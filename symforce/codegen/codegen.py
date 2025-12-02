@@ -32,6 +32,25 @@ from symforce.values import Values
 from . import PythonConfig
 
 CURRENT_DIR = Path(__file__).parent
+WARNING_MESSAGE = """
+    Generating code with epsilon set to 0 - This is dangerous!  You may get NaNs, Infs,
+    or numerically unstable results from calling generated functions near singularities.
+
+    In order to safely generate code, you should set epsilon to either a symbol
+    (recommended) or a small numerical value like `sf.numeric_epsilon`.  You should do
+    this before importing any other code from symforce, e.g. with
+
+        import symforce
+        symforce.set_epsilon_to_symbol()
+
+    or
+
+        import symforce
+        symforce.set_epsilon_to_number()
+
+    For more information on use of epsilon to prevent singularities, take a look at the
+    Epsilon Tutorial: https://symforce.org/tutorials/epsilon_tutorial.html
+"""
 
 
 class LinearizationMode(enum.Enum):
@@ -116,31 +135,10 @@ class Codegen:
         """
 
         if sf.epsilon() == 0:
-            warning_message = """
-                Generating code with epsilon set to 0 - This is dangerous!  You may get NaNs, Infs,
-                or numerically unstable results from calling generated functions near singularities.
-
-                In order to safely generate code, you should set epsilon to either a symbol
-                (recommended) or a small numerical value like `sf.numeric_epsilon`.  You should do
-                this before importing any other code from symforce, e.g. with
-
-                    import symforce
-                    symforce.set_epsilon_to_symbol()
-
-                or
-
-                    import symforce
-                    symforce.set_epsilon_to_number()
-
-                For more information on use of epsilon to prevent singularities, take a look at the
-                Epsilon Tutorial: https://symforce.org/tutorials/epsilon_tutorial.html
-                """
-            warning_message = textwrap.indent(textwrap.dedent(warning_message), "    ")
-
             if config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.FAIL:
-                raise ValueError(warning_message)
+                raise ValueError(WARNING_MESSAGE)
             elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.WARN:
-                logger.warning(warning_message)
+                logger.warning(WARNING_MESSAGE)
             elif config.zero_epsilon_behavior == codegen_config.ZeroEpsilonBehavior.ALLOW:
                 pass
             else:

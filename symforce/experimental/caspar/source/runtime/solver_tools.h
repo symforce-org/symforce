@@ -19,4 +19,5 @@ void beta_from_num_denum(const float* beta_num, const float* beta_denum, float* 
 float sum(const float* start, const float* end, float* target_ptr, float* scratch_ptr,
           bool copy_to_host = true);
 
+float read_cumem(const float* const data);
 }  // namespace caspar

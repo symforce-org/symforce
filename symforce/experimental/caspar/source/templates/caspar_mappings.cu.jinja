@@ -12,8 +12,8 @@
 namespace cg = cooperative_groups;
 
 // We use shared memory to improve the memory access.
-// A smaller block size of 128 allows for larger nodetypes.
-constexpr int block_size = 128;
+// A smaller block size of 64 allows for larger nodetypes.
+constexpr int block_size = 64;
 
 namespace caspar {
 {% for nodetype in caslib.exposed_types%}

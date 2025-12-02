@@ -265,6 +265,12 @@ file:./third_party/skymarshal
     # via symforce (pyproject.toml)
 snowballstemmer==3.0.1
     # via sphinx
+sortedcontainers==2.4.0
+    # via
+    #   symforce (pyproject.toml)
+    #   sortedcontainers-stubs
+sortedcontainers-stubs==2.4.2
+    # via symforce (pyproject.toml)
 soupsieve==2.7
     # via beautifulsoup4
 sphinx==7.1.2
@@ -338,6 +344,7 @@ typing-extensions==4.13.2
     #   mistune
     #   mypy
     #   setuptools-scm
+    #   sortedcontainers-stubs
 tzdata==2025.2
     # via pandas
 urllib3==2.2.3

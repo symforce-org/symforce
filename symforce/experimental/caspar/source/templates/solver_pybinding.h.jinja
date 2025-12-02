@@ -12,12 +12,12 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                                      "Class for solving Factor Graphs.")
       .def(py::init<SolverParams,
            {% for thing in solver.size_contributors %}
-           size_t{{ ", " if not loop.last else "" }}
+             size_t{{ ", " if not loop.last else "" }}
            {% endfor %}>(),
            py::arg("params"),
            py::kw_only(),
            {% for thing in solver.size_contributors %}
-           py::arg("{{num_arg_key(thing)}}") = 0{{ ", " if not loop.last else "" }}
+             py::arg("{{num_arg_key(thing)}}") = 0{{ ", " if not loop.last else "" }}
            {% endfor %}
        )
 
@@ -28,92 +28,148 @@ inline void add_solver_pybinding(pybind11::module_ module) {
       .def("get_allocation_size", &{{solver.struct_name}}::get_allocation_size)
 
       {% for nodetype in solver.node_types %}
-      .def("set_{{nodetype.__name__}}_num", &{{solver.struct_name}}::set_{{nodetype.__name__}}_num)
-      .def("set_{{nodetype.__name__}}_nodes_from_stacked_host",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertHostMemory(stacked_data);
-             solver.set_{{nodetype.__name__}}_nodes_from_stacked_host(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
-      )
-      .def("set_{{nodetype.__name__}}_nodes_from_stacked_device",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertDeviceMemory(stacked_data);
-             solver.set_{{nodetype.__name__}}_nodes_from_stacked_device(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
-      )
-      .def("get_{{nodetype.__name__}}_nodes_to_stacked_host",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertHostMemory(stacked_data);
-             solver.get_{{nodetype.__name__}}_nodes_to_stacked_host(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
-      )
-      .def("get_{{nodetype.__name__}}_nodes_to_stacked_device",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertDeviceMemory(stacked_data);
-             solver.get_{{nodetype.__name__}}_nodes_to_stacked_device(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
-      )
+        .def("set_{{nodetype.__name__}}_num", &{{solver.struct_name}}::set_{{nodetype.__name__}}_num)
+        .def("set_{{nodetype.__name__}}_nodes_from_stacked_host",
+             []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
+               AssertHostMemory(stacked_data);
+               solver.set_{{nodetype.__name__}}_nodes_from_stacked_host(
+                   AsFloatPtr(stacked_data),
+                   offset,
+                   GetNumRows(stacked_data));
+             },
+             pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
+        )
+        .def("set_{{nodetype.__name__}}_nodes_from_stacked_device",
+             []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
+               AssertDeviceMemory(stacked_data);
+               solver.set_{{nodetype.__name__}}_nodes_from_stacked_device(
+                   AsFloatPtr(stacked_data),
+                   offset,
+                   GetNumRows(stacked_data));
+             },
+             pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
+        )
+        .def("get_{{nodetype.__name__}}_nodes_to_stacked_host",
+             []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
+               AssertHostMemory(stacked_data);
+               solver.get_{{nodetype.__name__}}_nodes_to_stacked_host(
+                   AsFloatPtr(stacked_data),
+                   offset,
+                   GetNumRows(stacked_data));
+             },
+             pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
+        )
+        .def("get_{{nodetype.__name__}}_nodes_to_stacked_device",
+             []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
+               AssertDeviceMemory(stacked_data);
+               solver.get_{{nodetype.__name__}}_nodes_to_stacked_device(
+                   AsFloatPtr(stacked_data),
+                   offset,
+                   GetNumRows(stacked_data));
+             },
+             pybind11::arg("stacked_nodes"), pybind11::arg("offset") = 0
+        )
 
       {% endfor %}
       {% for factor in solver.factors %}
-      .def("set_{{factor.name}}_num", &{{solver.struct_name}}::set_{{factor.name}}_num)
+        .def("set_{{factor.name}}_num", &{{solver.struct_name}}::set_{{factor.name}}_num)
 
-      {% for argname, argtype in factor.node_arg_types.items() %}
-      .def("set_{{factor.name}}_{{argname}}_indices_from_host",
-           []({{ solver.struct_name }} &solver, pybind11::object indices) {
-             AssertHostMemory(indices);
-             solver.set_{{factor.name}}_{{argname}}_indices_from_host(
-                 AsUintPtr(indices),
-                 GetNumRows(indices));
-           }
-      )
-      .def("set_{{factor.name}}_{{argname}}_indices_from_device",
-           []({{ solver.struct_name }} &solver, pybind11::object indices) {
-             AssertDeviceMemory(indices);
-             solver.set_{{factor.name}}_{{argname}}_indices_from_device(
-                 AsUintPtr(indices),
-                 GetNumRows(indices));
-           }
-      )
-      {% endfor %}
-      {% for argname, argtype in factor.const_arg_types.items() %}
-      .def("set_{{factor.name}}_{{argname}}_data_from_stacked_device",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertDeviceMemory(stacked_data);
-             solver.set_{{factor.name}}_{{argname}}_data_from_stacked_device(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
-      )
-      .def("set_{{factor.name}}_{{argname}}_data_from_stacked_host",
-           []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
-             AssertHostMemory(stacked_data);
-             solver.set_{{factor.name}}_{{argname}}_data_from_stacked_host(
-                 AsFloatPtr(stacked_data),
-                 offset,
-                 GetNumRows(stacked_data));
-           },
-           pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
-      )
-      {% endfor %}
+        {% for argname, argtype in factor.node_arg_types.items() %}
+          {% if factor.isnodeshared[argname] %}
+          .def("set_{{factor.name}}_{{argname}}_indices_from_host",
+               []({{ solver.struct_name }} &solver, pybind11::object indices) {
+                 AssertHostMemory(indices);
+                 solver.set_{{factor.name}}_{{argname}}_indices_from_host(
+                     AsUintPtr(indices),
+                     GetNumRows(indices));
+               }
+          )
+          .def("set_{{factor.name}}_{{argname}}_indices_from_device",
+               []({{ solver.struct_name }} &solver, pybind11::object indices) {
+                 AssertDeviceMemory(indices);
+                 solver.set_{{factor.name}}_{{argname}}_indices_from_device(
+                     AsUintPtr(indices),
+                     GetNumRows(indices));
+               }
+          )
+          {% endif %}
+        {% endfor %}
+        {% for argname, argtype in factor.const_arg_types.items() %}
+          .def("set_{{factor.name}}_{{argname}}_data_from_stacked_device",
+               [](
+                   {% if factor.isconstseq[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% elif factor.isconstuniq[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data
+                   {% elif factor.isconstshared[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% endif %}
+                   ) {
+                 AssertDeviceMemory(stacked_data);
+                 solver.set_{{factor.name}}_{{argname}}_data_from_stacked_device(
+                   {% if factor.isconstseq[argname] %}
+                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% elif factor.isconstuniq[argname] %}
+                     AsFloatPtr(stacked_data)
+                   {% elif factor.isconstshared[argname] %}
+                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% endif %}
+                 );
+               },
+               {% if factor.isconstseq[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+               {% elif factor.isconstuniq[argname] %}
+                 pybind11::arg("stacked_data")
+              {% elif factor.isconstshared[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+              {% endif %}
+          )
+          .def("set_{{factor.name}}_{{argname}}_data_from_stacked_host",
+               [](
+                   {% if factor.isconstseq[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% elif factor.isconstuniq[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data
+                   {% elif factor.isconstshared[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% endif %}
+                   ) {
+                 AssertHostMemory(stacked_data);
+                 solver.set_{{factor.name}}_{{argname}}_data_from_stacked_host(
+                   {% if factor.isconstseq[argname] %}
+                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% elif factor.isconstuniq[argname] %}
+                     AsFloatPtr(stacked_data)
+                   {% elif factor.isconstshared[argname] %}
+                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% endif %}
+                 );
+               },
+               {% if factor.isconstseq[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+               {% elif factor.isconstuniq[argname] %}
+                 pybind11::arg("stacked_data")
+               {% elif factor.isconstshared[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+               {% endif %}
+          )
+        {% if factor.isconstshared[argname] %}
+        .def("set_{{factor.name}}_{{argname}}_indices_from_host",
+            []({{ solver.struct_name }} &solver, pybind11::object indices) {
+              AssertHostMemory(indices);
+              solver.set_{{factor.name}}_{{argname}}_indices_from_host(AsUintPtr(indices), GetNumRows(indices));
+            },
+            pybind11::arg("indices")
+        )
+        .def("set_{{factor.name}}_{{argname}}_indices_from_device",
+            []({{ solver.struct_name }} &solver, pybind11::object indices) {
+              AssertDeviceMemory(indices);
+              solver.set_{{factor.name}}_{{argname}}_indices_from_device(AsUintPtr(indices),GetNumRows(indices));
+            },
+            pybind11::arg("indices")
+        )
+        {% endif %}
+        {% endfor %}
       {% endfor %}
       ;
 }

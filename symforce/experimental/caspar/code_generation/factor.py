@@ -6,24 +6,34 @@
 from __future__ import annotations
 
 import symforce.symbolic as sf
+from symforce import jacobian_helpers
 from symforce import typing as T
-from symforce.jacobian_helpers import tangent_jacobians
 from symforce.ops import LieGroupOps as Ops
 
 from ..code_generation.kernel import Kernel
-from ..memory import AddIndexed
-from ..memory import AddSequential
 from ..memory import AddSharedSum
+from ..memory import AddSum
+from ..memory import ConstantSequential
+from ..memory import ConstantShared
+from ..memory import ConstantUnique
 from ..memory import ReadIndexed
+from ..memory import ReadPair
 from ..memory import ReadSequential
 from ..memory import ReadShared
-from ..memory import Tunable
-from ..memory import WriteBlockSum
+from ..memory import ReadUnique
+from ..memory import TunablePair
+from ..memory import TunableShared
+from ..memory import TunableUnique
 from ..memory import WriteIndexed
 from ..memory import WriteSequential
+from ..memory.accessors import AddPair
 from ..memory.accessors import _FactorAccessor
 from ..memory.accessors import _ReadAccessor
+from ..memory.accessors import _TunableAccessor
 from ..memory.accessors import _WriteAccessor
+from ..memory.pair import Pair
+from ..memory.pair import get_memtype
+from ..memory.pair import get_symbolic
 
 
 def get_diagonal_and_lower_triangle(mat: sf.Matrix) -> tuple[sf.Matrix, sf.Matrix]:
@@ -80,23 +90,48 @@ class Factor:
     A Factor object is essentially just a collection of kernels necessary for optimization.
     """
 
-    def __init__(self, func: T.Callable):
-        self.name = func.__name__
+    def __init__(self, func: T.Callable, name: T.Optional[str] = None):  # noqa: PLR0915
+        self.name = name or func.__name__
         self.func = func
         self.signature = T.get_type_hints(func, include_extras=True)  # type: ignore[call-arg]
         self.signature.pop("return", None)  # We don't care about the return annotation
-
+        self.kernels: dict[str, Kernel] = {}
         for k, v in self.signature.items():
             if not (hasattr(v, "__metadata__") and hasattr(v, "__origin__")):
                 raise ValueError(f"Argument {k} must be of type T.Annotated.")
             if not issubclass(v.__metadata__[0], _FactorAccessor):
                 raise ValueError(f"Argument {k} must have an FactorAccessor descriptor.")
 
-        self.fac_args = {k: Ops.symbolic(v.__origin__, k) for k, v in self.signature.items()}
-        self.isnode = {k: issubclass(v.__metadata__[0], Tunable) for k, v in self.signature.items()}
-        self.arg_types = {k: v.__origin__ for k, v in self.signature.items()}
+        self.fac_args = {k: get_symbolic(v.__origin__, k) for k, v in self.signature.items()}
+        self.accessors = {k: v.__metadata__[0] for k, v in self.signature.items()}
+        self.isnode = {k: issubclass(v, _TunableAccessor) for k, v in self.accessors.items()}
+        self.isnodepair = {k: issubclass(v, TunablePair) for k, v in self.accessors.items()}
+        self.isnodeuniq = {k: issubclass(v, TunableUnique) for k, v in self.accessors.items()}
+        self.isnodeshared = {k: issubclass(v, TunableShared) for k, v in self.accessors.items()}
+        self.isconstseq = {k: issubclass(v, ConstantSequential) for k, v in self.accessors.items()}
+        self.isconstuniq = {k: issubclass(v, ConstantUnique) for k, v in self.accessors.items()}
+        self.isconstshared = {k: issubclass(v, ConstantShared) for k, v in self.accessors.items()}
+
+        self.arg_types: dict[str, T.Type[sf.Storage]] = {
+            k: get_memtype(v.__origin__) for k, v in self.signature.items()
+        }
         self.node_arg_types = {k: v for k, v in self.arg_types.items() if self.isnode[k]}
         self.const_arg_types = {k: v for k, v in self.arg_types.items() if not self.isnode[k]}
+
+        by_size = sorted(
+            self.node_arg_types,
+            key=lambda k: (self.isnodepair[k], Ops.tangent_dim(self.node_arg_types[k])),
+        )
+        self.prioritized_node = by_size[-1]
+        self.prioritized_node_second = by_size[-2] if len(by_size) > 1 else by_size[-1]
+
+        self.jnjtr_args = {
+            k: self.node_arg_types[k]
+            for k in sorted(
+                self.node_arg_types,
+                key=lambda k: k != self.prioritized_node_second,
+            )
+        }
 
         out = self.func(**self.fac_args)
         if out is None:
@@ -110,108 +145,172 @@ class Factor:
         self.res = sf.Matrix(Ops.to_storage(out))
         self.res_dim = self.res.shape[0]
 
-        by_size = sorted(self.node_arg_types, key=lambda k: Ops.tangent_dim(self.node_arg_types[k]))
-        self.smallest_node = by_size[0]
-        self.second_smallest_node = by_size[1] if len(by_size) > 1 else by_size[0]
+        self.jac_syms: dict[str, sf.Matrix] = {}
+        self.jacs: dict[str, sf.Matrix] = {}
+        self.jac_outs: dict[str, T.Union[WriteSequential, WriteIndexed]] = {}
+        self.jac_ins: dict[str, T.Union[ReadSequential, ReadIndexed]] = {}
+        self.jac_arg_types: dict[str, T.Type[sf.Storage]] = {}
+        self.jac_name_map: dict[str, str] = {}
 
-        self.jnjtr_args = {
-            k: self.node_arg_types[k]
-            for k in sorted(
-                self.node_arg_types,
-                key=lambda k: (k == self.smallest_node, k == self.second_smallest_node),
-            )
-        }
+        for k, v in self.node_arg_types.items():
+            if self.isnodepair[k]:
+                j1 = get_jac(self.res, Ops.symbolic(v, f"{k}_first"))
+                j2 = get_jac(self.res, Ops.symbolic(v, f"{k}_second"))
+                self.jac_syms[f"{k}_first"] = symbolic_with_const(j1, (f"{k}_jac_first"))
+                self.jac_syms[f"{k}_second"] = symbolic_with_const(j2, (f"{k}_jac_second"))
+                self.jacs[f"{k}_first"] = j1
+                self.jacs[f"{k}_second"] = j2
+                self.jac_outs[f"{k}_first"] = WriteSequential(f"out_{k}_jac_first", dyn_part(j1))
+                self.jac_outs[f"{k}_second"] = WriteSequential(f"out_{k}_jac_second", dyn_part(j2))
+                self.jac_arg_types[f"{k}_first"] = v
+                self.jac_arg_types[f"{k}_second"] = v
+                self.jac_name_map[f"{k}_first"] = k
+                self.jac_name_map[f"{k}_second"] = k
+            else:
+                j = get_jac(self.res, Ops.symbolic(v, k))
+                self.jac_syms[k] = symbolic_with_const(j, (f"{k}_jac"))
+                self.jacs[k] = j
+                self.jac_outs[k] = WriteSequential(f"out_{k}_jac", dyn_part(j))
+                self.jac_arg_types[k] = v
+                self.jac_name_map[k] = k
+
         assert tuple(self.isnode) == tuple(self.fac_args)
 
+    def add_kernel(
+        self, args: tuple[str, ...], inputs: list[_ReadAccessor], outputs: list[_WriteAccessor]
+    ) -> None:
+        name = "_".join(args)
+        self.kernels[name] = Kernel(name, inputs, outputs, expose_to_python=False)
+
     def make_kernels(self) -> list[Kernel]:
-        kernels = []
+        inputs: list[_ReadAccessor] = [self.accessors[k](k, v) for k, v in self.fac_args.items()]
+        jac_args = self.jac_name_map
 
-        def kernel(name: str, inputs: list[_ReadAccessor], outputs: list[_WriteAccessor]) -> None:
-            kernels.append(Kernel(name, inputs, outputs, expose_to_python=False))
-
-        inputs: list[_ReadAccessor] = [
-            (ReadShared if self.isnode[k] else ReadSequential)(k, v)
-            for k, v in self.fac_args.items()
-        ]
-
-        jacs = {
-            f"{k}": tangent_jacobians(self.res, [v])[0]
-            for k, v in self.fac_args.items()
-            if self.isnode[k]
-        }
-
-        kernel(
-            f"{self.name}_res_jac_first",
-            inputs,
-            [
-                WriteSequential("out_res", self.res),
-                WriteBlockSum("out_rTr", self.res.T * self.res),
-                *(WriteIndexed(f"out_{k}_jac", v) for k, v in jacs.items()),
-            ],
-        )
-        kernel(
-            f"{self.name}_res_jac",
-            inputs,
-            [
-                WriteSequential("out_res", self.res),
-                *(WriteIndexed(f"out_{k}_jac", v) for k, v in jacs.items()),
-            ],
-        )
-
-        kernel(f"{self.name}_score", inputs, [WriteBlockSum("out_resTres", self.res.T * self.res)])
-
-        res_sym = self.res.symbolic("res")
-        jacs_syms = {k: v.symbolic(f"{k}_jac") for k, v in jacs.items()}
-        jnjtr_sym = sf.Matrix(self.res_dim, 1).symbolic("jnjtr")
-
-        for name, jac_sym in jacs_syms.items():
-            njtr = -jac_sym.T * res_sym
-            jtj = jac_sym.T * jac_sym
-            precond_diag, precond_tril = get_diagonal_and_lower_triangle(jtj)
-            njtr_sym = njtr.symbolic(f"{name}_njtr")
-
-            kernel(
-                f"{self.name}_{name}_njtr_precond",
-                [
-                    ReadIndexed("res", res_sym),
-                    ReadSequential(f"{name}_jac", jac_sym),
-                ],
-                [
-                    AddSharedSum(f"out_{name}_njtr", njtr),
-                    AddSharedSum(
-                        f"out_{name}_precond_diag", precond_diag, use_index=f"out_{name}_njtr"
-                    ),
-                    AddSharedSum(
-                        f"out_{name}_precond_tril", precond_tril, use_index=f"out_{name}_njtr"
-                    ),
-                ],
-            )
-
-            out_t: T.Type[_WriteAccessor]
-            if name == self.smallest_node:
-                out_t = AddSequential
-            elif name == self.second_smallest_node:
-                out_t = WriteIndexed
+        jac_outs: list[T.Any] = []
+        for k in self.node_arg_types:
+            if self.isnodepair[k]:
+                jac0, jac1 = self.jacs[f"{k}_first"], self.jacs[f"{k}_second"]
+                diag0, tril0 = get_diagonal_and_lower_triangle(jac0.T * jac0)
+                diag1, tril1 = get_diagonal_and_lower_triangle(jac1.T * jac1)
+                jac_outs += (
+                    WriteSequential(f"out_{k}_jac_first", dyn_part(jac0)),
+                    WriteSequential(f"out_{k}_jac_second", dyn_part(jac1)),
+                    AddPair(f"out_{k}_njtr", Pair(-jac0.T * self.res, -jac1.T * self.res)),
+                    AddPair(f"out_{k}_precond_diag", Pair(diag0, diag1)),
+                    AddPair(f"out_{k}_precond_tril", Pair(tril0, tril1)),
+                )
+            elif self.isnodeuniq[k]:
+                jac = self.jacs[k]
+                diag, tril = get_diagonal_and_lower_triangle(jac.T * jac)
+                jac_outs += (
+                    WriteSequential(f"out_{k}_jac", dyn_part(jac)),
+                    AddSum(f"out_{k}_njtr", -jac.T * self.res),
+                    AddSum(f"out_{k}_precond_diag", diag),
+                    AddSum(f"out_{k}_precond_tril", tril),
+                )
             else:
-                out_t = AddIndexed
+                jac = self.jacs[k]
+                diag, tril = get_diagonal_and_lower_triangle(jac.T * jac)
+                jac_outs += (
+                    WriteSequential(f"out_{k}_jac", dyn_part(jac)),
+                    AddSharedSum(f"out_{k}_njtr", -jac.T * self.res, k),
+                    AddSharedSum(f"out_{k}_precond_diag", diag, k),
+                    AddSharedSum(f"out_{k}_precond_tril", tril, k),
+                )
 
-            kernel(
-                f"{self.name}_{name}_jnjtr",
-                [
-                    ReadSequential(f"{name}_jac", jac_sym),
-                    ReadShared(f"{name}_njtr", njtr_sym),
-                ],
-                [out_t(f"out_{name}_jnjtr", jac_sym * njtr_sym)],
-            )
+        self.add_kernel(
+            (self.name, "res_jac_first"),
+            inputs,
+            [
+                WriteSequential("out_res", self.res),
+                AddSum("out_rTr", self.res.T * self.res),
+                *jac_outs,
+            ],
+        )
+        self.add_kernel(
+            (self.name, "res_jac"),
+            inputs,
+            [
+                WriteSequential("out_res", self.res),
+                *jac_outs,
+            ],
+        )
+        self.add_kernel(
+            (self.name, "score"),
+            inputs,
+            [
+                AddSum("out_rTr", self.res.T * self.res),
+            ],
+        )
 
-            kernel(
-                f"{self.name}_{name}_jtjnjtr",
-                [
-                    ReadSequential(f"{name}_jac", jac_sym),
-                    (ReadSequential if name == self.smallest_node else ReadIndexed)(
-                        "jnjtr", jnjtr_sym
-                    ),
-                ],
-                [AddSharedSum(f"out_{name}_jtjnjtr", jac_sym.T * jnjtr_sym)],
-            )
-        return kernels
+        njtr_syms = {
+            k: sf.Matrix(Ops.tangent_dim(v), 1).symbolic(k) for k, v in self.jac_arg_types.items()
+        }
+        jnjtr = sum(
+            (jac * njtr for jac, njtr in zip(self.jac_syms.values(), njtr_syms.values())),
+            start=sf.Matrix(self.res_dim, 1),
+        )
+
+        jtjnjtr_inputs: list[_ReadAccessor] = []
+        for k in self.node_arg_types:
+            if self.isnodepair[k]:
+                jtjnjtr_inputs += (
+                    ReadPair(f"{k}_njtr", Pair(njtr_syms[f"{k}_first"], njtr_syms[f"{k}_second"])),
+                    ReadSequential(f"{k}_jac_first", dyn_part(self.jac_syms[f"{k}_first"])),
+                    ReadSequential(f"{k}_jac_second", dyn_part(self.jac_syms[f"{k}_second"])),
+                )
+            elif self.isnodeuniq[k]:
+                jtjnjtr_inputs += (
+                    ReadUnique(f"{k}_njtr", njtr_syms[k]),
+                    ReadSequential(f"{k}_jac", dyn_part(self.jac_syms[k])),
+                )
+            else:
+                jtjnjtr_inputs += (
+                    ReadShared(f"{k}_njtr", njtr_syms[k]),
+                    ReadSequential(f"{k}_jac", dyn_part(self.jac_syms[k])),
+                )
+
+        jtjnjtr_outs: list[_WriteAccessor] = []
+        for k in self.node_arg_types:
+            if self.isnodepair[k]:
+                jac0, jac1 = self.jac_syms[f"{k}_first"], self.jac_syms[f"{k}_second"]
+                jtjnjtr_outs.append(AddPair(f"out_{k}_njtr", Pair(jac0.T * jnjtr, jac1.T * jnjtr)))
+            elif self.isnodeuniq[k]:
+                jac = self.jac_syms[k]
+                jtjnjtr_outs.append(AddSum(f"out_{k}_njtr", jac.T * jnjtr))
+            else:
+                jac = self.jac_syms[k]
+                jtjnjtr_outs.append(
+                    AddSharedSum(f"out_{k}_njtr", jac.T * jnjtr, use_index=f"{jac_args[k]}_njtr")
+                )
+
+        self.add_kernel(
+            (self.name, "jtjnjtr_direct"),
+            jtjnjtr_inputs,
+            jtjnjtr_outs,
+        )
+
+        self.res_sym = self.res.symbolic("res")
+        self.jnjtr_sym = sf.Matrix(self.res_dim, 1).symbolic("jnjtr")
+
+        return list(self.kernels.values())
+
+
+def dyn_part(storage: sf.Storage) -> list[T.Scalar]:
+    return [i for i in storage.to_storage() if not i.is_number]
+
+
+StorageT = T.TypeVar("StorageT", bound=T.Storable)
+
+
+def symbolic_with_const(storage: StorageT, name: str) -> StorageT:
+    return storage.from_storage(
+        [
+            v if v.is_number else sf.Symbol(name + "_" + str(i))
+            for (i, v) in enumerate(storage.to_storage())
+        ]
+    )
+
+
+def get_jac(fx: T.Element, x: T.Element) -> sf.Matrix:
+    return jacobian_helpers.tangent_jacobians(fx, [x])[0]

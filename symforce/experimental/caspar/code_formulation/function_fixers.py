@@ -5,15 +5,16 @@
 
 from __future__ import annotations
 
-import typing as T
 from fractions import Fraction
 from functools import lru_cache
 from itertools import combinations
 from itertools import product
 
-from . import function_types
-from .function_types import Func
-from .function_types import Var
+from . import ftypes
+from .dabseg import Call
+from .dabseg import CallId
+from .dabseg import Dabseg
+from .dabseg import Val
 
 
 @lru_cache
@@ -28,7 +29,10 @@ def get_pow_map(
     Operations can either be nested (e.g. x^(1/4) = sqrt(sqrt(x)))
     or multiplied (e.g. x^(5/6) = sqrt(x)*cbrt(x)).
     The first element in each value of the output is a boolean indicating if the operations are
-    multiplied, the remaining two elements are the exponents of the operations.
+    multiplied (True) or nested (False).
+    The remaining two elements are the exponents of the operations.
+
+    TODO: Take cse into account.
     """
     if cost_map is None:
         cost_map = {
@@ -41,105 +45,157 @@ def get_pow_map(
         }
     costs = {**cost_map, **{Fraction(1, 1): 0}}
     exp_maps: dict[Fraction, Fraction | tuple[bool, Fraction, Fraction]] = {k: k for k in costs}
-    anynew = True
 
     def add_if_new(e0: Fraction, cost0: float, e1: Fraction, cost1: float, multiply: bool) -> bool:
         exp_new = e0 + e1 if multiply else e0 * e1
         cost = cost0 + cost1 + 1 if multiply else cost0 + cost1
-        if cost < costs.get(exp_new, powf_cost):
+        if is_new := cost < costs.get(exp_new, powf_cost):
             costs[exp_new] = cost
             exp_maps[exp_new] = (multiply, e0, e1)
-            return True
-        return False
+        return is_new
 
+    anynew = True
     while anynew:
         anynew = False
-        for (e0, cost0), (e1, cost1) in list(product(costs.items(), costs.items())):
-            anynew |= add_if_new(e0, cost0, e1, cost1, True)
-        for (e0, cost0), (e1, cost1) in list(product(cost_map.items(), costs.items())):
-            anynew |= add_if_new(e0, cost0, e1, cost1, False)
-    return exp_maps
+        keys = list(costs)
+        for key0, key1 in combinations(keys, 2):
+            anynew |= add_if_new(key0, costs[key0], key1, costs[key1], True)
+        for key0, key1 in product(cost_map, keys):
+            anynew |= add_if_new(key0, costs[key0], key1, costs[key1], False)
+    return {k: exp_maps[k] for k in sorted(exp_maps)}
 
 
 EXPONENTIAL_MAP = get_pow_map()
 OPERATION_MAP = {
-    Fraction(-1, 1): function_types.Rcp,
-    Fraction(2, 1): function_types.Square,
-    Fraction(1, 2): function_types.Sqrt,
-    Fraction(1, 3): function_types.Cbrt,
-    Fraction(-1, 3): function_types.RCbrt,
-    Fraction(-1, 2): function_types.RSqrt,
+    Fraction(-1, 1): ftypes.Rcp,
+    Fraction(2, 1): ftypes.Square,
+    Fraction(1, 2): ftypes.Sqrt,
+    Fraction(1, 3): ftypes.Cbrt,
+    Fraction(-1, 3): ftypes.RCbrt,
+    Fraction(-1, 2): ftypes.RSqrt,
 }
 
 
-def fix_pow(func: Func) -> Func:
+def fix_pow(dabseg: Dabseg, call: Call) -> Call:
     """
     Fixes the power function using the generated maps above.
     """
+    if not call.is_a(ftypes.Pow) or not call.args[1].call.is_a(ftypes.Store):
+        return call
 
-    def inner(base: Var, exponent: Fraction) -> Var:
+    def inner(base: Val, exponent: Fraction) -> Val:
         exp = EXPONENTIAL_MAP.get(exponent, None)
         if exp is None:
-            return function_types.Pow(base, function_types.Store(data=float(exponent))[0])[0]
+            exp_val = dabseg.add_call(ftypes.Store(data=float(exponent)))[0]
+            return dabseg.add_call(ftypes.Pow(), (base, exp_val))[0]
 
         if isinstance(exp, Fraction):
             if exp == 1:
                 return base
             else:
-                return OPERATION_MAP[exp](base)[0]
-
+                return dabseg.add_call(OPERATION_MAP[exp](), (base,))[0]
         mul, e0, e1 = exp
         if mul:
             v0 = inner(base, e0)
             v1 = inner(base, e1)
-            return function_types.Prod(v0, v1)[0]
+            return dabseg.add_call(ftypes.Prod(), (v0, v1))[0]
         else:
             v1 = inner(base, e1)
             return inner(v1, e0)
 
-    if not func.args[1].func.is_store():
-        return func
-    exponent = Fraction(float(func.args[1].func.data)).limit_denominator()
-    return inner(func.args[0], exponent).func
+    exponent = Fraction(float(call.args[1].call.func.data)).limit_denominator()
+    return dabseg.rebind(inner(call.args[0], exponent).call, call)
 
 
-def make_accumulators_shared(funcs: list[Func], ftype: T.Type[Func]) -> list[Func]:
+def unpack_square(dabseg: Dabseg, call: Call) -> Call:
+    if not call.is_a(ftypes.Square):
+        return call
+    new_call = dabseg.add_call(ftypes.Prod(), (call.args[0], call.args[0]), fix_accumulator=False)
+    return dabseg.rebind(new_call, call)
+
+
+def split_accumulators(dabseg: Dabseg) -> None:  # noqa: PLR0912, PLR0915
     """
-    Search for the best common subexpressions from a colloction of
-    accumulators on the same type (e.g. Sums or Prods).
-
-    The function finds the pair of variables that are used the most across all accumulators,
-    extracts them from the functions and repeats until no more pairs of variables are shared.
+    Used to split accumulators into single argument contributors.
+    To facilitate instruction ordering additional marker calls are generated to limit sorting.
     """
-    # TODO(Emil Martens): speedup this function by using dynamic updates (don't regenerate all
-    # pairs)
+    relations_map: dict[CallId, list[CallId]] = {}
+    for call in dabseg.call_iter():
+        if call.is_accumulator:
+            relations_map.setdefault(call.id, [])
+        for arg in call.args:
+            if arg.call.is_accumulator:
+                relations_map.setdefault(arg.call.id, []).append(call.id)
 
-    pair_to_uses: dict[tuple[Var, Var], set[Func]] = {}
-    for func0, func1 in combinations(funcs, 2):
-        for pair in combinations(set(func0.args) & set(func1.args), 2):
-            pair_to_uses.setdefault(pair, set()).update([func0, func1])
+    def is_fma_prod(call: Call) -> bool:
+        return (
+            call.is_a(ftypes.Prod)
+            and len(rel := relations_map[call.id]) == 1
+            and dabseg.call(rel[0]).is_a(ftypes.Sum)
+        )
 
-    siblings = set(frozenset(v) for v in pair_to_uses.values())
+    for call_id, relations in relations_map.items():
+        call = dabseg.call(call_id)
+        if (is_fma_prod(call) and call.n_args == 2) or not relations:
+            continue
 
-    max_len = max(map(len, siblings), default=0)
-    if max_len == 0:
-        return funcs
+        # ReadyMarker
+        markers: list[Call] = []
+        non_fma_prod_markers: list[Call] = []
+        is_fma = False
+        fma_prod_markers: list[Call] = []
+        for arg in call.args:
+            acall = arg.call
+            if is_fma_prod(acall) and acall.n_args == 2:
+                is_fma = True
+                marker = dabseg.add_call(ftypes.FmaProd2Marker(), acall.args)
+            elif acall.is_a(ftypes.FinishFmaProd):
+                is_fma = True
+                marker = dabseg.add_call(ftypes.FmaProdMarker(), (arg,))
+                fma_prod_markers.append(acall)
+            else:
+                marker = dabseg.add_call(ftypes.ContributeMarker(), (arg,))
+                non_fma_prod_markers.append(marker)
+            markers.append(marker)
 
-    candidate_sets = [v for v in siblings if len(v) == max_len]
-    best_shared: set[Var] = set()
-    best_fset: frozenset[Func] = frozenset()
-    for fset in candidate_sets:
-        it = iter(fset)
-        shared = set(next(it).args)
-        for func in it:
-            shared &= set(func.args)
-        if len(shared) > len(best_shared):
-            best_shared = shared
-            best_fset = fset
-    out = []
-    shared_var = ftype(*best_shared)[0]
-    for func in funcs:
-        if func in best_fset:
-            func = ftype(*(set(func.args) - best_shared), shared_var)
-        out.append(func)
-    return make_accumulators_shared(out, ftype)
+        # Initialize
+        if is_fma:
+            assert call.is_a(ftypes.Sum)
+            init = dabseg.add_call(ftypes.StartFma(), depends=tuple(markers))
+            for contrib in (c for keep in fma_prod_markers for c in keep.depends):
+                free = dabseg.add_call(ftypes.FreeMarker(), contrib.args, depends=(init,))
+                contrib.add_relation(free, "free")
+                contrib.add_relation(init, "fma")
+        else:
+            init = dabseg.add_call(ftypes.StartAccumulate(call.func), depends=tuple(markers))
+        for marker in markers:
+            marker.add_relation(init, "starter")
+
+        # Contribute / FreeMarker
+        contribs: list[Call] = []
+        for arg, marker in zip(call.args, markers):
+            acall = arg.call
+            if is_fma_prod(acall) and acall.n_args == 2:
+                depends = tuple((init, *non_fma_prod_markers))
+                contrib = dabseg.add_call(ftypes.ContributeFmaProd2(), acall.args, depends=depends)
+            elif is_fma_prod(call):
+                contrib = dabseg.add_call(ftypes.ContributeToFmaProd(), (arg,), depends=(init,))
+            elif acall.is_a(ftypes.FinishFmaProd):
+                contrib = dabseg.add_call(ftypes.ContributeFmaProd(), (arg,), depends=(init,))
+            else:
+                contrib = dabseg.add_call(ftypes.Contribute(call.func), (arg,), depends=(init,))
+            contrib.add_relation(marker, "marker")
+            marker.add_relation(contrib, "contrib")
+            contribs.append(contrib)
+
+        # Finalize
+        if is_fma_prod(call):
+            assert call.n_args > 2
+            finish = dabseg.add_call(ftypes.FinishFmaProd(), (init[0],), depends=tuple(contribs))
+        else:
+            finish = dabseg.add_call(ftypes.FinishAccumulate(), (init[0],), depends=tuple(contribs))
+
+        finish.add_relation(init, "starter")
+        init.add_relation(finish, "finish")
+
+        dabseg.rebind(finish, call)

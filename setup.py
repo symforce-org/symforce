@@ -391,6 +391,7 @@ if __name__ == "__main__":
                 "sympy~=1.11.1",
                 f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
                 "typing-extensions; python_version<'3.9'",
+                "sortedcontainers",
             ]
         ),
         setup_requires=setup_requirements,
@@ -410,6 +411,7 @@ if __name__ == "__main__":
                     "types-jinja2",
                     "types-requests",
                     "types-setuptools",
+                    "sortedcontainers-stubs",
                     # Oldest version that solves to the right requirements
                     "uv>=0.2.0",
                 ]

@@ -8,8 +8,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from ..code_formulation.compute_graph_optimizer import ComputeGraphOptimizer
-from ..code_formulation.compute_graph_sorter import ComputeGraphSorter
+from ..code_formulation.dabseg_from_accessors import make_dabseg
+from ..code_formulation.dabseg_sorter import get_lines
 from ..memory.accessors import Accessor
 from ..memory.accessors import _ReadAccessor
 from ..memory.accessors import _WriteAccessor
@@ -40,10 +40,9 @@ class Kernel:
         self.expose_to_python = expose_to_python
 
     def generate(self, out_dir: Path) -> None:
-        funcset = ComputeGraphOptimizer(self.inputs, self.outputs)
-        ordering = ComputeGraphSorter(list(funcset.funcs()))
-        self.code_lines = ordering.get_lines()
-        self.registers = [f"r{i}" for i in range(ordering.max_registers)]
+        dabseg = make_dabseg(self.inputs, self.outputs)
+        self.code_lines, n_registers = get_lines(dabseg)
+        self.registers = [f"r{i}" for i in range(n_registers)]
 
         code = env.get_template("kernel.cu.jinja").render(kernel=self)
         code = EMPTY_BLOCK_PATTERN.sub("", code)

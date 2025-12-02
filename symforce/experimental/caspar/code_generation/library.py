@@ -19,6 +19,8 @@ from ..code_generation.solver import num_arg_key
 from ..memory import caspar_size
 from ..memory.accessors import Accessor
 from ..memory.layouts import get_default_caspar_layout
+from ..memory.pair import get_memtype
+from ..memory.pair import get_symbolic
 from ..source.templates import copy_if_different
 from ..source.templates import env
 from ..source.templates import write_if_different
@@ -27,7 +29,7 @@ from ..source.templates import write_if_different
 def insert_sorted_unique(
     container: list[T.LieGroupElementOrType], items: T.Iterable[T.LieGroupElementOrType]
 ) -> None:
-    for item in items:
+    for item in map(get_memtype, items):
         lo = 0
         hi = len(container)
         name = item.__name__
@@ -65,7 +67,7 @@ class CasparLibrary:
                 raise ValueError(f"Argument {k} must have an Accessor descriptor.")
 
         ret_type = signature.pop("return")
-        in_syms = {k: Ops.symbolic(v.__origin__, k) for k, v in signature.items()}
+        in_syms = {k: get_symbolic(v.__origin__, k) for k, v in signature.items()}
         output = func(**in_syms)
 
         if isinstance(output, tuple):
@@ -87,40 +89,47 @@ class CasparLibrary:
             insert_sorted_unique(self.exposed_types, [ret_type.__origin__])
         return func
 
-    def add_factor(self, func: T.Callable) -> T.Callable:
-        factor = Factor(func)
-        self.factors.append(factor)
-        insert_sorted_unique(self.node_types, factor.node_arg_types.values())
-        insert_sorted_unique(self.exposed_types, factor.arg_types.values())
-        return func
+    def add_factor(
+        self,
+        func_or_name: T.Union[T.Callable, str],
+        name: str | None = None,
+    ) -> T.Callable:
+        if isinstance(func_or_name, str):
+            return lambda func: self.add_factor(func, func_or_name)
+        else:
+            factor = Factor(func_or_name, name)
+            self.factors.append(factor)
+            insert_sorted_unique(self.node_types, factor.node_arg_types.values())
+            insert_sorted_unique(self.exposed_types, factor.arg_types.values())
+            return func_or_name
 
-    def generate(self, out_dir: Path, use_symlinks: bool = True) -> None:
+    def generate(self, out_dir: Path, use_symlinks: bool = False) -> None:
         out_dir.mkdir(exist_ok=True, parents=True)
-
-        solver = None
-        if self.factors:
-            solver = Solver(self)
-            self.kernels.extend(solver.make_kernels())
-            solver.generate(out_dir)
 
         for fac in self.factors:
             self.kernels.extend(fac.make_kernels())
 
         self.generate_castype_mappings(out_dir)
         self.generate_links(out_dir, use_symlinks)
-        self.generate_kernels(out_dir)
+        if solver := (Solver(self) if self.factors else None):
+            self.kernels.extend(solver.make_kernels())
+            solver.generate(out_dir)
         self.generate_binding_file(out_dir, solver)
         self.generate_stubs(out_dir, solver)
         self.generate_buildfiles(out_dir)
+        self.generate_kernels(out_dir)
 
     @staticmethod
-    def compile(out_dir: Path) -> None:
+    def compile(out_dir: Path, debug: bool = False) -> None:
         import subprocess
 
         build_dir = out_dir / "build"
         build_dir.mkdir(exist_ok=True)
         logging.info(f"Compiling {out_dir}")
-        subprocess.run(["cmake", ".."], cwd=build_dir, check=True)
+        if debug:
+            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Debug", ".."], cwd=build_dir, check=True)
+        else:
+            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Release", ".."], cwd=build_dir, check=True)
         subprocess.run(["make", "-j"], cwd=build_dir, check=True)
 
     # This function has no annotated return type, so that type inference in IDEs can get more
@@ -164,7 +173,8 @@ class CasparLibrary:
         write_if_different(pyi, out_dir.joinpath(f"{self.name}.pyi"))
 
     def generate_kernels(self, out_dir: Path) -> None:
-        for kernel in self.kernels:
+        for kernel in sorted(self.kernels, key=lambda k: k.name != "imu_residual_res_jac_first"):
+            logging.info(f"Generating kernel {kernel.name}")
             kernel.generate(out_dir)
 
     @staticmethod

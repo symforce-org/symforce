@@ -43,9 +43,9 @@ caslib = CasparLibrary()
 
 @caslib.add_factor
 def fac_reprojection(
-    cam: T.Annotated[Cam, mem.Tunable],
-    point: T.Annotated[Point, mem.Tunable],
-    pixel: T.Annotated[Pixel, mem.Constant],
+    cam: T.Annotated[Cam, mem.TunableShared],
+    point: T.Annotated[Point, mem.TunableShared],
+    pixel: T.Annotated[Pixel, mem.ConstantSequential],
 ) -> sf.V2:
     focal_length, k1, k2 = cam.calibration
     point_cam = cam.cam_T_world * point
@@ -58,7 +58,7 @@ def fac_reprojection(
 
 
 out_dir = Path(__file__).resolve().parent / "generated"
-caslib.generate(out_dir)
+caslib.generate(out_dir, use_symlinks=True)
 caslib.compile(out_dir)
 
 # Can also be imported using: lib = caslib.import_lib(out_dir)

@@ -15,10 +15,10 @@ struct SolverParams {
   float diag_min = 1e-12;
   float score_exit_value = 0.0f;
   int solver_iter_max = 100;
-  int pcg_iter_max = 5;
-  float pcg_rel_error_exit = 1e-2;
-  float pcg_rel_score_exit = 0.9f;
-  float pcg_rel_decrease_min = 1.0f;
+  int pcg_iter_max = 20;
+  float pcg_rel_error_exit = 1e-4;
+  float pcg_rel_score_exit = -1.0f;    // disabled if == -1.0f
+  float pcg_rel_decrease_min = -1.0f;  // disabled if == -1.0f
   float solver_rel_decrease_min = 1.0f;
 };
 

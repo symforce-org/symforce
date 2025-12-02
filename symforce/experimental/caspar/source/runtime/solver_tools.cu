@@ -34,6 +34,12 @@ float sum(const float* start, const float* end, float* target_ptr, float* scratc
   return result;
 }
 
+float read_cumem(const float* const data) {
+  float result;
+  cudaMemcpy(&result, data, sizeof(float), cudaMemcpyDeviceToHost);
+  return result;
+}
+
 __global__ void alpha_from_num_denum_kernel(const float* alpha_numerator,
                                             const float* alpha_denumerator, float* alpha,
                                             float* neg_alpha) {

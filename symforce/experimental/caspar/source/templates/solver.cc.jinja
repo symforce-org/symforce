@@ -5,6 +5,7 @@
 #include "solver.h"
 
 #include <stdexcept>
+#include <algorithm>
 #include <chrono>
 
 #include "caspar_mappings.h"
@@ -15,18 +16,14 @@
 {% for fac in solver.factors%}
 #include "kernel_{{fac.name}}_res_jac.h"
 #include "kernel_{{fac.name}}_res_jac_first.h"
+#include "kernel_{{fac.name}}_jtjnjtr_direct.h"
 #include "kernel_{{fac.name}}_score.h"
-{% for arg, typ in fac.node_arg_types.items()%}
-#include "kernel_{{fac.name}}_{{arg}}_jnjtr.h"
-#include "kernel_{{fac.name}}_{{arg}}_jtjnjtr.h"
-#include "kernel_{{fac.name}}_{{arg}}_njtr_precond.h"
-{% endfor %}
 {% endfor %}
 {% for nodetype in solver.node_types%}
 #include "kernel_{{nodetype.__name__}}_alpha_denumerator_or_beta_nummerator.h"
 #include "kernel_{{nodetype.__name__}}_alpha_numerator_denominator.h"
 #include "kernel_{{nodetype.__name__}}_normalize.h"
-#include "kernel_{{nodetype.__name__}}_pred_decrease.h"
+#include "kernel_{{nodetype.__name__}}_pred_decrease_times_two.h"
 #include "kernel_{{nodetype.__name__}}_retract.h"
 #include "kernel_{{nodetype.__name__}}_start_w.h"
 #include "kernel_{{nodetype.__name__}}_start_w_contribute.h"
@@ -69,12 +66,16 @@ namespace caspar {
     : params_(params),
       {% for thing in solver.size_contributors %}
       {{num_key(thing)}}({{num_arg_key(thing)}}),
-      {{num_blocks_key(thing)}}(({{num_arg_key(thing)}} + 1023) / 1024),
       {{num_max_key(thing)}}({{num_arg_key(thing)}}){{ ", " if not loop.last else "" }}
       {% endfor %}
       {
   indices_valid_ = false;
-
+  if (params.pcg_rel_error_exit<= 0.0f){
+    throw std::runtime_error("params.pcg_rel_error_exit must be positive");
+  }
+  if (params.diag_init <= 0.0f){
+    throw std::runtime_error("params.diag_init must be positive");
+  }
   allocation_size_ = get_nbytes();
   cudaMalloc(&origin_ptr_, allocation_size_);
 
@@ -84,8 +85,7 @@ namespace caspar {
       origin_ptr_, offset, {{field.dim_real}} * {{field.num_key}}, {{field.alignment}});
   {% endfor %}
 
-  scratch_inout_size_ = marker__end_ - marker__scratch_inout_;  // sorting, sum,
-  scratch_sum_size_ = marker__scratch_sum_end_ - marker__scratch_sum_;  // sorting, sum,
+  scratch_inout_size_ = offset;  // sorting, sum,
 }
 
 {{ solver.struct_name }}::~{{ solver.struct_name }}(){
@@ -105,12 +105,7 @@ float GraphSolver::solve(bool print_progress) {
   float score_best;
   float score_best_pcg;
   float diag = params_.diag_init;
-  cudaMemcpy(solver__current_diag_, &diag, sizeof(float), cudaMemcpyHostToDevice);
-
-  if (!indices_valid_) {
-    throw std::runtime_error(
-        "Indices not valid. Set indices and call finish_indices before running solve().");
-  }
+  cudaMemcpy({{solver_key("current_diag")}}, &diag, sizeof(float), cudaMemcpyHostToDevice);
 
   float up_scale = params_.diag_scaling_up;
   float quality;
@@ -126,47 +121,51 @@ float GraphSolver::solve(bool print_progress) {
     if (solver_iter_ != 0 && solver_iter_ < params_.solver_iter_max - 1){
       do_res_jac();
     }
-    do_njtr_precond();
     score_best_pcg = score_best;
-    for (pcg_iter_ = 0; pcg_iter_ < params_.pcg_iter_max; pcg_iter_++) {
+    for (pcg_iter_ = 0; pcg_iter_ < params_.pcg_iter_max; pcg_iter_++){
       do_normalize();
 
       if (pcg_iter_ == 0) {
-        do_jp();
-        do_jtjp();
+        do_jtjp_direct();
         do_alpha_first();
         do_update_step_first();
         do_update_r_first();
       } else {
         do_beta();
         do_update_p();
-        do_jp();
-        do_jtjp();
+        do_jtjp_direct();
         do_alpha();
         do_update_step();
-      }
-      float score_new_pcg = do_retract_score();
-      if (score_new_pcg > score_best_pcg * params_.pcg_rel_decrease_min) {
-        pcg_iter_--;  // final step was not accepted
-        break;
-      }
-      if (pcg_iter_ != 0){
         do_update_r();
       }
-      score_best_pcg = score_new_pcg;
-      {% for node_type in solver.node_types %}
-      std::swap({{node_key(node_type, "storage_check")}},
-                {{node_key(node_type, "storage_new_best")}});
-      {% endfor %}
-
-      if (score_best_pcg < score_best * params_.pcg_rel_score_exit){
-        break;
+      if (params_.pcg_rel_decrease_min != -1.0f || params_.pcg_rel_score_exit != -1.0f) {
+        float score_new_pcg = do_retract_score();
+        if (!(score_new_pcg <= score_best_pcg * params_.pcg_rel_decrease_min)) {
+          break;
+        }
+        {% for node_type in solver.node_types %}
+        std::swap({{node_key(node_type, "storage_check")}},
+                  {{node_key(node_type, "storage_new_best")}});
+        {% endfor %}
+        score_best_pcg = score_new_pcg;
+        if (params_.pcg_rel_score_exit != -1.0f
+            &&score_best_pcg < score_best * params_.pcg_rel_score_exit){
+          break;
+        }
       }
       if (pcg_r_kp1_norm2_ < pcg_r_0_norm2_ * params_.pcg_rel_error_exit){
         break;
       }
     }
-    pcg_iter_ = std::min(pcg_iter_, params_.pcg_iter_max - 1);
+    pcg_iter_ = std::min(pcg_iter_, params_.pcg_iter_max-1);
+
+    if (params_.pcg_rel_decrease_min == -1.0f && params_.pcg_rel_score_exit == -1.0f) {
+      score_best_pcg = do_retract_score();
+      {% for node_type in solver.node_types %}
+      std::swap({{node_key(node_type, "storage_check")}},
+                {{node_key(node_type, "storage_new_best")}});
+      {% endfor %}
+    }
 
     if (score_best_pcg < score_best * params_.solver_rel_decrease_min) {
       quality = (score_best - score_best_pcg) / get_pred_decrease();
@@ -174,7 +173,7 @@ float GraphSolver::solve(bool print_progress) {
       float scale =
           std::max(params_.diag_scaling_down, 1.0f - quality_tmp * quality_tmp * quality_tmp);
       diag = std::max(params_.diag_min, diag * scale);
-      cudaMemcpy(solver__current_diag_, &diag, sizeof(float), cudaMemcpyHostToDevice);
+      cudaMemcpy({{solver_key("current_diag")}}, &diag, sizeof(float), cudaMemcpyHostToDevice);
       up_scale = params_.diag_scaling_up;
       score_best = score_best_pcg;
       {% for node_type in solver.node_types %}
@@ -188,7 +187,7 @@ float GraphSolver::solve(bool print_progress) {
       if (diag > params_.diag_exit_value) {
         break;
       }
-      cudaMemcpy(solver__current_diag_, &diag, sizeof(float), cudaMemcpyHostToDevice);
+      cudaMemcpy({{solver_key("current_diag")}}, &diag, sizeof(float), cudaMemcpyHostToDevice);
       up_scale *= 2;
     }
     const auto t_now = std::chrono::steady_clock::now();
@@ -211,77 +210,70 @@ float GraphSolver::solve(bool print_progress) {
   return score_best;
 }
 
-float {{ solver.struct_name }}::do_res_jac_first() {
-  zero(marker__res_tot_start_, marker__res_tot_end_);
-  {% for fac in solver.factors %}
-  {{fac.name}}_res_jac_first(
-      {% for arg, typ in fac.arg_types.items() %}
-      {% if fac.isnode[arg] %}
-          {{node_key(typ, "storage_current")}},
-          {{num_max_key(typ)}},
-          {{arg_key(fac, arg, "idx_shared")}},
-      {% else %}
-          {{arg_key(fac, arg, "data")}},
-          {{num_max_key(fac)}},
-      {% endif%}
-      {% endfor %}
-      {{fac_key(fac, "res")}},
-      {{num_max_key(fac)}},
-      {{fac_key(fac, "res_tot")}},
-      {{num_blocks_key(fac)}},
-      {% for arg, typ in fac.node_arg_types.items()%}
-          {{arg_key(fac, arg, "jac")}},
-          {{num_max_key(fac)}},
-          {{arg_key(fac, arg, "idx_target")}},
-      {% endfor %}
-      {{num_key(fac)}}
-  );
-  {% endfor %}
-  return 0.5 * sum(marker__res_tot_start_, marker__res_tot_end_, marker__scratch_sum_,
-                   marker__scratch_sum_ + 1);
-}
 
-void {{ solver.struct_name }}::do_res_jac() {
-    {% for fac in solver.factors %}
-    {{fac.name}}_res_jac(
-        {% for arg, typ in fac.arg_types.items() %}
-        {% if fac.isnode[arg] %}
-            {{node_key(typ, "storage_current")}},
-            {{num_max_key(typ)}},
-            {{arg_key(fac, arg, "idx_shared")}},
-        {% else %}
-            {{arg_key(fac, arg, "data")}},
-            {{num_max_key(fac)}},
-        {% endif%}
-        {% endfor %}
-        {{fac_key(fac, "res")}},
-        {{num_max_key(fac)}},
-        {% for arg, typ in fac.node_arg_types.items()%}
-            {{arg_key(fac, arg, "jac")}},
-            {{num_max_key(fac)}},
-            {{arg_key(fac, arg, "idx_target")}},
-        {% endfor %}
-        {{num_key(fac)}}
-    );
-    {% endfor %}
-}
-
-void {{ solver.struct_name }}::do_njtr_precond() {
+{%for isfirst in ["_first", ""]%}
+  {% if isfirst == "_first" %} float {% else %} void {% endif %} {{ solver.struct_name }}::do_res_jac{{isfirst}}() {
+    zero({{solver_key("res_tot")}}, {{solver_key("res_tot")}}+1);
     zero(marker__r_0_start_, marker__precond_end_);
+
     {% for fac in solver.factors %}
-    {% for arg, typ in fac.node_arg_types.items() %}
-    {{fac.name}}_{{arg}}_njtr_precond(
-        {{fac_key(fac, "res")}}, {{num_max_key(fac)}}, {{arg_key(fac, arg, "idx_argsort")}},
-        {{arg_key(fac, arg, "jac")}}, {{num_max_key(fac)}},
-        {{node_key(typ, "r_0")}}, {{num_max_key(typ)}}, {{arg_key(fac, arg, "idx_sorted_shared")}},
-        {{node_key(typ, "precond_diag")}}, {{num_max_key(typ)}},
-        {{node_key(typ, "precond_tril")}}, {{num_max_key(typ)}},
+
+    {{fac.name}}_res_jac{{isfirst}}(
+        {% for arg, typ in fac.arg_types.items() %}
+          {% if fac.isnode[arg] %}
+            {% if fac.isnodepair[arg] %}
+                {{node_key(typ, "storage_current")}},
+                {{num_max_key(typ)}},
+            {% elif fac.isnodeuniq[arg] %}
+                {{node_key(typ, "storage_current")}},
+            {% elif fac.isnodeshared[arg] %}
+                {{node_key(typ, "storage_current")}},
+                {{num_max_key(typ)}},
+                {{arg_key(fac, arg, "idx_shared")}},
+            {% endif %}
+          {% else %}
+            {% if fac.isconstseq[arg] %}
+                {{arg_key(fac, arg, "data")}},
+                {{num_max_key(fac)}},
+            {% elif fac.isconstshared[arg] %}
+                {{arg_key(fac, arg, "data")}}, {{num_max_key(fac)}}, {{arg_key(fac, arg, "idx_shared")}},
+            {% elif fac.isconstuniq[arg] %}
+                {{arg_key(fac, arg, "data")}},
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {{fac_key(fac, "res")}},{{num_max_key(fac)}},
+        {% if isfirst == "_first" %}{{solver_key("res_tot")}},{% endif %}
+
+        {% for arg, typ in fac.node_arg_types.items()%}
+        {% if fac.isnodepair[arg] %}
+            {{arg_key(fac, arg, "jac_first")}}, {{num_max_key(fac)}},
+            {{arg_key(fac, arg, "jac_second")}}, {{num_max_key(fac)}},
+            {{node_key(typ, "r_0")}}, {{num_max_key(typ)}},
+            {{node_key(typ, "precond_diag")}}, {{num_max_key(typ)}},
+            {{node_key(typ, "precond_tril")}}, {{num_max_key(typ)}},
+        {% elif fac.isnodeuniq[arg] %}
+            {{arg_key(fac, arg, "jac")}},{{num_max_key(fac)}},
+            {{node_key(typ, "r_0")}},
+            {{node_key(typ, "precond_diag")}},
+            {{node_key(typ, "precond_tril")}},
+        {% else %}
+            {{arg_key(fac, arg, "jac")}},{{num_max_key(fac)}},
+            {{node_key(typ, "r_0")}}, {{num_max_key(typ)}},
+            {{node_key(typ, "precond_diag")}}, {{num_max_key(typ)}},
+            {{node_key(typ, "precond_tril")}}, {{num_max_key(typ)}},
+        {% endif %}
+        {% endfor %}
         {{num_key(fac)}}
     );
-    {% endfor %}
     {% endfor %}
     copy(marker__r_0_start_, marker__precond_start_, marker__r_k_a_start_);
-}
+    {% if isfirst == "_first" %}
+    return 0.5 * read_cumem({{solver_key("res_tot")}});
+    {% endif %}
+  }
+{%endfor%}
 
 void {{ solver.struct_name }}::do_normalize() {
     float * r_k;
@@ -293,33 +285,14 @@ void {{ solver.struct_name }}::do_normalize() {
         {{node_key(nodetype, "precond_diag")}}, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "precond_tril")}}, {{num_max_key(nodetype)}},
         r_k, {{num_max_key(nodetype)}},
-        solver__current_diag_,
+        {{solver_key("current_diag")}},
         z, {{num_max_key(nodetype)}},
-        {{num_key(nodetype)}});
+        {{num_key(nodetype)}}
+    );
     {% endfor%}
 }
 
-void {{ solver.struct_name }}::do_jp() {
-    zero(marker__jp_start_, marker__jp_end_);
-    float* p_kp1;
-    {% for fac in solver.factors %}
-    {% for arg, typ in fac.jnjtr_args.items() %}
-    p_kp1 = pcg_iter_ % 2 ? {{node_key(typ, "p_k_a")}} : {{node_key(typ, "p_k_b")}};
-    {{fac.name}}_{{arg}}_jnjtr(
-        {{arg_key(fac, arg, "jac")}}, {{num_max_key(fac)}},
-        p_kp1, {{num_max_key(typ)}}, {{arg_key(fac, arg, "idx_sorted_shared")}},
-        {{fac_key(fac, "jp")}},
-        {{num_max_key(fac)}},
-        {% if arg != fac.smallest_node %}
-            {{arg_key(fac, arg, "idx_jp_target")}},
-        {% endif %}
-        {{num_key(fac)}}
-    );
-    {% endfor %}
-    {% endfor %}
-}
-
-void {{ solver.struct_name }}::do_jtjp() {
+void {{ solver.struct_name }}::do_jtjp_direct() {
     float* p_kp1;
 
     {% for nodetype in solver.node_types %}
@@ -327,7 +300,7 @@ void {{ solver.struct_name }}::do_jtjp() {
     {{nodetype.__name__}}_start_w(
         {{node_key(nodetype, "precond_diag")}},
         {{num_max_key(nodetype)}},
-        solver__current_diag_,
+        {{solver_key("current_diag")}},
         p_kp1,
         {{num_max_key(nodetype)}},
         {{node_key(nodetype, "w")}},
@@ -337,28 +310,39 @@ void {{ solver.struct_name }}::do_jtjp() {
     {% endfor %}
 
     {% for fac in solver.factors %}
-    if ({{num_key(fac)}}) {
-        {% for arg, typ in fac.jnjtr_args.items() %}
-        {{fac.name}}_{{arg}}_jtjnjtr(
-            {{arg_key(fac, arg, "jac")}},
-            {{num_max_key(fac)}},
-            {{fac_key(fac, "jp")}},
-            {{num_max_key(fac)}},
-            {% if arg!=fac.smallest_node %}
-                {{arg_key(fac, arg, "idx_jp_target")}},
-            {% endif %}
-            {{node_key(typ, "w")}},
+      {{fac.name}}_jtjnjtr_direct(
+      {% for arg, typ in fac.node_arg_types.items() %}
+        {% if fac.isnodepair[arg] %}
+            pcg_iter_ % 2 ? {{node_key(typ, "p_k_a")}} : {{node_key(typ, "p_k_b")}},
             {{num_max_key(typ)}},
-            {{arg_key(fac, arg, "idx_sorted_shared")}},
-            {{num_key(fac)}}
-        );
-        {% endfor %}
-    }
-    {% endfor %}
+            {{arg_key(fac, arg, "jac_first")}}, {{num_max_key(fac)}},
+            {{arg_key(fac, arg, "jac_second")}}, {{num_max_key(fac)}},
+        {% elif fac.isnodeuniq[arg] %}
+            pcg_iter_ % 2 ? {{node_key(typ, "p_k_a")}} : {{node_key(typ, "p_k_b")}},
+            {{arg_key(fac, arg, "jac")}}, {{num_max_key(fac)}},
+        {% elif fac.isnodeshared[arg] %}
+            pcg_iter_ % 2 ? {{node_key(typ, "p_k_a")}} : {{node_key(typ, "p_k_b")}},
+            {{num_max_key(typ)}},
+            {{arg_key(fac, arg, "idx_shared")}},
+            {{arg_key(fac, arg, "jac")}}, {{num_max_key(fac)}},
+        {% endif %}
+      {% endfor %}
+      {% for arg, typ in fac.node_arg_types.items()%}
+      {% if fac.isnodepair[arg] %}
+          {{node_key(typ, "w")}}, {{num_max_key(typ)}},
+      {% elif fac.isnodeuniq[arg] %}
+          {{node_key(typ, "w")}},
+      {% else %}
+          {{node_key(typ, "w")}}, {{num_max_key(typ)}},
+      {% endif %}
+      {% endfor %}
+      {{num_key(fac)}}
+  );
+  {% endfor %}
 }
 
 void {{ solver.struct_name }}::do_alpha_first() {
-    zero(marker__alpha_numerator_tot_start_, marker__alpha_denumerator_tot_end_);
+    zero({{solver_key("alpha_numerator")}}, {{solver_key("alpha_denumerator")}}+1);
     float* p_kp1;
     float* r_k;
     {% for nodetype in solver.node_types %}
@@ -368,44 +352,39 @@ void {{ solver.struct_name }}::do_alpha_first() {
         p_kp1, {{num_max_key(nodetype)}},
         r_k, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "w")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "alpha_numerator_tot")}}, {{num_blocks_key(nodetype)}},
-        {{node_key(nodetype, "alpha_denumerator_tot")}}, {{num_blocks_key(nodetype)}},
+        {{solver_key( "alpha_numerator")}},
+        {{solver_key( "alpha_denumerator")}},
         {{num_key(nodetype)}}
     );
     {% endfor %}
 
-    sum(marker__alpha_numerator_tot_start_, marker__alpha_numerator_tot_end_,
-        solver__alpha_numerator_, marker__scratch_sum_, false);
-    sum(marker__alpha_denumerator_tot_start_, marker__alpha_denumerator_tot_end_,
-        solver__alpha_denumerator_, marker__scratch_sum_, false);
-    alpha_from_num_denum(solver__alpha_numerator_, solver__alpha_denumerator_, solver__alpha_,
-                         solver__neg_alpha_);
+    alpha_from_num_denum({{solver_key("alpha_numerator")}}, {{solver_key("alpha_denumerator")}}, {{solver_key("alpha")}},
+                         {{solver_key("neg_alpha")}});
 }
 
 void {{ solver.struct_name }}::do_alpha() {
-    zero(marker__alpha_denumerator_tot_start_, marker__alpha_denumerator_tot_end_);
+    zero({{solver_key("alpha_denumerator")}}, {{solver_key("alpha_denumerator")}}+1);
     float* p_kp1;
     {% for nodetype in solver.node_types %}
     p_kp1 = pcg_iter_ % 2 ? {{node_key(nodetype, "p_k_a")}} : {{node_key(nodetype, "p_k_b")}};
     {{nodetype.__name__}}_alpha_denumerator_or_beta_nummerator(
         p_kp1, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "w")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "alpha_denumerator_tot")}}, {{num_blocks_key(nodetype)}},
+        {{solver_key("alpha_denumerator")}},
         {{num_key(nodetype)}}
     );
     {% endfor %}
 
-    sum(marker__alpha_denumerator_tot_start_, marker__alpha_denumerator_tot_end_,
-        solver__alpha_denumerator_, marker__scratch_sum_, false);
-    alpha_from_num_denum(solver__beta_numerator_, solver__alpha_denumerator_, solver__alpha_,
-                         solver__neg_alpha_);
+
+    alpha_from_num_denum({{solver_key("beta_numerator")}}, {{solver_key("alpha_denumerator")}}, {{solver_key("alpha")}},
+                         {{solver_key("neg_alpha")}});
 }
 
 void {{ solver.struct_name }}::do_update_step_first() {
     {% for nodetype in solver.node_types %}
     {{nodetype.__name__}}_update_step_first(
         {{node_key(nodetype, "p_k_b")}}, {{num_max_key(nodetype)}},
-        solver__alpha_,
+        {{solver_key("alpha")}},
         {{node_key(nodetype, "step_k_b")}}, {{num_max_key(nodetype)}},
         {{num_key(nodetype)}}
     );
@@ -423,7 +402,7 @@ void {{ solver.struct_name }}::do_update_step() {
     {{nodetype.__name__}}_update_step_or_update_p(
         step_k, {{num_max_key(nodetype)}},
         p_kp1, {{num_max_key(nodetype)}},
-        solver__alpha_,
+        {{solver_key("alpha")}},
         step_kp1, {{num_max_key(nodetype)}},
         {{num_key(nodetype)}}
     );
@@ -431,28 +410,26 @@ void {{ solver.struct_name }}::do_update_step() {
 }
 
 void {{ solver.struct_name }}::do_update_r_first() {
-    zero(marker__r_0_norm2_tot_start_, marker__r_kp1_norm2_tot_end_);
+    zero({{solver_key("r_0_norm2_tot")}}, {{solver_key("r_0_norm2_tot")}}+1);
 
     {% for nodetype in solver.node_types %}
     {{nodetype.__name__}}_update_r_first(
         {{node_key(nodetype, "r_k_a")}}, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "w")}}, {{num_max_key(nodetype)}},
-        solver__neg_alpha_,
+        {{solver_key("neg_alpha")}},
         {{node_key(nodetype, "r_k_b")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "r_0_norm2_tot")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "r_kp1_norm2_tot")}}, {{num_max_key(nodetype)}},
+        {{solver_key("r_0_norm2_tot")}},
+        {{solver_key("r_kp1_norm2_tot")}},
         {{num_key(nodetype)}}
     );
 
     {% endfor %}
-    pcg_r_0_norm2_ = sum(marker__r_0_norm2_tot_start_, marker__r_0_norm2_tot_end_,
-                         marker__scratch_sum_, marker__scratch_sum_+1);
-    pcg_r_kp1_norm2_ = sum(marker__r_kp1_norm2_tot_start_, marker__r_kp1_norm2_tot_end_,
-                           marker__scratch_sum_, marker__scratch_sum_+1);
+    pcg_r_0_norm2_ = read_cumem({{solver_key("r_0_norm2_tot")}});
+    pcg_r_kp1_norm2_ = read_cumem({{solver_key("r_kp1_norm2_tot")}});
 }
 
 void {{ solver.struct_name }}::do_update_r() {
-    zero(marker__r_kp1_norm2_tot_start_, marker__r_kp1_norm2_tot_end_);
+    zero({{solver_key("r_kp1_norm2_tot")}}, {{solver_key("r_kp1_norm2_tot")}}+1);
 
     float* r_k;
     float* r_kp1;
@@ -463,14 +440,13 @@ void {{ solver.struct_name }}::do_update_r() {
     {{nodetype.__name__}}_update_r(
         r_k, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "w")}}, {{num_max_key(nodetype)}},
-        solver__neg_alpha_,
+        {{solver_key("neg_alpha")}},
         r_kp1, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "r_kp1_norm2_tot")}}, {{num_blocks_key(nodetype)}},
+        {{solver_key("r_kp1_norm2_tot")}},
         {{num_key(nodetype)}}
     );
     {% endfor %}
-    pcg_r_kp1_norm2_ = sum(marker__r_kp1_norm2_tot_start_, marker__r_kp1_norm2_tot_end_,
-                           marker__scratch_sum_, marker__scratch_sum_+1);
+    pcg_r_kp1_norm2_ = read_cumem({{solver_key("r_kp1_norm2_tot")}});
 }
 
 float {{ solver.struct_name }}::do_retract_score() {
@@ -487,30 +463,41 @@ float {{ solver.struct_name }}::do_retract_score() {
     );
     {% endfor %}
 
-    zero(marker__res_tot_start_, marker__res_tot_end_);
+    zero({{solver_key("res_tot")}}, {{solver_key("res_tot")}}+1);
     {% for fac in solver.factors %}
     {{fac.name}}_score(
         {% for arg, typ in fac.arg_types.items() %}
-        {% if fac.isnode[arg] %}
-            {{node_key(typ, "storage_check")}},
-            {{num_max_key(typ)}},
-            {{arg_key(fac, arg, "idx_shared")}},
-        {% else %}
-            {{arg_key(fac, arg, "data")}},
-            {{num_max_key(fac)}},
-        {% endif %}
+          {% if fac.isnode[arg] %}
+            {% if fac.isnodepair[arg] %}
+                {{node_key(typ, "storage_check")}},
+                {{num_max_key(typ)}},
+            {% elif fac.isnodeuniq[arg] %}
+                {{node_key(typ, "storage_check")}},
+            {% elif fac.isnodeshared[arg] %}
+                {{node_key(typ, "storage_check")}},
+                {{num_max_key(typ)}},
+                {{arg_key(fac, arg, "idx_shared")}},
+            {% endif %}
+          {% else %}
+            {% if fac.isconstseq[arg] %}
+                {{arg_key(fac, arg, "data")}},
+                {{num_max_key(fac)}},
+            {% elif fac.isconstshared[arg] %}
+                {{arg_key(fac, arg, "data")}}, {{num_max_key(fac)}}, {{arg_key(fac, arg, "idx_shared")}},
+            {% elif fac.isconstuniq[arg] %}
+                {{arg_key(fac, arg, "data")}},
+            {% endif %}
+          {% endif %}
         {% endfor %}
-        {{fac_key(fac, "res_tot")}},
-        {{num_blocks_key(fac)}},
+        {{solver_key("res_tot")}},
         {{num_key(fac)}}
     );
     {% endfor %}
-    return 0.5 * sum(marker__res_tot_start_, marker__res_tot_end_, marker__scratch_sum_,
-                     marker__scratch_sum_+1);
+    return 0.5 * read_cumem({{solver_key("res_tot")}});
 }
 
 void {{ solver.struct_name }}::do_beta() {
-    zero(marker__beta_numerator_tot_start_, marker__beta_numerator_tot_end_);
+    zero({{solver_key("beta_numerator")}}, {{solver_key("beta_numerator")}}+1);
     float* r_k;
     {% for nodetype in solver.node_types %}
     r_k = pcg_iter_ % 2 ? {{node_key(nodetype, "r_k_b")}} : {{node_key(nodetype, "r_k_a")}};
@@ -518,13 +505,11 @@ void {{ solver.struct_name }}::do_beta() {
     {{nodetype.__name__}}_alpha_denumerator_or_beta_nummerator(
         r_k, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "z")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "beta_numerator_tot")}}, {{num_blocks_key(nodetype)}},
+        {{solver_key("beta_numerator")}},
         {{num_key(nodetype)}}
     );
     {% endfor %}
-    sum(marker__beta_numerator_tot_start_, marker__beta_numerator_tot_end_,
-        solver__beta_numerator_, marker__scratch_sum_, false);
-    beta_from_num_denum(solver__beta_numerator_, solver__alpha_numerator_, solver__beta_);
+    beta_from_num_denum({{solver_key("beta_numerator")}}, {{solver_key("alpha_numerator")}}, {{solver_key("beta")}});
 }
 
 void {{ solver.struct_name }}::do_update_p() {
@@ -536,7 +521,7 @@ void {{ solver.struct_name }}::do_update_p() {
     {{nodetype.__name__}}_update_step_or_update_p(
         {{node_key(nodetype, "z")}}, {{num_max_key(nodetype)}},
         p_k, {{num_max_key(nodetype)}},
-        solver__beta_,
+        {{solver_key("beta")}},
         p_kp1, {{num_max_key(nodetype)}},
         {{num_key(nodetype)}}
     );
@@ -544,37 +529,37 @@ void {{ solver.struct_name }}::do_update_p() {
 }
 
 float {{ solver.struct_name }}::get_pred_decrease() {
-    zero(marker__pred_decrease_tot_start_, marker__pred_decrease_tot_end_);
+    zero({{solver_key("pred_decrease_tot")}}, {{solver_key("pred_decrease_tot")}}+1);
     float* step_kp1;
-    float* r_kp1;
     {% for nodetype in solver.node_types %}
     step_kp1 = pcg_iter_ % 2 ? {{node_key(nodetype, "step_k_a")}} : {{node_key(nodetype, "step_k_b")}};
-    r_kp1 = pcg_iter_ % 2 ? {{node_key(nodetype, "r_k_a")}} : {{node_key(nodetype, "r_k_b")}};
-    {{nodetype.__name__}}_pred_decrease(
+    {{nodetype.__name__}}_pred_decrease_times_two(
         step_kp1, {{num_max_key(nodetype)}},
         {{node_key(nodetype, "precond_diag")}}, {{num_max_key(nodetype)}},
-        solver__current_diag_,
-        r_kp1, {{num_max_key(nodetype)}},
+        {{solver_key("current_diag")}},
         {{node_key(nodetype, "r_0")}}, {{num_max_key(nodetype)}},
-        {{node_key(nodetype, "pred_decrease_tot")}}, {{num_blocks_key(nodetype)}},
+        {{solver_key("pred_decrease_tot")}},
         {{num_key(nodetype)}}
     );
     {% endfor %}
-    return sum(marker__pred_decrease_tot_start_, marker__pred_decrease_tot_end_,
-               marker__scratch_sum_, marker__scratch_sum_+1);
+    return 0.5 * read_cumem({{solver_key("pred_decrease_tot")}});
 }
 
 void {{ solver.struct_name }}::finish_indices() {
-    {% for fac in solver.factors %}
-    {% for arg, argtype in fac.node_arg_types.items() %}
-    {% if arg != fac.smallest_node %}
-    select_index({{arg_key(fac, fac.smallest_node, "idx_target")}},
-                 {{arg_key(fac, arg, "idx_argsort")}},
-                 {{arg_key(fac, arg, "idx_jp_target")}},
-                 {{num_key(fac)}});
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
+  // This function is no longer needed since we use the new jtjnjtr_direct method.
+  // It is lent here for backwards compatibility, and because it will be necessary for cuDSS.
+    {# {% for fac in solver.factors %}
+      {% if not fac.isnodepair[fac.prioritized_node] %}
+        {% for arg, argtype in fac.node_arg_types.items() %}
+          {% if arg != fac.prioritized_node %}
+          select_index({{arg_key(fac, fac.prioritized_node, "idx_target")}},
+                      {{arg_key(fac, arg, "idx_argsort")}},
+                      {{arg_key(fac, arg, "idx_jp_target")}},
+                      {{num_key(fac)}});
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %} #}
     indices_valid_ = true;
 }
 
@@ -631,93 +616,137 @@ void {{solver.struct_name}}::get_{{nodetype.__name__}}_nodes_to_stacked_device(
 {% endfor%}
 
 {% for fac in solver.factors %}
-void {{ solver.struct_name }}::set_{{num_key(fac)[:-1]}}(const size_t num) {
-  if (num > {{num_max_key(fac)}}){
-    throw std::runtime_error(std::to_string(num) + " > {{num_max_key(fac)}}");
+  void {{ solver.struct_name }}::set_{{num_key(fac)[:-1]}}(const size_t num) {
+    if (num > {{num_max_key(fac)}}){
+      throw std::runtime_error(std::to_string(num) + " > {{num_max_key(fac)}}");
+    }
+    {{num_key(fac)}} = num;
   }
-  {{num_key(fac)}} = num;
-}
-{% for arg, argtype in fac.node_arg_types.items() %}
+  {% for arg, argtype in fac.node_arg_types.items() %}
+    {% if fac.isnodeshared[arg] %}
+      void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_host(
+          const unsigned int* const indices, size_t num) {
+        if (num != {{num_key(fac)}}){
+          throw std::runtime_error(
+              std::to_string(num)
+              + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
+        }
+        cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
+                  cudaMemcpyHostToDevice);
+        set_{{fac.name}}_{{arg}}_indices_from_device((unsigned int*)marker__scratch_inout_, num);
+      }
 
-void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_host(
-    const unsigned int* const indices, size_t num) {
-  if (num != {{num_key(fac)}}){
-    throw std::runtime_error(
-        std::to_string(num)
-        + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
-  }
-  cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
-             cudaMemcpyHostToDevice);
-  set_{{fac.name}}_{{arg}}_indices_from_device((unsigned int*)marker__scratch_inout_, num);
-}
+      void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_device(
+          const unsigned int* const indices, size_t num) {
+        indices_valid_ = false;
 
-void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_device(
-    const unsigned int* const indices, size_t num) {
-  indices_valid_ = false;
+        if (num != {{num_key(fac)}}){
+          throw std::runtime_error(
+              std::to_string(num)
+              + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
+        }
 
-  if (num != {{num_key(fac)}}){
-    throw std::runtime_error(
-        std::to_string(num)
-        + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
-  }
+        size_t tmp_size = sort_indices_get_tmp_nbytes(num);
+        if (tmp_size + num > scratch_inout_size_) {
+            throw std::runtime_error("Scratch_inout_size too small. tmp_size: " + std::to_string(tmp_size) +
+                                    ", num: " + std::to_string(num) +
+                                    ", scratch_inout_size_: " + std::to_string(scratch_inout_size_));
+        }
+        shared_indices(indices, {{arg_key(fac, arg, "idx_shared")}}, num);
+      }
+    {% endif %}
+  {% endfor %}
+  {% for arg, argtype in fac.const_arg_types.items() %}
+    void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_data_from_stacked_host(
+          {% if fac.isconstseq[arg] %}
+          const float* const data, size_t offset, size_t num
+          {% elif fac.isconstuniq[arg] %}
+          const float* const data
+          {% elif fac.isconstshared[arg] %}
+          const float* const data, size_t offset, size_t num
+          {% endif %}
+          ) {
+      {% if fac.isconstuniq[arg] %}
+      const size_t offset = 0;
+      const size_t num = 1;
+      {% endif %}
+      if (offset + num > {{num_max_key(fac)}}) {
+          throw std::runtime_error(std::to_string(offset + num) + " > {{num_max_key(fac)}}");
+      }
+      cudaMemcpy(marker__scratch_inout_, data, {{Ops.storage_dim(argtype)}} * num * sizeof(float),
+                cudaMemcpyHostToDevice);
+      {{argtype.__name__}}_stacked_to_caspar(marker__scratch_inout_, {{arg_key(fac, arg, "data")}},
+                                            {{num_max_key(fac)}}, offset, num);
+    }
 
-  size_t tmp_size = sort_indices_get_tmp_nbytes(num);
-  if (tmp_size + num > scratch_inout_size_) {
-      throw std::runtime_error("Scratch_inout_size too small. tmp_size: " + std::to_string(tmp_size) +
-                               ", num: " + std::to_string(num) +
-                               ", scratch_inout_size_: " + std::to_string(scratch_inout_size_));
-  }
-  sort_indices(marker__scratch_inout_ + num, tmp_size, indices,
-              {{arg_key(fac, arg, "idx_sorted")}},
-              {{arg_key(fac, arg, "idx_target")}},
-              {{arg_key(fac, arg, "idx_argsort")}},
-              num);
-  unsigned int idx_max;
-  cudaMemcpy(&idx_max, {{arg_key(fac, arg, "idx_sorted")}} + num - 1, sizeof(unsigned int),
-             cudaMemcpyDeviceToHost);
-  if (idx_max >= {{num_key(argtype)}}) {
-    throw std::runtime_error(std::to_string(idx_max) + " >= {{num_key(argtype)}} ("
-                             + std::to_string({{num_key(argtype)}}) + ")");
-  }
+    void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_data_from_stacked_device(
+          {% if fac.isconstseq[arg] %}
+          const float* const data, size_t offset, size_t num
+          {% elif fac.isconstuniq[arg] %}
+          const float* const data
+          {% elif fac.isconstshared[arg] %}
+            const float* const data, size_t offset, size_t num
+          {% endif %}        ) {
+      {% if fac.isconstuniq[arg] %}
+      const size_t offset = 0;
+      const size_t num = 1;
+      {% endif %}
+      if (offset + num > {{num_max_key(fac)}}){
+        throw std::runtime_error(std::to_string(offset + num) + " > {{num_max_key(fac)}}");
+      }
+      {{argtype.__name__}}_stacked_to_caspar(data, {{arg_key(fac, arg, "data")}}, {{num_max_key(fac)}},
+                                            offset, num);
+    }
+    {% if fac.isconstshared[arg] %}
+      void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_host(
+            const unsigned int* const indices, size_t num) {
+          if (num != {{num_key(fac)}}){
+            throw std::runtime_error(
+                std::to_string(num)
+                + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
+          }
+          cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
+                    cudaMemcpyHostToDevice);
+          set_{{fac.name}}_{{arg}}_indices_from_device((unsigned int*)marker__scratch_inout_, num);
+        }
 
-  shared_indices(indices, {{arg_key(fac, arg, "idx_shared")}}, num);
-  shared_indices({{arg_key(fac, arg, "idx_sorted")}},
-                  {{arg_key(fac, arg, "idx_sorted_shared")}},
-                  num);
-}
-{% endfor %}
-{% for arg, argtype in fac.const_arg_types.items() %}
-void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_data_from_stacked_host(
-    const float* const data, size_t offset, size_t num) {
-  if (offset + num > {{num_max_key(fac)}}) {
-      throw std::runtime_error(std::to_string(offset + num) + " > {{num_max_key(fac)}}");
-  }
-  cudaMemcpy(marker__scratch_inout_, data, {{Ops.storage_dim(argtype)}} * num * sizeof(float),
-             cudaMemcpyHostToDevice);
-  {{argtype.__name__}}_stacked_to_caspar(marker__scratch_inout_, {{arg_key(fac, arg, "data")}},
-                                         {{num_max_key(fac)}}, offset, num);
-}
+        void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_indices_from_device(
+            const unsigned int* const indices, size_t num) {
+          indices_valid_ = false;
 
-void {{ solver.struct_name }}::set_{{fac.name}}_{{arg}}_data_from_stacked_device(
-    const float* const data, size_t offset, size_t num) {
-  if (offset + num > {{num_max_key(fac)}}){
-    throw std::runtime_error(std::to_string(offset + num) + " > {{num_max_key(fac)}}");
-  }
-  {{argtype.__name__}}_stacked_to_caspar(data, {{arg_key(fac, arg, "data")}}, {{num_max_key(fac)}},
-                                         offset, num);
-}
+          if (num != {{num_key(fac)}}){
+            throw std::runtime_error(
+                std::to_string(num)
+                + " != {{num_key(fac)}}. Use set_{{fac.name}}_num before setting indices.");
+          }
 
-{% endfor%}
+          size_t tmp_size = sort_indices_get_tmp_nbytes(num);
+          if (tmp_size + num > scratch_inout_size_) {
+              throw std::runtime_error("Scratch_inout_size too small. tmp_size: " + std::to_string(tmp_size) +
+                                      ", num: " + std::to_string(num) +
+                                      ", scratch_inout_size_: " + std::to_string(scratch_inout_size_));
+          }
+
+
+          shared_indices(indices, {{arg_key(fac, arg, "idx_shared")}}, num);
+
+        }
+    {% endif%}
+  {% endfor%}
 {% endfor%}
 
 size_t {{ solver.struct_name }}::get_nbytes() {
     size_t offset = 0;
+    size_t at_least = 0;
     {% for name, field in solver.fields.items()%}
+    {% if name in solver.at_least %}
+    at_least = std::max(at_least, offset + {{solver.at_least[name]}});
+    {% endif %}
     increment_offset<{{field.dtype}}>(offset, {{field.dim_real}} * {{field.num_key}},
                                       {{field.alignment}});
     {% endfor %}
 
-    return offset;
+    return std::max(offset, at_least);
 }
 
 } // namespace caspar

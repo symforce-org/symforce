@@ -107,6 +107,7 @@ class {{solver.struct_name}}:
 
     {% for factor in solver.factors %}
     {% for argname, argtype in factor.node_arg_types.items() %}
+    {% if factor.isnodeshared[argname] %}
     def set_{{factor.name}}_{{argname}}_indices_from_host(self, indices: Array) -> None:
         """
         Set the indices for the {{argname}} argument for the {{factor.name}} factor from host.
@@ -116,22 +117,44 @@ class {{solver.struct_name}}:
         """
         Set the indices for the {{argname}} argument for the {{factor.name}} factor from device.
         """
+    {% endif %}
     {% endfor %}
 
     {% for argname, argtype in factor.const_arg_types.items() %}
-    def set_{{factor.name}}_{{argname}}_data_from_stacked_host(self, stacked_data: Array, offset: int = 0) -> None:
+    def set_{{factor.name}}_{{argname}}_data_from_stacked_host(
+        {% if factor.isconstseq[argname] %}
+        self, stacked_data: Array, offset: int = 0
+        {% elif factor.isconstuniq[argname] %}
+        self, stacked_data: Array
+        {% endif %}
+        ) -> None:
         """
         Set the values for the {{argname}} consts {{factor.name}} factor from stacked host data.
 
         The offset can be used to start writing from a specific index.
         """
 
-    def set_{{factor.name}}_{{argname}}_data_from_stacked_device(self, stacked_data: CudaArray, offset: int = 0) -> None:
+    def set_{{factor.name}}_{{argname}}_data_from_stacked_device(
+        {% if factor.isconstseq[argname] %}
+        self, stacked_data: Array, offset: int = 0
+        {% elif factor.isconstuniq[argname] %}
+        self, stacked_data: Array
+        {% endif %}        ) -> None:
         """
         Set the values for the {{argname}} consts {{factor.name}} factor from stacked device data.
 
         The offset can be used to start writing from a specific index.
         """
+    {% if factor.isconstshared[argname] %}
+    def set_{{factor.name}}_{{argname}}_indices_from_host(self, indices: Array) -> None:
+        """
+        Set the indices for the {{argname}} argument for the {{factor.name}} factor from host.
+        """
+    def set_{{factor.name}}_{{argname}}_indices_from_device(self, indices: CudaArray) -> None:
+        """
+        Set the indices for the {{argname}} argument for the {{factor.name}} factor from device.
+        """
+    {% endif %}
     {% endfor %}
 
     def set_{{factor.name}}_num(self, num: int) -> None:

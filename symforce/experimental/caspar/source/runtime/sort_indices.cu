@@ -46,6 +46,19 @@ void sort_indices(void* tmp_storage, size_t tmp_storage_bytes, const uint* keys_
   target_from_argsort<<<grid_size, 1024>>>(argsort_out, target_out, problem_size);
 }
 
+size_t sort_keys_get_tmp_nbytes(size_t problem_size) {
+  size_t tmp_storage_bytes = 0;
+  auto err = cub::DeviceRadixSort::SortKeys(nullptr, tmp_storage_bytes, (uint*)nullptr,
+                                            (uint*)nullptr, (uint)problem_size);
+  return tmp_storage_bytes;
+}
+
+void sort_keys(void* tmp_storage, size_t tmp_storage_bytes, const uint* keys_in, uint* sorted_out,
+               size_t problem_size) {
+  cub::DeviceRadixSort::SortKeys(tmp_storage, tmp_storage_bytes, keys_in, sorted_out,
+                                 (uint)problem_size);
+}
+
 __global__ void select_index_kernel(const uint* const input, const uint* const selections,
                                     uint* const output, size_t problem_size) {
   const uint global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;

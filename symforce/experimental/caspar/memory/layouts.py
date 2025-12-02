@@ -8,6 +8,9 @@ from __future__ import annotations
 from symforce import typing as T
 from symforce.ops.storage_ops import StorageOps as Ops
 
+from .pair import Pair
+from .pair import get_memtype
+
 """
 This module contains functions for converting between different memory layouts.
 
@@ -31,10 +34,12 @@ Example::
 """
 
 
-def get_default_caspar_layout(stype: T.StorableOrType) -> list[list[int]]:
+def get_default_caspar_layout(stype: T.Union[T.StorableOrType, Pair]) -> list[list[int]]:
     """
     Default layout for a given storage type.
     """
+    if isinstance(stype, Pair):
+        return get_default_caspar_layout(get_memtype(stype))
     size = Ops.storage_dim(stype)
     layout = [list(range(i, min(i + 4, size))) for i in range(0, size, 4)]
     return layout

@@ -24,6 +24,8 @@ setuptools-scm
     # via symforce (pyproject.toml)
 file:./third_party/skymarshal
     # via symforce (pyproject.toml)
+sortedcontainers
+    # via symforce (pyproject.toml)
 file:./gen/python
     # via symforce (pyproject.toml)
 sympy

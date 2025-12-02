@@ -35,7 +35,9 @@ def load_bal(
             nrows: int,
             cols: int | T.Sequence[int] | None = None,
         ) -> np.ndarray:
-            return np.loadtxt(file, typ, skiprows=start, max_rows=nrows, usecols=cols)  # type: ignore[arg-type]
+            if cols is None:
+                return np.loadtxt(file, typ, skiprows=start, max_rows=nrows)
+            return np.loadtxt(file, typ, skiprows=start, max_rows=nrows, usecols=cols)
 
         n_cams, n_points, n_facs = load(fpath, np.int32, 0, 1)
         cam_ids, point_ids = np.ascontiguousarray(load(fpath, np.int32, 1, n_facs, (0, 1)).T)

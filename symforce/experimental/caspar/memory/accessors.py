@@ -5,13 +5,18 @@
 
 from __future__ import annotations
 
+import logging
 import textwrap
 from abc import abstractmethod
 
 from symforce import typing as T
+from symforce.ops import StorageOps
 
+from .layouts import caspar_size
 from .layouts import chunk_dim
 from .layouts import get_default_caspar_layout
+from .pair import get_memtype
+from .pair import is_pair
 
 PYOBJ = "pybind11::object"
 
@@ -26,13 +31,15 @@ class Common:
         self.idx_name = accessor.idx_name
         self.offset = sum(chunk_dim(chunk) for chunk in accessor.chunk_indices[:idx])
         self.dim = len(accessor.chunk_indices[idx])
-        self.args = ", ".join(["{" + "xyzw"[i] + "}" for i in range(self.dim)])
+        self.args = ", ".join([f"{{arg_{i}}}" for i in range(self.dim)])
 
 
 class _UsingSharedMem:
     """
     An accessor that needs shared scratch memory.
     """
+
+    EXTRA_DATA = 0
 
 
 class _UsingIndexData:
@@ -55,9 +62,13 @@ class Accessor:
     PY_SIG_TEMPLATE: T.ClassVar[dict[str, str]]
     PY_ARGS_TEMPLATE: T.ClassVar[list[str]]
 
+    SKIP_IF_ALL_ZERO: T.ClassVar[bool] = False
+
     def __init__(self, name: str, storage: T.StorableOrType, use_index: str | None = None):
+        assert isinstance(self, _Pairwise) == is_pair(storage)
+
         self.storage = storage
-        self.chunk_indices = get_default_caspar_layout(storage)
+        self.chunk_indices = self.get_layout(storage)
         self.idx_name = name if use_index is None else use_index
         params = {"name": name, "idx_name": self.idx_name, "block_size": CUDA_BLOCK_SIZE}
 
@@ -74,9 +85,27 @@ class Accessor:
             self.py_args = self.py_args[:-1]
             self.prep_lines = ""
 
+    def get_signature(self, name: str) -> dict[str, str]:
+        params = {"name": name, "idx_name": self.idx_name, "block_size": CUDA_BLOCK_SIZE}
+        return {k.format(**params): v for k, v in self.KERNEL_SIG_TEMPLATE.items()}
+
+    def get_layout(self, storage: T.StorableOrType) -> list[list[int]]:  # noqa: PLR6301
+        return get_default_caspar_layout(storage)
+
+    def pre_kernel_code(self) -> str:  # noqa: PLR6301
+        return ""
+
+    def pre_calc_code(self) -> str:  # noqa: PLR6301
+        return ""
+
+    def post_calc_code(self) -> str:  # noqa: PLR6301
+        return ""
+
     def shared_size_req(self) -> int:
         if isinstance(self, _UsingSharedMem):
-            return max(map(len, self.chunk_indices), default=0) * CUDA_BLOCK_SIZE
+            return max((caspar_size(len(c)) for c in self.chunk_indices), default=0) * (
+                CUDA_BLOCK_SIZE + self.EXTRA_DATA
+            )
         return 0
 
 
@@ -100,6 +129,14 @@ class _WriteAccessor(Accessor):
         raise NotImplementedError
 
 
+class _AddAccessor(_WriteAccessor):
+    """
+    An accessor that adds data.
+    """
+
+    SKIP_IF_ALL_ZERO = True
+
+
 class _Sequential:
     """
     Accessor for sequential read/write memory access.
@@ -117,10 +154,6 @@ class ReadSequential(_Sequential, _ReadAccessor):
         c = Common(self, idx)
         return f"read_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx, {c.args});"
 
-    def write_template(self, idx: int) -> str:
-        c = Common(self, idx)
-        return f"write_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx, {c.args});"
-
 
 class WriteSequential(_Sequential, _WriteAccessor):
     def write_template(self, idx: int) -> str:
@@ -128,7 +161,7 @@ class WriteSequential(_Sequential, _WriteAccessor):
         return f"write_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx, {c.args});"
 
 
-class AddSequential(_Sequential, _WriteAccessor):
+class AddSequential(_Sequential, _AddAccessor):
     """
     Accessor for sequentially adding to the output.
 
@@ -169,18 +202,16 @@ class _Indexed(_UsingIndexData):
 class ReadIndexed(_Indexed, _ReadAccessor):
     def read_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return f"read_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, {c.name}_idx, {c.args});"
+        return f"read_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
 
 
 class WriteIndexed(_Indexed, _WriteAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return (
-            f"write_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, {c.name}_idx, {c.args});"
-        )
+        return f"write_idx_{c.dim}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
 
 
-class AddIndexed(_Indexed, _WriteAccessor):
+class AddIndexed(_Indexed, _AddAccessor):
     """
     Accessor for adding to indexed elements.
 
@@ -245,7 +276,7 @@ class ReadUnique(_UsingSharedMem, _ReadAccessor):
     There is a small overhead compared to `Indexed` access.
     """
 
-    KERNEL_SIG_TEMPLATE = {"{name}": "float*"}
+    KERNEL_SIG_TEMPLATE = {"{name}": "const float* const"}
     PY_SIG_TEMPLATE = {"{name}": PYOBJ}
     PY_ARGS_TEMPLATE = ["AsFloatPtr({name})"]
 
@@ -262,7 +293,7 @@ class ReadUnique(_UsingSharedMem, _ReadAccessor):
         """.strip()
 
 
-class AddSharedSum(_UsingIndexData, _UsingSharedMem, _WriteAccessor):
+class AddSharedSum(_UsingIndexData, _UsingSharedMem, _AddAccessor):
     """
     Accessor for shared sum memory write access.
 
@@ -274,7 +305,7 @@ class AddSharedSum(_UsingIndexData, _UsingSharedMem, _WriteAccessor):
     """
 
     KERNEL_SIG_TEMPLATE = {
-        "{name}": "float*",
+        "{name}": "float* const",
         "{name}_num_alloc": "unsigned int",
         "{idx_name}_indices": "SharedIndex*",
     }
@@ -298,7 +329,7 @@ class AddSharedSum(_UsingIndexData, _UsingSharedMem, _WriteAccessor):
         return f"""
         write_sum_{c.dim}(inout_shared, {c.args});
         }}}};
-        flush_sum<{c.dim}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, inout_shared);
+        flush_sum_shared<{c.dim}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, inout_shared);
         if (global_thread_idx < problem_size) {{{{
         """.strip()
 
@@ -315,11 +346,11 @@ class WriteBlockSum(_UsingSharedMem, _WriteAccessor):
     This class does not use atomic add when writing to the output.
     You need to generate the shared indices using the `lib.shared_indices` function.
 
-    Equivalent to: ``(for i, k in enumerate(indices)): out[k] += values[i]``
+    Equivalent to: ``(for i, k in enumerate(indices)): out[(k//1024)] += values[i]``
     """
 
     KERNEL_SIG_TEMPLATE = {
-        "{name}": "float*",
+        "{name}": "float* const",
         "{name}_num_alloc": "unsigned int",
     }
 
@@ -339,14 +370,19 @@ class WriteBlockSum(_UsingSharedMem, _WriteAccessor):
         """.strip()
 
 
-class AddBlockSum(_UsingSharedMem, _WriteAccessor):
+class AddBlockSum(_UsingSharedMem, _AddAccessor):
     """
-    Accessor for shared sum memory write access.
+    Accessor for summation over the block.
 
-    This class uses atomic add when writing to the output.
+    Each block adds to one element.
+
+    To do a full reduction, the user needs to calculate the final sum from the ``n // 1024``
+    elements.
+
+    This class does not use atomic add when writing to the output.
     You need to generate the shared indices using the `lib.shared_indices` function.
 
-    Equivalent to: ``(for i, k in enumerate(indices)): out[k] += values[i]``
+    Equivalent to: ``(for i, k in enumerate(indices)): out[(k//1024)] += values[i]``
     """
 
     KERNEL_SIG_TEMPLATE = {
@@ -370,23 +406,183 @@ class AddBlockSum(_UsingSharedMem, _WriteAccessor):
         """.strip()
 
 
-class _FactorAccessor:
+class AddSum(_UsingSharedMem, _AddAccessor):
     """
-    Helper class designating an accessor used in factor definitions.
-    """
-
-
-class Tunable(ReadShared, _FactorAccessor):
-    """
-    Used in factors to define tunable parameters.
-
-    Currently we only support the Shared access pattern.
+    Accessor for adding global sum.
     """
 
+    KERNEL_SIG_TEMPLATE = {
+        "{name}": "float* const",
+    }
 
-class Constant(ReadSequential, _FactorAccessor):
+    PY_SIG_TEMPLATE = {"{name}": PYOBJ}
+    PY_ARGS_TEMPLATE = [
+        "AsFloatPtr({name})",
+    ]
+    EXTRA_DATA = 32 - 1024
+
+    def write_template(self, idx: int) -> str:
+        c = Common(self, idx)
+        return f"""
+        }}}};
+        sum_store({self.name}_local, inout_shared, {self.chunk_indices[idx][0]}, global_thread_idx < problem_size, {c.args});
+        if (global_thread_idx < problem_size) {{{{
+        """.strip()
+
+    def get_layout(self, storage: T.StorableOrType) -> list[list[int]]:  # noqa: PLR6301
+        return [[i] for i in range(StorageOps.storage_dim(storage))]
+
+    def pre_calc_code(self) -> str:
+        if StorageOps.storage_dim(self.storage) > 0:
+            return f"__shared__ float {self.name}_local[{StorageOps.storage_dim(self.storage)}];"
+        return ""
+
+    def post_calc_code(self) -> str:
+        if StorageOps.storage_dim(self.storage) > 0:
+            return f"sum_flush_final({self.name}_local, {self.name}, {StorageOps.storage_dim(self.storage)});"
+        return ""
+
+
+class WriteSum(AddSum):
     """
-    Used in factors to define constant parameters accessed according to the Sequential class.
+    Accessor for writing global sum.
+    """
 
-    Currently we only support the Sequential access pattern.
+    def pre_kernel_code(self) -> str:
+        c = Common(self, 0)
+        dim = caspar_size(self.storage)
+        return f"cudaMemset({c.name}, 0, {dim}*sizeof(float));\n"
+
+
+class _Pairwise(_UsingSharedMem): ...
+
+
+class ReadPair(_Pairwise, _ReadAccessor):
+    """
+    Accessor to read the element corresponding to the current thread and the next thread.
+    """
+
+    KERNEL_SIG_TEMPLATE = {"{name}": "float* const", "{name}_num_alloc": "unsigned int"}
+    PY_SIG_TEMPLATE = {"{name}": PYOBJ}
+    PY_ARGS_TEMPLATE = ["AsFloatPtr({name})", "GetNumCols({name})"]
+
+    def read_template(self, idx: int) -> str:
+        c = Common(self, idx)
+        return f"""
+        }}}};
+        read_and_shuffle_{c.dim}(inout_shared,
+        {c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx,
+        threadIdx.x == {CUDA_BLOCK_SIZE - 1},
+        global_thread_idx <= problem_size,
+        {",".join(f"{{arg_{i}}}" for i in range(c.dim * 2))});
+        if (global_thread_idx < problem_size) {{{{
+        """.strip()
+
+
+class AddPair(_Pairwise, _AddAccessor):
+    """
+    Accessor for adding the pair to the element corresponding to the current thread
+    and the next thread.
+    """
+
+    KERNEL_SIG_TEMPLATE = {"{name}": "float* const", "{name}_num_alloc": "unsigned int"}
+    PY_SIG_TEMPLATE = {"{name}": PYOBJ}
+    PY_ARGS_TEMPLATE = ["AsFloatPtr({name})", "GetNumCols({name})"]
+    EXTRA_DATA = 1
+
+    def write_template(self, idx: int) -> str:
+        c = Common(self, idx)
+        return f"""
+        }}}};
+        shuffle_and_add_{c.dim}(inout_shared,
+        {c.name}, {c.offset}*{c.name}_num_alloc,
+        global_thread_idx, problem_size,
+        {",".join(f"{{arg_{i}}}" for i in range(c.dim * 2))});
+        if (global_thread_idx < problem_size) {{{{
+        """.strip()
+
+
+class WritePair(_Pairwise, _ReadAccessor):
+    """
+    Accessor for writing the pair to the element corresponding to the current thread
+    and the next thread. The second element is added to the first element of the next thread.
+    """
+
+    KERNEL_SIG_TEMPLATE = {"{name}": "float* const", "{name}_num_alloc": "unsigned int"}
+    PY_SIG_TEMPLATE = {"{name}": PYOBJ}
+    PY_ARGS_TEMPLATE = ["AsFloatPtr({name})", "GetNumCols({name})"]
+    EXTRA_DATA = 1
+
+    def pre_kernel_code(self) -> str:
+        c = Common(self, 0)
+        dim = caspar_size(get_memtype(self.storage))
+        return f"cudaMemset({c.name}, 0, {c.name}_num_alloc*{dim}*sizeof(float));\n"
+
+    def write_template(self, idx: int) -> str:
+        c = Common(self, idx)
+        return f"""
+        }}}};
+        shuffle_and_write_{c.dim}(inout_shared,
+        {c.name}, {c.offset}*{c.name}_num_alloc,
+        global_thread_idx, problem_size,
+        {",".join(f"{{arg_{i}}}" for i in range(c.dim * 2))});
+        if (global_thread_idx < problem_size) {{{{
+        """.strip()
+
+
+class _FactorAccessor(_ReadAccessor): ...
+
+
+class _TunableAccessor(_FactorAccessor): ...
+
+
+class _ConstAccessor(_FactorAccessor): ...
+
+
+class TunableShared(ReadShared, _TunableAccessor):
+    """
+    Used in factors to define a tunable parameter that is shared between factors.
+    """
+
+
+class Tunable(TunableShared):
+    def __init__(self, name: str, storage: T.StorableOrType, use_index: str | None = None):
+        logging.warning("Tunable is deprecated, use TunableShared instead")
+        super().__init__(name, storage, use_index)
+
+
+class TunableUnique(ReadUnique, _TunableAccessor):
+    """
+    Used in factors to define a tunable parameter that is shared between all factors.
+    """
+
+
+class TunablePair(ReadPair, _TunableAccessor):
+    """
+    Used in factors to define a tunable pair.
+    That is factor[0] depends on arg[0] and arg[1], factor[1] depends on arg[1] and arg[2], etc.
+    """
+
+
+class ConstantSequential(ReadSequential, _ConstAccessor):
+    """
+    Used in factors to define constants that are unique to each factor.
+    """
+
+
+class Constant(ConstantSequential):
+    def __init__(self, name: str, storage: T.StorableOrType, use_index: str | None = None):
+        logging.warning("ConstantSequential is deprecated, use ConstantShared instead")
+        super().__init__(name, storage, use_index)
+
+
+class ConstantShared(ReadShared, _ConstAccessor):
+    """
+    Used in factors to define constants that are shared between factors.
+    """
+
+
+class ConstantUnique(ReadUnique, _ConstAccessor):
+    """
+    Used in factors to define a constant that is shared between all factors.
     """

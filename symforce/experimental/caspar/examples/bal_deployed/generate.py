@@ -37,8 +37,8 @@ caslib = CasparLibrary()
 
 @caslib.add_factor
 def fac_reprojection(
-    cam: T.Annotated[Cam, mem.Tunable],
-    point: T.Annotated[Point, mem.Tunable],
+    cam: T.Annotated[Cam, mem.TunableShared],
+    point: T.Annotated[Point, mem.TunableShared],
     pixel: T.Annotated[Pixel, mem.Constant],
 ) -> sf.V2:
     cam_T_world = cam.pose
