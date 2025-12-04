@@ -380,7 +380,9 @@ if __name__ == "__main__":
         install_requires=maybe_rewrite_local_dependencies(
             [
                 "ruff",
-                "clang-format",
+                # clang-format 21.1.3 and newer have this issue:
+                # https://github.com/llvm/llvm-project/issues/170573
+                "clang-format<21.1.3",
                 "graphviz",
                 "jinja2",
                 # numpy 2.0 isn't supported until SymPy 1.13.0
