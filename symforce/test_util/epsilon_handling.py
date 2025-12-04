@@ -74,7 +74,7 @@ def is_value_with_epsilon_correct(
         value_x0_raw = expected_value
     value_x0_eps = expr_eps.subs(x, singularity)
     value_x0_eps_sub2 = _limit_and_simplify(value_x0_eps, epsilon, 0, "+")
-    if value_x0_eps_sub2 != value_x0_raw:
+    if not value_x0_eps_sub2.equals(value_x0_raw):
         if display_func is not None:
             # Only show the original expressions if we didn't show already
             if is_correct:
@@ -135,7 +135,7 @@ def is_derivative_with_epsilon_correct(
         derivative_x0_raw = expected_derivative
     derivative_x0_eps = expr_eps.diff(x).subs(x, singularity)
     derivative_x0_eps_sub2 = _limit_and_simplify(derivative_x0_eps, epsilon, 0, "+")
-    if derivative_x0_eps_sub2 != derivative_x0_raw:
+    if not derivative_x0_eps_sub2.equals(derivative_x0_raw):
         if display_func is not None:
             display_func("Expressions (raw / eps):")
             display_func(expr_raw)

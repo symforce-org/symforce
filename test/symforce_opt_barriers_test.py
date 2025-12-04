@@ -35,7 +35,7 @@ class SymforceOptBarriersTest(TestCase):
                 center_error = symmetric_power_barrier(
                     0, x_nominal, error_nominal, dist_zero_to_nominal, power
                 )
-                self.assertEqual(center_error, 0.0)
+                self.assertEqual(float(center_error), 0.0)
 
                 # Check corners
                 x_left_corner = -x_nominal + dist_zero_to_nominal
@@ -46,8 +46,8 @@ class SymforceOptBarriersTest(TestCase):
                 right_corner_error = symmetric_power_barrier(
                     x_right_corner, x_nominal, error_nominal, dist_zero_to_nominal, power
                 )
-                self.assertEqual(left_corner_error, 0.0)
-                self.assertEqual(right_corner_error, 0.0)
+                self.assertEqual(float(left_corner_error), 0.0)
+                self.assertEqual(float(right_corner_error), 0.0)
 
                 # Check nominal point
                 left_nominal_error = symmetric_power_barrier(
@@ -56,8 +56,8 @@ class SymforceOptBarriersTest(TestCase):
                 right_nominal_error = symmetric_power_barrier(
                     x_nominal, x_nominal, error_nominal, dist_zero_to_nominal, power
                 )
-                self.assertEqual(left_nominal_error, error_nominal)
-                self.assertEqual(right_nominal_error, error_nominal)
+                self.assertEqual(float(left_nominal_error), error_nominal)
+                self.assertEqual(float(right_nominal_error), error_nominal)
 
                 # Check curve shape
                 x = x_nominal + 1
@@ -68,7 +68,7 @@ class SymforceOptBarriersTest(TestCase):
                 error = symmetric_power_barrier(
                     x, x_nominal, error_nominal, dist_zero_to_nominal, power
                 )
-                self.assertEqual(error, expected_error)
+                self.assertEqual(float(error), float(expected_error))
 
     def test_min_max_power_barriers(self) -> None:
         """
@@ -95,26 +95,30 @@ class SymforceOptBarriersTest(TestCase):
             with self.subTest(power=power):
                 # Check center
                 center = (x_nominal_lower + x_nominal_upper) / 2
-                self.assertEqual(min_max_power_barrier_helper(center, power), 0.0)
-                self.assertEqual(max_power_barrier_helper(center, power), 0.0)
-                self.assertEqual(min_power_barrier_helper(center, power), 0.0)
+                self.assertEqual(float(min_max_power_barrier_helper(center, power)), 0.0)
+                self.assertEqual(float(max_power_barrier_helper(center, power)), 0.0)
+                self.assertEqual(float(min_power_barrier_helper(center, power)), 0.0)
 
                 # Check corners
                 left_corner = x_nominal_lower + dist_zero_to_nominal
                 right_corner = x_nominal_upper - dist_zero_to_nominal
-                self.assertEqual(min_max_power_barrier_helper(left_corner, power), 0.0)
-                self.assertEqual(min_max_power_barrier_helper(right_corner, power), 0.0)
-                self.assertEqual(max_power_barrier_helper(right_corner, power), 0.0)
-                self.assertEqual(min_power_barrier_helper(left_corner, power), 0.0)
+                self.assertEqual(float(min_max_power_barrier_helper(left_corner, power)), 0.0)
+                self.assertEqual(float(min_max_power_barrier_helper(right_corner, power)), 0.0)
+                self.assertEqual(float(max_power_barrier_helper(right_corner, power)), 0.0)
+                self.assertEqual(float(min_power_barrier_helper(left_corner, power)), 0.0)
 
                 # Check nominal point
                 self.assertEqual(
-                    min_max_power_barrier_helper(x_nominal_lower, power), error_nominal
+                    float(min_max_power_barrier_helper(x_nominal_lower, power)),
+                    float(error_nominal),
                 )
                 self.assertEqual(
-                    min_max_power_barrier_helper(x_nominal_upper, power), error_nominal
+                    float(min_max_power_barrier_helper(x_nominal_upper, power)),
+                    float(error_nominal),
                 )
-                self.assertEqual(max_power_barrier_helper(x_nominal_upper, power), error_nominal)
+                self.assertEqual(
+                    float(max_power_barrier_helper(x_nominal_upper, power)), float(error_nominal)
+                )
                 self.assertEqual(min_power_barrier_helper(x_nominal_lower, power), error_nominal)
 
                 # Check curve shape
@@ -122,10 +126,13 @@ class SymforceOptBarriersTest(TestCase):
                 expected_error = (
                     error_nominal * ((x - right_corner) / dist_zero_to_nominal) ** power
                 )
-                self.assertEqual(min_max_power_barrier_helper(x, power), expected_error)
-                self.assertEqual(max_power_barrier_helper(x, power), expected_error)
                 self.assertEqual(
-                    min_power_barrier_helper(x_nominal_lower - 1, power), expected_error
+                    float(min_max_power_barrier_helper(x, power)), float(expected_error)
+                )
+                self.assertEqual(float(max_power_barrier_helper(x, power)), float(expected_error))
+                self.assertEqual(
+                    float(min_power_barrier_helper(x_nominal_lower - 1, power)),
+                    float(expected_error),
                 )
 
         # Check that min_max_linear_barrier returns the same error for several points
@@ -177,17 +184,21 @@ class SymforceOptBarriersTest(TestCase):
             with self.subTest(power=power):
                 # Check center
                 center = (x_nominal_lower + x_nominal_upper) / 2
-                self.assertEqual(centering_barrier_helper(center, power), 0.0)
+                self.assertEqual(float(centering_barrier_helper(center, power)), 0.0)
 
                 # Check corners
                 left_corner = x_nominal_lower + dist_zero_to_nominal
                 right_corner = x_nominal_upper - dist_zero_to_nominal
-                self.assertNotEqual(centering_barrier_helper(left_corner, power), 0.0)
-                self.assertNotEqual(centering_barrier_helper(right_corner, power), 0.0)
+                self.assertNotEqual(float(centering_barrier_helper(left_corner, power)), 0.0)
+                self.assertNotEqual(float(centering_barrier_helper(right_corner, power)), 0.0)
 
                 # Check nominal point
-                self.assertEqual(centering_barrier_helper(x_nominal_lower, power), error_nominal)
-                self.assertEqual(centering_barrier_helper(x_nominal_upper, power), error_nominal)
+                self.assertEqual(
+                    float(centering_barrier_helper(x_nominal_lower, power)), float(error_nominal)
+                )
+                self.assertEqual(
+                    float(centering_barrier_helper(x_nominal_upper, power)), float(error_nominal)
+                )
 
                 # Check curve shape on bounding curve
                 x_bounding = x_nominal_upper + 1
@@ -195,7 +206,8 @@ class SymforceOptBarriersTest(TestCase):
                     error_nominal * ((x_bounding - right_corner) / dist_zero_to_nominal) ** power
                 )
                 self.assertEqual(
-                    centering_barrier_helper(x_bounding, power), expected_error_bounding
+                    float(centering_barrier_helper(x_bounding, power)),
+                    float(expected_error_bounding),
                 )
 
                 # Check curve shape on centering curve

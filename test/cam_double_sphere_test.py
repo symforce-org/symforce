@@ -88,12 +88,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle - self.EPS)
                 _, is_valid = cal.pixel_from_camera_point(point)
-                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
+                self.assertEqual(float(T.cast(sf.Expr, is_valid).evalf()), 1.0)
 
             with self.subTest(angle=angle, xi=xi, alpha=alpha):
                 point = point_from_angle(angle + self.EPS)
                 _, is_valid = cal.pixel_from_camera_point(point)
-                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
+                self.assertEqual(float(T.cast(sf.Expr, is_valid).evalf()), 0.0)
 
         # linear is_valid for trivial case
         check_forward_is_valid_on_boundary(0, 0, np.pi / 2)
@@ -133,12 +133,12 @@ class DoubleSphereTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius - self.EPS)
                 _, is_valid = cal.camera_ray_from_pixel(pixel)
-                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 1.0)
+                self.assertEqual(float(T.cast(sf.Expr, is_valid).evalf()), 1.0)
 
             with self.subTest(radius=radius, xi=xi, alpha=alpha):
                 pixel = pixel_from_radius(radius + self.EPS)
                 _, is_valid = cal.camera_ray_from_pixel(pixel)
-                self.assertEqual(T.cast(sf.Expr, is_valid).evalf(), 0.0)
+                self.assertEqual(float(T.cast(sf.Expr, is_valid).evalf()), 0.0)
 
         # sphere is_valid for spheres far apart
         check_backward_is_valid_on_boundary(3, 0.7, 271.321813)

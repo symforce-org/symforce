@@ -385,12 +385,10 @@ if __name__ == "__main__":
                 "clang-format<21.1.3",
                 "graphviz",
                 "jinja2",
-                # numpy 2.0 isn't supported until SymPy 1.13.0
-                # https://github.com/sympy/sympy/wiki/Release-Notes-for-1.13.0
-                "numpy<2.0",
+                "numpy",
                 "scipy",
                 f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
-                "sympy~=1.11.1",
+                "sympy~=1.13.0",
                 f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
                 "typing-extensions; python_version<'3.9'",
                 "sortedcontainers",
@@ -405,7 +403,7 @@ if __name__ == "__main__":
                     "argh",
                     "coverage",
                     "jinja2~=3.0",
-                    "mypy~=1.11.0",
+                    "mypy~=1.14.0",
                     "numba",
                     # Base for https://github.com/sizmailov/pybind11-stubgen/pull/263
                     "pybind11-stubgen>=2.5.5",

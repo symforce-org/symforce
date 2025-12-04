@@ -28,7 +28,7 @@ class LieGroupNdarrayTest(LieGroupOpsTestMixin, TestCase):
         m = sf.M33()
         a = np.zeros((3, 3))
 
-        i = 0.0
+        i = 1.0
         for row in range(3):
             for col in range(3):
                 m[row, col] = i

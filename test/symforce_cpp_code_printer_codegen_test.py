@@ -46,6 +46,45 @@ class SymforceCppCodePrinterTest(TestCase):
             "std::min<Scalar>(std::pow(a, Scalar(2)), std::pow(b, Scalar(2)))",
         )
 
+    def test_pow(self) -> None:
+        printer = codegen.CppConfig().printer()
+
+        x = sf.Symbol("x")
+
+        # Test various powers
+        expr = x ** (-1)
+        self.assertEqual(printer.doprint(expr), "Scalar(1.0) / (x)")
+
+        expr = x**3
+        self.assertEqual(
+            printer.doprint(expr), "[&]() { const Scalar base = x; return base * base * base; }()"
+        )
+
+        expr = x ** (1 / 2)
+        self.assertEqual(printer.doprint(expr), "std::sqrt(x)")
+
+        expr = x ** (3 / 2)
+        self.assertEqual(printer.doprint(expr), "(x * std::sqrt(x))")
+
+        # Test with floats
+        expr = x ** (-1.0)
+        self.assertEqual(printer.doprint(expr), "Scalar(1.0) / (x)")
+
+        expr = x ** (3.0)
+        self.assertEqual(
+            printer.doprint(expr), "[&]() { const Scalar base = x; return base * base * base; }()"
+        )
+
+        # Test various powers with symbols
+        expr = x ** (-sf.S.One)
+        self.assertEqual(printer.doprint(expr), "Scalar(1.0) / (x)")
+
+        expr = x**sf.S.Half
+        self.assertEqual(printer.doprint(expr), "std::sqrt(x)")
+
+        expr = x ** (sf.Rational(3, 2))
+        self.assertEqual(printer.doprint(expr), "(x * std::sqrt(x))")
+
     @sympy_only
     def test_heaviside(self) -> None:
         output_dir = self.make_output_dir("sf_heaviside_test_")

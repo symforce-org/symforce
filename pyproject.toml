@@ -76,7 +76,6 @@ module = [
   "setuptools_scm.*",
   "skymarshal.*",
   "symengine.*",
-  "sympy.*",
   "torch.*",        # We don't require torch to be installed
 ]
 ignore_missing_imports = true
@@ -93,3 +92,10 @@ follow_imports = "skip"
 follow_imports_for_stubs = true
 # the py3.8 version of matplotlib has no type stubs, so we fully ignore it
 ignore_missing_imports = true
+
+# Per https://github.com/sympy/sympy/pull/26158, sympy removed their py.typed marker, so we have to
+# tell mypy to typecheck it anyway
+# Tracking issue afaict is https://github.com/sympy/sympy/issues/17945
+[[tool.mypy.overrides]]
+module = ["sympy.*"]
+follow_untyped_imports = true

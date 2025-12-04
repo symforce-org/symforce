@@ -18,72 +18,72 @@ class SymforceLogicTest(TestCase):
         Tests:
             sf.is_positive
         """
-        self.assertEqual(sf.is_positive(0.1).evalf(), 1.0)
-        self.assertEqual(sf.is_positive(0.0).evalf(), 0.0)
-        self.assertEqual(sf.is_positive(-0.1).evalf(), 0.0)
+        self.assertEqual(float(sf.is_positive(0.1).evalf()), 1.0)
+        self.assertEqual(float(sf.is_positive(0.0).evalf()), 0.0)
+        self.assertEqual(float(sf.is_positive(-0.1).evalf()), 0.0)
 
     def test_is_negative(self) -> None:
         """
         Tests:
             sf.is_negative
         """
-        self.assertEqual(sf.is_negative(0.1).evalf(), 0.0)
-        self.assertEqual(sf.is_negative(0.0).evalf(), 0.0)
-        self.assertEqual(sf.is_negative(-0.1).evalf(), 1.0)
+        self.assertEqual(float(sf.is_negative(0.1).evalf()), 0.0)
+        self.assertEqual(float(sf.is_negative(0.0).evalf()), 0.0)
+        self.assertEqual(float(sf.is_negative(-0.1).evalf()), 1.0)
 
     def test_is_nonnegative(self) -> None:
         """
         Tests:
             sf.is_nonnegative
         """
-        self.assertEqual(sf.is_nonnegative(0.1).evalf(), 1.0)
-        self.assertEqual(sf.is_nonnegative(0.0).evalf(), 1.0)
-        self.assertEqual(sf.is_nonnegative(-0.1).evalf(), 0.0)
+        self.assertEqual(float(sf.is_nonnegative(0.1).evalf()), 1.0)
+        self.assertEqual(float(sf.is_nonnegative(0.0).evalf()), 1.0)
+        self.assertEqual(float(sf.is_nonnegative(-0.1).evalf()), 0.0)
 
     def test_is_nonpositive(self) -> None:
         """
         Tests:
             sf.is_nonpositive
         """
-        self.assertEqual(sf.is_nonpositive(0.1).evalf(), 0.0)
-        self.assertEqual(sf.is_nonpositive(0.0).evalf(), 1.0)
-        self.assertEqual(sf.is_nonpositive(-0.1).evalf(), 1.0)
+        self.assertEqual(float(sf.is_nonpositive(0.1).evalf()), 0.0)
+        self.assertEqual(float(sf.is_nonpositive(0.0).evalf()), 1.0)
+        self.assertEqual(float(sf.is_nonpositive(-0.1).evalf()), 1.0)
 
     def test_less_equal(self) -> None:
         """
         Tests:
             sf.less_equal
         """
-        self.assertEqual(sf.less_equal(0.0, 1.0).evalf(), 1.0)
-        self.assertEqual(sf.less_equal(0.0, 0.0).evalf(), 1.0)
-        self.assertEqual(sf.less_equal(1.0, 0.0).evalf(), 0.0)
+        self.assertEqual(float(sf.less_equal(0.0, 1.0).evalf()), 1.0)
+        self.assertEqual(float(sf.less_equal(0.0, 0.0).evalf()), 1.0)
+        self.assertEqual(float(sf.less_equal(1.0, 0.0).evalf()), 0.0)
 
     def test_greater_equal(self) -> None:
         """
         Tests:
             sf.greater_equal
         """
-        self.assertEqual(sf.greater_equal(0.0, 1.0).evalf(), 0.0)
-        self.assertEqual(sf.greater_equal(0.0, 0.0).evalf(), 1.0)
-        self.assertEqual(sf.greater_equal(1.0, 0.0).evalf(), 1.0)
+        self.assertEqual(float(sf.greater_equal(0.0, 1.0).evalf()), 0.0)
+        self.assertEqual(float(sf.greater_equal(0.0, 0.0).evalf()), 1.0)
+        self.assertEqual(float(sf.greater_equal(1.0, 0.0).evalf()), 1.0)
 
     def test_less(self) -> None:
         """
         Tests:
             sf.less
         """
-        self.assertEqual(sf.less(0.0, 1.0).evalf(), 1.0)
-        self.assertEqual(sf.less(0.0, 0.0).evalf(), 0.0)
-        self.assertEqual(sf.less(1.0, 0.0).evalf(), 0.0)
+        self.assertEqual(float(sf.less(0.0, 1.0).evalf()), 1.0)
+        self.assertEqual(float(sf.less(0.0, 0.0).evalf()), 0.0)
+        self.assertEqual(float(sf.less(1.0, 0.0).evalf()), 0.0)
 
     def test_greater(self) -> None:
         """
         Tests:
             sf.greater
         """
-        self.assertEqual(sf.greater(0.0, 1.0).evalf(), 0.0)
-        self.assertEqual(sf.greater(0.0, 0.0).evalf(), 0.0)
-        self.assertEqual(sf.greater(1.0, 0.0).evalf(), 1.0)
+        self.assertEqual(float(sf.greater(0.0, 1.0).evalf()), 0.0)
+        self.assertEqual(float(sf.greater(0.0, 0.0).evalf()), 0.0)
+        self.assertEqual(float(sf.greater(1.0, 0.0).evalf()), 1.0)
 
     SCALARS_TO_CHECK = (-2, -1, -0.9, -0.1, 0.0, 0.1, 0.9, 1, 2)
     UNSAFE_SCALARS_TO_CHECK = (0.0, 1.0)

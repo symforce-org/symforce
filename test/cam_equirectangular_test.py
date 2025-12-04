@@ -84,7 +84,7 @@ class EquirectangularTest(LieGroupOpsTestMixin, CamCalTestMixin, TestCase):
         ]
         for pixel in invalid_pixels:
             _, is_valid_back_proj = cam_cal.camera_ray_from_pixel(pixel)
-            self.assertTrue(StorageOps.evalf(is_valid_back_proj) == 0.0)
+            self.assertEqual(float(StorageOps.evalf(is_valid_back_proj)), 0.0)
 
 
 if __name__ == "__main__":

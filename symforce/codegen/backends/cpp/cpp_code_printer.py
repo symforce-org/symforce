@@ -96,13 +96,15 @@ class CppCodePrinter(CXX11CodePrinter):
         # We don't special-case 2, because std::pow(x, 2) compiles to x * x under all circumstances
         # we tested (floats or doubles, fast-math or not)
 
-        if expr.exp == -1:
+        # NOTE(aaron): These don't work as set membership checks, which is what ruff is suggesting.
+        # I didn't dig into why.
+        if expr.exp == -1 or expr.exp == -1.0:  # noqa: PLR1714
             return f"{self._print_Float(sympy.S(1.0))} / ({raw_base_str})"
-        elif expr.exp == 3:
+        elif expr.exp == 3 or expr.exp == 3.0:  # noqa: PLR1714
             return f"[&]() {{ const Scalar base = {raw_base_str}; return base * base * base; }}()"
-        elif expr.exp == sympy.S.One / 2:
+        elif expr.exp == sympy.S.One / 2 or expr.exp == 0.5:
             return f"{self._ns}sqrt({base_str})"
-        elif expr.exp == sympy.S(3) / 2:
+        elif expr.exp == sympy.S(3) / 2 or expr.exp == 1.5:
             return f"({raw_base_str} * {self._ns}sqrt({base_str}))"
         else:
             return f"{self._ns}pow({base_str}, {exp_str})"
