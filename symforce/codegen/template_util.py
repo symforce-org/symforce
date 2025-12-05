@@ -23,7 +23,7 @@ from symforce.codegen.codegen_config import RenderTemplateConfig
 CURRENT_DIR = Path(__file__).parent
 LCM_TEMPLATE_DIR = CURRENT_DIR / "lcm_templates"
 PYBIND_TEMPLATE_DIR = CURRENT_DIR / "pybind_templates"
-PRETTIER_CONFIG_PATH = CURRENT_DIR.parent.parent / "prettier.config.mjs"
+PRETTIER_CONFIG_PATH = CURRENT_DIR.parent / "prettier.config.mjs"
 
 
 class FileType(enum.Enum):

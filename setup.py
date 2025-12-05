@@ -362,7 +362,15 @@ if __name__ == "__main__":
             "lcmtypes": "lcmtypes_build/lcmtypes",
         },
         package_data={
-            "": ["*.jinja", "*.mtx", "README*", ".clang-format", "py.typed", "ruff.toml"]
+            "": [
+                "*.jinja",
+                "*.mtx",
+                "README*",
+                ".clang-format",
+                "py.typed",
+                "ruff.toml",
+                "prettier.config.mjs",
+            ]
         },
         # pyproject.toml doesn't allow specifying url or homepage separately, and if it's not
         # specified separately PyPI sorts all the links alphabetically

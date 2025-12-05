@@ -117,7 +117,8 @@ jobs:
           python -m build --wheel {project}/third_party/skymarshal --outdir /tmp/wheel-test-dist &&
           python -m build --wheel {project}/gen/python --outdir /tmp/wheel-test-dist &&
           pip install /tmp/wheel-test-dist/*
-        CIBW_TEST_COMMAND: python {project}/.github/scripts/run_wheel_tests.py {project}
+        # Need to install prettier for typescript codegen
+        CIBW_TEST_COMMAND: source {project}/.github/scripts/install_prettier.sh && python {project}/.github/scripts/run_wheel_tests.py {project}
         CIBW_TEST_EXTRAS: dev
 
     - name: Upload Wheels
