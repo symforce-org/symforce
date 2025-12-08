@@ -396,7 +396,7 @@ if __name__ == "__main__":
                 "numpy",
                 "scipy",
                 f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
-                "sympy~=1.13.0",
+                "sympy>=1.11",
                 f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
                 "typing-extensions; python_version<'3.9'",
                 "sortedcontainers",
