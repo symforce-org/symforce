@@ -41,9 +41,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - deploy_target: 15.0
-            runner: macos-15-intel
-            arch: x86_64
           - deploy_target: 14.0
             runner: macos-14
             arch: arm64
