@@ -36,14 +36,16 @@ jobs:
 
   build-macos:
     if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-    runs-on: macos-${{ matrix.os.version }}
+    runs-on: ${{ matrix.os.runner }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - version: 13
+          - deploy_target: 15.0
+            runner: macos-15-intel
             arch: x86_64
-          - version: 14
+          - deploy_target: 14.0
+            runner: macos-14
             arch: arm64
         python-version: [cp38, cp39, cp310, cp311, cp312]
 
@@ -69,7 +71,7 @@ jobs:
         CIBW_BUILD_FRONTEND: build
         # For arm64; for x86, it's at /usr/local but cmake finds that ok already
         GMP_ROOT: /opt/homebrew
-        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.version }}.0 SYMFORCE_PYTHON_OVERRIDE=python
+        CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION MACOSX_DEPLOYMENT_TARGET=${{ matrix.os.deploy_target }} SYMFORCE_PYTHON_OVERRIDE=python
         CIBW_BEFORE_TEST: >
           pip install build setuptools_scm &&
           python -m build --wheel {project}/third_party/skymarshal --outdir /tmp/wheel-test-dist &&
