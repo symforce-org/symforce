@@ -15,20 +15,11 @@ async def run_test(
         args: list[str] = [str(test_file)]
 
         # Codegen is different on macOS; there's some nondeterminism in SymEngine, based on e.g.
-        # unordered_map iteration order, that we need to fix.  For now, this is fine, so we check
-        # that the tests pass, but allow them to generate different code than is checked in.
+        # unordered_map iteration order, that we need to fix.  The wheel tests also don't pin
+        # dependencies, so there are some differences on newer sympy with the Rust backend. We
+        # check that the tests pass, but allow them to generate different code than is checked in.
         include_update_flag = (
-            test_file.name.endswith("_codegen_test.py")
-            and platform.system() == "Darwin"
-            and (
-                symbolic_api == "symengine"
-                or (
-                    # Sympy is also different on arm64 macos for some reason
-                    symbolic_api == "sympy"
-                    and platform.machine() == "arm64"
-                    and sys.version_info.minor in {9, 12}
-                )
-            )
+            test_file.name.endswith("_codegen_test.py") and platform.system() == "Darwin"
         )
         if include_update_flag:
             args.append("--update")

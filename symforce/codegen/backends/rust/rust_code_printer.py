@@ -20,6 +20,9 @@ class ScalarType(Enum):
     DOUBLE = float64
 
 
+_sympy_version = tuple(map(int, sympy.__version__.split(".")))
+
+
 class RustCodePrinter(SympyRustCodePrinter):
     """
     SymForce code printer for Rust. Based on the SymPy Rust printer.
@@ -36,7 +39,8 @@ class RustCodePrinter(SympyRustCodePrinter):
         self.known_functions = dict(sympy_known_functions, CopysignNoZero="copysign")
 
         # This is bugged, before https://github.com/sympy/sympy/pull/27736
-        del self.known_functions["sign"]
+        if _sympy_version < (1, 14):
+            del self.known_functions["sign"]
 
         if settings is not None:
             userfuncs = settings.get("user_functions", {})
@@ -55,6 +59,17 @@ class RustCodePrinter(SympyRustCodePrinter):
             return f"{name}({expr_string})"
 
         setattr(self, method_name, _print_expr)
+
+    if _sympy_version >= (1, 14):
+        # On sympy >= 1.14, the Rust printer has this extra logic in the rust_code function.  We
+        # add it here instead so we can just call `doprint` and get the correct behavior.
+        # See https://github.com/sympy/sympy/pull/26882
+        def doprint(self, expr: T.Any, assign_to: T.Any = None) -> str:
+            expr = self._rewrite_known_functions(expr)  # type: ignore[attr-defined]
+            if isinstance(expr, sympy.Expr):
+                for src_func, dst_func in self.function_overrides.values():  # type: ignore[attr-defined]
+                    expr = expr.replace(src_func, dst_func)
+            return super().doprint(expr, assign_to)
 
     @staticmethod
     def _print_Zero(expr: sympy.Expr) -> str:
