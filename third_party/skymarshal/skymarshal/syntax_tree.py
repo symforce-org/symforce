@@ -192,8 +192,11 @@ class Notation(AstNode):
         #
         # A type annotated as `#cpp_display_everywhere` will have a useful human-readable
         # representation regardless of `SKYMARSHAL_PRINTING_ENABLED`.
+        #
+        # Types annotated with `#cpp_no_print_helpers` will also ommit generation of print helpers.
         "#cpp_display_everywhere": NotationSpec(allowed={"struct"}, properties=[]),
         "#cpp_no_display": NotationSpec(allowed={"struct"}, properties=[]),
+        "#cpp_no_print_helpers": NotationSpec(allowed={"struct"}, properties=[]),
     }
 
     # If allow_unknown_notations is true, then any notation that doesn't match a NOTATION_SPECS

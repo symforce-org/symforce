@@ -644,6 +644,10 @@ class CppStruct(StructBuilder, CppBase):
     def cpp_no_display(self):
         return any(notation.name == "#cpp_no_display" for notation in self.struct.notations)
 
+    @property
+    def cpp_no_print_helpers(self):
+        return any(notation.name == "#cpp_no_print_helpers" for notation in self.struct.notations)
+
 
 class SkymarshalCpp(SkymarshalLanguage):
     @classmethod
@@ -667,6 +671,11 @@ class SkymarshalCpp(SkymarshalLanguage):
             "--cpp-no-operators",
             action="store_true",  # TODO(jeff): use for enums?
             help="Exclude operators and member constructor for structs",
+        )
+        parser.add_argument(
+            "--cpp-no-print-helpers",
+            action="store_true",
+            help="Exclud show_fields and translate_fields print helpers methods",
         )
 
     @classmethod

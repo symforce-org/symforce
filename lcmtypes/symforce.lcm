@@ -39,7 +39,7 @@ struct valuesf_t {
 // Storage for the linearization of a factor
 // ------------------------------------------------------------------------------------------------
 
-#cpp_no_display
+#cpp_no_print_helpers
 struct linearized_dense_factor_t {
   eigen_lcm.VectorXd residual;  // b
   eigen_lcm.MatrixXd jacobian;  // J
@@ -49,7 +49,7 @@ struct linearized_dense_factor_t {
 };
 
 // Same as linearized_dense_factor_t but for floats.
-#cpp_no_display
+#cpp_no_print_helpers
 struct linearized_dense_factorf_t {
   eigen_lcm.VectorXf residual;  // b
   eigen_lcm.MatrixXf jacobian;  // J

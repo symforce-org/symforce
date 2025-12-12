@@ -14,7 +14,7 @@
 #ifndef __{{lcmtype.underscored}}_hpp__
 #define __{{lcmtype.underscored}}_hpp__
 
-{% if not lcmtype.cpp_no_display %}
+{% if not lcmtype.cpp_no_print_helpers and not lcmtype.args.cpp_no_print_helpers %}
 {% if not lcmtype.cpp_display_everywhere %}
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
 {% endif %}
@@ -147,7 +147,7 @@ class {{lcmtype.name}}
         inline bool operator!=(const {{lcmtype.name}}& other) const;
 {% endif %}
 
-{% if not lcmtype.cpp_no_display %}
+{% if not lcmtype.args.cpp_no_print_helpers and not lcmtype.cpp_no_print_helpers %}
 {% if not lcmtype.cpp_display_everywhere %}
 #if defined(SKYMARSHAL_PRINTING_ENABLED)
 {% endif %}
@@ -191,18 +191,22 @@ class {{lcmtype.name}}
             }
         }
 
+{% if not lcmtype.cpp_no_display %}
         // Ability to print to standard streams as well as the fmt library.
         friend std::ostream& operator<<(std::ostream& _stream, const {{lcmtype.name}}& obj) {
             lcm::show_field(_stream, nullptr, 0, obj, 0);
             return _stream;
         }
+{% endif %}
 
 {% if not lcmtype.cpp_display_everywhere %}
+{% if not lcmtype.cpp_no_display %}
 #else
         friend std::ostream& operator<<(std::ostream& _stream, const {{lcmtype.name}}& obj) {
             _stream << "<FORMATTING DISABLED>";
             return _stream;
         }
+{% endif %}
 #endif
 {% endif %}
 
