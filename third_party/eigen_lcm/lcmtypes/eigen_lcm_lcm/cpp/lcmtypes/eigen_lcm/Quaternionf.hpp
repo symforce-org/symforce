@@ -44,6 +44,11 @@ class Quaternionf : public Eigen::Quaternion<float, Eigen::DontAlign> {
     return os;
   }
 
+  // Mimic the data() accessor of standard eigen lcm types
+  inline const Coefficients& data() const {
+    return coeffs();
+  }
+
   template <typename T>
   bool operator==(const T& other) const {
     return (coeffs() == other.coeffs());
