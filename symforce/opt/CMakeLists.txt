@@ -119,6 +119,10 @@ target_include_directories(symforce_cholesky PUBLIC ../..)
 
 file(GLOB_RECURSE SYMFORCE_OPT_SOURCES CONFIGURE_DEPENDS *.cc **/*.cc)
 file(GLOB_RECURSE SYMFORCE_OPT_HEADERS CONFIGURE_DEPENDS *.h **/*.h *.tcc **/*.tcc)
+if(SYMFORCE_CUSTOM_TIC_TOCS)
+  list(REMOVE_ITEM SYMFORCE_OPT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/internal/tic_toc.cc")
+  list(REMOVE_ITEM SYMFORCE_OPT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/internal/tic_toc.h")
+endif(SYMFORCE_CUSTOM_TIC_TOCS)
 add_library(
   symforce_opt
   ${SYMFORCE_LIBRARY_TYPE}
