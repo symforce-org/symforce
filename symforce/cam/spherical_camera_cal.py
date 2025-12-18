@@ -190,7 +190,7 @@ class SphericalCameraCal(CameraCal):
             self._radial_distortion_coefficients(), max_theta
         )
 
-    def _radial_distortion(self, theta: sf.Symbol) -> sf.Symbol:
+    def _radial_distortion(self, theta: T.Scalar) -> T.Scalar:
         """
         Compute the radius in the unit-depth plane from the angle theta with the camera z-axis
         """

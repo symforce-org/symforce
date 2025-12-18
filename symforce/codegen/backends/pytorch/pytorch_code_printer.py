@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import sympy
+from sympy.functions.special.gamma_functions import gamma
 from sympy.printing.codeprinter import CodePrinter
 from sympy.printing.pycode import PythonCodePrinter
 
@@ -177,7 +178,7 @@ class PyTorchCodePrinter(CodePrinter):
     def _print_Heaviside(self, expr: "sympy.Heaviside") -> str:  # type: ignore[override]
         return f"torch.heaviside({self._print(expr.args[0])}, values=torch.tensor(1.0, **tensor_kwargs))"
 
-    def _print_gamma(self, expr: sympy.functions.special.gamma_functions.gamma) -> str:
+    def _print_gamma(self, expr: gamma) -> str:
         # PyTorch does not have the gamma function, this is the best we can do
         return f"torch.lgamma({self._print(expr.args[0])}).exp()"
 

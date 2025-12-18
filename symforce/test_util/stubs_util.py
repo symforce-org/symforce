@@ -8,6 +8,16 @@ from __future__ import annotations
 import typing as T
 
 import pybind11_stubgen
+import pybind11_stubgen.parser.mixins.fix as fix_mixins
+import pybind11_stubgen.parser.mixins.parse as parse_mixins
+from pybind11_stubgen import ExtractSignaturesFromPybind11Docstrings
+from pybind11_stubgen import FixCurrentModulePrefixInTypeNames
+from pybind11_stubgen import FixMissingImports as PybindFixMissingImports
+from pybind11_stubgen import (
+    FixMissingNoneHashFieldAnnotation as PybindFixMissingNoneHashFieldAnnotation,
+)
+from pybind11_stubgen import FixTypingTypeNames as PybindFixTypingTypeNames
+from pybind11_stubgen import IParser
 from pybind11_stubgen.structs import Class
 from pybind11_stubgen.structs import Docstring
 from pybind11_stubgen.structs import Field
@@ -19,7 +29,7 @@ from pybind11_stubgen.structs import ResolvedType
 from pybind11_stubgen.structs import Value
 
 
-class FixMissingImports(pybind11_stubgen.parser.mixins.fix.FixMissingImports):
+class FixMissingImports(PybindFixMissingImports):
     def _add_import(self, name: QualifiedName) -> None:
         if len(name) == 0:
             return
@@ -44,7 +54,7 @@ class FixMissingImports(pybind11_stubgen.parser.mixins.fix.FixMissingImports):
 
 
 def patch_lcmtype_imports() -> None:
-    pybind11_stubgen.parser.mixins.fix.FixMissingImports = FixMissingImports  # type: ignore[misc]
+    fix_mixins.FixMissingImports = FixMissingImports  # type: ignore[misc]
     pybind11_stubgen.FixMissingImports = FixMissingImports  # type: ignore[misc]
 
 
@@ -56,12 +66,10 @@ def patch_current_module_prefix() -> None:
     """
 
     def parse_annotation_str(
-        self: pybind11_stubgen.parser.mixins.fix.FixCurrentModulePrefixInTypeNames,
+        self: FixCurrentModulePrefixInTypeNames,
         annotation_str: str,
     ) -> ResolvedType | InvalidExpression | Value:
-        result = super(  # type: ignore[safe-super]
-            pybind11_stubgen.parser.mixins.fix.FixCurrentModulePrefixInTypeNames, self
-        ).parse_annotation_str(annotation_str)
+        result = super(FixCurrentModulePrefixInTypeNames, self).parse_annotation_str(annotation_str)  # type: ignore[safe-super]
 
         def handle_annotation(annotation: ResolvedType | InvalidExpression | Value) -> None:
             if isinstance(annotation, ResolvedType):
@@ -73,9 +81,7 @@ def patch_current_module_prefix() -> None:
         handle_annotation(result)
         return result
 
-    pybind11_stubgen.parser.mixins.fix.FixCurrentModulePrefixInTypeNames.parse_annotation_str = (  # type: ignore[method-assign]
-        parse_annotation_str
-    )
+    fix_mixins.FixCurrentModulePrefixInTypeNames.parse_annotation_str = parse_annotation_str  # type: ignore[method-assign]
 
 
 def patch_handle_docstring() -> None:
@@ -84,17 +90,13 @@ def patch_handle_docstring() -> None:
     docstrings
     """
 
-    def handle_docstring(
-        self: pybind11_stubgen.IParser, path: QualifiedName, value: T.Any
-    ) -> T.Optional[Docstring]:
+    def handle_docstring(self: IParser, path: QualifiedName, value: T.Any) -> T.Optional[Docstring]:
         if isinstance(value, str):
-            assert isinstance(
-                self, pybind11_stubgen.parser.mixins.parse.ExtractSignaturesFromPybind11Docstrings
-            )
+            assert isinstance(self, ExtractSignaturesFromPybind11Docstrings)
             return self._strip_empty_lines(value.splitlines())
         return None
 
-    pybind11_stubgen.parser.mixins.parse.BaseParser.handle_docstring = handle_docstring  # type: ignore[method-assign]
+    parse_mixins.BaseParser.handle_docstring = handle_docstring  # type: ignore[method-assign]
 
 
 def patch_fix_missing_none_hash_field_annotation() -> None:
@@ -103,24 +105,22 @@ def patch_fix_missing_none_hash_field_annotation() -> None:
     """
 
     def handle_field(
-        self: pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation,
+        self: PybindFixMissingNoneHashFieldAnnotation,
         path: QualifiedName,
         field: T.Any,
     ) -> T.Optional[Field]:
-        result = super(  # type: ignore[safe-super]
-            pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation, self
-        ).handle_field(path, field)
+        result = super(PybindFixMissingNoneHashFieldAnnotation, self).handle_field(path, field)  # type: ignore[safe-super]
         if result is None:
             return None
         if field is None and path[-1] == "__hash__":
             result.attribute.annotation = self.parse_annotation_str("typing.ClassVar[typing.Any]")
         return result
 
-    pybind11_stubgen.parser.mixins.fix.FixMissingNoneHashFieldAnnotation.handle_field = handle_field  # type: ignore[method-assign]
+    fix_mixins.FixMissingNoneHashFieldAnnotation.handle_field = handle_field  # type: ignore[method-assign]
 
 
 def patch_numpy_annotations() -> None:
-    class FixTypingTypeNames(pybind11_stubgen.parser.mixins.fix.FixTypingTypeNames):
+    class FixTypingTypeNames(PybindFixTypingTypeNames):
         def _parse_annotation_str(
             self,
             result: ResolvedType | InvalidExpression | Value,
@@ -152,11 +152,11 @@ def patch_numpy_annotations() -> None:
 
             return result
 
-    pybind11_stubgen.parser.mixins.fix.FixTypingTypeNames = FixTypingTypeNames  # type: ignore[misc]
+    fix_mixins.FixTypingTypeNames = FixTypingTypeNames  # type: ignore[misc]
     pybind11_stubgen.FixTypingTypeNames = FixTypingTypeNames  # type: ignore[misc]
 
 
-class FixNumpyArrayRemoveParameters(pybind11_stubgen.IParser):
+class FixNumpyArrayRemoveParameters(IParser):
     __ndarray_name = QualifiedName.from_str("numpy.typing.ArrayLike")
 
     def handle_class(self, path: QualifiedName, class_: type) -> T.Optional[Class]:
@@ -192,5 +192,5 @@ def patch_remove_parameters() -> None:
     Fix NumpyArrayRemoveParameters to work with pybind 3.x and deduplicate overloads
     """
 
-    pybind11_stubgen.parser.mixins.fix.FixNumpyArrayRemoveParameters = FixNumpyArrayRemoveParameters  # type: ignore[misc,assignment]
+    fix_mixins.FixNumpyArrayRemoveParameters = FixNumpyArrayRemoveParameters  # type: ignore[misc,assignment]
     pybind11_stubgen.FixNumpyArrayRemoveParameters = FixNumpyArrayRemoveParameters  # type: ignore[misc,assignment]
