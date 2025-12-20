@@ -2,7 +2,6 @@
 # DO NOT MODIFY BY HAND
 # fmt: off
 # isort: off
-# mypy: disallow-untyped-defs
 
 import copy
 import typing as T

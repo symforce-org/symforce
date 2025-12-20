@@ -6,7 +6,6 @@
 {% endif %}
 # fmt: off
 # isort: off
-# mypy: disallow-untyped-defs
 
 import typing as T
 
