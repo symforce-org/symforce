@@ -5,6 +5,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import random
 import typing as T
@@ -35,8 +37,7 @@ class {{ cls.__name__ }}(object):
 
     __slots__ = ['data']
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return '<{} {}>'.format(self.__class__.__name__, self.data)
 
     {% set custom_template_name = "custom_methods/{}.py.jinja".format(cls.__name__.lower()) %}
@@ -61,7 +62,6 @@ class {{ cls.__name__ }}(object):
         {% endif %}
     {{ util.function_declaration(spec, is_method=True, available_classes=available_classes) | indent(4)}}
         {{ util.print_docstring(spec.docstring) | indent(8) }}
-
         {{ util.expr_code(spec, available_classes=available_classes) | indent(4) }}
 
     {% endfor %}
@@ -71,17 +71,14 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return {{ ops.StorageOps.storage_dim(cls) }}
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> {{ cls.__name__ }}
+    def from_storage(cls, vec: T.Sequence[float]) -> {{ cls.__name__ }}:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -102,20 +99,16 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> {{ cls.__name__ }}
+    def identity(cls) -> {{ cls.__name__ }}:
         return ops.GroupOps.identity()
 
-    def inverse(self):
-    # type: () -> {{ cls.__name__ }}
+    def inverse(self) -> {{ cls.__name__ }}:
         return ops.GroupOps.inverse(self)
 
-    def compose(self, b):
-        # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
+    def compose(self, b: {{ cls.__name__ }}) -> {{ cls.__name__ }}:
         return ops.GroupOps.compose(self, b)
 
-    def between(self, b):
-        # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
+    def between(self, b: {{ cls.__name__ }}) -> {{ cls.__name__ }}:
         return ops.GroupOps.between(self, b)
 
     {% endif %}
@@ -126,14 +119,12 @@ class {{ cls.__name__ }}(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return {{ ops.LieGroupOps.tangent_dim(cls) }}
 
     {% if is_lie_group %}
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> {{ cls.__name__ }}:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -142,13 +133,11 @@ class {{ cls.__name__ }}(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
     {% endif %}
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> {{ cls.__name__ }}
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> {{ cls.__name__ }}:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -157,12 +146,10 @@ class {{ cls.__name__ }}(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: ({{ cls.__name__ }}, float) -> numpy.ndarray
+    def local_coordinates(self, b: {{ cls.__name__ }}, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: ({{ cls.__name__ }}, float, float) -> {{ cls.__name__ }}
+    def interpolate(self, b: {{ cls.__name__ }}, alpha: float, epsilon: float = 1e-8) -> {{ cls.__name__ }}:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     {% endif %}
@@ -171,8 +158,7 @@ class {{ cls.__name__ }}(object):
     # General Helpers
     # --------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, {{ cls.__name__ }}):
             return self.data == other.data
         else:
@@ -180,17 +166,14 @@ class {{ cls.__name__ }}(object):
 
     {% if is_group %}
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: ({{ cls.__name__ }}) -> {{ cls.__name__ }}
+    def __mul__(self, other: {{ cls.__name__ }}) -> {{ cls.__name__ }}:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (numpy.ndarray) -> numpy.ndarray
+    def __mul__(self, other: numpy.ndarray) -> numpy.ndarray:  # pragma: no cover
         pass
 
-    def __mul__(self, other):
-        # type: (T.Union[{{ cls.__name__ }}, numpy.ndarray]) -> T.Union[{{ cls.__name__ }}, numpy.ndarray]
+    def __mul__(self, other: T.Union[{{ cls.__name__ }}, numpy.ndarray]) -> T.Union[{{ cls.__name__ }}, numpy.ndarray]:
         if isinstance(other, {{ cls.__name__ }}):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):

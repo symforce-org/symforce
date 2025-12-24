@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.DoubleSphereCameraCal
-
+    def from_tangent(vec: numpy.ndarray, epsilon: float) -> sym.DoubleSphereCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -48,9 +48,7 @@ class LieGroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.DoubleSphereCameraCal, float) -> numpy.ndarray
-
+    def to_tangent(a: sym.DoubleSphereCameraCal, epsilon: float) -> numpy.ndarray:
         # Total ops: 0
 
         # Input arrays
@@ -69,9 +67,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> sym.DoubleSphereCameraCal
-
+    def retract(
+        a: sym.DoubleSphereCameraCal, vec: numpy.ndarray, epsilon: float
+    ) -> sym.DoubleSphereCameraCal:
         # Total ops: 6
 
         # Input arrays
@@ -98,9 +96,9 @@ class LieGroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal, float) -> numpy.ndarray
-
+    def local_coordinates(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal, epsilon: float
+    ) -> numpy.ndarray:
         # Total ops: 6
 
         # Input arrays
@@ -120,9 +118,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal, float, float) -> sym.DoubleSphereCameraCal
-
+    def interpolate(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal, alpha: float, epsilon: float
+    ) -> sym.DoubleSphereCameraCal:
         # Total ops: 18
 
         # Input arrays

@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.DoubleSphereCameraCal
-
+    def identity() -> sym.DoubleSphereCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -40,9 +40,7 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.DoubleSphereCameraCal) -> sym.DoubleSphereCameraCal
-
+    def inverse(a: sym.DoubleSphereCameraCal) -> sym.DoubleSphereCameraCal:
         # Total ops: 6
 
         # Input arrays
@@ -61,9 +59,9 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal) -> sym.DoubleSphereCameraCal
-
+    def compose(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal
+    ) -> sym.DoubleSphereCameraCal:
         # Total ops: 6
 
         # Input arrays
@@ -83,9 +81,9 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal) -> sym.DoubleSphereCameraCal
-
+    def between(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal
+    ) -> sym.DoubleSphereCameraCal:
         # Total ops: 6
 
         # Input arrays
@@ -105,9 +103,9 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.DoubleSphereCameraCal) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray]
-
+    def inverse_with_jacobian(
+        a: sym.DoubleSphereCameraCal,
+    ) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray]:
         # Total ops: 6
 
         # Input arrays
@@ -163,9 +161,9 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal
+    ) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 6
 
         # Input arrays
@@ -259,9 +257,9 @@ class GroupOps(object):
         return sym.DoubleSphereCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.DoubleSphereCameraCal, sym.DoubleSphereCameraCal) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.DoubleSphereCameraCal, b: sym.DoubleSphereCameraCal
+    ) -> T.Tuple[sym.DoubleSphereCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 6
 
         # Input arrays

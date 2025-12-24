@@ -4,6 +4,8 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 import typing as T
 
 import numpy
@@ -29,11 +31,15 @@ class ATANCameraCal(object):
     # This is because of an issue where mypy doesn't recognize attributes defined in __slots__
     # See https://github.com/python/mypy/issues/5941
     if T.TYPE_CHECKING:
-        data = []  # type: T.List[float]
+        data: T.List[float] = []
 
-    def __init__(self, focal_length, principal_point, omega):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray], T.Union[T.Sequence[float], numpy.ndarray], float) -> None
-        self.data = []
+    def __init__(
+        self,
+        focal_length: T.Union[T.Sequence[float], numpy.ndarray],
+        principal_point: T.Union[T.Sequence[float], numpy.ndarray],
+        omega: float,
+    ) -> None:
+        self.data: T.List[float] = []
         if isinstance(focal_length, numpy.ndarray):
             if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
@@ -69,32 +75,30 @@ class ATANCameraCal(object):
         self.data.extend(principal_point)
         self.data.append(omega)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # CameraOps
     # --------------------------------------------------------------------------
 
-    def focal_length(self):
-        # type: (ATANCameraCal) -> numpy.ndarray
+    def focal_length(self: ATANCameraCal) -> numpy.ndarray:
         """
         Return the focal length.
         """
 
         return ops.CameraOps.focal_length(self)
 
-    def principal_point(self):
-        # type: (ATANCameraCal) -> numpy.ndarray
+    def principal_point(self: ATANCameraCal) -> numpy.ndarray:
         """
         Return the principal point.
         """
 
         return ops.CameraOps.principal_point(self)
 
-    def pixel_from_camera_point(self, point, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+    def pixel_from_camera_point(
+        self: ATANCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -105,8 +109,9 @@ class ATANCameraCal(object):
 
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
-    def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+    def pixel_from_camera_point_with_jacobians(
+        self: ATANCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -119,8 +124,9 @@ class ATANCameraCal(object):
 
         return ops.CameraOps.pixel_from_camera_point_with_jacobians(self, point, epsilon)
 
-    def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+    def camera_ray_from_pixel(
+        self: ATANCameraCal, pixel: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -131,8 +137,9 @@ class ATANCameraCal(object):
 
         return ops.CameraOps.camera_ray_from_pixel(self, pixel, epsilon)
 
-    def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (ATANCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+    def camera_ray_from_pixel_with_jacobians(
+        self: ATANCameraCal, pixel: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -150,17 +157,14 @@ class ATANCameraCal(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 5
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> ATANCameraCal
+    def from_storage(cls, vec: T.Sequence[float]) -> ATANCameraCal:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -180,13 +184,11 @@ class ATANCameraCal(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 5
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> ATANCameraCal
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> ATANCameraCal:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -195,12 +197,10 @@ class ATANCameraCal(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> ATANCameraCal
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> ATANCameraCal:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -209,19 +209,16 @@ class ATANCameraCal(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (ATANCameraCal, float) -> numpy.ndarray
+    def local_coordinates(self, b: ATANCameraCal, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (ATANCameraCal, float, float) -> ATANCameraCal
+    def interpolate(self, b: ATANCameraCal, alpha: float, epsilon: float = 1e-8) -> ATANCameraCal:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, ATANCameraCal):
             return self.data == other.data
         else:

@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.LinearCameraCal
-
+    def from_tangent(vec: numpy.ndarray, epsilon: float) -> sym.LinearCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -46,9 +46,7 @@ class LieGroupOps(object):
         return sym.LinearCameraCal.from_storage(_res)
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.LinearCameraCal, float) -> numpy.ndarray
-
+    def to_tangent(a: sym.LinearCameraCal, epsilon: float) -> numpy.ndarray:
         # Total ops: 0
 
         # Input arrays
@@ -65,9 +63,7 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.LinearCameraCal, numpy.ndarray, float) -> sym.LinearCameraCal
-
+    def retract(a: sym.LinearCameraCal, vec: numpy.ndarray, epsilon: float) -> sym.LinearCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -92,9 +88,9 @@ class LieGroupOps(object):
         return sym.LinearCameraCal.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.LinearCameraCal, sym.LinearCameraCal, float) -> numpy.ndarray
-
+    def local_coordinates(
+        a: sym.LinearCameraCal, b: sym.LinearCameraCal, epsilon: float
+    ) -> numpy.ndarray:
         # Total ops: 4
 
         # Input arrays
@@ -112,9 +108,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.LinearCameraCal, sym.LinearCameraCal, float, float) -> sym.LinearCameraCal
-
+    def interpolate(
+        a: sym.LinearCameraCal, b: sym.LinearCameraCal, alpha: float, epsilon: float
+    ) -> sym.LinearCameraCal:
         # Total ops: 12
 
         # Input arrays

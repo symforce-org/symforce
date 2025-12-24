@@ -7,6 +7,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import random
 import typing as T
@@ -45,16 +47,14 @@ class Unit3(object):
 
     __slots__ = ["data"]
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # Handwritten methods included from "custom_methods/unit3.py.jinja"
     # --------------------------------------------------------------------------
 
-    def __init__(self, vec):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray]) -> None
+    def __init__(self, vec: T.Union[T.Sequence[float], numpy.ndarray]) -> None:
         if isinstance(vec, numpy.ndarray):
             if vec.shape in {(3, 1), (1, 3)}:
                 vec = vec.flatten()
@@ -68,11 +68,10 @@ class Unit3(object):
             raise IndexError(
                 "Expected vec to be a sequence of length 3, was instead length {}.".format(len(vec))
             )
-        self.data = list(vec)  # type: T.List[float]
+        self.data: T.List[float] = list(vec)
 
     @classmethod
-    def random(cls, epsilon=1e-8):
-        # type: (float) -> Unit3
+    def random(cls, epsilon: float = 1e-8) -> Unit3:
         """
         Return a random :class:`Unit3` object
         """
@@ -84,8 +83,7 @@ class Unit3(object):
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def basis(self, epsilon):
-        # type: (Unit3, float) -> numpy.ndarray
+    def basis(self: Unit3, epsilon: float) -> numpy.ndarray:
         """
         Returns a :class:`Matrix32` with the basis vectors of the tangent space (in R^3) at the
         current Unit3 direction.
@@ -129,8 +127,7 @@ class Unit3(object):
         _res[2, 1] = _tmp1 * (-_tmp5 * _tmp8 + 1) + _tmp2 * (-_tmp5 * _tmp7 + 1)
         return _res
 
-    def to_unit_vector(self):
-        # type: (Unit3) -> numpy.ndarray
+    def to_unit_vector(self: Unit3) -> numpy.ndarray:
         """
         Returns a :class:`Vector3` version of the unit direction.
         """
@@ -150,8 +147,7 @@ class Unit3(object):
         return _res
 
     @staticmethod
-    def random_from_uniform_samples(u1, u2, epsilon):
-        # type: (float, float, float) -> Unit3
+    def random_from_uniform_samples(u1: float, u2: float, epsilon: float) -> Unit3:
         """
         Generate a random :class:`Unit3` direction from two variables uniformly sampled in [0, 1].
         """
@@ -178,8 +174,7 @@ class Unit3(object):
         return Unit3.from_storage(_res)
 
     @staticmethod
-    def from_vector(a, epsilon):
-        # type: (numpy.ndarray, float) -> Unit3
+    def from_vector(a: numpy.ndarray, epsilon: float) -> Unit3:
         """
         Return a :class:`Unit3` that points along the direction of vector ``a``
 
@@ -207,8 +202,7 @@ class Unit3(object):
         return Unit3.from_storage(_res)
 
     @staticmethod
-    def from_unit_vector(a):
-        # type: (numpy.ndarray) -> Unit3
+    def from_unit_vector(a: numpy.ndarray) -> Unit3:
         """
         Return a :class:`Unit3` that points along the direction of vector ``a``
 
@@ -239,17 +233,14 @@ class Unit3(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 3
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> Unit3
+    def from_storage(cls, vec: T.Sequence[float]) -> Unit3:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -269,12 +260,10 @@ class Unit3(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 2
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Unit3
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> Unit3:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -283,20 +272,17 @@ class Unit3(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Unit3, float) -> numpy.ndarray
+    def local_coordinates(self, b: Unit3, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (Unit3, float, float) -> Unit3
+    def interpolate(self, b: Unit3, alpha: float, epsilon: float = 1e-8) -> Unit3:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, Unit3):
             return self.data == other.data
         else:

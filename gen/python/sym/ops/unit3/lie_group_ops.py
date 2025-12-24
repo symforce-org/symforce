@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.Unit3, numpy.ndarray, float) -> sym.Unit3
-
+    def retract(a: sym.Unit3, vec: numpy.ndarray, epsilon: float) -> sym.Unit3:
         # Total ops: 84
 
         # Input arrays
@@ -90,9 +90,7 @@ class LieGroupOps(object):
         return sym.Unit3.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.Unit3, sym.Unit3, float) -> numpy.ndarray
-
+    def local_coordinates(a: sym.Unit3, b: sym.Unit3, epsilon: float) -> numpy.ndarray:
         # Total ops: 77
 
         # Input arrays
@@ -148,9 +146,7 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.Unit3, sym.Unit3, float, float) -> sym.Unit3
-
+    def interpolate(a: sym.Unit3, b: sym.Unit3, alpha: float, epsilon: float) -> sym.Unit3:
         # Total ops: 115
 
         # Input arrays

@@ -7,6 +7,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import random
 import typing as T
@@ -27,18 +29,16 @@ class Rot2(object):
 
     __slots__ = ["data"]
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # Handwritten methods included from "custom_methods/rot2.py.jinja"
     # --------------------------------------------------------------------------
 
-    def __init__(self, z=None):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray, None]) -> None
+    def __init__(self, z: T.Union[T.Sequence[float], numpy.ndarray, None] = None) -> None:
         if z is None:
-            self.data = ops.GroupOps.identity().data  # type: T.List[float]
+            self.data: T.List[float] = ops.GroupOps.identity().data
         else:
             if isinstance(z, numpy.ndarray):
                 if z.shape in {(2, 1), (1, 2)}:
@@ -56,16 +56,14 @@ class Rot2(object):
             self.data = list(z)
 
     @classmethod
-    def random(cls):
-        # type: () -> Rot2
+    def random(cls) -> Rot2:
         return Rot2.random_from_uniform_sample(random.uniform(0, 1))
 
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def compose_with_point(self, right):
-        # type: (Rot2, numpy.ndarray) -> numpy.ndarray
+    def compose_with_point(self: Rot2, right: numpy.ndarray) -> numpy.ndarray:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -91,8 +89,7 @@ class Rot2(object):
         _res[1] = _self[0] * right[1, 0] + _self[1] * right[0, 0]
         return _res
 
-    def to_angle(self, epsilon):
-        # type: (Rot2, float) -> float
+    def to_angle(self: Rot2, epsilon: float) -> float:
         """
         Get the angle of this Rot2 in radians
 
@@ -111,8 +108,7 @@ class Rot2(object):
         return _res
 
     @staticmethod
-    def from_angle(theta):
-        # type: (float) -> Rot2
+    def from_angle(theta: float) -> Rot2:
         """
         Create a Rot2 from an angle ``theta`` in radians
 
@@ -131,8 +127,7 @@ class Rot2(object):
         _res[1] = math.sin(theta)
         return Rot2.from_storage(_res)
 
-    def to_rotation_matrix(self):
-        # type: (Rot2) -> numpy.ndarray
+    def to_rotation_matrix(self: Rot2) -> numpy.ndarray:
         """
         A matrix representation of this element in the Euclidean space that contains it.
         """
@@ -153,8 +148,7 @@ class Rot2(object):
         return _res
 
     @staticmethod
-    def from_rotation_matrix(r):
-        # type: (numpy.ndarray) -> Rot2
+    def from_rotation_matrix(r: numpy.ndarray) -> Rot2:
         """
         Create a Rot2 from a 2x2 rotation matrix.
 
@@ -179,8 +173,7 @@ class Rot2(object):
         return Rot2.from_storage(_res)
 
     @staticmethod
-    def random_from_uniform_sample(u1):
-        # type: (float) -> Rot2
+    def random_from_uniform_sample(u1: float) -> Rot2:
         """
         Generate a random element of SO2 from a variable uniformly sampled on [0, 1].
         """
@@ -203,17 +196,14 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 2
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> Rot2
+    def from_storage(cls, vec: T.Sequence[float]) -> Rot2:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -233,20 +223,16 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Rot2
+    def identity(cls) -> Rot2:
         return ops.GroupOps.identity()
 
-    def inverse(self):
-        # type: () -> Rot2
+    def inverse(self) -> Rot2:
         return ops.GroupOps.inverse(self)
 
-    def compose(self, b):
-        # type: (Rot2) -> Rot2
+    def compose(self, b: Rot2) -> Rot2:
         return ops.GroupOps.compose(self, b)
 
-    def between(self, b):
-        # type: (Rot2) -> Rot2
+    def between(self, b: Rot2) -> Rot2:
         return ops.GroupOps.between(self, b)
 
     # --------------------------------------------------------------------------
@@ -254,13 +240,11 @@ class Rot2(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 1
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot2
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> Rot2:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -269,12 +253,10 @@ class Rot2(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot2
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> Rot2:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -283,37 +265,31 @@ class Rot2(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot2, float) -> numpy.ndarray
+    def local_coordinates(self, b: Rot2, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (Rot2, float, float) -> Rot2
+    def interpolate(self, b: Rot2, alpha: float, epsilon: float = 1e-8) -> Rot2:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, Rot2):
             return self.data == other.data
         else:
             return False
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (Rot2) -> Rot2
+    def __mul__(self, other: Rot2) -> Rot2:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (numpy.ndarray) -> numpy.ndarray
+    def __mul__(self, other: numpy.ndarray) -> numpy.ndarray:  # pragma: no cover
         pass
 
-    def __mul__(self, other):
-        # type: (T.Union[Rot2, numpy.ndarray]) -> T.Union[Rot2, numpy.ndarray]
+    def __mul__(self, other: T.Union[Rot2, numpy.ndarray]) -> T.Union[Rot2, numpy.ndarray]:
         if isinstance(other, Rot2):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):

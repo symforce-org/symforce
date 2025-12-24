@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.PolynomialCameraCal
-
+    def from_tangent(vec: numpy.ndarray, epsilon: float) -> sym.PolynomialCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -50,9 +50,7 @@ class LieGroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.PolynomialCameraCal, float) -> numpy.ndarray
-
+    def to_tangent(a: sym.PolynomialCameraCal, epsilon: float) -> numpy.ndarray:
         # Total ops: 0
 
         # Input arrays
@@ -73,9 +71,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.PolynomialCameraCal, numpy.ndarray, float) -> sym.PolynomialCameraCal
-
+    def retract(
+        a: sym.PolynomialCameraCal, vec: numpy.ndarray, epsilon: float
+    ) -> sym.PolynomialCameraCal:
         # Total ops: 8
 
         # Input arrays
@@ -104,9 +102,9 @@ class LieGroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal, float) -> numpy.ndarray
-
+    def local_coordinates(
+        a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal, epsilon: float
+    ) -> numpy.ndarray:
         # Total ops: 8
 
         # Input arrays
@@ -128,9 +126,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal, float, float) -> sym.PolynomialCameraCal
-
+    def interpolate(
+        a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal, alpha: float, epsilon: float
+    ) -> sym.PolynomialCameraCal:
         # Total ops: 24
 
         # Input arrays

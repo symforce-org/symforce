@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,8 +22,7 @@ class CameraOps(object):
     """
 
     @staticmethod
-    def focal_length(self):
-        # type: (sym.DoubleSphereCameraCal) -> numpy.ndarray
+    def focal_length(self: sym.DoubleSphereCameraCal) -> numpy.ndarray:
         """
         Return the focal length.
         """
@@ -40,8 +41,7 @@ class CameraOps(object):
         return _focal_length
 
     @staticmethod
-    def principal_point(self):
-        # type: (sym.DoubleSphereCameraCal) -> numpy.ndarray
+    def principal_point(self: sym.DoubleSphereCameraCal) -> numpy.ndarray:
         """
         Return the principal point.
         """
@@ -60,8 +60,9 @@ class CameraOps(object):
         return _principal_point
 
     @staticmethod
-    def pixel_from_camera_point(self, point, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+    def pixel_from_camera_point(
+        self: sym.DoubleSphereCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -149,8 +150,9 @@ class CameraOps(object):
         return _pixel, _is_valid
 
     @staticmethod
-    def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+    def pixel_from_camera_point_with_jacobians(
+        self: sym.DoubleSphereCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -281,8 +283,9 @@ class CameraOps(object):
         return _pixel, _is_valid, _pixel_D_cal, _pixel_D_point
 
     @staticmethod
-    def camera_ray_from_pixel(self, pixel, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+    def camera_ray_from_pixel(
+        self: sym.DoubleSphereCameraCal, pixel: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -332,8 +335,9 @@ class CameraOps(object):
         return _camera_ray, _is_valid
 
     @staticmethod
-    def camera_ray_from_pixel_with_jacobians(self, pixel, epsilon):
-        # type: (sym.DoubleSphereCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+    def camera_ray_from_pixel_with_jacobians(
+        self: sym.DoubleSphereCameraCal, pixel: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 

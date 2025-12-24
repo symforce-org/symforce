@@ -6,6 +6,8 @@
 
 # ruff: noqa: F401, PLR0912, PLR0913, PLR0914, PLR0915, PLR0917, RUF100
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -28,5 +30,4 @@ import sym
     {% if spec.docstring %}
     {{ util.print_docstring(spec.docstring) | indent(4) }}
     {% endif %}
-
     {{ util.expr_code(spec) }}

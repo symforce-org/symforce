@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.Rot3
-
+    def identity() -> sym.Rot3:
         # Total ops: 0
 
         # Input arrays
@@ -38,9 +38,7 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.Rot3) -> sym.Rot3
-
+    def inverse(a: sym.Rot3) -> sym.Rot3:
         # Total ops: 3
 
         # Input arrays
@@ -57,9 +55,7 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> sym.Rot3
-
+    def compose(a: sym.Rot3, b: sym.Rot3) -> sym.Rot3:
         # Total ops: 28
 
         # Input arrays
@@ -77,9 +73,7 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> sym.Rot3
-
+    def between(a: sym.Rot3, b: sym.Rot3) -> sym.Rot3:
         # Total ops: 28
 
         # Input arrays
@@ -97,9 +91,7 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray]
-
+    def inverse_with_jacobian(a: sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray]:
         # Total ops: 34
 
         # Input arrays
@@ -139,9 +131,9 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.Rot3, b: sym.Rot3
+    ) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]:
         # Total ops: 224
 
         # Input arrays
@@ -273,9 +265,9 @@ class GroupOps(object):
         return sym.Rot3.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.Rot3, sym.Rot3) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.Rot3, b: sym.Rot3
+    ) -> T.Tuple[sym.Rot3, numpy.ndarray, numpy.ndarray]:
         # Total ops: 161
 
         # Input arrays

@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.PolynomialCameraCal
-
+    def identity() -> sym.PolynomialCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -42,9 +42,7 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.PolynomialCameraCal) -> sym.PolynomialCameraCal
-
+    def inverse(a: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
         # Total ops: 8
 
         # Input arrays
@@ -65,9 +63,7 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal) -> sym.PolynomialCameraCal
-
+    def compose(a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
         # Total ops: 8
 
         # Input arrays
@@ -89,9 +85,7 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal) -> sym.PolynomialCameraCal
-
+    def between(a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
         # Total ops: 8
 
         # Input arrays
@@ -113,9 +107,9 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.PolynomialCameraCal) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray]
-
+    def inverse_with_jacobian(
+        a: sym.PolynomialCameraCal,
+    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays
@@ -201,9 +195,9 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal
+    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays
@@ -355,9 +349,9 @@ class GroupOps(object):
         return sym.PolynomialCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.PolynomialCameraCal, sym.PolynomialCameraCal) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal
+    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays

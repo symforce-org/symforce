@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.OrthographicCameraCal
-
+    def identity() -> sym.OrthographicCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -38,9 +38,7 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.OrthographicCameraCal) -> sym.OrthographicCameraCal
-
+    def inverse(a: sym.OrthographicCameraCal) -> sym.OrthographicCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -57,9 +55,9 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.OrthographicCameraCal, sym.OrthographicCameraCal) -> sym.OrthographicCameraCal
-
+    def compose(
+        a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
+    ) -> sym.OrthographicCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -77,9 +75,9 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.OrthographicCameraCal, sym.OrthographicCameraCal) -> sym.OrthographicCameraCal
-
+    def between(
+        a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
+    ) -> sym.OrthographicCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -97,9 +95,9 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.OrthographicCameraCal) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray]
-
+    def inverse_with_jacobian(
+        a: sym.OrthographicCameraCal,
+    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -133,9 +131,9 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.OrthographicCameraCal, sym.OrthographicCameraCal) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
+    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -187,9 +185,9 @@ class GroupOps(object):
         return sym.OrthographicCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.OrthographicCameraCal, sym.OrthographicCameraCal) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
+    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays

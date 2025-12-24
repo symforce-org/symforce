@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.Pose2
-
+    def from_tangent(vec: numpy.ndarray, epsilon: float) -> sym.Pose2:
         # Total ops: 2
 
         # Input arrays
@@ -46,9 +46,7 @@ class LieGroupOps(object):
         return sym.Pose2.from_storage(_res)
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.Pose2, float) -> numpy.ndarray
-
+    def to_tangent(a: sym.Pose2, epsilon: float) -> numpy.ndarray:
         # Total ops: 3
 
         # Input arrays
@@ -64,9 +62,7 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.Pose2, numpy.ndarray, float) -> sym.Pose2
-
+    def retract(a: sym.Pose2, vec: numpy.ndarray, epsilon: float) -> sym.Pose2:
         # Total ops: 10
 
         # Input arrays
@@ -93,9 +89,7 @@ class LieGroupOps(object):
         return sym.Pose2.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.Pose2, sym.Pose2, float) -> numpy.ndarray
-
+    def local_coordinates(a: sym.Pose2, b: sym.Pose2, epsilon: float) -> numpy.ndarray:
         # Total ops: 11
 
         # Input arrays
@@ -113,9 +107,7 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.Pose2, sym.Pose2, float, float) -> sym.Pose2
-
+    def interpolate(a: sym.Pose2, b: sym.Pose2, alpha: float, epsilon: float) -> sym.Pose2:
         # Total ops: 24
 
         # Input arrays

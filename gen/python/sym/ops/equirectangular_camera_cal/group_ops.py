@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.EquirectangularCameraCal
-
+    def identity() -> sym.EquirectangularCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -38,9 +38,7 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.EquirectangularCameraCal) -> sym.EquirectangularCameraCal
-
+    def inverse(a: sym.EquirectangularCameraCal) -> sym.EquirectangularCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -57,9 +55,9 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.EquirectangularCameraCal, sym.EquirectangularCameraCal) -> sym.EquirectangularCameraCal
-
+    def compose(
+        a: sym.EquirectangularCameraCal, b: sym.EquirectangularCameraCal
+    ) -> sym.EquirectangularCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -77,9 +75,9 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.EquirectangularCameraCal, sym.EquirectangularCameraCal) -> sym.EquirectangularCameraCal
-
+    def between(
+        a: sym.EquirectangularCameraCal, b: sym.EquirectangularCameraCal
+    ) -> sym.EquirectangularCameraCal:
         # Total ops: 4
 
         # Input arrays
@@ -97,9 +95,9 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.EquirectangularCameraCal) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray]
-
+    def inverse_with_jacobian(
+        a: sym.EquirectangularCameraCal,
+    ) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -133,9 +131,9 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.EquirectangularCameraCal, sym.EquirectangularCameraCal) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.EquirectangularCameraCal, b: sym.EquirectangularCameraCal
+    ) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -187,9 +185,9 @@ class GroupOps(object):
         return sym.EquirectangularCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.EquirectangularCameraCal, sym.EquirectangularCameraCal) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.EquirectangularCameraCal, b: sym.EquirectangularCameraCal
+    ) -> T.Tuple[sym.EquirectangularCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
