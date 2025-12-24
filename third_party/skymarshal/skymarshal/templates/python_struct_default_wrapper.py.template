@@ -8,6 +8,8 @@
 # From Source File: {{ lcmtype.struct.source_file }}
 {% endif %}
 
+from __future__ import annotations
+
 import copy
 import typing as T
 

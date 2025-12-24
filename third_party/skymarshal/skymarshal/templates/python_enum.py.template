@@ -11,13 +11,11 @@ class {{enumtype.name}}(enum.Enum):
     {{case.name}} = {{case.int_value}}
 {% endfor %}
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "{}.{}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def _skytype_meta():
-        # type: () -> T.Dict[str, str]
+    def _skytype_meta() -> T.Dict[str, str]:
         return dict(
             type="enum",
             package="{{enumtype.package.name}}",
@@ -25,25 +23,21 @@ class {{enumtype.name}}(enum.Enum):
         )
 
     @classmethod
-    def _default(cls):
-        # type: () -> {{enumtype.name}}
+    def _default(cls) -> {{enumtype.name}}:
         # Return the first enum case
         return list(cls)[0]
 
-    def encode(self):
-        # type: () -> bytes
+    def encode(self) -> bytes:
         buf = BytesIO()
         buf.write(self._get_packed_fingerprint())
         self._encode_one(buf)
         return buf.getvalue()
 
-    def _encode_one(self, buf):
-        # type: (T.BinaryIO) -> None
+    def _encode_one(self, buf: T.BinaryIO) -> None:
         {{ enumtype.encode_value() }}
 
     @classmethod
-    def decode(cls, data):
-        # type: (T.Union[bytes, T.BinaryIO]) -> {{enumtype.name}}
+    def decode(cls, data: T.Union[bytes, T.BinaryIO]) -> {{enumtype.name}}:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -59,8 +53,7 @@ class {{enumtype.name}}(enum.Enum):
         return cls._decode_one(buf)
 
     @classmethod
-    def _decode_one(cls, buf):
-        # type: (T.BinaryIO) -> {{enumtype.name}}
+    def _decode_one(cls, buf: T.BinaryIO) -> {{enumtype.name}}:
         value = {{ enumtype.decode_value() }}
         result = cls.from_int(value)
         if result is None:
@@ -69,19 +62,18 @@ class {{enumtype.name}}(enum.Enum):
 
     @T.overload
     @classmethod
-    def from_int(cls, value, default):
-        # type: (int, {{enumtype.name}}) -> {{enumtype.name}}
+    def from_int(cls, value: int, default: {{enumtype.name}}) -> {{enumtype.name}}:
         pass
 
     @T.overload
     @classmethod
-    def from_int(cls, value, default=None):
-        # type: (int, None) -> T.Optional[{{enumtype.name}}]
+    def from_int(cls, value: int, default: None = None) -> T.Optional[{{enumtype.name}}]:
         pass
 
     @classmethod
-    def from_int(cls, value, default=None):
-        # type: (int, T.Optional[{{enumtype.name}}]) -> T.Optional[{{enumtype.name}}]
+    def from_int(
+        cls, value: int, default: T.Optional[{{enumtype.name}}] = None
+    ) -> T.Optional[{{enumtype.name}}]:
         """
         An alternative to "{{enumtype.name}}(value)" which will return
         the given default instead of raising a ValueError for unknown values.
@@ -93,8 +85,7 @@ class {{enumtype.name}}(enum.Enum):
             return default
 
     @classmethod
-    def _get_hash_recursive(cls, parents):
-        # type: (T.List[T.Type]) -> int
+    def _get_hash_recursive(cls, parents: T.List[T.Type]) -> int:
         if cls in parents:
             return 0
         tmphash = ({{enumtype.hash.hex_no_padding()}}) & 0xffffffffffffffff
@@ -102,6 +93,5 @@ class {{enumtype.name}}(enum.Enum):
         return tmphash
 
     @classmethod
-    def _get_packed_fingerprint(cls):
-        # type: () -> bytes
+    def _get_packed_fingerprint(cls) -> bytes:
         return struct.pack(">Q", cls._get_hash_recursive([]))

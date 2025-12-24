@@ -8,6 +8,8 @@
 # isort: off
 # mypy: disallow-untyped-defs
 
+from __future__ import annotations
+
 import typing as T
 
 {% include "./python_enum.py.template" %}

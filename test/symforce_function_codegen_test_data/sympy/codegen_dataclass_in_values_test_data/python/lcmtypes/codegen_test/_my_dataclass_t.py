@@ -4,6 +4,8 @@
 # isort: off
 # mypy: disallow-untyped-defs
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -27,7 +29,7 @@ class my_dataclass_t(object):
     @staticmethod
     def from_all_fields(
         rot: Vector4d,
-    ) -> "my_dataclass_t":
+    ) -> my_dataclass_t:
         return my_dataclass_t(
             rot=rot,
         )
@@ -41,7 +43,7 @@ class my_dataclass_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "my_dataclass_t":
+    def _default(cls) -> my_dataclass_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -71,7 +73,7 @@ class my_dataclass_t(object):
         self.rot._encode_one(buf)
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "my_dataclass_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> my_dataclass_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -87,7 +89,7 @@ class my_dataclass_t(object):
         return my_dataclass_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "my_dataclass_t":
+    def _decode_one(buf: T.BinaryIO) -> my_dataclass_t:
         self = my_dataclass_t(_skip_initialize=True)
         self.rot = Vector4d._decode_one(buf)
         return self
@@ -108,7 +110,7 @@ class my_dataclass_t(object):
             my_dataclass_t._packed_fingerprint = struct.pack(">Q", my_dataclass_t._get_hash_recursive([]))
         return my_dataclass_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "my_dataclass_t":
+    def deepcopy(self, **kwargs: T.Any) -> my_dataclass_t:
         """
         Deep copy of this LCM type
 

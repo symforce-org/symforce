@@ -40,7 +40,7 @@ class {{ lcmtype.name }}(object):
 {% for member, _, init_val, type_hint in lcmtype.member_initializers() %}
         {{ member.name }}: {{ type_hint }},
 {% endfor %}
-    ) -> "{{ lcmtype.name }}":
+    ) -> {{ lcmtype.name }}:
         return {{ lcmtype.name }}(
 {% for member, _, _, _ in lcmtype.member_initializers() %}
             {{ member.name }}={{ member.name }},
@@ -57,7 +57,7 @@ class {{ lcmtype.name }}(object):
         )
 
     @classmethod
-    def _default(cls) -> "{{ lcmtype.name }}":
+    def _default(cls) -> {{ lcmtype.name }}:
         return cls()
 
     def __repr__(self) -> str:
@@ -101,7 +101,7 @@ class {{ lcmtype.name }}(object):
 {{ lcmtype.encode_members(2) }}
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "{{ lcmtype.name }}":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> {{ lcmtype.name }}:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -117,7 +117,7 @@ class {{ lcmtype.name }}(object):
         return {{ lcmtype.name }}._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "{{ lcmtype.name }}":
+    def _decode_one(buf: T.BinaryIO) -> {{ lcmtype.name }}:
         self = {{ lcmtype.name }}(_skip_initialize=True)
 {% if lcmtype.members %}
 {{ lcmtype.decode_members(2) }}
@@ -142,7 +142,7 @@ class {{ lcmtype.name }}(object):
             {{ lcmtype.name }}._packed_fingerprint = struct.pack(">Q", {{ lcmtype.name }}._get_hash_recursive([]))
         return {{ lcmtype.name }}._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "{{ lcmtype.name }}":
+    def deepcopy(self, **kwargs: T.Any) -> {{ lcmtype.name }}:
         """
         Deep copy of this LCM type
 

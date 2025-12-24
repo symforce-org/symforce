@@ -4,6 +4,8 @@
 # isort: off
 # mypy: disallow-untyped-defs
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -26,7 +28,7 @@ class inputs_constants_t(object):
     @staticmethod
     def from_all_fields(
         epsilon: float,
-    ) -> "inputs_constants_t":
+    ) -> inputs_constants_t:
         return inputs_constants_t(
             epsilon=epsilon,
         )
@@ -40,7 +42,7 @@ class inputs_constants_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "inputs_constants_t":
+    def _default(cls) -> inputs_constants_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -66,7 +68,7 @@ class inputs_constants_t(object):
         buf.write(inputs_constants_t._CACHED_STRUCT_0.pack(self.epsilon))
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "inputs_constants_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> inputs_constants_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -82,7 +84,7 @@ class inputs_constants_t(object):
         return inputs_constants_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "inputs_constants_t":
+    def _decode_one(buf: T.BinaryIO) -> inputs_constants_t:
         self = inputs_constants_t(_skip_initialize=True)
         self.epsilon = inputs_constants_t._CACHED_STRUCT_0.unpack(buf.read(8))[0]
         return self
@@ -102,7 +104,7 @@ class inputs_constants_t(object):
             inputs_constants_t._packed_fingerprint = struct.pack(">Q", inputs_constants_t._get_hash_recursive([]))
         return inputs_constants_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "inputs_constants_t":
+    def deepcopy(self, **kwargs: T.Any) -> inputs_constants_t:
         """
         Deep copy of this LCM type
 
