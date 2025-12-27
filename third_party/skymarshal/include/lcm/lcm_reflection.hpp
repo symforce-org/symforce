@@ -129,7 +129,7 @@ template <typename T,
 uint32_t translate_fields(const char *const fields[], uint32_t field_indices_out[],
                           uint32_t num_fields)
 {
-    return translate_fields<std::remove_reference_t<decltype(static_cast<T *>(nullptr)->coeffs())>>(
+    return translate_fields<std::remove_reference_t<decltype(std::declval<T>().coeffs())>>(
         fields, field_indices_out, num_fields);
 }
 
@@ -145,9 +145,8 @@ uint32_t translate_fields(const char *const fields[], uint32_t field_indices_out
         return 1;
     }
     field_indices_out[0] = index;
-    uint32_t ret =
-        translate_fields<std::remove_reference_t<decltype((*static_cast<T *>(nullptr))[0])>>(
-            fields + 1, field_indices_out + 1, num_fields - 1);
+    uint32_t ret = translate_fields<std::remove_reference_t<decltype(std::declval<T>()[0])>>(
+        fields + 1, field_indices_out + 1, num_fields - 1);
     return ret == 0 ? ret : ret + 1;
 }
 
