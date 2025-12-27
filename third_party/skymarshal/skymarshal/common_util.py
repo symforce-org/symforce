@@ -1,16 +1,8 @@
 
 from __future__ import annotations
 
-import sys
 import typing as T
-
-# Support both python 2 and 3 versions of the string module
-if sys.version_info[0] == 2:
-    # In python2.7, it's called uppercase
-    from string import uppercase
-else:
-    # ...but in python3, it's called ascii_uppercase. So rename it.
-    from string import ascii_uppercase as uppercase
+from string import ascii_uppercase as uppercase
 
 StrType = T.TypeVar("StrType", str, T.Text)
 

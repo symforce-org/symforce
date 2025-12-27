@@ -95,12 +95,7 @@ class Lextab:
 
         self_token = self_attr[1]
         other_token = other_attr[1]
-        if sys.version_info.major < 3:
-            self_re_sort = "|".join(sorted(self_re.split("|")))
-            other_re_sort = "|".join(sorted(other_re.split("|")))
-            return sorted(self_token) == sorted(other_token) and self_re_sort == other_re_sort
-
-        # no need to sort in python 3 because the generation is ordered
+        # No need to sort in python 3 because the generation is ordered
         return self_re == other_re and self_token == other_token
 
 

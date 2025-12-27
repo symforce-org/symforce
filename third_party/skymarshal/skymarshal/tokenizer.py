@@ -193,19 +193,13 @@ def t_error(arg):
     print("error", arg)
 
 
-if sys.version_info.major < 3:
-    lextab_opt = "lextab_py2"
-else:
-    lextab_opt = "lextab_py3"
-
-
 # Create the lexer (this lowercase name is required by PLY)
 if os.environ.get("SKYMARSHAL_REGENERATE_LEXER"):
     lexer = lex.lex(optimize=1)  # this will create lextab.py
 else:
     tempdir = tempfile.mkdtemp()
     try:
-        lexer = lex.lex(optimize=1, lextab=lextab_opt, outputdir=tempdir)
+        lexer = lex.lex(optimize=1, lextab="lextab_py3", outputdir=tempdir)
     finally:
         shutil.rmtree(tempdir)
 
