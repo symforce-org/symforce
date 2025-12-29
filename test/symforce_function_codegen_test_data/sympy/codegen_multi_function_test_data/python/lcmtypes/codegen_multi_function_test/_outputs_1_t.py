@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -46,7 +48,7 @@ class outputs_1_t(object):
         values_vec_2D_out: T.List[T.List[values_vec_t]],
         big_matrix_from_small_matrix: MatrixXd,
         small_matrix_from_big_matrix: Matrix4d,
-    ) -> "outputs_1_t":
+    ) -> outputs_1_t:
         return outputs_1_t(
             foo=foo,
             bar=bar,
@@ -66,7 +68,7 @@ class outputs_1_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "outputs_1_t":
+    def _default(cls) -> outputs_1_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -122,7 +124,7 @@ class outputs_1_t(object):
         self.small_matrix_from_big_matrix._encode_one(buf)
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "outputs_1_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> outputs_1_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -138,7 +140,7 @@ class outputs_1_t(object):
         return outputs_1_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "outputs_1_t":
+    def _decode_one(buf: T.BinaryIO) -> outputs_1_t:
         self = outputs_1_t(_skip_initialize=True)
         self.foo, self.bar = outputs_1_t._CACHED_STRUCT_0.unpack(buf.read(16))
         self.scalar_vec_out = list(outputs_1_t._CACHED_STRUCT_1.unpack(buf.read(24)))
@@ -170,7 +172,7 @@ class outputs_1_t(object):
             outputs_1_t._packed_fingerprint = struct.pack(">Q", outputs_1_t._get_hash_recursive([]))
         return outputs_1_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "outputs_1_t":
+    def deepcopy(self, **kwargs: T.Any) -> outputs_1_t:
         """
         Deep copy of this LCM type
 

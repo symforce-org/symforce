@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -29,7 +31,7 @@ class d_t(object):
     def from_all_fields(
         x: float,
         y: Vector2d,
-    ) -> "d_t":
+    ) -> d_t:
         return d_t(
             x=x,
             y=y,
@@ -44,7 +46,7 @@ class d_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "d_t":
+    def _default(cls) -> d_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -76,7 +78,7 @@ class d_t(object):
         self.y._encode_one(buf)
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "d_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> d_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -92,7 +94,7 @@ class d_t(object):
         return d_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "d_t":
+    def _decode_one(buf: T.BinaryIO) -> d_t:
         self = d_t(_skip_initialize=True)
         self.x = d_t._CACHED_STRUCT_0.unpack(buf.read(8))[0]
         self.y = Vector2d._decode_one(buf)
@@ -114,7 +116,7 @@ class d_t(object):
             d_t._packed_fingerprint = struct.pack(">Q", d_t._get_hash_recursive([]))
         return d_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "d_t":
+    def deepcopy(self, **kwargs: T.Any) -> d_t:
         """
         Deep copy of this LCM type
 

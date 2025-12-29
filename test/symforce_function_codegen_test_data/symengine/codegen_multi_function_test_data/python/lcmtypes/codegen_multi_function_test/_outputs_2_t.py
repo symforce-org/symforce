@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -25,7 +27,7 @@ class outputs_2_t(object):
     @staticmethod
     def from_all_fields(
         foo: float,
-    ) -> "outputs_2_t":
+    ) -> outputs_2_t:
         return outputs_2_t(
             foo=foo,
         )
@@ -39,7 +41,7 @@ class outputs_2_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "outputs_2_t":
+    def _default(cls) -> outputs_2_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -65,7 +67,7 @@ class outputs_2_t(object):
         buf.write(outputs_2_t._CACHED_STRUCT_0.pack(self.foo))
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "outputs_2_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> outputs_2_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -81,7 +83,7 @@ class outputs_2_t(object):
         return outputs_2_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "outputs_2_t":
+    def _decode_one(buf: T.BinaryIO) -> outputs_2_t:
         self = outputs_2_t(_skip_initialize=True)
         self.foo = outputs_2_t._CACHED_STRUCT_0.unpack(buf.read(8))[0]
         return self
@@ -101,7 +103,7 @@ class outputs_2_t(object):
             outputs_2_t._packed_fingerprint = struct.pack(">Q", outputs_2_t._get_hash_recursive([]))
         return outputs_2_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "outputs_2_t":
+    def deepcopy(self, **kwargs: T.Any) -> outputs_2_t:
         """
         Deep copy of this LCM type
 

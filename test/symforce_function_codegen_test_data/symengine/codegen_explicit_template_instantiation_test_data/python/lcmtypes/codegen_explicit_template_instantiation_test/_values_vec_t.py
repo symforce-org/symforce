@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -41,7 +43,7 @@ class values_vec_t(object):
         rot_vec: T.List[Vector4d],
         scalar_vec: T.List[float],
         list_of_lists: T.List[T.List[Vector4d]],
-    ) -> "values_vec_t":
+    ) -> values_vec_t:
         return values_vec_t(
             x=x,
             y=y,
@@ -60,7 +62,7 @@ class values_vec_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "values_vec_t":
+    def _default(cls) -> values_vec_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -110,7 +112,7 @@ class values_vec_t(object):
                 self.list_of_lists[i0][i1]._encode_one(buf)
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "values_vec_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> values_vec_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -126,7 +128,7 @@ class values_vec_t(object):
         return values_vec_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "values_vec_t":
+    def _decode_one(buf: T.BinaryIO) -> values_vec_t:
         self = values_vec_t(_skip_initialize=True)
         self.x, self.y = values_vec_t._CACHED_STRUCT_0.unpack(buf.read(16))
         self.rot = Vector4d._decode_one(buf)
@@ -157,7 +159,7 @@ class values_vec_t(object):
             values_vec_t._packed_fingerprint = struct.pack(">Q", values_vec_t._get_hash_recursive([]))
         return values_vec_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "values_vec_t":
+    def deepcopy(self, **kwargs: T.Any) -> values_vec_t:
         """
         Deep copy of this LCM type
 

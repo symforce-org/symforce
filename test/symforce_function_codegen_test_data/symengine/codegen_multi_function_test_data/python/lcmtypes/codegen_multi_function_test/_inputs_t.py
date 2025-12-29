@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -64,7 +66,7 @@ class inputs_t(object):
         big_matrix: MatrixXd,
         small_matrix: Matrix4d,
         states: inputs_states_t,
-    ) -> "inputs_t":
+    ) -> inputs_t:
         return inputs_t(
             x=x,
             y=y,
@@ -89,7 +91,7 @@ class inputs_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "inputs_t":
+    def _default(cls) -> inputs_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -178,7 +180,7 @@ class inputs_t(object):
         self.states._encode_one(buf)
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "inputs_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> inputs_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -194,7 +196,7 @@ class inputs_t(object):
         return inputs_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "inputs_t":
+    def _decode_one(buf: T.BinaryIO) -> inputs_t:
         self = inputs_t(_skip_initialize=True)
         self.x, self.y = inputs_t._CACHED_STRUCT_0.unpack(buf.read(16))
         self.rot = Vector4d._decode_one(buf)
@@ -237,7 +239,7 @@ class inputs_t(object):
             inputs_t._packed_fingerprint = struct.pack(">Q", inputs_t._get_hash_recursive([]))
         return inputs_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "inputs_t":
+    def deepcopy(self, **kwargs: T.Any) -> inputs_t:
         """
         Deep copy of this LCM type
 

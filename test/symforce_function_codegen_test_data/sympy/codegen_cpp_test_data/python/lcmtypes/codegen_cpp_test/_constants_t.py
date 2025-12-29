@@ -3,6 +3,8 @@
 # fmt: off
 # isort: off
 
+from __future__ import annotations
+
 import copy
 import typing as T
 
@@ -25,7 +27,7 @@ class constants_t(object):
     @staticmethod
     def from_all_fields(
         epsilon: float,
-    ) -> "constants_t":
+    ) -> constants_t:
         return constants_t(
             epsilon=epsilon,
         )
@@ -39,7 +41,7 @@ class constants_t(object):
         )
 
     @classmethod
-    def _default(cls) -> "constants_t":
+    def _default(cls) -> constants_t:
         return cls()
 
     def __repr__(self) -> str:
@@ -65,7 +67,7 @@ class constants_t(object):
         buf.write(constants_t._CACHED_STRUCT_0.pack(self.epsilon))
 
     @staticmethod
-    def decode(data: T.Union[bytes, T.BinaryIO]) -> "constants_t":
+    def decode(data: T.Union[bytes, T.BinaryIO]) -> constants_t:
         # NOTE(eric): This function can technically accept either a BinaryIO or
         # anything that supports the C++ Buffer Protocol,
         # which is unspecifiable in type hints.
@@ -81,7 +83,7 @@ class constants_t(object):
         return constants_t._decode_one(buf)
 
     @staticmethod
-    def _decode_one(buf: T.BinaryIO) -> "constants_t":
+    def _decode_one(buf: T.BinaryIO) -> constants_t:
         self = constants_t(_skip_initialize=True)
         self.epsilon = constants_t._CACHED_STRUCT_0.unpack(buf.read(8))[0]
         return self
@@ -101,7 +103,7 @@ class constants_t(object):
             constants_t._packed_fingerprint = struct.pack(">Q", constants_t._get_hash_recursive([]))
         return constants_t._packed_fingerprint
 
-    def deepcopy(self, **kwargs: T.Any) -> "constants_t":
+    def deepcopy(self, **kwargs: T.Any) -> constants_t:
         """
         Deep copy of this LCM type
 
