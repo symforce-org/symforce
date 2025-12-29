@@ -91,21 +91,6 @@ def format_py(file_contents: str, filename: str) -> str:
     return result.stdout
 
 
-def format_py_dir(dirname: T.Openable) -> None:
-    """
-    Autoformat python files in a directory (recursively) in-place
-    """
-    subprocess.run(
-        [find_ruff_bin(), "format", dirname],
-        check=True,
-        # Disable the ruff cache.  This is important for running in a hermetic context like a bazel
-        # test, and shouldn't really hurt other use cases.  If it does, we should work around this
-        # differently.
-        env=dict(os.environ, RUFF_NO_CACHE="true"),
-        text=True,
-    )
-
-
 _rustfmt_path: T.Optional[Path] = None
 
 

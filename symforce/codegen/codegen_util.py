@@ -772,7 +772,8 @@ def generate_lcm_types(
     )
 
     # Autoformat generated python files
-    format_util.format_py_dir(python_types_dir)
+    for f in python_types_dir.rglob("*.py"):
+        f.write_text(format_util.format_py(f.read_text(), str(Path(__file__).parent / f.name)))
 
     return result
 
