@@ -4,6 +4,8 @@
 # Do NOT modify by hand.
 # -----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 import typing as T
 
 import numpy
@@ -33,11 +35,14 @@ class OrthographicCameraCal(object):
     # This is because of an issue where mypy doesn't recognize attributes defined in __slots__
     # See https://github.com/python/mypy/issues/5941
     if T.TYPE_CHECKING:
-        data = []  # type: T.List[float]
+        data: T.List[float] = []
 
-    def __init__(self, focal_length, principal_point):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray], T.Union[T.Sequence[float], numpy.ndarray]) -> None
-        self.data = []
+    def __init__(
+        self,
+        focal_length: T.Union[T.Sequence[float], numpy.ndarray],
+        principal_point: T.Union[T.Sequence[float], numpy.ndarray],
+    ) -> None:
+        self.data: T.List[float] = []
         if isinstance(focal_length, numpy.ndarray):
             if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
@@ -72,32 +77,30 @@ class OrthographicCameraCal(object):
         self.data.extend(focal_length)
         self.data.extend(principal_point)
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # CameraOps
     # --------------------------------------------------------------------------
 
-    def focal_length(self):
-        # type: (OrthographicCameraCal) -> numpy.ndarray
+    def focal_length(self: OrthographicCameraCal) -> numpy.ndarray:
         """
         Return the focal length.
         """
 
         return ops.CameraOps.focal_length(self)
 
-    def principal_point(self):
-        # type: (OrthographicCameraCal) -> numpy.ndarray
+    def principal_point(self: OrthographicCameraCal) -> numpy.ndarray:
         """
         Return the principal point.
         """
 
         return ops.CameraOps.principal_point(self)
 
-    def pixel_from_camera_point(self, point, epsilon):
-        # type: (OrthographicCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float]
+    def pixel_from_camera_point(
+        self: OrthographicCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -108,8 +111,9 @@ class OrthographicCameraCal(object):
 
         return ops.CameraOps.pixel_from_camera_point(self, point, epsilon)
 
-    def pixel_from_camera_point_with_jacobians(self, point, epsilon):
-        # type: (OrthographicCameraCal, numpy.ndarray, float) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]
+    def pixel_from_camera_point_with_jacobians(
+        self: OrthographicCameraCal, point: numpy.ndarray, epsilon: float
+    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -127,17 +131,14 @@ class OrthographicCameraCal(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 4
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> OrthographicCameraCal
+    def from_storage(cls, vec: T.Sequence[float]) -> OrthographicCameraCal:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -157,13 +158,11 @@ class OrthographicCameraCal(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 4
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> OrthographicCameraCal
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> OrthographicCameraCal:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -172,12 +171,10 @@ class OrthographicCameraCal(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> OrthographicCameraCal
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> OrthographicCameraCal:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -186,19 +183,18 @@ class OrthographicCameraCal(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (OrthographicCameraCal, float) -> numpy.ndarray
+    def local_coordinates(self, b: OrthographicCameraCal, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (OrthographicCameraCal, float, float) -> OrthographicCameraCal
+    def interpolate(
+        self, b: OrthographicCameraCal, alpha: float, epsilon: float = 1e-8
+    ) -> OrthographicCameraCal:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, OrthographicCameraCal):
             return self.data == other.data
         else:

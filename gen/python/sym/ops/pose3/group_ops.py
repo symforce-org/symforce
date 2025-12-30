@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.Pose3
-
+    def identity() -> sym.Pose3:
         # Total ops: 0
 
         # Input arrays
@@ -41,9 +41,7 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.Pose3) -> sym.Pose3
-
+    def inverse(a: sym.Pose3) -> sym.Pose3:
         # Total ops: 49
 
         # Input arrays
@@ -74,9 +72,7 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.Pose3, sym.Pose3) -> sym.Pose3
-
+    def compose(a: sym.Pose3, b: sym.Pose3) -> sym.Pose3:
         # Total ops: 74
 
         # Input arrays
@@ -114,9 +110,7 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.Pose3, sym.Pose3) -> sym.Pose3
-
+    def between(a: sym.Pose3, b: sym.Pose3) -> sym.Pose3:
         # Total ops: 89
 
         # Input arrays
@@ -178,9 +172,7 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray]
-
+    def inverse_with_jacobian(a: sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray]:
         # Total ops: 115
 
         # Input arrays
@@ -285,9 +277,9 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.Pose3, sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.Pose3, b: sym.Pose3
+    ) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]:
         # Total ops: 330
 
         # Input arrays
@@ -516,9 +508,9 @@ class GroupOps(object):
         return sym.Pose3.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.Pose3, sym.Pose3) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.Pose3, b: sym.Pose3
+    ) -> T.Tuple[sym.Pose3, numpy.ndarray, numpy.ndarray]:
         # Total ops: 306
 
         # Input arrays

@@ -6,6 +6,8 @@
 
 # ruff: noqa: F401, PLR0912, PLR0913, PLR0914, PLR0915, PLR0917, RUF100
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -14,8 +16,9 @@ import numpy
 import sym
 
 
-def az_el_from_point(nav_T_cam, nav_t_point, epsilon):
-    # type: (sym.Pose3, numpy.ndarray, float) -> numpy.ndarray
+def az_el_from_point(
+    nav_T_cam: sym.Pose3, nav_t_point: numpy.ndarray, epsilon: float
+) -> numpy.ndarray:
     """
     Transform a nav point into azimuth / elevation angles in the
     camera frame.

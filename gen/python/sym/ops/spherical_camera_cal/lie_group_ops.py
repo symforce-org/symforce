@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class LieGroupOps(object):
     """
 
     @staticmethod
-    def from_tangent(vec, epsilon):
-        # type: (numpy.ndarray, float) -> sym.SphericalCameraCal
-
+    def from_tangent(vec: numpy.ndarray, epsilon: float) -> sym.SphericalCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -53,9 +53,7 @@ class LieGroupOps(object):
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
-    def to_tangent(a, epsilon):
-        # type: (sym.SphericalCameraCal, float) -> numpy.ndarray
-
+    def to_tangent(a: sym.SphericalCameraCal, epsilon: float) -> numpy.ndarray:
         # Total ops: 0
 
         # Input arrays
@@ -79,9 +77,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def retract(a, vec, epsilon):
-        # type: (sym.SphericalCameraCal, numpy.ndarray, float) -> sym.SphericalCameraCal
-
+    def retract(
+        a: sym.SphericalCameraCal, vec: numpy.ndarray, epsilon: float
+    ) -> sym.SphericalCameraCal:
         # Total ops: 11
 
         # Input arrays
@@ -113,9 +111,9 @@ class LieGroupOps(object):
         return sym.SphericalCameraCal.from_storage(_res)
 
     @staticmethod
-    def local_coordinates(a, b, epsilon):
-        # type: (sym.SphericalCameraCal, sym.SphericalCameraCal, float) -> numpy.ndarray
-
+    def local_coordinates(
+        a: sym.SphericalCameraCal, b: sym.SphericalCameraCal, epsilon: float
+    ) -> numpy.ndarray:
         # Total ops: 11
 
         # Input arrays
@@ -140,9 +138,9 @@ class LieGroupOps(object):
         return _res
 
     @staticmethod
-    def interpolate(a, b, alpha, epsilon):
-        # type: (sym.SphericalCameraCal, sym.SphericalCameraCal, float, float) -> sym.SphericalCameraCal
-
+    def interpolate(
+        a: sym.SphericalCameraCal, b: sym.SphericalCameraCal, alpha: float, epsilon: float
+    ) -> sym.SphericalCameraCal:
         # Total ops: 33
 
         # Input arrays

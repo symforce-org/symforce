@@ -7,6 +7,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import random
 import typing as T
@@ -27,18 +29,16 @@ class Rot3(object):
 
     __slots__ = ["data"]
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # Handwritten methods included from "custom_methods/rot3.py.jinja"
     # --------------------------------------------------------------------------
 
-    def __init__(self, q=None):
-        # type: (T.Union[T.Sequence[float], numpy.ndarray, None]) -> None
+    def __init__(self, q: T.Union[T.Sequence[float], numpy.ndarray, None] = None) -> None:
         if q is None:
-            self.data = ops.GroupOps.identity().data  # type: T.List[float]
+            self.data: T.List[float] = ops.GroupOps.identity().data
         else:
             if isinstance(q, numpy.ndarray):
                 if q.shape in {(4, 1), (1, 4)}:
@@ -56,8 +56,7 @@ class Rot3(object):
             self.data = list(q)
 
     @classmethod
-    def from_rotation_matrix(cls, R, epsilon=0.0):
-        # type: (numpy.ndarray, float) -> Rot3
+    def from_rotation_matrix(cls, R: numpy.ndarray, epsilon: float = 0.0) -> Rot3:
         """
         This implementation is based on Shepperd's method (1978)
         https://arc.aiaa.org/doi/abs/10.2514/3.55767b?journalCode=jgc (this is paywalled)
@@ -96,8 +95,7 @@ class Rot3(object):
         return Rot3.from_storage([x, y, z, w])
 
     @classmethod
-    def random(cls):
-        # type: () -> Rot3
+    def random(cls) -> Rot3:
         return Rot3.random_from_uniform_samples(
             random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1)
         )
@@ -106,8 +104,7 @@ class Rot3(object):
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def compose_with_point(self, right):
-        # type: (Rot3, numpy.ndarray) -> numpy.ndarray
+    def compose_with_point(self: Rot3, right: numpy.ndarray) -> numpy.ndarray:
         """
         Left-multiplication. Either rotation concatenation or point transform.
         """
@@ -157,8 +154,7 @@ class Rot3(object):
         )
         return _res
 
-    def to_tangent_norm(self, epsilon):
-        # type: (Rot3, float) -> float
+    def to_tangent_norm(self: Rot3, epsilon: float) -> float:
         """
         Returns the norm of the tangent vector corresponding to this rotation
 
@@ -179,8 +175,7 @@ class Rot3(object):
         _res = 2 * math.acos(min(abs(_self[3]), 1 - epsilon))
         return _res
 
-    def to_rotation_matrix(self):
-        # type: (Rot3) -> numpy.ndarray
+    def to_rotation_matrix(self: Rot3) -> numpy.ndarray:
         """
         Converts to a rotation matrix
         """
@@ -217,8 +212,7 @@ class Rot3(object):
         return _res
 
     @staticmethod
-    def random_from_uniform_samples(u1, u2, u3):
-        # type: (float, float, float) -> Rot3
+    def random_from_uniform_samples(u1: float, u2: float, u3: float) -> Rot3:
         """
         Generate a random element of SO3 from three variables uniformly sampled in [0, 1].
         """
@@ -242,8 +236,7 @@ class Rot3(object):
         _res[3] = _tmp3 * math.cos(_tmp4)
         return Rot3.from_storage(_res)
 
-    def to_yaw_pitch_roll(self):
-        # type: (Rot3) -> numpy.ndarray
+    def to_yaw_pitch_roll(self: Rot3) -> numpy.ndarray:
         """
         Compute the yaw, pitch, and roll Euler angles in radians of this rotation
 
@@ -280,8 +273,7 @@ class Rot3(object):
         return _res
 
     @staticmethod
-    def from_yaw_pitch_roll(yaw, pitch, roll):
-        # type: (float, float, float) -> Rot3
+    def from_yaw_pitch_roll(yaw: float, pitch: float, roll: float) -> Rot3:
         """
         Construct from yaw, pitch, and roll Euler angles in radians
         """
@@ -314,8 +306,7 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_yaw(yaw):
-        # type: (float) -> Rot3
+    def from_yaw(yaw: float) -> Rot3:
         """Construct from yaw angle in radians"""
 
         # Total ops: 5
@@ -334,8 +325,7 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_pitch(pitch):
-        # type: (float) -> Rot3
+    def from_pitch(pitch: float) -> Rot3:
         """Construct from pitch angle in radians"""
 
         # Total ops: 5
@@ -354,8 +344,7 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_roll(roll):
-        # type: (float) -> Rot3
+    def from_roll(roll: float) -> Rot3:
         """Construct from roll angle in radians"""
 
         # Total ops: 5
@@ -374,8 +363,7 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_angle_axis(angle, axis):
-        # type: (float, numpy.ndarray) -> Rot3
+    def from_angle_axis(angle: float, axis: numpy.ndarray) -> Rot3:
         """
         Construct from an angle in radians and a (normalized) axis as a 3-vector.
         """
@@ -405,8 +393,7 @@ class Rot3(object):
         return Rot3.from_storage(_res)
 
     @staticmethod
-    def from_two_unit_vectors(a, b, epsilon):
-        # type: (numpy.ndarray, numpy.ndarray, float) -> Rot3
+    def from_two_unit_vectors(a: numpy.ndarray, b: numpy.ndarray, epsilon: float) -> Rot3:
         """
         Return a rotation that transforms a to b. Both inputs are three-vectors that
         are expected to be normalized.
@@ -460,17 +447,14 @@ class Rot3(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 4
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> Rot3
+    def from_storage(cls, vec: T.Sequence[float]) -> Rot3:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -490,20 +474,16 @@ class Rot3(object):
     # --------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Rot3
+    def identity(cls) -> Rot3:
         return ops.GroupOps.identity()
 
-    def inverse(self):
-        # type: () -> Rot3
+    def inverse(self) -> Rot3:
         return ops.GroupOps.inverse(self)
 
-    def compose(self, b):
-        # type: (Rot3) -> Rot3
+    def compose(self, b: Rot3) -> Rot3:
         return ops.GroupOps.compose(self, b)
 
-    def between(self, b):
-        # type: (Rot3) -> Rot3
+    def between(self, b: Rot3) -> Rot3:
         return ops.GroupOps.between(self, b)
 
     # --------------------------------------------------------------------------
@@ -511,13 +491,11 @@ class Rot3(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 3
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot3
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> Rot3:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -526,12 +504,10 @@ class Rot3(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Rot3
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> Rot3:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -540,37 +516,31 @@ class Rot3(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Rot3, float) -> numpy.ndarray
+    def local_coordinates(self, b: Rot3, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (Rot3, float, float) -> Rot3
+    def interpolate(self, b: Rot3, alpha: float, epsilon: float = 1e-8) -> Rot3:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, Rot3):
             return self.data == other.data
         else:
             return False
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (Rot3) -> Rot3
+    def __mul__(self, other: Rot3) -> Rot3:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (numpy.ndarray) -> numpy.ndarray
+    def __mul__(self, other: numpy.ndarray) -> numpy.ndarray:  # pragma: no cover
         pass
 
-    def __mul__(self, other):
-        # type: (T.Union[Rot3, numpy.ndarray]) -> T.Union[Rot3, numpy.ndarray]
+    def __mul__(self, other: T.Union[Rot3, numpy.ndarray]) -> T.Union[Rot3, numpy.ndarray]:
         if isinstance(other, Rot3):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):

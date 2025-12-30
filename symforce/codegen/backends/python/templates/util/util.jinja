@@ -111,11 +111,12 @@
 {%- if is_method and "self" not in spec.inputs -%}
 @staticmethod
 {% endif %}
-def {{ function_name_and_args(spec) }}:
-    # type: (
-    {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
-    {%- endfor -%}) -> {{ get_return_type(spec, available_classes=available_classes) }}
+def {{ spec.name }}(
+{%- for name, type in spec.inputs.items() %}
+    {{ name }}: {{ format_typename(type, name, is_input=True, available_classes=available_classes) }}{% if not loop.last %},{% endif %}
+
+{%- endfor %}
+) -> {{ get_return_type(spec, available_classes=available_classes) }}:
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}

@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -20,9 +22,7 @@ class GroupOps(object):
     """
 
     @staticmethod
-    def identity():
-        # type: () -> sym.ATANCameraCal
-
+    def identity() -> sym.ATANCameraCal:
         # Total ops: 0
 
         # Input arrays
@@ -39,9 +39,7 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse(a):
-        # type: (sym.ATANCameraCal) -> sym.ATANCameraCal
-
+    def inverse(a: sym.ATANCameraCal) -> sym.ATANCameraCal:
         # Total ops: 5
 
         # Input arrays
@@ -59,9 +57,7 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
-    def compose(a, b):
-        # type: (sym.ATANCameraCal, sym.ATANCameraCal) -> sym.ATANCameraCal
-
+    def compose(a: sym.ATANCameraCal, b: sym.ATANCameraCal) -> sym.ATANCameraCal:
         # Total ops: 5
 
         # Input arrays
@@ -80,9 +76,7 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
-    def between(a, b):
-        # type: (sym.ATANCameraCal, sym.ATANCameraCal) -> sym.ATANCameraCal
-
+    def between(a: sym.ATANCameraCal, b: sym.ATANCameraCal) -> sym.ATANCameraCal:
         # Total ops: 5
 
         # Input arrays
@@ -101,9 +95,7 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a):
-        # type: (sym.ATANCameraCal) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray]
-
+    def inverse_with_jacobian(a: sym.ATANCameraCal) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray]:
         # Total ops: 5
 
         # Input arrays
@@ -147,9 +139,9 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res), _res_D_a
 
     @staticmethod
-    def compose_with_jacobians(a, b):
-        # type: (sym.ATANCameraCal, sym.ATANCameraCal) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def compose_with_jacobians(
+        a: sym.ATANCameraCal, b: sym.ATANCameraCal
+    ) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 5
 
         # Input arrays
@@ -220,9 +212,9 @@ class GroupOps(object):
         return sym.ATANCameraCal.from_storage(_res), _res_D_a, _res_D_b
 
     @staticmethod
-    def between_with_jacobians(a, b):
-        # type: (sym.ATANCameraCal, sym.ATANCameraCal) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray, numpy.ndarray]
-
+    def between_with_jacobians(
+        a: sym.ATANCameraCal, b: sym.ATANCameraCal
+    ) -> T.Tuple[sym.ATANCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 5
 
         # Input arrays

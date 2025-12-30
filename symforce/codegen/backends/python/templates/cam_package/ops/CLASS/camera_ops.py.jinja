@@ -6,6 +6,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -23,7 +25,6 @@ class CameraOps(object):
     @staticmethod
     {{ util.function_declaration(spec) }}
         {{ util.print_docstring(spec.docstring) | indent(8) }}
-
     {{ util.expr_code(spec) | indent(4) }}
 
     {% endfor %}

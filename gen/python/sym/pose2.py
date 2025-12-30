@@ -7,6 +7,8 @@
 
 # ruff: noqa: PLR0915, F401, PLW0211, PLR0914
 
+from __future__ import annotations
+
 import math
 import random
 import typing as T
@@ -49,16 +51,18 @@ class Pose2(object):
 
     __slots__ = ["data"]
 
-    def __repr__(self):
-        # type: () -> str
+    def __repr__(self) -> str:
         return "<{} {}>".format(self.__class__.__name__, self.data)
 
     # --------------------------------------------------------------------------
     # Handwritten methods included from "custom_methods/pose2.py.jinja"
     # --------------------------------------------------------------------------
 
-    def __init__(self, R=None, t=None):
-        # type: (T.Optional[Rot2], T.Union[T.Sequence[float], numpy.ndarray, None]) -> None
+    def __init__(
+        self,
+        R: T.Optional[Rot2] = None,
+        t: T.Union[T.Sequence[float], numpy.ndarray, None] = None,
+    ) -> None:
         rotation = R if R is not None else Rot2()
         if t is None:
             t = [0.0, 0.0]
@@ -79,31 +83,27 @@ class Pose2(object):
         self.data = rotation.to_storage() + list(t)
 
     @property
-    def R(self):
-        # type: () -> Rot2
+    def R(self) -> Rot2:
         """
         Accessor for the rotation component, equivalent to self.rotation()
         """
         return self.rotation()
 
     @property
-    def t(self):
-        # type: () -> numpy.ndarray
+    def t(self) -> numpy.ndarray:
         """
         Accessor for the position component, equivalent to self.position()
         """
         return self.position()
 
-    def rotation(self):
-        # type: () -> Rot2
+    def rotation(self) -> Rot2:
         return Rot2.from_storage(list(self.rotation_storage()))
 
     # --------------------------------------------------------------------------
     # Custom generated methods
     # --------------------------------------------------------------------------
 
-    def rotation_storage(self):
-        # type: (Pose2) -> numpy.ndarray
+    def rotation_storage(self: Pose2) -> numpy.ndarray:
         """
         Returns the rotational component of this pose.
         """
@@ -121,8 +121,7 @@ class Pose2(object):
         _res[1] = _self[1]
         return _res
 
-    def position(self):
-        # type: (Pose2) -> numpy.ndarray
+    def position(self: Pose2) -> numpy.ndarray:
         """
         Returns the positional component of this pose.
         """
@@ -140,8 +139,7 @@ class Pose2(object):
         _res[1] = _self[3]
         return _res
 
-    def compose_with_point(self, right):
-        # type: (Pose2, numpy.ndarray) -> numpy.ndarray
+    def compose_with_point(self: Pose2, right: numpy.ndarray) -> numpy.ndarray:
         """
         Left-multiply with a compatible quantity.
         """
@@ -167,8 +165,7 @@ class Pose2(object):
         _res[1] = _self[0] * right[1, 0] + _self[1] * right[0, 0] + _self[3]
         return _res
 
-    def inverse_compose(self, point):
-        # type: (Pose2, numpy.ndarray) -> numpy.ndarray
+    def inverse_compose(self: Pose2, point: numpy.ndarray) -> numpy.ndarray:
         """
         Returns ``self.inverse() * point``
 
@@ -207,8 +204,7 @@ class Pose2(object):
         )
         return _res
 
-    def to_homogenous_matrix(self):
-        # type: (Pose2) -> numpy.ndarray
+    def to_homogenous_matrix(self: Pose2) -> numpy.ndarray:
         """
         A matrix representation of this element in the Euclidean space that contains it.
 
@@ -241,17 +237,14 @@ class Pose2(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def storage_dim():
-        # type: () -> int
+    def storage_dim() -> int:
         return 4
 
-    def to_storage(self):
-        # type: () -> T.List[float]
+    def to_storage(self) -> T.List[float]:
         return list(self.data)
 
     @classmethod
-    def from_storage(cls, vec):
-        # type: (T.Sequence[float]) -> Pose2
+    def from_storage(cls, vec: T.Sequence[float]) -> Pose2:
         instance = cls.__new__(cls)
 
         if isinstance(vec, list):
@@ -271,20 +264,16 @@ class Pose2(object):
     # --------------------------------------------------------------------------
 
     @classmethod
-    def identity(cls):
-        # type: () -> Pose2
+    def identity(cls) -> Pose2:
         return ops.GroupOps.identity()
 
-    def inverse(self):
-        # type: () -> Pose2
+    def inverse(self) -> Pose2:
         return ops.GroupOps.inverse(self)
 
-    def compose(self, b):
-        # type: (Pose2) -> Pose2
+    def compose(self, b: Pose2) -> Pose2:
         return ops.GroupOps.compose(self, b)
 
-    def between(self, b):
-        # type: (Pose2) -> Pose2
+    def between(self, b: Pose2) -> Pose2:
         return ops.GroupOps.between(self, b)
 
     # --------------------------------------------------------------------------
@@ -292,13 +281,11 @@ class Pose2(object):
     # --------------------------------------------------------------------------
 
     @staticmethod
-    def tangent_dim():
-        # type: () -> int
+    def tangent_dim() -> int:
         return 3
 
     @classmethod
-    def from_tangent(cls, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Pose2
+    def from_tangent(cls, vec: numpy.ndarray, epsilon: float = 1e-8) -> Pose2:
         if len(vec) != cls.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -307,12 +294,10 @@ class Pose2(object):
             )
         return ops.LieGroupOps.from_tangent(vec, epsilon)
 
-    def to_tangent(self, epsilon=1e-8):
-        # type: (float) -> numpy.ndarray
+    def to_tangent(self, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.to_tangent(self, epsilon)
 
-    def retract(self, vec, epsilon=1e-8):
-        # type: (numpy.ndarray, float) -> Pose2
+    def retract(self, vec: numpy.ndarray, epsilon: float = 1e-8) -> Pose2:
         if len(vec) != self.tangent_dim():
             raise ValueError(
                 "Vector dimension ({}) not equal to tangent space dimension ({}).".format(
@@ -321,37 +306,31 @@ class Pose2(object):
             )
         return ops.LieGroupOps.retract(self, vec, epsilon)
 
-    def local_coordinates(self, b, epsilon=1e-8):
-        # type: (Pose2, float) -> numpy.ndarray
+    def local_coordinates(self, b: Pose2, epsilon: float = 1e-8) -> numpy.ndarray:
         return ops.LieGroupOps.local_coordinates(self, b, epsilon)
 
-    def interpolate(self, b, alpha, epsilon=1e-8):
-        # type: (Pose2, float, float) -> Pose2
+    def interpolate(self, b: Pose2, alpha: float, epsilon: float = 1e-8) -> Pose2:
         return ops.LieGroupOps.interpolate(self, b, alpha, epsilon)
 
     # --------------------------------------------------------------------------
     # General Helpers
     # --------------------------------------------------------------------------
 
-    def __eq__(self, other):
-        # type: (T.Any) -> bool
+    def __eq__(self, other: T.Any) -> bool:
         if isinstance(other, Pose2):
             return self.data == other.data
         else:
             return False
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (Pose2) -> Pose2
+    def __mul__(self, other: Pose2) -> Pose2:  # pragma: no cover
         pass
 
     @T.overload
-    def __mul__(self, other):  # pragma: no cover
-        # type: (numpy.ndarray) -> numpy.ndarray
+    def __mul__(self, other: numpy.ndarray) -> numpy.ndarray:  # pragma: no cover
         pass
 
-    def __mul__(self, other):
-        # type: (T.Union[Pose2, numpy.ndarray]) -> T.Union[Pose2, numpy.ndarray]
+    def __mul__(self, other: T.Union[Pose2, numpy.ndarray]) -> T.Union[Pose2, numpy.ndarray]:
         if isinstance(other, Pose2):
             return self.compose(other)
         elif isinstance(other, numpy.ndarray) and hasattr(self, "compose_with_point"):
