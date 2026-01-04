@@ -109,7 +109,7 @@ class GroupOps(object):
     @staticmethod
     def inverse_with_jacobian(
         a: sym.PolynomialCameraCal,
-    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray]:
+    ) -> tuple[sym.PolynomialCameraCal, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays
@@ -197,7 +197,7 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(
         a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal
-    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays
@@ -351,7 +351,7 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(
         a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal
-    ) -> T.Tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.PolynomialCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 8
 
         # Input arrays

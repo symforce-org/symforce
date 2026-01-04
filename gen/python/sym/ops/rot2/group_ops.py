@@ -83,7 +83,7 @@ class GroupOps(object):
         return sym.Rot2.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a: sym.Rot2) -> T.Tuple[sym.Rot2, numpy.ndarray]:
+    def inverse_with_jacobian(a: sym.Rot2) -> tuple[sym.Rot2, numpy.ndarray]:
         # Total ops: 5
 
         # Input arrays
@@ -102,7 +102,7 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(
         a: sym.Rot2, b: sym.Rot2
-    ) -> T.Tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]:
         # Total ops: 11
 
         # Input arrays
@@ -129,7 +129,7 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(
         a: sym.Rot2, b: sym.Rot2
-    ) -> T.Tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.Rot2, numpy.ndarray, numpy.ndarray]:
         # Total ops: 15
 
         # Input arrays

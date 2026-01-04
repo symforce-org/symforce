@@ -58,7 +58,7 @@ class SphericalCameraCal(object):
     # This is because of an issue where mypy doesn't recognize attributes defined in __slots__
     # See https://github.com/python/mypy/issues/5941
     if T.TYPE_CHECKING:
-        data: T.List[float] = []
+        data: list[float] = []
 
     def __init__(
         self,
@@ -67,7 +67,7 @@ class SphericalCameraCal(object):
         critical_theta: float,
         distortion_coeffs: T.Union[T.Sequence[float], numpy.ndarray],
     ) -> None:
-        self.data: T.List[float] = []
+        self.data: list[float] = []
         if isinstance(focal_length, numpy.ndarray):
             if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
@@ -142,7 +142,7 @@ class SphericalCameraCal(object):
 
     def pixel_from_camera_point(
         self: SphericalCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -155,7 +155,7 @@ class SphericalCameraCal(object):
 
     def pixel_from_camera_point_with_jacobians(
         self: SphericalCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -176,7 +176,7 @@ class SphericalCameraCal(object):
     def storage_dim() -> int:
         return 11
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

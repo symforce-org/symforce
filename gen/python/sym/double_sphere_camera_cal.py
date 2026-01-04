@@ -43,7 +43,7 @@ class DoubleSphereCameraCal(object):
     # This is because of an issue where mypy doesn't recognize attributes defined in __slots__
     # See https://github.com/python/mypy/issues/5941
     if T.TYPE_CHECKING:
-        data: T.List[float] = []
+        data: list[float] = []
 
     def __init__(
         self,
@@ -52,7 +52,7 @@ class DoubleSphereCameraCal(object):
         xi: float,
         alpha: float,
     ) -> None:
-        self.data: T.List[float] = []
+        self.data: list[float] = []
         if isinstance(focal_length, numpy.ndarray):
             if focal_length.shape in {(2, 1), (1, 2)}:
                 focal_length = focal_length.flatten()
@@ -112,7 +112,7 @@ class DoubleSphereCameraCal(object):
 
     def pixel_from_camera_point(
         self: DoubleSphereCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -125,7 +125,7 @@ class DoubleSphereCameraCal(object):
 
     def pixel_from_camera_point_with_jacobians(
         self: DoubleSphereCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -140,7 +140,7 @@ class DoubleSphereCameraCal(object):
 
     def camera_ray_from_pixel(
         self: DoubleSphereCameraCal, pixel: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -153,7 +153,7 @@ class DoubleSphereCameraCal(object):
 
     def camera_ray_from_pixel_with_jacobians(
         self: DoubleSphereCameraCal, pixel: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -174,7 +174,7 @@ class DoubleSphereCameraCal(object):
     def storage_dim() -> int:
         return 6
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

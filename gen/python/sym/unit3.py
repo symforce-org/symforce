@@ -68,7 +68,7 @@ class Unit3(object):
             raise IndexError(
                 "Expected vec to be a sequence of length 3, was instead length {}.".format(len(vec))
             )
-        self.data: T.List[float] = list(vec)
+        self.data: list[float] = list(vec)
 
     @classmethod
     def random(cls, epsilon: float = 1e-8) -> Unit3:
@@ -236,7 +236,7 @@ class Unit3(object):
     def storage_dim() -> int:
         return 3
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

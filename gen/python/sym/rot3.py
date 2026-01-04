@@ -38,7 +38,7 @@ class Rot3(object):
 
     def __init__(self, q: T.Union[T.Sequence[float], numpy.ndarray, None] = None) -> None:
         if q is None:
-            self.data: T.List[float] = ops.GroupOps.identity().data
+            self.data: list[float] = ops.GroupOps.identity().data
         else:
             if isinstance(q, numpy.ndarray):
                 if q.shape in {(4, 1), (1, 4)}:
@@ -450,7 +450,7 @@ class Rot3(object):
     def storage_dim() -> int:
         return 4
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

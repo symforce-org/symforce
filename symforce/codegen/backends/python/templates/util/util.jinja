@@ -13,7 +13,7 @@
  #     T_or_value (type or Element):
  #     name (str): Name in case type is a generated struct
  #     is_input (bool): Is this an input argument or return value?
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro format_typename(T_or_value, name, is_input, available_classes = []) %}
@@ -36,7 +36,7 @@
         {%- if is_input -%}
             T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
         {%- else -%}
-            T.List[float]
+            list[float]
         {%- endif -%}
     {%- else -%}
         {%- if T not in available_classes and ("geo" in T.__module__ or "cam" in T.__module__) -%}
@@ -52,7 +52,7 @@
  #
  # Args:
  #     spec (Codegen):
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro get_return_type(spec, available_classes = []) %}
@@ -60,7 +60,7 @@
         {%- set name, type = spec.outputs.items() | first -%}
         {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}
     {%- elif spec.outputs -%}
-        T.Tuple[
+        tuple[
         {%- for name, type in spec.outputs.items() -%}
         {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
         {%- endfor -%}]
@@ -104,7 +104,7 @@
  # Args:
  #     spec (Codegen):
  #     is_method (bool): True if function is a method of a class,
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro function_declaration(spec, is_method = False, available_classes = []) -%}
@@ -135,7 +135,7 @@ def {{ spec.name }}(
  # Args:
  #     name (str): The name of the array to be checked and resized. Should be a user
  #       argument name, as it is used in the error message.
- #     shape (T.Tuple[int, int]): The expected shape of name.
+ #     shape (tuple[int, int]): The expected shape of name.
  #     use_numba (bool): Whether the generated code should be numba compatible.
  #}
 {% macro check_size_and_reshape(name, shape, use_numba) %}
@@ -164,7 +164,7 @@ elif {{ name }}.shape != {{ shape }}:
  #
  # Args:
  #     spec (Codegen):
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {% macro expr_code(spec, available_classes = []) %}

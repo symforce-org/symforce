@@ -62,7 +62,7 @@ class CameraOps(object):
     @staticmethod
     def pixel_from_camera_point(
         self: sym.ATANCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -100,7 +100,7 @@ class CameraOps(object):
     @staticmethod
     def pixel_from_camera_point_with_jacobians(
         self: sym.ATANCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -203,7 +203,7 @@ class CameraOps(object):
     @staticmethod
     def camera_ray_from_pixel(
         self: sym.ATANCameraCal, pixel: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 
@@ -250,7 +250,7 @@ class CameraOps(object):
     @staticmethod
     def camera_ray_from_pixel_with_jacobians(
         self: sym.ATANCameraCal, pixel: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Backproject a 2D pixel coordinate into a 3D ray in the camera frame.
 

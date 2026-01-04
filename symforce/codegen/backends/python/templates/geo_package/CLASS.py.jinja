@@ -74,7 +74,7 @@ class {{ cls.__name__ }}(object):
     def storage_dim() -> int:
         return {{ ops.StorageOps.storage_dim(cls) }}
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

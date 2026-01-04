@@ -13,7 +13,7 @@
  #     T_or_value (type or Element):
  #     name (str): Name in case type is a generated struct
  #     is_input (bool): Is this an input argument or return value?
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro format_typename(T_or_value, name, is_input, available_classes = []) %}
@@ -32,7 +32,7 @@
         {%- if is_input -%}
             T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
         {%- else -%}
-            T.List[float]
+            list[float]
         {%- endif -%}
     {%- else -%}
         {{ raise('PyTorch backend does not support geo or cam types, got value "{}" of type `{}`'.format(name, T)) }}
@@ -45,7 +45,7 @@
  #
  # Args:
  #     spec (Codegen):
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro get_return_type(spec, available_classes = []) %}
@@ -53,7 +53,7 @@
         {%- set name, type = spec.outputs.items() | first -%}
         {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}
     {%- elif spec.outputs -%}
-        T.Tuple[
+        tuple[
         {%- for name, type in spec.outputs.items() -%}
         {{ format_typename(type, name, is_input=False, available_classes=available_classes) }}{% if not loop.last %}, {% endif %}
         {%- endfor -%}]
@@ -111,7 +111,7 @@ default to the device and dtype of the first input tensor, or the empty dict if 
  # Args:
  #     spec (Codegen):
  #     is_method (bool): True if function is a method of a class,
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {%- macro function_declaration(spec, is_method = False, available_classes = []) -%}
@@ -131,7 +131,7 @@ def {{ function_name_and_args(spec) }}:
  #
  # Args:
  #     spec (Codegen):
- #     available_classes (T.List[type]):  A list sym classes already available (meaning
+ #     available_classes (list[type]):  A list sym classes already available (meaning
  #       they should be referenced by just their name, and not, say, sym.Rot3).
  #}
 {% macro expr_code(spec, available_classes = []) %}

@@ -29,7 +29,7 @@ class {{ cls.__name__ }}(object):
     # This is because of an issue where mypy doesn't recognize attributes defined in __slots__
     # See https://github.com/python/mypy/issues/5941
     if T.TYPE_CHECKING:
-        data: T.List[float] = []
+        data: list[float] = []
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class {{ cls.__name__ }}(object):
 
         {% endfor %}
     ) -> None:
-        self.data: T.List[float] = []
+        self.data: list[float] = []
         {% for arg, size in storage_order %}
         {% if size != 1 %}
         {{ util.flatten_if_ndarray(arg, size) | indent(width=8) }}
@@ -72,7 +72,7 @@ class {{ cls.__name__ }}(object):
     def storage_dim() -> int:
         return {{ ops.StorageOps.storage_dim(cls) }}
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

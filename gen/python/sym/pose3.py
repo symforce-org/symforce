@@ -317,7 +317,7 @@ class Pose3(object):
     def storage_dim() -> int:
         return 7
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

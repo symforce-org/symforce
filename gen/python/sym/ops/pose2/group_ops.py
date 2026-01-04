@@ -91,7 +91,7 @@ class GroupOps(object):
         return sym.Pose2.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(a: sym.Pose2) -> T.Tuple[sym.Pose2, numpy.ndarray]:
+    def inverse_with_jacobian(a: sym.Pose2) -> tuple[sym.Pose2, numpy.ndarray]:
         # Total ops: 14
 
         # Input arrays
@@ -125,7 +125,7 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(
         a: sym.Pose2, b: sym.Pose2
-    ) -> T.Tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]:
         # Total ops: 22
 
         # Input arrays
@@ -173,7 +173,7 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(
         a: sym.Pose2, b: sym.Pose2
-    ) -> T.Tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.Pose2, numpy.ndarray, numpy.ndarray]:
         # Total ops: 35
 
         # Input arrays

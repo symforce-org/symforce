@@ -6,6 +6,8 @@
 
 # ruff: noqa: F401, PLR0912, PLR0913, PLR0914, PLR0915, PLR0917, RUF100
 
+from __future__ import annotations
+
 import math
 import typing as T
 
@@ -21,7 +23,7 @@ class TensorKwargs(T.TypedDict):
 
 
 def _broadcast_and_stack(tensors, dim=-1):
-    # type: (T.List[torch.Tensor], int) -> torch.Tensor
+    # type: (list[torch.Tensor], int) -> torch.Tensor
     """
     broadcast tensors to common shape then stack along new dimension
     """

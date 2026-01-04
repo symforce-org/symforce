@@ -91,9 +91,7 @@ class GroupOps(object):
         return sym.LinearCameraCal.from_storage(_res)
 
     @staticmethod
-    def inverse_with_jacobian(
-        a: sym.LinearCameraCal,
-    ) -> T.Tuple[sym.LinearCameraCal, numpy.ndarray]:
+    def inverse_with_jacobian(a: sym.LinearCameraCal) -> tuple[sym.LinearCameraCal, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -129,7 +127,7 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(
         a: sym.LinearCameraCal, b: sym.LinearCameraCal
-    ) -> T.Tuple[sym.LinearCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.LinearCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -183,7 +181,7 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(
         a: sym.LinearCameraCal, b: sym.LinearCameraCal
-    ) -> T.Tuple[sym.LinearCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.LinearCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays

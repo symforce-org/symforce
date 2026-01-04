@@ -38,7 +38,7 @@ class Rot2(object):
 
     def __init__(self, z: T.Union[T.Sequence[float], numpy.ndarray, None] = None) -> None:
         if z is None:
-            self.data: T.List[float] = ops.GroupOps.identity().data
+            self.data: list[float] = ops.GroupOps.identity().data
         else:
             if isinstance(z, numpy.ndarray):
                 if z.shape in {(2, 1), (1, 2)}:
@@ -199,7 +199,7 @@ class Rot2(object):
     def storage_dim() -> int:
         return 2
 
-    def to_storage(self) -> T.List[float]:
+    def to_storage(self) -> list[float]:
         return list(self.data)
 
     @classmethod

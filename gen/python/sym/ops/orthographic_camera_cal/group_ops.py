@@ -97,7 +97,7 @@ class GroupOps(object):
     @staticmethod
     def inverse_with_jacobian(
         a: sym.OrthographicCameraCal,
-    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray]:
+    ) -> tuple[sym.OrthographicCameraCal, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -133,7 +133,7 @@ class GroupOps(object):
     @staticmethod
     def compose_with_jacobians(
         a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
-    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays
@@ -187,7 +187,7 @@ class GroupOps(object):
     @staticmethod
     def between_with_jacobians(
         a: sym.OrthographicCameraCal, b: sym.OrthographicCameraCal
-    ) -> T.Tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[sym.OrthographicCameraCal, numpy.ndarray, numpy.ndarray]:
         # Total ops: 4
 
         # Input arrays

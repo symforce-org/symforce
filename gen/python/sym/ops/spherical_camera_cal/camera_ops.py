@@ -62,7 +62,7 @@ class CameraOps(object):
     @staticmethod
     def pixel_from_camera_point(
         self: sym.SphericalCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float]:
+    ) -> tuple[numpy.ndarray, float]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
@@ -120,7 +120,7 @@ class CameraOps(object):
     @staticmethod
     def pixel_from_camera_point_with_jacobians(
         self: sym.SphericalCameraCal, point: numpy.ndarray, epsilon: float
-    ) -> T.Tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
+    ) -> tuple[numpy.ndarray, float, numpy.ndarray, numpy.ndarray]:
         """
         Project a 3D point in the camera frame into 2D pixel coordinates.
 
