@@ -92,19 +92,6 @@ default to the device and dtype of the first input tensor, or the empty dict if 
 {% endmacro %}
 
 {# ------------------------------------------------------------------------- #}
-{# Generate function name and arguments:
- #
- # Args:
- #     spec (Codegen):
- #}
-{%- macro function_name_and_args(spec) -%}
-{{ spec.name }}(
-{%- for name in spec.inputs.keys() -%}
-{{ name }},{{ ' ' }}
-{%- endfor -%}tensor_kwargs = None)
-{%- endmacro -%}
-
-{# ------------------------------------------------------------------------- #}
 
 {# Generate function declaration
  #
@@ -118,11 +105,12 @@ default to the device and dtype of the first input tensor, or the empty dict if 
 {%- if is_method and "self" not in spec.inputs -%}
 @staticmethod
 {% endif %}
-def {{ function_name_and_args(spec) }}:
-    # type: (
-    {%- for name, type in spec.inputs.items() -%}
-    {{ format_typename(type, name, is_input=True, available_classes=available_classes) }},{{ ' ' }}
-    {%- endfor -%}T.Optional[TensorKwargs]) -> {{ get_return_type(spec, available_classes=available_classes) }}
+def {{ spec.name }}(
+{%- for name, type in spec.inputs.items() %}
+    {{ name }}: {{ format_typename(type, name, is_input=True, available_classes=available_classes) }},
+{%- endfor %}
+    tensor_kwargs: TensorKwargs | None = None
+) -> {{ get_return_type(spec, available_classes=available_classes) }}:
 {%- endmacro -%}
 
 {# ------------------------------------------------------------------------- #}

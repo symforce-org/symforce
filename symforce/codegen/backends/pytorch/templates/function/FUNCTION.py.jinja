@@ -22,8 +22,7 @@ class TensorKwargs(T.TypedDict):
     dtype: torch.dtype
 
 
-def _broadcast_and_stack(tensors, dim=-1):
-    # type: (list[torch.Tensor], int) -> torch.Tensor
+def _broadcast_and_stack(tensors: list[torch.Tensor], dim: int = -1) -> torch.Tensor:
     """
     broadcast tensors to common shape then stack along new dimension
     """
@@ -37,5 +36,4 @@ def _broadcast_and_stack(tensors, dim=-1):
     {% if spec.docstring %}
     {{ util.print_docstring(spec.docstring) | indent(4) }}
     {% endif %}
-
     {{ util.expr_code(spec) }}
