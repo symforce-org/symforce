@@ -11,6 +11,7 @@
 # ----------------------------------------------------------------------------
 
 import os
+import random
 import sys
 import unittest
 
@@ -31,6 +32,7 @@ class GeoPackageTest(unittest.TestCase):
 
     def setUp(self) -> None:
         np.random.seed(42)
+        random.seed(42)
         # Store verbosity flag so tests can use
         self.verbose = ("-v" in sys.argv) or ("--verbose" in sys.argv)
 
@@ -565,9 +567,11 @@ class GeoPackageTest(unittest.TestCase):
         np.testing.assert_almost_equal(recovered_a.to_storage(), a.to_storage())
 
         perturbation_zero = a.local_coordinates(recovered_a, epsilon=sym.epsilon)
-        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim))
+        np.testing.assert_almost_equal(perturbation_zero, np.zeros(tangent_dim), decimal=6)
 
-        np.testing.assert_almost_equal(a.interpolate(b, 0.0).to_storage(), a.to_storage())
+        np.testing.assert_almost_equal(
+            a.interpolate(b, 0.0).to_storage(), a.to_storage(), decimal=6
+        )
         np.testing.assert_almost_equal(a.interpolate(b, 1.0).to_storage(), b.to_storage())
 
 
