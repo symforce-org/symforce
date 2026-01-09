@@ -177,10 +177,24 @@ inline uint32_t translate_fields<std::string, true>(const char *const fields[],
 // If the operation failed, return value is equal to 1 + the index of the first invalid field.
 ////
 
+struct FormatSettings {
+    uint32_t indent = 0;
+
+    // When this is false, Eigen types are converted to (nested) arrays. For example, 2x2 Matrix2D
+    // becomes [[1.0, 2.0], [3.0, 4.0]]. This is a "pretty" print.
+    // When this is true, Eigen types are wrapped in a struct and serialized as 1D arrays to avoid
+    // array nesting (which causes problems with Foxglove). For example, the same 2x2 Matrix2D
+    // becomes { "data": [1.0, 3.0, 2.0, 4.0] }. This is a column-major ordering that matches
+    // Eigen's internal representation of this type.
+    // TODO(michael.dresser): Add shape information when in this output mode so that the original
+    // matrix can be reconstructed from the 1D array.
+    bool eigen_no_nested_arrays = false;
+};
+
 // for arithmetic types and bools
 template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t)
+                    const T &item, const FormatSettings &settings)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -200,55 +214,57 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
 // Non-templated helper func to reduce code size
 inline void _show_field_enum(std::ostream &stream, const std::string &item_name,
                              const std::string &item_value, const char *const item_typename,
-                             uint32_t indent)
+                             const FormatSettings &settings)
 {
     stream << "{\n";
-    uint32_t new_indent = indent + kLcmIndentSpaces;
+    uint32_t new_indent = settings.indent + kLcmIndentSpaces;
     stream << std::string(new_indent, ' ') << "\"name\": \"" << item_name << "\",\n";
     stream << std::string(new_indent, ' ') << "\"value\": " << item_value;
     stream << ",\n";
     stream << std::string(new_indent, ' ') << "\"_enum_\": \"" << item_typename << "\"\n";
-    stream << std::string(indent, ' ') << "}";
+    stream << std::string(settings.indent, ' ') << "}";
 }
 
 template <typename T, std::enable_if_t<std::is_enum<typename T::option_t>::value, bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent)
+                    const T &item, const FormatSettings settings)
 {
     if (num_fields != 0) {
         // Too many fields for this type
         return 1;
     }
     _show_field_enum(stream, item.string_value(), std::to_string(item.int_value()),
-                     item.getTypeName(), indent);
+                     item.getTypeName(), settings);
     return 0;
 }
 
 // for lcm structs
 inline void _show_field_struct(std::ostream &stream, const char *const item_typename,
-                               uint32_t indent)
+                               const FormatSettings &settings)
 {
-    stream << std::string(indent + kLcmIndentSpaces, ' ') << "\"_struct_\": \"" << item_typename
-           << "\"\n";
-    stream << std::string(indent, ' ') << "}";
+    stream << std::string(settings.indent + kLcmIndentSpaces, ' ') << "\"_struct_\": \""
+           << item_typename << "\"\n";
+    stream << std::string(settings.indent, ' ') << "}";
 }
 template <
     typename T,
     std::enable_if_t<std::is_member_function_pointer<decltype(&T::show_field)>::value, bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent)
+                    const T &item, const FormatSettings &settings)
 {
     if (num_fields > 0) {
-        return item.show_field(stream, field_indices, num_fields, indent);
+        return item.show_field(stream, field_indices, num_fields, settings);
     }
     stream << "{\n";
-    uint32_t new_indent = indent + kLcmIndentSpaces;
+    uint32_t new_indent = settings.indent + kLcmIndentSpaces;
+    FormatSettings new_settings = settings;
+    new_settings.indent = new_indent;
     for (uint32_t i = 0; i < item.fields().size(); i++) {
         stream << std::string(new_indent, ' ') << "\"" << item.fields()[i] << "\": ";
-        item.show_field(stream, &i, 1, new_indent);
+        item.show_field(stream, &i, 1, new_settings);
         stream << ",\n";
     }
-    _show_field_struct(stream, item.getTypeName(), indent);
+    _show_field_struct(stream, item.getTypeName(), settings);
     return 0;
 }
 
@@ -256,40 +272,42 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
 template <typename T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value,
                                        bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent);
+                    const T &item, const FormatSettings &settings);
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::toRotationMatrix)>::value,
                            bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent);
+                    const T &item, const FormatSettings &settings);
 
 // for arrays and vectors (must appear last due to recursion)
 template <typename T, std::enable_if_t<is_iterable_v<T>, bool> = true>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent)
+                    const T &item, const FormatSettings &settings)
 {
     if (num_fields > 0) {
         if (field_indices[0] >= item.size()) {
             return 1;
         }
         uint32_t ret =
-            show_field(stream, field_indices + 1, num_fields - 1, item[field_indices[0]], indent);
+            show_field(stream, field_indices + 1, num_fields - 1, item[field_indices[0]], settings);
         return ret == 0 ? ret : ret + 1;
     }
 
     stream << "[";
     if (item.size() > 0)
         stream << "\n";
-    uint32_t new_indent = indent + kLcmIndentSpaces;
+    uint32_t new_indent = settings.indent + kLcmIndentSpaces;
+    FormatSettings new_settings = settings;
+    new_settings.indent = new_indent;
     for (size_t i = 0; i < item.size(); ++i) {
         stream << std::string(new_indent, ' ');
-        show_field(stream, nullptr, 0, item[i], new_indent);
+        show_field(stream, nullptr, 0, item[i], new_settings);
         if (i + 1 < item.size())
             stream << ",";
         stream << "\n";
     }
     if (item.size() > 0)
-        stream << std::string(indent, ' ');
+        stream << std::string(settings.indent, ' ');
     stream << "]";
     return 0;
 }
@@ -298,7 +316,7 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
 template <>
 inline uint32_t show_field<std::string, true>(std::ostream &stream, const uint32_t field_indices[],
                                               uint32_t num_fields, const std::string &item,
-                                              uint32_t)
+                                              const FormatSettings &settings)
 {
     if (num_fields != 0) {
         // Too many fields for this type

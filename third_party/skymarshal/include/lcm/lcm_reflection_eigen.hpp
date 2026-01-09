@@ -18,7 +18,7 @@ inline Eigen::IOFormat _get_vector_format()
                            "]");
 }
 
-inline Eigen::IOFormat _get_matrix_format(uint32_t indent)
+inline Eigen::IOFormat _get_matrix_pretty_format(uint32_t indent)
 {
     return Eigen::IOFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ",\n",
                            std::string(indent + kLcmIndentSpaces, ' ') + "[", "]", "[\n",
@@ -29,15 +29,40 @@ inline Eigen::IOFormat _get_matrix_format(uint32_t indent)
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value, bool>>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent)
+                    const T &item, const FormatSettings &settings)
 {
     if (num_fields == 0) {
-        if (item.cols() == 1) {
-            stream << item.format(_get_vector_format());
-        } else {
-            stream << item.format(_get_matrix_format(indent));
+        if (settings.eigen_no_nested_arrays) {
+            // Wrap all Eigen types in object with "data" field. This is consistent with the
+            // underlying representation. See comment on "FormatSettings.eigen_no_nested_arrays"
+            // for more detail.
+            stream << "{\n";
+            uint32_t new_indent = settings.indent + kLcmIndentSpaces;
+            stream << std::string(new_indent, ' ') << "\"data\": ";
+
+            // Both vectors and matrices: flatten to 1D array
+            // Uses Eigen's native column-major storage order for consistency with eigen_lcm
+            // encoding. This printout is thus consistent with the underlying representation.
+            const auto *data_ptr = item.data();
+            stream << "[";
+            for (int i = 0; i < item.size(); ++i) {
+                if (i > 0) {
+                    stream << ", ";
+                }
+                stream << data_ptr[i];
+            }
+            stream << "]";
+
+            stream << "\n" << std::string(settings.indent, ' ') << "}";
+            return 0;
+        } else {  // The "pretty" format
+            if (item.cols() == 1) {
+                stream << item.format(_get_vector_format());
+            } else {
+                stream << item.format(_get_matrix_pretty_format(settings.indent));
+            }
+            return 0;
         }
-        return 0;
     }
     const uint8_t dim = item.cols() == 1 ? 1 : 2;
     uint32_t row_index = field_indices[0];
@@ -56,12 +81,12 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
     }
 
     if (has_col_index) {
-        show_field(stream, nullptr, 0, item(row_index, col_index), indent);
+        show_field(stream, nullptr, 0, item(row_index, col_index), settings);
     } else {
         if (dim == 2) {
             stream << item.row(row_index).format(_get_vector_format());
         } else {
-            show_field(stream, nullptr, 0, item(row_index), indent);
+            show_field(stream, nullptr, 0, item(row_index), settings);
         }
     }
     return 0;
@@ -101,9 +126,9 @@ template <
     typename T,
     std::enable_if_t<std::is_member_function_pointer<decltype(&T::toRotationMatrix)>::value, bool>>
 uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32_t num_fields,
-                    const T &item, uint32_t indent)
+                    const T &item, const FormatSettings &settings)
 {
-    return show_field(stream, field_indices, num_fields, item.coeffs(), indent);
+    return show_field(stream, field_indices, num_fields, item.coeffs(), settings);
 }
 
 template <

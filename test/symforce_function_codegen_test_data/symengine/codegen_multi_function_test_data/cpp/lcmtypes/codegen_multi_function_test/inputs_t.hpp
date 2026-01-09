@@ -272,45 +272,45 @@ class inputs_t
 
         // Return value is 0 if the operation succeeded.
         // If the operation failed, return value is equal to 1 + the index of the first invalid field.
-        uint32_t show_field(std::ostream& _stream, const uint32_t _field_indices[], uint32_t _num_fields, uint32_t _indent) const
+        uint32_t show_field(std::ostream& _stream, const uint32_t _field_indices[], uint32_t _num_fields, const lcm::FormatSettings &_settings) const
         {
             uint32_t ret;
             switch (_field_indices[0]) {
                 case 0:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, x, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, x, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 1:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, y, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, y, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 2:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, rot, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, rot, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 3:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, rot_vec, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, rot_vec, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 4:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, scalar_vec, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, scalar_vec, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 5:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, list_of_lists, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, list_of_lists, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 6:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, values_vec, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, values_vec, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 7:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, values_vec_2D, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, values_vec_2D, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 8:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, constants, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, constants, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 9:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, big_matrix, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, big_matrix, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 10:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, small_matrix, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, small_matrix, _settings);
                 return ret == 0 ? ret : ret + 1;
                 case 11:
-                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, states, _indent);
+                ret = lcm::show_field(_stream, _field_indices + 1, _num_fields - 1, states, _settings);
                 return ret == 0 ? ret : ret + 1;
                 default:
                 return 1;
@@ -319,7 +319,11 @@ class inputs_t
 
         // Ability to print to standard streams as well as the fmt library.
         friend std::ostream& operator<<(std::ostream& _stream, const inputs_t& obj) {
-            lcm::show_field(_stream, nullptr, 0, obj, 0);
+            const lcm::FormatSettings settings = lcm::FormatSettings{
+                .indent = 0,
+                .eigen_no_nested_arrays = false,
+            };
+            lcm::show_field(_stream, nullptr, 0, obj, settings);
             return _stream;
         }
 
