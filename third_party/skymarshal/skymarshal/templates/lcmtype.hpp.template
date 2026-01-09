@@ -160,6 +160,20 @@ class {{lcmtype.name}}
             {{ '}}' }};
         }
 
+        // Get the schema for this type
+        static lcm::StructType schema()
+        {
+            std::vector<lcm::SchemaType> fields;
+
+        {% for member in lcmtype.members %}
+            fields.push_back(lcm::get_schema<decltype({{lcmtype.name}}::{{member.name}})>());
+        {% endfor %}
+
+            return lcm::StructType{
+                .fields = std::move(fields),
+            };
+        }
+
         // Given a string field path, translate the entire path to field / list indices within this struct.
         // Return value is 0 if the operation succeeded.
         // If the operation failed, return value is equal to 1 + the index of the first invalid field.

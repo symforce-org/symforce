@@ -179,6 +179,29 @@ class inputs_t
             }};
         }
 
+        // Get the schema for this type
+        static lcm::StructType schema()
+        {
+            std::vector<lcm::SchemaType> fields;
+
+            fields.push_back(lcm::get_schema<decltype(inputs_t::x)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::y)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::rot)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::rot_vec)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::scalar_vec)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::list_of_lists)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::values_vec)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::values_vec_2D)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::constants)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::big_matrix)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::small_matrix)>());
+            fields.push_back(lcm::get_schema<decltype(inputs_t::states)>());
+
+            return lcm::StructType{
+                .fields = std::move(fields),
+            };
+        }
+
         // Given a string field path, translate the entire path to field / list indices within this struct.
         // Return value is 0 if the operation succeeded.
         // If the operation failed, return value is equal to 1 + the index of the first invalid field.

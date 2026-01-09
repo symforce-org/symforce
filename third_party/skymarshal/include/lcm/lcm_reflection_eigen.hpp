@@ -115,4 +115,10 @@ uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &ite
     return store_field(field_indices, num_fields, item.coeffs(), value);
 }
 
+template <typename T>
+std::enable_if_t<is_eigen_v<T>, SchemaType> get_schema()
+{
+    return EigenType{};
+}
+
 }  // namespace lcm

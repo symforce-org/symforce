@@ -151,6 +151,24 @@ class outputs_1_t
             }};
         }
 
+        // Get the schema for this type
+        static lcm::StructType schema()
+        {
+            std::vector<lcm::SchemaType> fields;
+
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::foo)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::bar)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::scalar_vec_out)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::values_vec_out)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::values_vec_2D_out)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::big_matrix_from_small_matrix)>());
+            fields.push_back(lcm::get_schema<decltype(outputs_1_t::small_matrix_from_big_matrix)>());
+
+            return lcm::StructType{
+                .fields = std::move(fields),
+            };
+        }
+
         // Given a string field path, translate the entire path to field / list indices within this struct.
         // Return value is 0 if the operation succeeded.
         // If the operation failed, return value is equal to 1 + the index of the first invalid field.
