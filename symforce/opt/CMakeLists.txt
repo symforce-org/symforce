@@ -12,7 +12,7 @@ include(FetchContent)
 # ------------------------------------------------------------------------------
 # fmtlib
 
-find_package(fmt 8...<9 QUIET)
+find_package(fmt 8 QUIET)
 if (NOT fmt_FOUND)
   message(STATUS "fmt not found, adding with FetchContent")
   function(add_fmt)
@@ -34,7 +34,7 @@ endif()
 # ------------------------------------------------------------------------------
 # spdlog
 
-find_package(spdlog 1.9...<1.11 QUIET)
+find_package(spdlog 1.9 QUIET)
 if (NOT spdlog_FOUND)
   message(STATUS "spdlog not found, adding with FetchContent")
   function(add_spdlog)
