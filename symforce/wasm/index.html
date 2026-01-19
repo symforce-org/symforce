@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SymForce WASM Demo</title>
+    <style>
+      body {
+        padding: 1em;
+      }
+      #output {
+        background-color: rgb(60, 60, 60);
+        color: rgb(255, 255, 255);
+        padding: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <h1>SymForce Web Assembly Demo</h1>
+      <p>Output:</p>
+      <div id="output"></div>
+    </div>
+
+    <script>
+      /**
+       * Primary test function where sym is available.
+       */
+      function main() {
+        const R = new sym.Rot3();
+        write("R:\n", R);
+
+        const R_inv = R.inverse();
+        write("R_inv:\n", R_inv.toString());
+
+        write(`R_ypr: ${R.toYawPitchRoll()}`)
+        const R_mat = R.toRotationMatrix();
+        write("R_mat:\n", R_mat.toString());
+      }
+
+      /**
+       * Function that writes to the console and to the div.
+       */
+      function write(...stuff) {
+        console.log(...stuff);
+        document.getElementById("output").innerHTML += `<div> ${stuff.join(" ")} </div>`;
+      }
+
+      /**
+       * Initialization procedure for loading the WASM module under sym and then calling main.
+       */
+      var Module = {
+        onRuntimeInitialized: main,
+      };
+      const sym = Module;
+    </script>
+    <script src="./symforce_bindings.js"></script>
+  </body>
+</html>
