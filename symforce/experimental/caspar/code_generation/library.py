@@ -180,6 +180,8 @@ class CasparLibrary:
     @staticmethod
     def generate_links(out_dir: Path, use_symlinks: bool = True) -> None:
         for f in Path(caspar.__file__).parent.glob("source/runtime/*"):
+            if f.is_dir():  # Skip directories like __pycache__
+                continue
             f_new = out_dir / f.name
             if use_symlinks:
                 if f_new.exists():
