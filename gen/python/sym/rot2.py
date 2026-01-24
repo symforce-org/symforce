@@ -122,10 +122,8 @@ class Rot2(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = math.cos(theta)
-        _res[1] = math.sin(theta)
-        return Rot2.from_storage(_res)
+        _res = Rot2.from_storage([math.cos(theta), math.sin(theta)])
+        return _res
 
     def to_rotation_matrix(self: Rot2) -> numpy.ndarray:
         """
@@ -167,10 +165,8 @@ class Rot2(object):
         _tmp1 = 1 / math.sqrt(_tmp0**2 + (r[0, 1] - r[1, 0]) ** 2)
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = _tmp0 * _tmp1
-        _res[1] = _tmp1 * (-r[0, 1] + r[1, 0])
-        return Rot2.from_storage(_res)
+        _res = Rot2.from_storage([_tmp0 * _tmp1, _tmp1 * (-r[0, 1] + r[1, 0])])
+        return _res
 
     @staticmethod
     def random_from_uniform_sample(u1: float) -> Rot2:
@@ -186,10 +182,8 @@ class Rot2(object):
         _tmp0 = 2 * math.pi * u1
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = math.cos(_tmp0)
-        _res[1] = math.sin(_tmp0)
-        return Rot2.from_storage(_res)
+        _res = Rot2.from_storage([math.cos(_tmp0), math.sin(_tmp0)])
+        return _res
 
     # --------------------------------------------------------------------------
     # StorageOps concept

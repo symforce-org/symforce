@@ -30,14 +30,8 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 0
-        _res[4] = 0
-        _res[5] = 0
-        return sym.DoubleSphereCameraCal.from_storage(_res)
+        _res = sym.DoubleSphereCameraCal.from_storage([0, 0, 0, 0, 0, 0])
+        return _res
 
     @staticmethod
     def inverse(a: sym.DoubleSphereCameraCal) -> sym.DoubleSphereCameraCal:
@@ -49,14 +43,10 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = -_a[3]
-        _res[4] = -_a[4]
-        _res[5] = -_a[5]
-        return sym.DoubleSphereCameraCal.from_storage(_res)
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [-_a[0], -_a[1], -_a[2], -_a[3], -_a[4], -_a[5]]
+        )
+        return _res
 
     @staticmethod
     def compose(
@@ -71,14 +61,17 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = _a[0] + _b[0]
-        _res[1] = _a[1] + _b[1]
-        _res[2] = _a[2] + _b[2]
-        _res[3] = _a[3] + _b[3]
-        _res[4] = _a[4] + _b[4]
-        _res[5] = _a[5] + _b[5]
-        return sym.DoubleSphereCameraCal.from_storage(_res)
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [
+                _a[0] + _b[0],
+                _a[1] + _b[1],
+                _a[2] + _b[2],
+                _a[3] + _b[3],
+                _a[4] + _b[4],
+                _a[5] + _b[5],
+            ]
+        )
+        return _res
 
     @staticmethod
     def between(
@@ -93,14 +86,17 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
-        _res[5] = -_a[5] + _b[5]
-        return sym.DoubleSphereCameraCal.from_storage(_res)
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [
+                -_a[0] + _b[0],
+                -_a[1] + _b[1],
+                -_a[2] + _b[2],
+                -_a[3] + _b[3],
+                -_a[4] + _b[4],
+                -_a[5] + _b[5],
+            ]
+        )
+        return _res
 
     @staticmethod
     def inverse_with_jacobian(
@@ -114,13 +110,9 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = -_a[3]
-        _res[4] = -_a[4]
-        _res[5] = -_a[5]
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [-_a[0], -_a[1], -_a[2], -_a[3], -_a[4], -_a[5]]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
@@ -158,7 +150,7 @@ class GroupOps(object):
         _res_D_a[3, 5] = 0
         _res_D_a[4, 5] = 0
         _res_D_a[5, 5] = -1
-        return sym.DoubleSphereCameraCal.from_storage(_res), _res_D_a
+        return _res, _res_D_a
 
     @staticmethod
     def compose_with_jacobians(
@@ -173,13 +165,16 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = _a[0] + _b[0]
-        _res[1] = _a[1] + _b[1]
-        _res[2] = _a[2] + _b[2]
-        _res[3] = _a[3] + _b[3]
-        _res[4] = _a[4] + _b[4]
-        _res[5] = _a[5] + _b[5]
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [
+                _a[0] + _b[0],
+                _a[1] + _b[1],
+                _a[2] + _b[2],
+                _a[3] + _b[3],
+                _a[4] + _b[4],
+                _a[5] + _b[5],
+            ]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = 1
         _res_D_a[1, 0] = 0
@@ -254,7 +249,7 @@ class GroupOps(object):
         _res_D_b[3, 5] = 0
         _res_D_b[4, 5] = 0
         _res_D_b[5, 5] = 1
-        return sym.DoubleSphereCameraCal.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(
@@ -269,13 +264,16 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 6
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
-        _res[5] = -_a[5] + _b[5]
+        _res = sym.DoubleSphereCameraCal.from_storage(
+            [
+                -_a[0] + _b[0],
+                -_a[1] + _b[1],
+                -_a[2] + _b[2],
+                -_a[3] + _b[3],
+                -_a[4] + _b[4],
+                -_a[5] + _b[5],
+            ]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
@@ -350,4 +348,4 @@ class GroupOps(object):
         _res_D_b[3, 5] = 0
         _res_D_b[4, 5] = 0
         _res_D_b[5, 5] = 1
-        return sym.DoubleSphereCameraCal.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b

@@ -30,15 +30,8 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 1
-        _res[4] = 0
-        _res[5] = 0
-        _res[6] = 0
-        return sym.Pose3.from_storage(_res)
+        _res = sym.Pose3.from_storage([0, 0, 0, 1, 0, 0, 0])
+        return _res
 
     @staticmethod
     def inverse(a: sym.Pose3) -> sym.Pose3:
@@ -61,15 +54,18 @@ class GroupOps(object):
         _tmp10 = -2 * _a[0] ** 2
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = _a[3]
-        _res[4] = -_a[4] * (_tmp6 + _tmp7) - _a[5] * (_tmp1 + _tmp3) - _a[6] * (_tmp4 - _tmp5)
-        _res[5] = -_a[4] * (_tmp1 - _tmp3) - _a[5] * (_tmp10 + _tmp7) - _a[6] * (_tmp8 + _tmp9)
-        _res[6] = -_a[4] * (_tmp4 + _tmp5) - _a[5] * (_tmp8 - _tmp9) - _a[6] * (_tmp10 + _tmp6 + 1)
-        return sym.Pose3.from_storage(_res)
+        _res = sym.Pose3.from_storage(
+            [
+                -_a[0],
+                -_a[1],
+                -_a[2],
+                _a[3],
+                -_a[4] * (_tmp6 + _tmp7) - _a[5] * (_tmp1 + _tmp3) - _a[6] * (_tmp4 - _tmp5),
+                -_a[4] * (_tmp1 - _tmp3) - _a[5] * (_tmp10 + _tmp7) - _a[6] * (_tmp8 + _tmp9),
+                -_a[4] * (_tmp4 + _tmp5) - _a[5] * (_tmp8 - _tmp9) - _a[6] * (_tmp10 + _tmp6 + 1),
+            ]
+        )
+        return _res
 
     @staticmethod
     def compose(a: sym.Pose3, b: sym.Pose3) -> sym.Pose3:
@@ -93,21 +89,27 @@ class GroupOps(object):
         _tmp10 = 1 - 2 * _a[0] ** 2
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = _a[0] * _b[3] + _a[1] * _b[2] - _a[2] * _b[1] + _a[3] * _b[0]
-        _res[1] = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1]
-        _res[2] = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2]
-        _res[3] = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3]
-        _res[4] = (
-            _a[4] + _b[4] * (_tmp6 + _tmp7 + 1) + _b[5] * (_tmp4 - _tmp5) + _b[6] * (_tmp1 + _tmp3)
+        _res = sym.Pose3.from_storage(
+            [
+                _a[0] * _b[3] + _a[1] * _b[2] - _a[2] * _b[1] + _a[3] * _b[0],
+                -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1],
+                _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2],
+                -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3],
+                _a[4]
+                + _b[4] * (_tmp6 + _tmp7 + 1)
+                + _b[5] * (_tmp4 - _tmp5)
+                + _b[6] * (_tmp1 + _tmp3),
+                _a[5]
+                + _b[4] * (_tmp4 + _tmp5)
+                + _b[5] * (_tmp10 + _tmp6)
+                + _b[6] * (_tmp8 - _tmp9),
+                _a[6]
+                + _b[4] * (_tmp1 - _tmp3)
+                + _b[5] * (_tmp8 + _tmp9)
+                + _b[6] * (_tmp10 + _tmp7),
+            ]
         )
-        _res[5] = (
-            _a[5] + _b[4] * (_tmp4 + _tmp5) + _b[5] * (_tmp10 + _tmp6) + _b[6] * (_tmp8 - _tmp9)
-        )
-        _res[6] = (
-            _a[6] + _b[4] * (_tmp1 - _tmp3) + _b[5] * (_tmp8 + _tmp9) + _b[6] * (_tmp10 + _tmp7)
-        )
-        return sym.Pose3.from_storage(_res)
+        return _res
 
     @staticmethod
     def between(a: sym.Pose3, b: sym.Pose3) -> sym.Pose3:
@@ -140,36 +142,33 @@ class GroupOps(object):
         _tmp19 = _tmp15 + _tmp9
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _res[1] = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
-        _res[2] = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
-        _res[3] = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        _res[4] = (
-            -_a[4] * _tmp10
-            - _a[5] * _tmp7
-            - _a[6] * _tmp4
-            + _b[4] * _tmp10
-            + _b[5] * _tmp7
-            + _b[6] * _tmp4
+        _res = sym.Pose3.from_storage(
+            [
+                -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0],
+                _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1],
+                -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2],
+                _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3],
+                -_a[4] * _tmp10
+                - _a[5] * _tmp7
+                - _a[6] * _tmp4
+                + _b[4] * _tmp10
+                + _b[5] * _tmp7
+                + _b[6] * _tmp4,
+                -_a[4] * _tmp11
+                - _a[5] * _tmp16
+                - _a[6] * _tmp14
+                + _b[4] * _tmp11
+                + _b[5] * _tmp16
+                + _b[6] * _tmp14,
+                -_a[4] * _tmp17
+                - _a[5] * _tmp18
+                - _a[6] * _tmp19
+                + _b[4] * _tmp17
+                + _b[5] * _tmp18
+                + _b[6] * _tmp19,
+            ]
         )
-        _res[5] = (
-            -_a[4] * _tmp11
-            - _a[5] * _tmp16
-            - _a[6] * _tmp14
-            + _b[4] * _tmp11
-            + _b[5] * _tmp16
-            + _b[6] * _tmp14
-        )
-        _res[6] = (
-            -_a[4] * _tmp17
-            - _a[5] * _tmp18
-            - _a[6] * _tmp19
-            + _b[4] * _tmp17
-            + _b[5] * _tmp18
-            + _b[6] * _tmp19
-        )
-        return sym.Pose3.from_storage(_res)
+        return _res
 
     @staticmethod
     def inverse_with_jacobian(a: sym.Pose3) -> tuple[sym.Pose3, numpy.ndarray]:
@@ -229,14 +228,17 @@ class GroupOps(object):
         _tmp47 = _tmp21 - 1
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = _a[3]
-        _res[4] = -_a[4] * (_tmp11 + _tmp14 + 1) - _tmp4 - _tmp8
-        _res[5] = -_a[5] * (_tmp11 + _tmp22) - _tmp16 - _tmp19
-        _res[6] = -_a[6] * (_tmp14 + _tmp22) - _tmp23 - _tmp25
+        _res = sym.Pose3.from_storage(
+            [
+                -_a[0],
+                -_a[1],
+                -_a[2],
+                _a[3],
+                -_a[4] * (_tmp11 + _tmp14 + 1) - _tmp4 - _tmp8,
+                -_a[5] * (_tmp11 + _tmp22) - _tmp16 - _tmp19,
+                -_a[6] * (_tmp14 + _tmp22) - _tmp23 - _tmp25,
+            ]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = _tmp31
         _res_D_a[1, 0] = _tmp33
@@ -274,7 +276,7 @@ class GroupOps(object):
         _res_D_a[3, 5] = _tmp35
         _res_D_a[4, 5] = _tmp39
         _res_D_a[5, 5] = _tmp13 + _tmp47
-        return sym.Pose3.from_storage(_res), _res_D_a
+        return _res, _res_D_a
 
     @staticmethod
     def compose_with_jacobians(
@@ -423,14 +425,17 @@ class GroupOps(object):
         _tmp133 = 2 * _tmp132
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = _tmp4
-        _res[1] = _tmp9
-        _res[2] = _tmp14
-        _res[3] = _tmp19
-        _res[4] = _a[4] + _b[4] * _tmp33 + _b[5] * _tmp28 + _b[6] * _tmp24
-        _res[5] = _a[5] + _b[4] * _tmp34 + _b[5] * _tmp41 + _b[6] * _tmp38
-        _res[6] = _a[6] + _b[4] * _tmp43 + _b[5] * _tmp44 + _b[6] * _tmp45
+        _res = sym.Pose3.from_storage(
+            [
+                _tmp4,
+                _tmp9,
+                _tmp14,
+                _tmp19,
+                _a[4] + _b[4] * _tmp33 + _b[5] * _tmp28 + _b[6] * _tmp24,
+                _a[5] + _b[4] * _tmp34 + _b[5] * _tmp41 + _b[6] * _tmp38,
+                _a[6] + _b[4] * _tmp43 + _b[5] * _tmp44 + _b[6] * _tmp45,
+            ]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = _tmp54 * _tmp55 - _tmp64 * _tmp65 - _tmp74 * _tmp75 + _tmp81 * _tmp82
         _res_D_a[1, 0] = _tmp54 * _tmp82 - _tmp55 * _tmp81 + _tmp64 * _tmp75 - _tmp65 * _tmp74
@@ -505,7 +510,7 @@ class GroupOps(object):
         _res_D_b[3, 5] = _tmp24
         _res_D_b[4, 5] = _tmp38
         _res_D_b[5, 5] = _tmp45
-        return sym.Pose3.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(
@@ -662,14 +667,17 @@ class GroupOps(object):
         _tmp141 = _tmp136 * _tmp77
 
         # Output terms
-        _res = [0.0] * 7
-        _res[0] = _tmp4
-        _res[1] = _tmp9
-        _res[2] = _tmp14
-        _res[3] = _tmp19
-        _res[4] = -_a[4] * _tmp26 + _b[4] * _tmp26 - _tmp32 - _tmp37 + _tmp38
-        _res[5] = -_a[5] * _tmp49 + _b[5] * _tmp49 - _tmp41 - _tmp45 + _tmp50
-        _res[6] = -_a[6] * _tmp56 + _b[6] * _tmp56 - _tmp52 - _tmp55 + _tmp57
+        _res = sym.Pose3.from_storage(
+            [
+                _tmp4,
+                _tmp9,
+                _tmp14,
+                _tmp19,
+                -_a[4] * _tmp26 + _b[4] * _tmp26 - _tmp32 - _tmp37 + _tmp38,
+                -_a[5] * _tmp49 + _b[5] * _tmp49 - _tmp41 - _tmp45 + _tmp50,
+                -_a[6] * _tmp56 + _b[6] * _tmp56 - _tmp52 - _tmp55 + _tmp57,
+            ]
+        )
         _res_D_a = numpy.zeros((6, 6))
         _res_D_a[0, 0] = _tmp64 + _tmp71 - _tmp78 + _tmp85
         _res_D_a[1, 0] = _tmp86 - _tmp87 + _tmp89
@@ -765,4 +773,4 @@ class GroupOps(object):
         _res_D_b[3, 5] = _tmp36
         _res_D_b[4, 5] = _tmp44
         _res_D_b[5, 5] = _tmp56
-        return sym.Pose3.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b

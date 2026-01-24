@@ -167,11 +167,8 @@ class Unit3(object):
         _tmp7 = _tmp3 * _tmp6
 
         # Output terms
-        _res = [0.0] * 3
-        _res[0] = _tmp1 * _tmp7
-        _res[1] = _tmp5 * _tmp7
-        _res[2] = _tmp2 * _tmp6
-        return Unit3.from_storage(_res)
+        _res = Unit3.from_storage([_tmp1 * _tmp7, _tmp5 * _tmp7, _tmp2 * _tmp6])
+        return _res
 
     @staticmethod
     def from_vector(a: numpy.ndarray, epsilon: float) -> Unit3:
@@ -195,11 +192,8 @@ class Unit3(object):
         _tmp0 = 1 / math.sqrt(a[0, 0] ** 2 + a[1, 0] ** 2 + a[2, 0] ** 2 + epsilon)
 
         # Output terms
-        _res = [0.0] * 3
-        _res[0] = _tmp0 * a[0, 0]
-        _res[1] = _tmp0 * a[1, 0]
-        _res[2] = _tmp0 * a[2, 0]
-        return Unit3.from_storage(_res)
+        _res = Unit3.from_storage([_tmp0 * a[0, 0], _tmp0 * a[1, 0], _tmp0 * a[2, 0]])
+        return _res
 
     @staticmethod
     def from_unit_vector(a: numpy.ndarray) -> Unit3:
@@ -222,11 +216,8 @@ class Unit3(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 3
-        _res[0] = a[0, 0]
-        _res[1] = a[1, 0]
-        _res[2] = a[2, 0]
-        return Unit3.from_storage(_res)
+        _res = Unit3.from_storage([a[0, 0], a[1, 0], a[2, 0]])
+        return _res
 
     # --------------------------------------------------------------------------
     # StorageOps concept

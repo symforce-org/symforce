@@ -71,23 +71,20 @@ class LieGroupOps(object):
         _tmp24 = 2 * _tmp10
 
         # Output terms
-        _res = [0.0] * 3
-        _res[0] = (
-            _a[1] * _tmp15 * _tmp16
-            - _tmp0 * _tmp15 * _tmp4
-            + _tmp17 * (_tmp7 + _tmp8 * (-_tmp13 * _tmp9 + 1))
+        _res = sym.Unit3.from_storage(
+            [
+                _a[1] * _tmp15 * _tmp16
+                - _tmp0 * _tmp15 * _tmp4
+                + _tmp17 * (_tmp7 + _tmp8 * (-_tmp13 * _tmp9 + 1)),
+                -_a[1] * _tmp23
+                + _tmp16 * (-_tmp7 * (-_tmp18 * _tmp22 + 1) - _tmp8 * (-_tmp12 * _tmp22 + 1))
+                + _tmp4 * (-_tmp20 - _tmp21),
+                -_tmp0 * _tmp23
+                + _tmp16 * (_tmp20 + _tmp21)
+                + _tmp4 * (_tmp7 * (-_tmp18 * _tmp24 + 1) + _tmp8 * (-_tmp12 * _tmp24 + 1)),
+            ]
         )
-        _res[1] = (
-            -_a[1] * _tmp23
-            + _tmp16 * (-_tmp7 * (-_tmp18 * _tmp22 + 1) - _tmp8 * (-_tmp12 * _tmp22 + 1))
-            + _tmp4 * (-_tmp20 - _tmp21)
-        )
-        _res[2] = (
-            -_tmp0 * _tmp23
-            + _tmp16 * (_tmp20 + _tmp21)
-            + _tmp4 * (_tmp7 * (-_tmp18 * _tmp24 + 1) + _tmp8 * (-_tmp12 * _tmp24 + 1))
-        )
-        return sym.Unit3.from_storage(_res)
+        return _res
 
     @staticmethod
     def local_coordinates(a: sym.Unit3, b: sym.Unit3, epsilon: float) -> numpy.ndarray:
@@ -202,8 +199,11 @@ class LieGroupOps(object):
         _tmp36 = math.cos(_tmp31)
 
         # Output terms
-        _res = [0.0] * 3
-        _res[0] = _tmp12 * _tmp34 + _tmp21 * _tmp36 - _tmp22 * _tmp35
-        _res[1] = -_tmp12 * _tmp36 + _tmp19 * _tmp34 + _tmp27 * _tmp35
-        _res[2] = _tmp17 * _tmp34 - _tmp22 * _tmp36 + _tmp29 * _tmp35
-        return sym.Unit3.from_storage(_res)
+        _res = sym.Unit3.from_storage(
+            [
+                _tmp12 * _tmp34 + _tmp21 * _tmp36 - _tmp22 * _tmp35,
+                -_tmp12 * _tmp36 + _tmp19 * _tmp34 + _tmp27 * _tmp35,
+                _tmp17 * _tmp34 - _tmp22 * _tmp36 + _tmp29 * _tmp35,
+            ]
+        )
+        return _res

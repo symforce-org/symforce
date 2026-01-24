@@ -38,10 +38,8 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = math.cos(vec[0, 0])
-        _res[1] = math.sin(vec[0, 0])
-        return sym.Rot2.from_storage(_res)
+        _res = sym.Rot2.from_storage([math.cos(vec[0, 0]), math.sin(vec[0, 0])])
+        return _res
 
     @staticmethod
     def to_tangent(a: sym.Rot2, epsilon: float) -> numpy.ndarray:
@@ -77,10 +75,8 @@ class LieGroupOps(object):
         _tmp1 = math.sin(vec[0, 0])
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = _a[0] * _tmp0 - _a[1] * _tmp1
-        _res[1] = _a[0] * _tmp1 + _a[1] * _tmp0
-        return sym.Rot2.from_storage(_res)
+        _res = sym.Rot2.from_storage([_a[0] * _tmp0 - _a[1] * _tmp1, _a[0] * _tmp1 + _a[1] * _tmp0])
+        return _res
 
     @staticmethod
     def local_coordinates(a: sym.Rot2, b: sym.Rot2, epsilon: float) -> numpy.ndarray:
@@ -115,7 +111,5 @@ class LieGroupOps(object):
         _tmp3 = math.sin(_tmp1)
 
         # Output terms
-        _res = [0.0] * 2
-        _res[0] = _a[0] * _tmp2 - _a[1] * _tmp3
-        _res[1] = _a[0] * _tmp3 + _a[1] * _tmp2
-        return sym.Rot2.from_storage(_res)
+        _res = sym.Rot2.from_storage([_a[0] * _tmp2 - _a[1] * _tmp3, _a[0] * _tmp3 + _a[1] * _tmp2])
+        return _res

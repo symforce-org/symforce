@@ -41,12 +41,10 @@ class LieGroupOps(object):
         _tmp2 = math.sin(_tmp1) / _tmp0
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp2 * vec[0, 0]
-        _res[1] = _tmp2 * vec[1, 0]
-        _res[2] = _tmp2 * vec[2, 0]
-        _res[3] = math.cos(_tmp1)
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage(
+            [_tmp2 * vec[0, 0], _tmp2 * vec[1, 0], _tmp2 * vec[2, 0], math.cos(_tmp1)]
+        )
+        return _res
 
     @staticmethod
     def to_tangent(a: sym.Rot3, epsilon: float) -> numpy.ndarray:
@@ -93,12 +91,15 @@ class LieGroupOps(object):
         _tmp8 = _a[1] * _tmp2
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] * _tmp6 + _a[1] * _tmp3 - _tmp4 * vec[1, 0] + _tmp5 * vec[0, 0]
-        _res[1] = -_a[0] * _tmp3 + _a[1] * _tmp6 + _tmp4 * vec[0, 0] + _tmp5 * vec[1, 0]
-        _res[2] = _a[2] * _tmp6 + _tmp5 * vec[2, 0] + _tmp7 * vec[1, 0] - _tmp8 * vec[0, 0]
-        _res[3] = -_a[2] * _tmp3 + _a[3] * _tmp6 - _tmp7 * vec[0, 0] - _tmp8 * vec[1, 0]
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage(
+            [
+                _a[0] * _tmp6 + _a[1] * _tmp3 - _tmp4 * vec[1, 0] + _tmp5 * vec[0, 0],
+                -_a[0] * _tmp3 + _a[1] * _tmp6 + _tmp4 * vec[0, 0] + _tmp5 * vec[1, 0],
+                _a[2] * _tmp6 + _tmp5 * vec[2, 0] + _tmp7 * vec[1, 0] - _tmp8 * vec[0, 0],
+                -_a[2] * _tmp3 + _a[3] * _tmp6 - _tmp7 * vec[0, 0] - _tmp8 * vec[1, 0],
+            ]
+        )
+        return _res
 
     @staticmethod
     def local_coordinates(a: sym.Rot3, b: sym.Rot3, epsilon: float) -> numpy.ndarray:
@@ -147,9 +148,12 @@ class LieGroupOps(object):
         _tmp15 = _tmp11 * _tmp8
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] * _tmp14 + _a[1] * _tmp13 - _a[2] * _tmp12 + _a[3] * _tmp15
-        _res[1] = -_a[0] * _tmp13 + _a[1] * _tmp14 + _a[2] * _tmp15 + _a[3] * _tmp12
-        _res[2] = _a[0] * _tmp12 - _a[1] * _tmp15 + _a[2] * _tmp14 + _a[3] * _tmp13
-        _res[3] = -_a[0] * _tmp15 - _a[1] * _tmp12 - _a[2] * _tmp13 + _a[3] * _tmp14
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage(
+            [
+                _a[0] * _tmp14 + _a[1] * _tmp13 - _a[2] * _tmp12 + _a[3] * _tmp15,
+                -_a[0] * _tmp13 + _a[1] * _tmp14 + _a[2] * _tmp15 + _a[3] * _tmp12,
+                _a[0] * _tmp12 - _a[1] * _tmp15 + _a[2] * _tmp14 + _a[3] * _tmp13,
+                -_a[0] * _tmp15 - _a[1] * _tmp12 - _a[2] * _tmp13 + _a[3] * _tmp14,
+            ]
+        )
+        return _res

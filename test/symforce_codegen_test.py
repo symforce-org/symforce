@@ -17,6 +17,7 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
+import sym
 import symforce.symbolic as sf
 from symforce import codegen
 from symforce import ops
@@ -641,6 +642,106 @@ class SymforceCodegenTest(TestCase):
         y = numba_test_func_gen(x)
         self.assertTrue((y == np.array([1, 2])).all())
         self.assertTrue(hasattr(numba_test_func_gen, "__numba__"))
+
+    def test_matrices_list_codegen_python(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_matrices_list_python_")
+
+        # Create the specification
+        def matrices_list_test_func(x: sf.V3) -> T.List[sf.V2]:
+            return [sf.V2(x[0], x[1]), sf.V2(x[1], x[2])]
+
+        matrices_list_test_func_codegen = codegen.Codegen.function(
+            func=matrices_list_test_func, config=codegen.PythonConfig()
+        )
+        matrices_list_test_func_codegen_data = matrices_list_test_func_codegen.generate_function(
+            output_dir, namespace="sf_codegen_matrices_list_python"
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "matrices_list_test_func.py"
+        output_function = (
+            matrices_list_test_func_codegen_data.function_dir / "matrices_list_test_func.py"
+        )
+        self.compare_or_update_file(expected_code_file, output_function)
+
+        # Make sure it runs
+        matrices_list_test_func_gen = codegen_util.load_generated_function(
+            "matrices_list_test_func", matrices_list_test_func_codegen_data.function_dir
+        )
+        x = np.array([1, 2, 3])
+        y = matrices_list_test_func_gen(x)
+        np.testing.assert_array_equal(y, np.array([[1, 2], [2, 3]]))
+
+    def test_pose_list_codegen_python(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_pose_list_python_")
+
+        # Create the specification
+        def pose_list_test_func(x: sf.V3) -> T.List[sf.Pose3]:
+            return [
+                sf.Pose3(R=sf.Rot3(), t=sf.V3(x[0], x[1], x[2])),
+                sf.Pose3(R=sf.Rot3(), t=sf.V3(x[1], x[2], x[0])),
+            ]
+
+        pose_list_test_func_codegen = codegen.Codegen.function(
+            func=pose_list_test_func, config=codegen.PythonConfig()
+        )
+        pose_list_test_func_codegen_data = pose_list_test_func_codegen.generate_function(
+            output_dir, namespace="sf_codegen_pose_list_python"
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "pose_list_test_func.py"
+        output_function = pose_list_test_func_codegen_data.function_dir / "pose_list_test_func.py"
+        self.compare_or_update_file(expected_code_file, output_function)
+
+        # Make sure it runs
+        pose_list_test_func_gen = codegen_util.load_generated_function(
+            "pose_list_test_func", pose_list_test_func_codegen_data.function_dir
+        )
+        x = np.array([1, 2, 3])
+        y = pose_list_test_func_gen(x)
+        self.assertEqual(
+            y,
+            [
+                sym.Pose3(R=sym.Rot3(), t=np.array([x[0], x[1], x[2]])),
+                sym.Pose3(R=sym.Rot3(), t=np.array([x[1], x[2], x[0]])),
+            ],
+        )
+
+    def test_list_of_lists_codegen_python(self) -> None:
+        output_dir = self.make_output_dir("sf_codegen_list_of_lists_python_")
+
+        # Create the specification
+        def list_of_lists_test_func(x: sf.V3) -> T.List[T.List[sf.V2]]:
+            return [[sf.V2(x[0], x[1]), sf.V2(x[1], x[2])], [sf.V2(x[2], x[0]), sf.V2(x[0], x[1])]]
+
+        list_of_lists_test_func_codegen = codegen.Codegen.function(
+            func=list_of_lists_test_func, config=codegen.PythonConfig()
+        )
+        list_of_lists_test_func_codegen_data = list_of_lists_test_func_codegen.generate_function(
+            output_dir, namespace="sf_codegen_list_of_lists_python"
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "list_of_lists_test_func.py"
+        output_function = (
+            list_of_lists_test_func_codegen_data.function_dir / "list_of_lists_test_func.py"
+        )
+        self.compare_or_update_file(expected_code_file, output_function)
+
+        # Make sure it runs
+        list_of_lists_test_func_gen = codegen_util.load_generated_function(
+            "list_of_lists_test_func", list_of_lists_test_func_codegen_data.function_dir
+        )
+        x = np.array([1, 2, 3])
+        y = list_of_lists_test_func_gen(x)
+        self.assertEqual(len(y), 2)
+        self.assertEqual(len(y[0]), 2)
+        self.assertEqual(len(y[1]), 2)
+        np.testing.assert_array_equal(y[0][0], np.array([x[0], x[1]]))
+        np.testing.assert_array_equal(y[0][1], np.array([x[1], x[2]]))
+        np.testing.assert_array_equal(y[1][0], np.array([x[2], x[0]]))
+        np.testing.assert_array_equal(y[1][1], np.array([x[0], x[1]]))
 
     # -------------------------------------------------------------------------
     # C++

@@ -34,9 +34,12 @@ def codegen_dataclass_in_values_test(my_dataclass: T.Any) -> sym.Rot3:
     # Intermediate terms (0)
 
     # Output terms
-    _rot = [0.0] * 4
-    _rot[0] = my_dataclass.rot.data[0]
-    _rot[1] = my_dataclass.rot.data[1]
-    _rot[2] = my_dataclass.rot.data[2]
-    _rot[3] = my_dataclass.rot.data[3]
-    return sym.Rot3.from_storage(_rot)
+    _rot = sym.Rot3.from_storage(
+        [
+            my_dataclass.rot.data[0],
+            my_dataclass.rot.data[1],
+            my_dataclass.rot.data[2],
+            my_dataclass.rot.data[3],
+        ]
+    )
+    return _rot

@@ -323,7 +323,9 @@ class Codegen:
         # Form the output expressions as a Values object
         outputs = Values()
         for output_name, output in zip(output_names, output_terms):
-            if isinstance(output, (list, tuple)):
+            if isinstance(output, (list, tuple)) and all(
+                [typing_util.scalar_like(o) for o in output]
+            ):
                 output = sf.Matrix(output)
             outputs[output_name] = output
 
@@ -375,6 +377,13 @@ class Codegen:
         data["is_symbolic"] = is_symbolic
         data["issubclass"] = issubclass
         data["is_sequence"] = lambda arg: isinstance(arg, (list, tuple))
+
+        def is_value_or_nested_list_of_values(T: T.Any) -> bool:
+            return isinstance(T, Values) or (
+                isinstance(T, list) and all(map(is_value_or_nested_list_of_values, T))
+            )
+
+        data["is_value_or_nested_list_of_values"] = is_value_or_nested_list_of_values
 
         def should_set_zero(mat: sf.Matrix, zero_initialization_sparsity_threshold: float) -> bool:
             """

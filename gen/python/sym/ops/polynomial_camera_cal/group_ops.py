@@ -30,16 +30,8 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 0
-        _res[4] = 0
-        _res[5] = 0
-        _res[6] = 0
-        _res[7] = 0
-        return sym.PolynomialCameraCal.from_storage(_res)
+        _res = sym.PolynomialCameraCal.from_storage([0, 0, 0, 0, 0, 0, 0, 0])
+        return _res
 
     @staticmethod
     def inverse(a: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
@@ -51,16 +43,10 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = -_a[3]
-        _res[4] = -_a[4]
-        _res[5] = -_a[5]
-        _res[6] = -_a[6]
-        _res[7] = -_a[7]
-        return sym.PolynomialCameraCal.from_storage(_res)
+        _res = sym.PolynomialCameraCal.from_storage(
+            [-_a[0], -_a[1], -_a[2], -_a[3], -_a[4], -_a[5], -_a[6], -_a[7]]
+        )
+        return _res
 
     @staticmethod
     def compose(a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
@@ -73,16 +59,19 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = _a[0] + _b[0]
-        _res[1] = _a[1] + _b[1]
-        _res[2] = _a[2] + _b[2]
-        _res[3] = _a[3] + _b[3]
-        _res[4] = _a[4] + _b[4]
-        _res[5] = _a[5] + _b[5]
-        _res[6] = _a[6] + _b[6]
-        _res[7] = _a[7] + _b[7]
-        return sym.PolynomialCameraCal.from_storage(_res)
+        _res = sym.PolynomialCameraCal.from_storage(
+            [
+                _a[0] + _b[0],
+                _a[1] + _b[1],
+                _a[2] + _b[2],
+                _a[3] + _b[3],
+                _a[4] + _b[4],
+                _a[5] + _b[5],
+                _a[6] + _b[6],
+                _a[7] + _b[7],
+            ]
+        )
+        return _res
 
     @staticmethod
     def between(a: sym.PolynomialCameraCal, b: sym.PolynomialCameraCal) -> sym.PolynomialCameraCal:
@@ -95,16 +84,19 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
-        _res[5] = -_a[5] + _b[5]
-        _res[6] = -_a[6] + _b[6]
-        _res[7] = -_a[7] + _b[7]
-        return sym.PolynomialCameraCal.from_storage(_res)
+        _res = sym.PolynomialCameraCal.from_storage(
+            [
+                -_a[0] + _b[0],
+                -_a[1] + _b[1],
+                -_a[2] + _b[2],
+                -_a[3] + _b[3],
+                -_a[4] + _b[4],
+                -_a[5] + _b[5],
+                -_a[6] + _b[6],
+                -_a[7] + _b[7],
+            ]
+        )
+        return _res
 
     @staticmethod
     def inverse_with_jacobian(
@@ -118,15 +110,9 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = -_a[3]
-        _res[4] = -_a[4]
-        _res[5] = -_a[5]
-        _res[6] = -_a[6]
-        _res[7] = -_a[7]
+        _res = sym.PolynomialCameraCal.from_storage(
+            [-_a[0], -_a[1], -_a[2], -_a[3], -_a[4], -_a[5], -_a[6], -_a[7]]
+        )
         _res_D_a = numpy.zeros((8, 8))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
@@ -192,7 +178,7 @@ class GroupOps(object):
         _res_D_a[5, 7] = 0
         _res_D_a[6, 7] = 0
         _res_D_a[7, 7] = -1
-        return sym.PolynomialCameraCal.from_storage(_res), _res_D_a
+        return _res, _res_D_a
 
     @staticmethod
     def compose_with_jacobians(
@@ -207,15 +193,18 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = _a[0] + _b[0]
-        _res[1] = _a[1] + _b[1]
-        _res[2] = _a[2] + _b[2]
-        _res[3] = _a[3] + _b[3]
-        _res[4] = _a[4] + _b[4]
-        _res[5] = _a[5] + _b[5]
-        _res[6] = _a[6] + _b[6]
-        _res[7] = _a[7] + _b[7]
+        _res = sym.PolynomialCameraCal.from_storage(
+            [
+                _a[0] + _b[0],
+                _a[1] + _b[1],
+                _a[2] + _b[2],
+                _a[3] + _b[3],
+                _a[4] + _b[4],
+                _a[5] + _b[5],
+                _a[6] + _b[6],
+                _a[7] + _b[7],
+            ]
+        )
         _res_D_a = numpy.zeros((8, 8))
         _res_D_a[0, 0] = 1
         _res_D_a[1, 0] = 0
@@ -346,7 +335,7 @@ class GroupOps(object):
         _res_D_b[5, 7] = 0
         _res_D_b[6, 7] = 0
         _res_D_b[7, 7] = 1
-        return sym.PolynomialCameraCal.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(
@@ -361,15 +350,18 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 8
-        _res[0] = -_a[0] + _b[0]
-        _res[1] = -_a[1] + _b[1]
-        _res[2] = -_a[2] + _b[2]
-        _res[3] = -_a[3] + _b[3]
-        _res[4] = -_a[4] + _b[4]
-        _res[5] = -_a[5] + _b[5]
-        _res[6] = -_a[6] + _b[6]
-        _res[7] = -_a[7] + _b[7]
+        _res = sym.PolynomialCameraCal.from_storage(
+            [
+                -_a[0] + _b[0],
+                -_a[1] + _b[1],
+                -_a[2] + _b[2],
+                -_a[3] + _b[3],
+                -_a[4] + _b[4],
+                -_a[5] + _b[5],
+                -_a[6] + _b[6],
+                -_a[7] + _b[7],
+            ]
+        )
         _res_D_a = numpy.zeros((8, 8))
         _res_D_a[0, 0] = -1
         _res_D_a[1, 0] = 0
@@ -500,4 +492,4 @@ class GroupOps(object):
         _res_D_b[5, 7] = 0
         _res_D_b[6, 7] = 0
         _res_D_b[7, 7] = 1
-        return sym.PolynomialCameraCal.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b

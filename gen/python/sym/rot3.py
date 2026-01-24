@@ -229,12 +229,15 @@ class Rot3(object):
         _tmp4 = _tmp1 * u3
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp0 * math.sin(_tmp2)
-        _res[1] = _tmp0 * math.cos(_tmp2)
-        _res[2] = _tmp3 * math.sin(_tmp4)
-        _res[3] = _tmp3 * math.cos(_tmp4)
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage(
+            [
+                _tmp0 * math.sin(_tmp2),
+                _tmp0 * math.cos(_tmp2),
+                _tmp3 * math.sin(_tmp4),
+                _tmp3 * math.cos(_tmp4),
+            ]
+        )
+        return _res
 
     def to_yaw_pitch_roll(self: Rot3) -> numpy.ndarray:
         """
@@ -298,12 +301,15 @@ class Rot3(object):
         _tmp12 = _tmp5 * _tmp9
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = -_tmp1 * _tmp6 + _tmp10 * _tmp7
-        _res[1] = _tmp1 * _tmp12 + _tmp11 * _tmp7
-        _res[2] = -_tmp1 * _tmp10 + _tmp6 * _tmp7
-        _res[3] = _tmp1 * _tmp11 + _tmp12 * _tmp7
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage(
+            [
+                -_tmp1 * _tmp6 + _tmp10 * _tmp7,
+                _tmp1 * _tmp12 + _tmp11 * _tmp7,
+                -_tmp1 * _tmp10 + _tmp6 * _tmp7,
+                _tmp1 * _tmp11 + _tmp12 * _tmp7,
+            ]
+        )
+        return _res
 
     @staticmethod
     def from_yaw(yaw: float) -> Rot3:
@@ -317,12 +323,8 @@ class Rot3(object):
         _tmp0 = (1.0 / 2.0) * yaw
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 1.0 * math.sin(_tmp0)
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage([0, 0, 1.0 * math.sin(_tmp0), 1.0 * math.cos(_tmp0)])
+        return _res
 
     @staticmethod
     def from_pitch(pitch: float) -> Rot3:
@@ -336,12 +338,8 @@ class Rot3(object):
         _tmp0 = (1.0 / 2.0) * pitch
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = 0
-        _res[1] = 1.0 * math.sin(_tmp0)
-        _res[2] = 0
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage([0, 1.0 * math.sin(_tmp0), 0, 1.0 * math.cos(_tmp0)])
+        return _res
 
     @staticmethod
     def from_roll(roll: float) -> Rot3:
@@ -355,12 +353,8 @@ class Rot3(object):
         _tmp0 = (1.0 / 2.0) * roll
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = 1.0 * math.sin(_tmp0)
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 1.0 * math.cos(_tmp0)
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage([1.0 * math.sin(_tmp0), 0, 0, 1.0 * math.cos(_tmp0)])
+        return _res
 
     @staticmethod
     def from_angle_axis(angle: float, axis: numpy.ndarray) -> Rot3:
@@ -385,12 +379,10 @@ class Rot3(object):
         _tmp1 = math.sin(_tmp0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp1 * axis[0, 0]
-        _res[1] = _tmp1 * axis[1, 0]
-        _res[2] = _tmp1 * axis[2, 0]
-        _res[3] = math.cos(_tmp0)
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage(
+            [_tmp1 * axis[0, 0], _tmp1 * axis[1, 0], _tmp1 * axis[2, 0], math.cos(_tmp0)]
+        )
+        return _res
 
     @staticmethod
     def from_two_unit_vectors(a: numpy.ndarray, b: numpy.ndarray, epsilon: float) -> Rot3:
@@ -435,12 +427,15 @@ class Rot3(object):
         _tmp6 = 1 - _tmp3
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp4 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0]) + _tmp6 * (1 - _tmp5)
-        _res[1] = _tmp4 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0]) + _tmp5 * _tmp6
-        _res[2] = _tmp4 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0])
-        _res[3] = (1.0 / 4.0) * _tmp1 * _tmp2
-        return Rot3.from_storage(_res)
+        _res = Rot3.from_storage(
+            [
+                _tmp4 * (a[1, 0] * b[2, 0] - a[2, 0] * b[1, 0]) + _tmp6 * (1 - _tmp5),
+                _tmp4 * (-a[0, 0] * b[2, 0] + a[2, 0] * b[0, 0]) + _tmp5 * _tmp6,
+                _tmp4 * (a[0, 0] * b[1, 0] - a[1, 0] * b[0, 0]),
+                (1.0 / 4.0) * _tmp1 * _tmp2,
+            ]
+        )
+        return _res
 
     # --------------------------------------------------------------------------
     # StorageOps concept

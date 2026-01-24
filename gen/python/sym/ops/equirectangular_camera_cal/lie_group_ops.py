@@ -38,12 +38,10 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = vec[0, 0]
-        _res[1] = vec[1, 0]
-        _res[2] = vec[2, 0]
-        _res[3] = vec[3, 0]
-        return sym.EquirectangularCameraCal.from_storage(_res)
+        _res = sym.EquirectangularCameraCal.from_storage(
+            [vec[0, 0], vec[1, 0], vec[2, 0], vec[3, 0]]
+        )
+        return _res
 
     @staticmethod
     def to_tangent(a: sym.EquirectangularCameraCal, epsilon: float) -> numpy.ndarray:
@@ -82,12 +80,10 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] + vec[0, 0]
-        _res[1] = _a[1] + vec[1, 0]
-        _res[2] = _a[2] + vec[2, 0]
-        _res[3] = _a[3] + vec[3, 0]
-        return sym.EquirectangularCameraCal.from_storage(_res)
+        _res = sym.EquirectangularCameraCal.from_storage(
+            [_a[0] + vec[0, 0], _a[1] + vec[1, 0], _a[2] + vec[2, 0], _a[3] + vec[3, 0]]
+        )
+        return _res
 
     @staticmethod
     def local_coordinates(
@@ -125,9 +121,12 @@ class LieGroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] + alpha * (-_a[0] + _b[0])
-        _res[1] = _a[1] + alpha * (-_a[1] + _b[1])
-        _res[2] = _a[2] + alpha * (-_a[2] + _b[2])
-        _res[3] = _a[3] + alpha * (-_a[3] + _b[3])
-        return sym.EquirectangularCameraCal.from_storage(_res)
+        _res = sym.EquirectangularCameraCal.from_storage(
+            [
+                _a[0] + alpha * (-_a[0] + _b[0]),
+                _a[1] + alpha * (-_a[1] + _b[1]),
+                _a[2] + alpha * (-_a[2] + _b[2]),
+                _a[3] + alpha * (-_a[3] + _b[3]),
+            ]
+        )
+        return _res

@@ -35,8 +35,10 @@
     {%- elif is_sequence(T_or_value) -%}
         {%- if is_input -%}
             T.Sequence[{{ format_typename(T_or_value[0], name, is_input) }}]
-        {%- else -%}
+        {%- elif typing_util.scalar_like(T_or_value[0]) or is_value_or_nested_list_of_values(T_or_value[0]) -%}
             list[float]
+        {%- else -%}
+            list[{{ format_typename(T_or_value[0], name, is_input) }}]
         {%- endif -%}
     {%- else -%}
         {%- if T not in available_classes and ("geo" in T.__module__ or "cam" in T.__module__) -%}
@@ -160,6 +162,89 @@ elif {{ name }}.shape != {{ shape }}:
 
 {# ------------------------------------------------------------------------- #}
 
+{# Helper for outputting a matrix type
+ #
+ # Args:
+ #     spec (Codegen): The codegen object
+ #     name (str): The name of the temp variable to store the output
+ #     type (type): The type of the output
+ #     terms (list[tuple[str, str]]): The terms to be output
+ #     ns_terms (namespace): The namespace of the terms, must contain a starting_index attribute
+ #}
+{% macro output_matrix_helper(spec, name, type, terms, ns_terms) %}
+    {% if not spec.config.return_2d_vectors and 1 == (type.shape | min) %}
+        {% set size = type.shape | max %}
+    _{{ name }} = numpy.zeros({{ size }})
+        {% for i in range(size) %}
+    _{{ name }}[{{ i }}] = {{ terms[ns_terms.starting_index + i][1] }}
+        {% endfor %}
+    {% else %}
+        {% set rows = type.shape[0] %}
+        {% set cols = type.shape[1] %}
+    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
+        {% set ns = namespace(iter=0) %}
+        {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
+        storage order of geo.Matrix is changed (i.e., from column major to row major), the
+        following for loops will have to be changed to match that order. #}
+        {% for j in range(cols) %}
+            {% for i in range(rows) %}
+    _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns_terms.starting_index + ns.iter][1] }}
+                {% set ns.iter = ns.iter + 1 %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    {% set ns_terms.starting_index = ns_terms.starting_index + type.shape[0] * type.shape[1] %}
+{% endmacro %}
+
+{# Helper for outputting a dense type
+ #
+ # Args:
+ #     spec (Codegen): The codegen object
+ #     name (str): The name of the temp variable to store the output
+ #     type (type): The type of the output
+ #     terms (list[tuple[str, str]]): The terms to be output
+ #     ns_terms (namespace): The namespace of the terms, must contain a starting_index attribute
+ #}
+{% macro output_dense_helper(spec, available_classes, name, type, terms, ns_terms) %}
+    {% set T = typing_util.get_type(type) %}
+    {# Special case of sequence of floats and values need to be handled differently #}
+    {% if is_sequence(type) and typing_util.scalar_like(type[0]) or is_value_or_nested_list_of_values(type) %}
+        {% set dims = ops.StorageOps.storage_dim(type) %}
+    _{{name}} = [0.] * {{ dims }}
+        {% for i in range(dims) %}
+    _{{ name }}[{{ i }}] = {{ terms[ns_terms.starting_index + i][1] }}
+        {% endfor %}
+        {% set ns_terms.starting_index = ns_terms.starting_index + dims %}
+    {% elif is_sequence(type) %}
+        {% set sequence_length = type | length %}
+    _{{ name }} = []
+        {% for i in range(sequence_length) %}
+{{ output_dense_helper(spec, available_classes, name + "_" + i | string, type[i], terms, ns_terms) }}
+    _{{ name }}.append(_{{ name + "_" + i | string }})
+        {% endfor %}
+    {% elif issubclass(T, Matrix) %}
+{{- output_matrix_helper(spec, name, type, terms, ns_terms) -}}
+    {% elif "geo" in T.__module__ or "cam" in T.__module__ %}
+        {% set dims = ops.StorageOps.storage_dim(type) %}
+    _{{name}} =
+        {%- if T not in available_classes -%}
+            sym.
+        {%- endif -%}
+        {{- T.__name__ -}}.from_storage([{% for i in range(dims) %}{{ terms[ns_terms.starting_index + i][1] }}{% if not loop.last %},{% endif %}{% endfor %}])
+        {% set ns_terms.starting_index = ns_terms.starting_index + dims %}
+    {% elif not is_symbolic(type) %}
+        {% set dims = ops.StorageOps.storage_dim(type) %}
+    _{{name}} = [0.] * {{ dims }}
+        {% for i in range(dims) %}
+    _{{ name }}[{{ i }}] = {{ terms[ns_terms.starting_index + i][1] }}
+        {% endfor %}
+        {% set ns_terms.starting_index = ns_terms.starting_index + dims %}
+    {% else %}
+    _{{name}} = {{ terms[ns_terms.starting_index][1] }}
+        {% set ns_terms.starting_index = ns_terms.starting_index + 1 %}
+    {% endif %}
+{% endmacro %}
+
 {# Generate inner code for computing the given expression.
  #
  # Args:
@@ -190,38 +275,8 @@ elif {{ name }}.shape != {{ shape }}:
     # Output terms
     {# Render all non-sparse terms -#}
     {% for name, type, terms in spec.print_code_results.dense_terms %}
-        {%- set T = typing_util.get_type(type) -%}
-        {% if issubclass(T, Matrix) %}
-            {% if not spec.config.return_2d_vectors and 1 == (type.shape | min) %}
-                {% set size = type.shape | max %}
-    _{{ name }} = numpy.zeros({{ size }})
-                {% for i in range(size) %}
-    _{{ name }}[{{ i }}] = {{ terms[i][1] }}
-                {% endfor %}
-            {% else %}
-                {% set rows = type.shape[0] %}
-                {% set cols = type.shape[1] %}
-    _{{ name }} = numpy.zeros(({{ rows }}, {{ cols }}))
-                {% set ns = namespace(iter=0) %}
-                {# NOTE(brad): The order of the terms is the storage order of geo.Matrix. If the
-                storage order of geo.Matrix is changed (i.e., from column major to row major), the
-                following for loops will have to be changed to match that order. #}
-                {% for j in range(cols) %}
-                    {% for i in range(rows) %}
-    _{{ name }}[{{ i }}, {{ j }}] = {{ terms[ns.iter][1] }}
-                        {% set ns.iter = ns.iter + 1 %}
-                    {% endfor %}
-                {% endfor %}
-            {% endif %}
-        {% elif not is_symbolic(type) %}
-            {% set dims = ops.StorageOps.storage_dim(type) %}
-    _{{name}} = [0.] * {{ dims }}
-            {% for i in range(dims) %}
-    _{{ name }}[{{ i }}] = {{ terms[i][1] }}
-            {% endfor %}
-        {% else %}
-    _{{name}} = {{ terms[0][1] }}
-        {% endif %}
+        {% set ns_terms = namespace(starting_index=0) %}
+{{- output_dense_helper(spec, available_classes, name, type, terms, ns_terms) -}}
     {% endfor %}
 
     {#- Render all sparse terms -#}
@@ -244,16 +299,7 @@ elif {{ name }}.shape != {{ shape }}:
     {% endfor %}
     return
     {%- for name, type in spec.outputs.items() %}
-        {% set T = typing_util.get_type(type) %}
-        {% if issubclass(T, (Matrix, Values)) or is_sequence(type) or is_symbolic(type) %}
  _{{name}}
-        {%- else -%}
-            {%- if T in available_classes %}
- {{T.__name__}}.from_storage(_{{name}})
-            {% else %}
- sym.{{T.__name__}}.from_storage(_{{name}})
-            {%- endif -%}
-        {%- endif %}
         {%- if not loop.last %}, {% endif %}
     {%- endfor -%}
 {% endmacro %}

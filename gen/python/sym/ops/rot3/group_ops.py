@@ -30,12 +30,8 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = 0
-        _res[1] = 0
-        _res[2] = 0
-        _res[3] = 1
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage([0, 0, 0, 1])
+        return _res
 
     @staticmethod
     def inverse(a: sym.Rot3) -> sym.Rot3:
@@ -47,12 +43,8 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = _a[3]
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage([-_a[0], -_a[1], -_a[2], _a[3]])
+        return _res
 
     @staticmethod
     def compose(a: sym.Rot3, b: sym.Rot3) -> sym.Rot3:
@@ -65,12 +57,15 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _a[0] * _b[3] + _a[1] * _b[2] - _a[2] * _b[1] + _a[3] * _b[0]
-        _res[1] = -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1]
-        _res[2] = _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2]
-        _res[3] = -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3]
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage(
+            [
+                _a[0] * _b[3] + _a[1] * _b[2] - _a[2] * _b[1] + _a[3] * _b[0],
+                -_a[0] * _b[2] + _a[1] * _b[3] + _a[2] * _b[0] + _a[3] * _b[1],
+                _a[0] * _b[1] - _a[1] * _b[0] + _a[2] * _b[3] + _a[3] * _b[2],
+                -_a[0] * _b[0] - _a[1] * _b[1] - _a[2] * _b[2] + _a[3] * _b[3],
+            ]
+        )
+        return _res
 
     @staticmethod
     def between(a: sym.Rot3, b: sym.Rot3) -> sym.Rot3:
@@ -83,12 +78,15 @@ class GroupOps(object):
         # Intermediate terms (0)
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0]
-        _res[1] = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1]
-        _res[2] = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2]
-        _res[3] = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3]
-        return sym.Rot3.from_storage(_res)
+        _res = sym.Rot3.from_storage(
+            [
+                -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0],
+                _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1],
+                -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2],
+                _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3],
+            ]
+        )
+        return _res
 
     @staticmethod
     def inverse_with_jacobian(a: sym.Rot3) -> tuple[sym.Rot3, numpy.ndarray]:
@@ -113,11 +111,7 @@ class GroupOps(object):
         _tmp12 = -_a[1] * _tmp5
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = -_a[0]
-        _res[1] = -_a[1]
-        _res[2] = -_a[2]
-        _res[3] = _a[3]
+        _res = sym.Rot3.from_storage([-_a[0], -_a[1], -_a[2], _a[3]])
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp0 - _tmp1 + _tmp4
         _res_D_a[1, 0] = -_tmp6 + _tmp7
@@ -128,7 +122,7 @@ class GroupOps(object):
         _res_D_a[0, 2] = _tmp10 - _tmp9
         _res_D_a[1, 2] = _tmp11 + _tmp12
         _res_D_a[2, 2] = -_tmp0 + _tmp1 + _tmp4
-        return sym.Rot3.from_storage(_res), _res_D_a
+        return _res, _res_D_a
 
     @staticmethod
     def compose_with_jacobians(
@@ -237,11 +231,7 @@ class GroupOps(object):
         _tmp93 = _tmp41 + _tmp42 + _tmp74
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp4
-        _res[1] = _tmp9
-        _res[2] = _tmp14
-        _res[3] = _tmp19
+        _res = sym.Rot3.from_storage([_tmp4, _tmp9, _tmp14, _tmp19])
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp29 * _tmp30 - _tmp39 * _tmp40 - _tmp49 * _tmp50 + _tmp57 * _tmp58
         _res_D_a[1, 0] = _tmp29 * _tmp58 - _tmp30 * _tmp57 - _tmp39 * _tmp50 + _tmp40 * _tmp49
@@ -262,7 +252,7 @@ class GroupOps(object):
         _res_D_b[0, 2] = -_tmp40 * _tmp89 + _tmp58 * _tmp93 + _tmp86 - _tmp87
         _res_D_b[1, 2] = -_tmp30 * _tmp93 + _tmp58 * _tmp80 + _tmp91 - _tmp92
         _res_D_b[2, 2] = _tmp50 * _tmp93 + _tmp83 + _tmp90
-        return sym.Rot3.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b
 
     @staticmethod
     def between_with_jacobians(
@@ -355,11 +345,7 @@ class GroupOps(object):
         _tmp77 = _tmp32 * _tmp72
 
         # Output terms
-        _res = [0.0] * 4
-        _res[0] = _tmp4
-        _res[1] = _tmp9
-        _res[2] = _tmp14
-        _res[3] = _tmp19
+        _res = sym.Rot3.from_storage([_tmp4, _tmp9, _tmp14, _tmp19])
         _res_D_a = numpy.zeros((3, 3))
         _res_D_a[0, 0] = _tmp26 - _tmp33 + _tmp48
         _res_D_a[1, 0] = _tmp49 - _tmp51 + _tmp53
@@ -380,4 +366,4 @@ class GroupOps(object):
         _res_D_b[0, 2] = -_tmp4 * _tmp58 + _tmp69 - _tmp76
         _res_D_b[1, 2] = -_tmp65 + _tmp70 + _tmp77
         _res_D_b[2, 2] = _tmp60 + _tmp61 + _tmp74
-        return sym.Rot3.from_storage(_res), _res_D_a, _res_D_b
+        return _res, _res_D_a, _res_D_b
