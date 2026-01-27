@@ -8,6 +8,7 @@ from __future__ import annotations
 from symforce import typing as T
 from symforce.ops.storage_ops import StorageOps as Ops
 
+from .dtype import DType
 from .pair import Pair
 from .pair import get_memtype
 
@@ -34,14 +35,17 @@ Example::
 """
 
 
-def get_default_caspar_layout(stype: T.Union[T.StorableOrType, Pair]) -> list[list[int]]:
+def get_default_caspar_layout(
+    stype: T.Union[T.StorableOrType, Pair], dtype: DType
+) -> list[list[int]]:
     """
     Default layout for a given storage type.
     """
+    chunk_size = 4 if dtype.is_float() else 2
     if isinstance(stype, Pair):
-        return get_default_caspar_layout(get_memtype(stype))
+        return get_default_caspar_layout(get_memtype(stype), dtype)
     size = Ops.storage_dim(stype)
-    layout = [list(range(i, min(i + 4, size))) for i in range(0, size, 4)]
+    layout = [list(range(i, min(i + chunk_size, size))) for i in range(0, size, chunk_size)]
     return layout
 
 

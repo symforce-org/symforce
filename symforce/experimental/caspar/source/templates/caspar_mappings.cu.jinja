@@ -12,20 +12,20 @@
 namespace cg = cooperative_groups;
 
 // We use shared memory to improve the memory access.
-// A smaller block size of 64 allows for larger nodetypes.
-constexpr int block_size = 64;
+// A smaller block size of 32 allows for larger nodetypes.
+constexpr int block_size = 32;
 
 namespace caspar {
 {% for nodetype in caslib.exposed_types%}
 
 __global__ __launch_bounds__(block_size, 1)
-void {{nodetype.__name__}}_stacked_to_caspar_kernel(const float* const __restrict__ stacked_data,
-                          float* const __restrict__ cas_data,
+void {{nodetype.__name__}}_stacked_to_caspar_kernel(const {{caslib.storage_t}}* const __restrict__ stacked_data,
+                          {{caslib.storage_t}}* const __restrict__ cas_data,
                           const unsigned int cas_stride,
                           const unsigned int cas_offset,
                           const unsigned int num_objects) {
   const unsigned int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ float stacked_data_local[block_size*{{Ops.storage_dim(nodetype)}}];
+  __shared__ {{caslib.storage_t}} stacked_data_local[block_size*{{Ops.storage_dim(nodetype)}}];
 
   for (unsigned int target = (blockIdx.x * blockDim.x) * {{Ops.storage_dim(nodetype)}} + threadIdx.x;
        target < min(num_objects, (blockIdx.x + 1) * blockDim.x) * {{Ops.storage_dim(nodetype)}};
@@ -36,11 +36,11 @@ void {{nodetype.__name__}}_stacked_to_caspar_kernel(const float* const __restric
   __syncthreads();
 
   if (global_thread_idx < num_objects) {
-    float data[4] = {0, 0, 0, 0};
-    float* stacked_local_ptr = stacked_data_local + threadIdx.x * {{Ops.storage_dim(nodetype)}};
-    float* out_ptr;
+    {{caslib.storage_t}} data[4] = {0, 0, 0, 0};
+    {{caslib.storage_t}}* stacked_local_ptr = stacked_data_local + threadIdx.x * {{Ops.storage_dim(nodetype)}};
+    {{caslib.storage_t}}* out_ptr;
     {% set ns = namespace(offset=0) %}
-    {% for chunk in get_layout(nodetype) %}
+    {% for chunk in get_layout(nodetype, caslib.storage_t) %}
     {% for i in range(4) %}
     {% if i < len(chunk) %}
     data[{{i}}] = stacked_local_ptr[{{chunk[i]}}];
@@ -51,10 +51,12 @@ void {{nodetype.__name__}}_stacked_to_caspar_kernel(const float* const __restric
     {% if len(chunk) == 1 %}
     out_ptr[0] = data[0];
     {% elif len(chunk) == 2 %}
+    {% if caslib.storage_t.is_float() %}
     reinterpret_cast<float2*>(out_ptr)[0] = reinterpret_cast<float2*>(data)[0];
-    {% elif len(chunk) == 3 %}
-    reinterpret_cast<float3*>(out_ptr)[0] = reinterpret_cast<float3*>(data)[0];
-    {% elif len(chunk) == 4 %}
+    {% else %}
+    reinterpret_cast<double2*>(out_ptr)[0] = reinterpret_cast<double2*>(data)[0];
+    {% endif %}
+    {% elif len(chunk) == 3 or len(chunk) == 4 %}
     reinterpret_cast<float4*>(out_ptr)[0] = reinterpret_cast<float4*>(data)[0];
     {% endif %}
     {% set ns.offset = ns.offset + caspar_size(len(chunk)) %}
@@ -63,29 +65,31 @@ void {{nodetype.__name__}}_stacked_to_caspar_kernel(const float* const __restric
 }
 
 __global__ __launch_bounds__(block_size, 1)
-void {{nodetype.__name__}}_caspar_to_stacked_kernel(const float* const __restrict__ cas_data,
-                             float* const __restrict__ stacked_data,
+void {{nodetype.__name__}}_caspar_to_stacked_kernel(const {{caslib.storage_t}}* const __restrict__ cas_data,
+                             {{caslib.storage_t}}* const __restrict__ stacked_data,
                              const unsigned int cas_stride,
                              const unsigned int cas_offset,
                              const unsigned int num_objects) {
 
   const unsigned int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ float stacked_data_local[block_size*{{Ops.storage_dim(nodetype)}}];
+  __shared__ {{caslib.storage_t}} stacked_data_local[block_size*{{Ops.storage_dim(nodetype)}}];
 
   if (global_thread_idx < num_objects) {
-    float data[4] = {0, 0, 0, 0};
-    float* stacked_local_ptr = stacked_data_local + threadIdx.x * {{Ops.storage_dim(nodetype)}};
+    {{caslib.storage_t}} data[4] = {0, 0, 0, 0};
+    {{caslib.storage_t}}* stacked_local_ptr = stacked_data_local + threadIdx.x * {{Ops.storage_dim(nodetype)}};
     {% set ns = namespace(offset=0) %}
-    const float* in_ptr;
-    {% for chunk in get_layout(nodetype) %}
+    const {{caslib.storage_t}}* in_ptr;
+    {% for chunk in get_layout(nodetype, caslib.storage_t) %}
     in_ptr = cas_data + {{caspar_size(len(chunk))}} * (global_thread_idx + cas_offset) + {{ns.offset}} * cas_stride;
     {% if len(chunk) == 1 %}
     data[0] = in_ptr[0];
     {% elif len(chunk) == 2 %}
+    {% if caslib.storage_t.is_float() %}
     reinterpret_cast<float2*>(data)[0] = reinterpret_cast<const float2*>(in_ptr)[0];
-    {% elif len(chunk) == 3 %}
-    reinterpret_cast<float3*>(data)[0] = reinterpret_cast<const float3*>(in_ptr)[0];
-    {% elif len(chunk) == 4 %}
+    {% else %}
+    reinterpret_cast<double2*>(data)[0] = reinterpret_cast<const double2*>(in_ptr)[0];
+    {% endif %}
+    {% elif len(chunk) == 3 or len(chunk) == 4 %}
     reinterpret_cast<float4*>(data)[0] = reinterpret_cast<const float4*>(in_ptr)[0];
     {% endif %}
     {% for i in range(4) %}
@@ -106,8 +110,8 @@ void {{nodetype.__name__}}_caspar_to_stacked_kernel(const float* const __restric
   }
 }
 
-cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const float* stacked_data,
-                                                  float* cas_data,
+cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const {{caslib.storage_t}}* stacked_data,
+                                                  {{caslib.storage_t}}* cas_data,
                                                   const unsigned int cas_stride,
                                                   const unsigned int cas_offset,
                                                   const unsigned int num_objects
@@ -119,8 +123,8 @@ cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const float* stacked_data,
   return cudaGetLastError();
 }
 
-cudaError_t {{nodetype.__name__}}_caspar_to_stacked(const float* cas_data,
-                                                    float* stacked_data,
+cudaError_t {{nodetype.__name__}}_caspar_to_stacked(const {{caslib.storage_t}}* cas_data,
+                                                    {{caslib.storage_t}}* stacked_data,
                                                     const unsigned int cas_stride,
                                                     const unsigned int cas_offset,
                                                     const unsigned int num_objects) {

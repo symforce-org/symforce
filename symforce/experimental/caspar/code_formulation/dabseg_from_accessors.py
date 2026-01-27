@@ -57,7 +57,7 @@ def make_dabseg(
 ) -> Dabseg:
     expr_map: dict[sf.Basic, Val] = {}
     dabseg = Dabseg()
-
+    arg_to_calls: dict[str, list[Call]] = {}
     for arg in inputs:
         if is_pair(arg.storage):
             storage0 = Ops.to_storage(arg.storage[0])
@@ -68,6 +68,7 @@ def make_dabseg(
                         data=(arg.name, i), custom_code=arg.read_template(i)
                     )
                 )
+                arg_to_calls.setdefault(arg.name, []).append(call)
                 for (storage, el), var in zip(product((storage0, storage1), indices), call.outs):
                     expr_map[storage[el]] = var
                     var._str = storage[el].name  # noqa: SLF001
@@ -81,6 +82,7 @@ def make_dabseg(
                         data=(arg.name, i), custom_code=arg.read_template(i)
                     ),
                 )
+                arg_to_calls.setdefault(arg.name, []).append(call)
                 for el, var in zip(indices, call.outs):
                     expr_map[storage[el]] = var
                     var._str = storage[el].name  # noqa: SLF001
@@ -98,6 +100,7 @@ def make_dabseg(
                         data=(out.name, i), custom_code=out.write_template(i)
                     ),
                     tuple((expr_to_val(dabseg, a, expr_map) for a in expr_args)),
+                    depends=(arg_to_calls[out.after][i],) if out.after is not None else (),
                 )
                 leaves.append(call)
         else:
@@ -111,6 +114,7 @@ def make_dabseg(
                         data=(out.name, i), custom_code=out.write_template(i)
                     ),
                     tuple((expr_to_val(dabseg, a, expr_map) for a in expr_args)),
+                    depends=(arg_to_calls[out.after][i],) if out.after is not None else (),
                 )
                 leaves.append(call)
     dabseg.set_finalize(leaves)

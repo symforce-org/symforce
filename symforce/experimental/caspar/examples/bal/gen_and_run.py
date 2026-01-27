@@ -10,7 +10,8 @@ import numpy as np
 
 import symforce
 
-symforce.set_epsilon_to_number(float(10 * np.finfo(np.float32).eps))
+USE_DOUBLE = False  # Set USE_DOUBLE to True to have Caspar use double precision.
+symforce.set_epsilon_to_number(1e-15 if USE_DOUBLE else 1e-6)
 
 import symforce.symbolic as sf
 from symforce import typing as T
@@ -38,7 +39,7 @@ def huber_norm(e: sf.Expr, k: float) -> sf.Expr:
     return sf.Piecewise((e, e * sf.sign(e) < k), (other, True))
 
 
-caslib = CasparLibrary()
+caslib = CasparLibrary(dtype=mem.DType.FLOAT)
 
 
 @caslib.add_factor
@@ -58,11 +59,12 @@ def fac_reprojection(
 
 
 out_dir = Path(__file__).resolve().parent / "generated"
-caslib.generate(out_dir, use_symlinks=True)
-caslib.compile(out_dir)
+caslib.generate(out_dir)  # Can be commented out after the first run to avoid regenerating (slow)
+caslib.compile(out_dir)  # Can be commented out after the first run to avoid recompiling (slow)
 
-# Can also be imported using: lib = caslib.import_lib(out_dir)
-from generated import caspar_lib as lib  # type: ignore[import-not-found]
+# Can also be imported using:
+# lib = caslib.import_lib(out_dir)
+from generated import caspar_lib as lib  # type: ignore[import-not-found, unused-ignore]
 
 problems = {
     "medium": "venice/problem-245-198739-pre.txt.bz2",
@@ -71,10 +73,11 @@ problems = {
 }
 cam_ids, point_ids, camdata, pointdata, pixels = load_bal(problems["large"])
 
+# Configure the solver.
 params = lib.SolverParams()
-params.diag_init = 1.0
-params.solver_iter_max = 100
-params.pcg_iter_max = 10
+params.diag_init = 1
+params.solver_iter_max = 50
+params.pcg_iter_max = 20
 params.pcg_rel_error_exit = 1e-2
 
 solver = lib.GraphSolver(
@@ -84,25 +87,29 @@ solver = lib.GraphSolver(
     fac_reprojection_num_max=pixels.shape[0],
 )
 
+dtype = np.float64 if USE_DOUBLE else np.float32
+# Load the camera and point data into the solver.
 solver.set_Cam_num(camdata.shape[0])
-solver.set_Cam_nodes_from_stacked_host(camdata)
-solver.set_Point_nodes_from_stacked_host(pointdata)
+solver.set_Cam_nodes_from_stacked_host(camdata.astype(dtype))
+solver.set_Point_nodes_from_stacked_host(pointdata.astype(dtype))
 
+# Load the factor data into the solver.
 solver.set_fac_reprojection_cam_indices_from_host(cam_ids)
 solver.set_fac_reprojection_point_indices_from_host(point_ids)
-solver.finish_indices()
-
-solver.set_fac_reprojection_pixel_data_from_stacked_host(pixels)
+solver.set_fac_reprojection_pixel_data_from_stacked_host(pixels.astype(dtype))
 
 solver.solve(print_progress=True)
 
+# Load the optimized points
 pointdata_out = np.empty_like(pointdata)
 solver.get_Point_nodes_to_stacked_host(pointdata_out)
 
+# Center the points and compute the rotation matrix for better visualization.
 mean = pointdata_out.mean(0)
 points_valid_zeroed = pointdata_out - mean
 eig = np.linalg.eig(points_valid_zeroed.T @ points_valid_zeroed)
 rot = np.linalg.inv(eig[1])
 
+# These can be plotted to see the effect of the optimization.
 points_opt = points_valid_zeroed @ rot.T
 points_old = (pointdata - mean) @ rot.T

@@ -24,7 +24,7 @@ class {{ solver.struct_name }} {
   {% endfor %}
    */
   {{ solver.struct_name }}(
-      const SolverParams &params,
+      const SolverParams<double> &params,
       {% for thing in solver.size_contributors %}
       size_t {{num_arg_key(thing)}}{{ ", " if not loop.last else "" }}
       {% endfor %}
@@ -42,12 +42,12 @@ class {{ solver.struct_name }} {
   /**
    * Set the solver parameters.
    */
-  void set_params(const SolverParams &params);
+  void set_params(const SolverParams<double> &params);
 
   /**
    * Run the solver.
    */
-  float solve(bool print_progress = false);
+  {{solver.linear_t}} solve(bool print_progress = false);
 
   /**
    * Finish the indices.
@@ -69,7 +69,7 @@ class {{ solver.struct_name }} {
     * The offset can be used to start writing at a specific index.
     */
     void set_{{nodetype.__name__}}_nodes_from_stacked_host(
-        const float* const data, size_t offset, size_t num);
+        const {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
     * Set the current value for the {{nodetype.__name__}} nodes from the stacked device data.
@@ -77,7 +77,7 @@ class {{ solver.struct_name }} {
     * The offset can be used to start writing at a specific index.
     */
     void set_{{nodetype.__name__}}_nodes_from_stacked_device(
-        const float* const data, size_t offset, size_t num);
+        const {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
     * Read the current value for the {{nodetype.__name__}} nodes into the stacked output host data.
@@ -85,7 +85,7 @@ class {{ solver.struct_name }} {
     * The offset can be used to start reading from a specific index.
     */
     void get_{{nodetype.__name__}}_nodes_to_stacked_host(
-        float* const data, size_t offset, size_t num);
+        {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
     * Read the current value for the {{nodetype.__name__}} nodes into the stacked output device data.
@@ -93,7 +93,7 @@ class {{ solver.struct_name }} {
     * The offset can be used to start reading from a specific index.
     */
     void get_{{nodetype.__name__}}_nodes_to_stacked_device(
-        float* const data, size_t offset, size_t num);
+        {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
     * Set the current number of active nodes of type {{nodetype.__name__}}.
@@ -130,13 +130,15 @@ class {{ solver.struct_name }} {
         */
         void set_{{fac.name}}_{{arg}}_data_from_stacked_host(
           {% if fac.isconstseq[arg] %}
-          const float* const data, size_t offset, size_t num
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
-          const float* const data
+          const {{solver.storage_t}}* const data
           {% elif fac.isconstshared[arg] %}
-          const float* const data, size_t offset, size_t num
-            {% endif %}
-            );
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
+          {% elif fac.isconstindexed[arg] %}
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
+          {% endif %}
+          );
 
         /**
         * Set the values for the {{arg}} consts {{fac.name}} factor from stacked device data.
@@ -145,14 +147,21 @@ class {{ solver.struct_name }} {
         */
         void set_{{fac.name}}_{{arg}}_data_from_stacked_device(
           {% if fac.isconstseq[arg] %}
-          const float* const data, size_t offset, size_t num
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
-          const float* const data
+          const {{solver.storage_t}}* const data
           {% elif fac.isconstshared[arg] %}
-          const float* const data, size_t offset, size_t num
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
+          {% elif fac.isconstindexed[arg] %}
+          const {{solver.storage_t}}* const data, size_t offset, size_t num
             {% endif %}      );
 
         {% if fac.isconstshared[arg] %}
+        void set_{{fac.name}}_{{arg}}_indices_from_host(
+            const unsigned int* const indices, size_t num);
+        void set_{{fac.name}}_{{arg}}_indices_from_device(
+            const unsigned int* const indices, size_t num);
+        {% elif fac.isconstindexed[arg] %}
         void set_{{fac.name}}_{{arg}}_indices_from_host(
             const unsigned int* const indices, size_t num);
         void set_{{fac.name}}_{{arg}}_indices_from_device(
@@ -171,7 +180,7 @@ class {{ solver.struct_name }} {
   {% endfor %}
 
  private:
-  SolverParams params_;
+  SolverParams<{{solver.linear_t}}> params_;
   uint8_t* origin_ptr_;
   size_t scratch_inout_size_;
   size_t allocation_size_;
@@ -181,8 +190,8 @@ class {{ solver.struct_name }} {
 
   bool indices_valid_;
 
-  float pcg_r_0_norm2_;
-  float pcg_r_kp1_norm2_;
+  {{solver.linear_t}} pcg_r_0_norm2_;
+  {{solver.linear_t}} pcg_r_kp1_norm2_;
 
   {% for thing in solver.size_contributors %}
   size_t {{num_key(thing)}};
@@ -190,9 +199,9 @@ class {{ solver.struct_name }} {
   {% endfor %}
 
   size_t get_nbytes();
-  float linearize_first();
+  {{solver.linear_t}} linearize_first();
   void linearize();
-  float do_res_jac_first();
+  {{solver.linear_t}} do_res_jac_first();
   void do_res_jac();
   void do_normalize();
   void do_jtjp_direct();
@@ -202,10 +211,11 @@ class {{ solver.struct_name }} {
   void do_update_step();
   void do_update_r_first();
   void do_update_r();
-  float do_retract_score();
+  {{solver.linear_t}} do_retract_score();
   void do_beta();
   void do_update_p();
-  float get_pred_decrease();
+  void do_update_Mp();
+  {{solver.linear_t}} get_pred_decrease();
 
   {% for name, datadesc in solver.fields.items() %}
   {{ datadesc.dtype }}* {{ name }};

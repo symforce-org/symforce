@@ -109,11 +109,10 @@ class Pose2(LieGroup):
     def identity(cls) -> Pose2:
         return cls(R=Rot2.identity(), t=Vector2.zero())
 
-    def compose(self, other: Pose2) -> Pose2:
-        assert isinstance(other, self.__class__)
-        return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
+    def compose(self, other: Pose2T) -> Pose2:
+        return Pose2(R=self.R * other.R, t=self.t + self.R * other.t)
 
-    def inverse(self) -> Pose2:
+    def inverse(self: Pose2T) -> Pose2T:
         R_inv = self.R.inverse()
         return self.__class__(R=R_inv, t=-(R_inv * self.t))
 

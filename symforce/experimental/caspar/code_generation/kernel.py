@@ -13,6 +13,7 @@ from ..code_formulation.dabseg_sorter import get_lines
 from ..memory.accessors import Accessor
 from ..memory.accessors import _ReadAccessor
 from ..memory.accessors import _WriteAccessor
+from ..memory.dtype import DType
 from ..source.templates import env
 from ..source.templates import write_if_different
 
@@ -29,7 +30,10 @@ class Kernel:
         name: str,
         inputs: list[_ReadAccessor],
         outputs: list[_WriteAccessor],
+        dtype: DType,
+        *,
         expose_to_python: bool = True,
+        block_size: int = 1024,
     ):
         self.name = name
 
@@ -38,10 +42,12 @@ class Kernel:
         self.accessors: list[Accessor] = [*inputs, *outputs]
         self.shared_size_req = max(acc.shared_size_req() for acc in self.accessors)
         self.expose_to_python = expose_to_python
+        self.kernel_t = dtype
+        self.block_size = block_size
 
     def generate(self, out_dir: Path) -> None:
         dabseg = make_dabseg(self.inputs, self.outputs)
-        self.code_lines, n_registers = get_lines(dabseg)
+        self.code_lines, n_registers = get_lines(dabseg, dtype=self.kernel_t)
         self.registers = [f"r{i}" for i in range(n_registers)]
 
         code = env.get_template("kernel.cu.jinja").render(kernel=self)

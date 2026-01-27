@@ -31,6 +31,7 @@ void AssertNumRowsEquals(const py::object& obj, size_t n);
 void AssertNumColsEquals(const py::object& obj, size_t n);
 
 float* AsFloatPtr(const py::object& obj);
+double* AsDoublePtr(const py::object& obj);
 int* AsIntPtr(const py::object& obj);
 uint* AsUintPtr(const py::object& obj);
 uint8_t* AsCharPtr(const py::object& obj);

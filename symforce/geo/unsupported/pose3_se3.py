@@ -40,6 +40,9 @@ class Pose3_SE3(Pose3):
     # Lie group implementation
     # -------------------------------------------------------------------------
 
+    def compose(self, other: Pose3) -> Pose3_SE3:
+        return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
+
     @classmethod
     def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose3_SE3:
         R_tangent = (v[0], v[1], v[2])

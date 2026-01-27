@@ -28,7 +28,7 @@ void add_casmappings_pybindings(pybind11::module_ module) {
             "The caspar data must have at least as many columns as stacked_data has rows.");
         }
         {{nodetype.__name__}}_stacked_to_caspar(
-          AsFloatPtr(stacked_data), AsFloatPtr(cas_data), cas_stride, 0,  num_objects);
+          As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), As{{caslib.storage_t.capitalize()}}Ptr(cas_data), cas_stride, 0,  num_objects);
       });
   module.def("{{nodetype.__name__}}_caspar_to_stacked",
       [](pybind11::object cas_data, pybind11::object stacked_data) {
@@ -47,7 +47,7 @@ void add_casmappings_pybindings(pybind11::module_ module) {
           }
 
           {{nodetype.__name__}}_caspar_to_stacked(
-              AsFloatPtr(cas_data), AsFloatPtr(stacked_data), cas_stride, 0, num_objects);
+              As{{caslib.storage_t.capitalize()}}Ptr(cas_data), As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), cas_stride, 0, num_objects);
       });
   {% endfor %}
 }

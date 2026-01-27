@@ -127,6 +127,10 @@ void assert_float(const py::object& obj) {
   assert_type(obj, {"<f4"});
 }
 
+void assert_double(const py::object& obj) {
+  assert_type(obj, {"<f8"});
+}
+
 void assert_uint(const py::object& obj) {
   assert_type(obj, {"<u4", "<i4"});
 }
@@ -138,6 +142,12 @@ void assert_char(const py::object& obj) {
 void assert_floatvec(const py::object& obj) {
   py::object cuda_array_interface = get_interface(obj);
   assert_float(obj);
+  assert_contiguous(obj);
+}
+
+void assert_doublevec(const py::object& obj) {
+  py::object cuda_array_interface = get_interface(obj);
+  assert_double(obj);
   assert_contiguous(obj);
 }
 
@@ -163,6 +173,12 @@ float* AsFloatPtr(const py::object& obj) {
   assert_floatvec(obj);
   py::tuple data = get_interface(obj)["data"].cast<py::tuple>();
   return reinterpret_cast<float*>(data[0].cast<size_t>());
+}
+
+double* AsDoublePtr(const py::object& obj) {
+  assert_doublevec(obj);
+  py::tuple data = get_interface(obj)["data"].cast<py::tuple>();
+  return reinterpret_cast<double*>(data[0].cast<size_t>());
 }
 
 int* AsIntPtr(const py::object& obj) {

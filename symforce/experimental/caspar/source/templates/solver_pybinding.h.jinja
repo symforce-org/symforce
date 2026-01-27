@@ -10,7 +10,7 @@ namespace caspar {
 inline void add_solver_pybinding(pybind11::module_ module) {
   py::class_<{{solver.struct_name}}>(module, "{{solver.struct_name}}",
                                      "Class for solving Factor Graphs.")
-      .def(py::init<SolverParams,
+      .def(py::init<SolverParams<double>,
            {% for thing in solver.size_contributors %}
              size_t{{ ", " if not loop.last else "" }}
            {% endfor %}>(),
@@ -33,7 +33,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertHostMemory(stacked_data);
                solver.set_{{nodetype.__name__}}_nodes_from_stacked_host(
-                   AsFloatPtr(stacked_data),
+                   As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
              },
@@ -43,7 +43,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertDeviceMemory(stacked_data);
                solver.set_{{nodetype.__name__}}_nodes_from_stacked_device(
-                   AsFloatPtr(stacked_data),
+                   As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
              },
@@ -53,7 +53,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertHostMemory(stacked_data);
                solver.get_{{nodetype.__name__}}_nodes_to_stacked_host(
-                   AsFloatPtr(stacked_data),
+                   As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
              },
@@ -63,7 +63,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertDeviceMemory(stacked_data);
                solver.get_{{nodetype.__name__}}_nodes_to_stacked_device(
-                   AsFloatPtr(stacked_data),
+                   As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
              },
@@ -103,16 +103,20 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                      {{ solver.struct_name }} &solver, pybind11::object stacked_data
                    {% elif factor.isconstshared[argname] %}
                      {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% elif factor.isconstindexed[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
                    {% endif %}
                    ) {
                  AssertDeviceMemory(stacked_data);
                  solver.set_{{factor.name}}_{{argname}}_data_from_stacked_device(
                    {% if factor.isconstseq[argname] %}
-                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% elif factor.isconstuniq[argname] %}
-                     AsFloatPtr(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data)
                    {% elif factor.isconstshared[argname] %}
-                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% elif factor.isconstindexed[argname] %}
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% endif %}
                  );
                },
@@ -121,6 +125,8 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                {% elif factor.isconstuniq[argname] %}
                  pybind11::arg("stacked_data")
               {% elif factor.isconstshared[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+              {% elif factor.isconstindexed[argname] %}
                  pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
               {% endif %}
           )
@@ -132,16 +138,20 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                      {{ solver.struct_name }} &solver, pybind11::object stacked_data
                    {% elif factor.isconstshared[argname] %}
                      {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
+                   {% elif factor.isconstindexed[argname] %}
+                     {{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset
                    {% endif %}
                    ) {
                  AssertHostMemory(stacked_data);
                  solver.set_{{factor.name}}_{{argname}}_data_from_stacked_host(
                    {% if factor.isconstseq[argname] %}
-                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% elif factor.isconstuniq[argname] %}
-                     AsFloatPtr(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data)
                    {% elif factor.isconstshared[argname] %}
-                     AsFloatPtr(stacked_data), offset, GetNumRows(stacked_data)
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
+                   {% elif factor.isconstindexed[argname] %}
+                     As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% endif %}
                  );
                },
@@ -151,9 +161,26 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                  pybind11::arg("stacked_data")
                {% elif factor.isconstshared[argname] %}
                  pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
+               {% elif factor.isconstindexed[argname] %}
+                 pybind11::arg("stacked_data"), pybind11::arg("offset") = 0
                {% endif %}
           )
         {% if factor.isconstshared[argname] %}
+        .def("set_{{factor.name}}_{{argname}}_indices_from_host",
+            []({{ solver.struct_name }} &solver, pybind11::object indices) {
+              AssertHostMemory(indices);
+              solver.set_{{factor.name}}_{{argname}}_indices_from_host(AsUintPtr(indices), GetNumRows(indices));
+            },
+            pybind11::arg("indices")
+        )
+        .def("set_{{factor.name}}_{{argname}}_indices_from_device",
+            []({{ solver.struct_name }} &solver, pybind11::object indices) {
+              AssertDeviceMemory(indices);
+              solver.set_{{factor.name}}_{{argname}}_indices_from_device(AsUintPtr(indices),GetNumRows(indices));
+            },
+            pybind11::arg("indices")
+        )
+        {% elif factor.isconstindexed[argname] %}
         .def("set_{{factor.name}}_{{argname}}_indices_from_host",
             []({{ solver.struct_name }} &solver, pybind11::object indices) {
               AssertHostMemory(indices);

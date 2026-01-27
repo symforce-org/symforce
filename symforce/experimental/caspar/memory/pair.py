@@ -13,19 +13,19 @@ from symforce import typing as T
 from symforce.ops import StorageOps as Ops
 from symforce.ops.interfaces import Storage
 
-StorageT = T.TypeVar("StorageT", bound=T.Storable)
+storage_t = T.TypeVar("storage_t", bound=T.Storable)
 
 
-class Pair(T.Generic[StorageT]):
-    def __init__(self, first: StorageT, second: StorageT):
+class Pair(T.Generic[storage_t]):
+    def __init__(self, first: storage_t, second: storage_t):
         if type(first) is not type(second):
             raise ValueError("First and second must be of the same type")
         self.data = [first, second]
 
-    def __iter__(self) -> T.Iterable[StorageT]:
+    def __iter__(self) -> T.Iterable[storage_t]:
         return iter(self.data)
 
-    def __getitem__(self, idx: int) -> StorageT:
+    def __getitem__(self, idx: int) -> storage_t:
         return self.data[idx]
 
     def __repr__(self) -> str:
@@ -38,8 +38,8 @@ def is_pair(thing: T.Union[T.Type[Storage], T.Type[Pair], Storage, Pair]) -> boo
 
 def get_symbolic(storage_or_pair: T.Union[Storage, Pair], name: str) -> T.Union[Storage, Pair]:
     if is_pair(storage_or_pair):
-        StorageT = get_memtype(storage_or_pair)
-        return Pair(*(Ops.symbolic(StorageT, f"{name}_{k}") for k in ["first", "second"]))
+        storage_t = get_memtype(storage_or_pair)
+        return Pair(*(Ops.symbolic(storage_t, f"{name}_{k}") for k in ["first", "second"]))
     return Ops.symbolic(storage_or_pair, name)
 
 

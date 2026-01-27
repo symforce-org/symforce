@@ -112,9 +112,8 @@ class Pose3(LieGroup):
     def identity(cls: T.Type[Pose3T]) -> Pose3T:
         return cls(R=Rot3.identity(), t=Vector3.zero())
 
-    def compose(self: Pose3T, other: Pose3T) -> Pose3T:
-        assert isinstance(other, self.__class__)
-        return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
+    def compose(self, other: Pose3T) -> Pose3:
+        return Pose3(R=self.R * other.R, t=self.t + self.R * other.t)
 
     def inverse(self: Pose3T) -> Pose3T:
         so3_inv = self.R.inverse()
@@ -212,7 +211,7 @@ class Pose3(LieGroup):
     def __mul__(self: Pose3T, right: Vector3) -> Vector3:  # pragma: no cover
         pass
 
-    def __mul__(self: Pose3T, right: T.Union[Pose3T, Vector3]) -> T.Union[Pose3T, Vector3]:
+    def __mul__(self: Pose3T, right: T.Union[Pose3, Vector3]) -> T.Union[Pose3, Vector3]:
         """
         Left-multiply with a compatible quantity.
         """

@@ -16,7 +16,7 @@ namespace cg = cooperative_groups;
 namespace caspar {
 
 __global__ void
-__launch_bounds__(1024, 1)
+__launch_bounds__({{kernel.block_size}}, 1)
 {{kernel.name}}_kernel(
     {% for accessor in kernel.accessors %}
     {% for name, typ in accessor.kernel_sig.items() %}
@@ -26,7 +26,7 @@ __launch_bounds__(1024, 1)
     size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
   {% if kernel.shared_size_req > 0 %}
-  __shared__ float inout_shared[{{kernel.shared_size_req}}];
+  __shared__ uint8_t inout_shared[{{kernel.shared_size_req}}];
   {% endif %}
 
   {% for accessor in kernel.accessors %}
@@ -38,7 +38,10 @@ __launch_bounds__(1024, 1)
   {% endif %}
   {% endfor %}
 
-  float {{','.join(kernel.registers)}};
+  {% if kernel.registers.__len__() > 0 %}
+  {{kernel.kernel_t}} {{','.join(kernel.registers)}};
+  {% endif %}
+
   if (global_thread_idx < problem_size){
   {% for code_line in kernel.code_lines %}
   {% filter indent(width=4) %}
@@ -61,16 +64,22 @@ void {{kernel.name}} (
   {% endfor %}
   {% endfor %}
   size_t problem_size) {
+
+  {% if kernel.outputs.__len__() == 0 %}
+  return;
+  {% else %}
   if (problem_size == 0) {
     return;
   }
-  const int n_blocks = (problem_size + 1024 - 1) / 1024;
+  {% endif %}
+
+  const int n_blocks = (problem_size + {{kernel.block_size}} - 1) / {{kernel.block_size}};
   {% for accessor in kernel.accessors %}
   {% if accessor.pre_kernel_code() %}
   {{accessor.pre_kernel_code()}}
   {% endif %}
   {% endfor %}
-  {{kernel.name}}_kernel<<<n_blocks, 1024>>>(
+  {{kernel.name}}_kernel<<<n_blocks, {{kernel.block_size}}>>>(
       {% for accessor in kernel.accessors %}
       {% for name in accessor.kernel_sig %}
       {{name}},

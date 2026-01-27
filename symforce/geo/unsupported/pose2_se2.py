@@ -41,6 +41,9 @@ class Pose2_SE2(Pose2):
     # Lie group implementation
     # -------------------------------------------------------------------------
 
+    def compose(self, other: Pose2) -> Pose2_SE2:
+        return self.__class__(R=self.R * other.R, t=self.t + self.R * other.t)
+
     @classmethod
     def from_tangent(cls, v: T.Sequence[T.Scalar], epsilon: T.Scalar = sf.epsilon()) -> Pose2_SE2:
         theta = v[0]

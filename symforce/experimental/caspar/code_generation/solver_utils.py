@@ -11,6 +11,7 @@ from symforce.ops.interfaces import LieGroup
 
 from ..code_generation.factor import Factor
 from ..memory import caspar_size
+from ..memory.dtype import DType
 
 
 def fac_key(fac: Factor, suffix: str = "") -> str:
@@ -68,11 +69,11 @@ class MemDesc:
         self,
         dim: int,
         num_key: str | int,
+        dtype: DType | str,
         is_caspar_data: bool = True,
-        dtype: str = "float",
-        alignment: int = 16,
+        alignment: int = 4,
     ):
-        assert alignment in set((4, 16))
+        assert alignment in {1, 4}
         self.dim = dim
         self.dim_real = caspar_size(dim) if is_caspar_data else dim
         self.num_key = num_key

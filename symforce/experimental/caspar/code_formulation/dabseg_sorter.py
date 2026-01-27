@@ -8,6 +8,7 @@ from __future__ import annotations
 import typing as T
 from collections import Counter
 
+from ..memory.dtype import DType
 from . import ftypes
 from .dabseg import Call
 from .dabseg import CallId
@@ -19,8 +20,9 @@ from .ftypes import Func
 
 
 class DabsegSorter:
-    def __init__(self, dabseg: Dabseg):
+    def __init__(self, dabseg: Dabseg, dtype: DType):
         dabseg = dabseg.clean()
+        self.dtype = dtype
         self.dabseg = dabseg
         set_debug_graph(dabseg)
         self.calls = calls = list(self.dabseg.call_iter())
@@ -76,7 +78,7 @@ class DabsegSorter:
             self.allocate_outs(call)
             out_strs = [self.allocation[out.id] for out in outs]
             arg_strs = [self.allocation[arg.id] for arg in args]
-            line = func.assign_code(out_strs, arg_strs)
+            line = func.assign_code(out_strs, arg_strs, self.dtype)
             if line:
                 self.lines.append(line)
         self.free_unused_outs(call)
@@ -133,10 +135,10 @@ class DabsegSorter:
             return call.func, list(call.outs), list(call.args)
 
 
-def get_lines(dabseg: Dabseg) -> tuple[list[str], int]:
+def get_lines(dabseg: Dabseg, dtype: DType) -> tuple[list[str], int]:
     """
     Translates dabseg calls into lines of code.
     Returns the lines of code and the required number of registers.
     """
-    sorter = DabsegSorter(dabseg)
+    sorter = DabsegSorter(dabseg, dtype)
     return sorter.lines, sorter.n_allocated

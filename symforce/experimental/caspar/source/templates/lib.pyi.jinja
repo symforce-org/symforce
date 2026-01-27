@@ -29,6 +29,7 @@ class SolverParams:
     diag_scaling_up: float
     diag_scaling_down: float
     diag_exit_value: float
+    diag_min: float
 
     solver_rel_decrease_min: float
     score_exit_value: float
@@ -126,6 +127,10 @@ class {{solver.struct_name}}:
         self, stacked_data: Array, offset: int = 0
         {% elif factor.isconstuniq[argname] %}
         self, stacked_data: Array
+        {% elif factor.isconstshared[argname] %}
+        self, stacked_data: Array
+        {% elif factor.isconstindexed[argname] %}
+        self, stacked_data: Array
         {% endif %}
         ) -> None:
         """
@@ -139,6 +144,10 @@ class {{solver.struct_name}}:
         self, stacked_data: Array, offset: int = 0
         {% elif factor.isconstuniq[argname] %}
         self, stacked_data: Array
+        {% elif factor.isconstshared[argname] %}
+        self, stacked_data: Array
+        {% elif factor.isconstindexed[argname] %}
+        self, stacked_data: Array
         {% endif %}        ) -> None:
         """
         Set the values for the {{argname}} consts {{factor.name}} factor from stacked device data.
@@ -146,6 +155,15 @@ class {{solver.struct_name}}:
         The offset can be used to start writing from a specific index.
         """
     {% if factor.isconstshared[argname] %}
+    def set_{{factor.name}}_{{argname}}_indices_from_host(self, indices: Array) -> None:
+        """
+        Set the indices for the {{argname}} argument for the {{factor.name}} factor from host.
+        """
+    def set_{{factor.name}}_{{argname}}_indices_from_device(self, indices: CudaArray) -> None:
+        """
+        Set the indices for the {{argname}} argument for the {{factor.name}} factor from device.
+        """
+    {% elif factor.isconstindexed[argname] %}
     def set_{{factor.name}}_{{argname}}_indices_from_host(self, indices: Array) -> None:
         """
         Set the indices for the {{argname}} argument for the {{factor.name}} factor from host.

@@ -6,10 +6,12 @@
 from __future__ import annotations
 
 import logging
+import shutil
 from pathlib import Path
 
 from symforce import typing as T
 from symforce.experimental import caspar
+from symforce.experimental.caspar.memory.dtype import DType
 from symforce.ops import LieGroupOps as Ops
 
 from ..code_generation.factor import Factor
@@ -18,6 +20,8 @@ from ..code_generation.solver import Solver
 from ..code_generation.solver import num_arg_key
 from ..memory import caspar_size
 from ..memory.accessors import Accessor
+from ..memory.accessors import _ReadAccessor
+from ..memory.accessors import _WriteAccessor
 from ..memory.layouts import get_default_caspar_layout
 from ..memory.pair import get_memtype
 from ..memory.pair import get_symbolic
@@ -48,10 +52,11 @@ class CasparLibrary:
     The CasLib class is the main entry point for generating and compiling caspar libraries.
     """
 
-    def __init__(self, name: str = "caspar_lib"):
+    def __init__(self, name: str = "caspar_lib", dtype: DType = DType.FLOAT):
         self.kernels: list[Kernel] = []
         self.factors: list[Factor] = []
         self.name = name
+        self.storage_t = dtype
         # Keep sorted for deterministic template output
         self.node_types: list[T.LieGroupElement] = []
         self.exposed_types: list[T.LieGroupElement] = []
@@ -67,27 +72,48 @@ class CasparLibrary:
                 raise ValueError(f"Argument {k} must have an Accessor descriptor.")
 
         ret_type = signature.pop("return")
-        in_syms = {k: get_symbolic(v.__origin__, k) for k, v in signature.items()}
+        in_types = [v.__origin__ for v in signature.values()]
+        in_syms = {k: get_symbolic(ST, k) for k, ST in zip(signature, in_types)}
         output = func(**in_syms)
 
         if isinstance(output, tuple):
             out_syms = {f"out_{i}": v for i, v in enumerate(output)}
+            out_types = [v.__origin__ for v in ret_type.__args__]
             out_accessors = {f"out_{i}": a.__metadata__[0] for i, a in enumerate(ret_type.__args__)}
         else:
             out_syms = {"out": output}
+            out_types = [ret_type.__origin__]
             out_accessors = {"out": ret_type.__metadata__[0]}
-
-        inputs = [signature[k].__metadata__[0](k, v) for k, v in in_syms.items()]
-        outputs = [out_accessors[k](k, v) for k, v in out_syms.items()]
-        kernel = Kernel(func.__name__, inputs, outputs)
-        self.kernels.append(kernel)
-
-        insert_sorted_unique(self.exposed_types, (v.__origin__ for v in signature.values()))
-        if isinstance(output, tuple):
-            insert_sorted_unique(self.exposed_types, [a.__origin__ for a in ret_type.__args__])
-        else:
-            insert_sorted_unique(self.exposed_types, [ret_type.__origin__])
+        defaults = {
+            k: v.__metadata__[1] if len(v.__metadata__) == 2 else None for k, v in signature.items()
+        }
+        inputs = [
+            signature[k].__metadata__[0](
+                k, v, dtype=self.storage_t, kernel_dtype=self.storage_t, default=defaults[k]
+            )
+            for k, v in in_syms.items()
+        ]
+        outputs = [
+            out_accessors[k](k, v, dtype=self.storage_t, kernel_dtype=self.storage_t)
+            for k, v in out_syms.items()
+        ]
+        self.add_kernel_from_accessors(func.__name__, inputs, outputs)
+        insert_sorted_unique(self.exposed_types, (get_memtype(t) for t in (*in_types, *out_types)))
         return func
+
+    def add_kernel_from_accessors(
+        self,
+        name: str,
+        inputs: T.List[_ReadAccessor],
+        outputs: T.List[_WriteAccessor],
+        expose_to_python: bool = True,
+    ) -> None:
+        kernel = Kernel(
+            name, inputs, outputs, dtype=self.storage_t, expose_to_python=expose_to_python
+        )
+        self.kernels.append(kernel)
+        insert_sorted_unique(self.exposed_types, [get_memtype(acc.storage) for acc in inputs])
+        insert_sorted_unique(self.exposed_types, [get_memtype(acc.storage) for acc in outputs])
 
     def add_factor(
         self,
@@ -97,7 +123,7 @@ class CasparLibrary:
         if isinstance(func_or_name, str):
             return lambda func: self.add_factor(func, func_or_name)
         else:
-            factor = Factor(func_or_name, name)
+            factor = Factor(func_or_name, name, dtype=self.storage_t)
             self.factors.append(factor)
             insert_sorted_unique(self.node_types, factor.node_arg_types.values())
             insert_sorted_unique(self.exposed_types, factor.arg_types.values())
@@ -151,12 +177,12 @@ class CasparLibrary:
         tmp_pyi_path.parent.mkdir(exist_ok=True, parents=True)
         if tmp_pyi_path.exists():
             tmp_pyi_path.unlink()
-        tmp_pyi_path.symlink_to(out_dir / f"{self.name}.pyi")
+        shutil.copy(out_dir / f"{self.name}.pyi", tmp_pyi_path)
         if TYPE_CHECKING:
             # This import is useful for type inference in IDEs, or in local projects where a
             # generated caspar library is present here.  It won't always be present, and
             # won't be present in CI, so we ignore this if it's missing.
-            from ..tmp import lib  # type: ignore[import-not-found]
+            from ..tmp import lib  # type: ignore[import-not-found,unused-ignore]
         else:
             import sysconfig as s
 
