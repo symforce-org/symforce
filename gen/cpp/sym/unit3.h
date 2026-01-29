@@ -64,6 +64,11 @@ class Unit3 {
   explicit Unit3(const DataVec& data, const bool normalize = true)
       : data_(normalize ? DataVec(data.normalized()) : data) {}
 
+  // Access underlying storage
+  inline DataVec& Data() {
+    return data_;
+  }
+
   // Access underlying storage as const
   inline const DataVec& Data() const {
     return data_;

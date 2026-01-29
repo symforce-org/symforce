@@ -74,6 +74,11 @@ class {{ cls.__name__ }} {
   {{ cls.__name__ }}() : {{ cls.__name__ }}(GroupOps<Self>::Identity()) {}
   {% endif %}
 
+  // Access underlying storage
+  inline DataVec& Data() {
+      return data_;
+  }
+
   // Access underlying storage as const
   inline const DataVec& Data() const {
       return data_;

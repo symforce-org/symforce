@@ -1360,6 +1360,91 @@ class SymforceCodegenTest(TestCase):
             expected_dir=TEST_DATA_DIR / "codegen_eigen_maps_test_data",
         )
 
+    def test_matrices_list_codegen_cpp(self) -> None:
+        """
+        Tests that outputting a list of matrices works as expected
+        """
+        output_dir = self.make_output_dir("sf_codegen_matrices_list_cpp_")
+
+        def matrices_list_test_func(x: sf.V3) -> T.List[sf.V2]:
+            return [sf.V2(x[0], x[1]), sf.V2(x[1], x[2])]
+
+        matrices_list_test_func_codegen = codegen.Codegen.function(
+            func=matrices_list_test_func, config=codegen.CppConfig()
+        )
+        matrices_list_test_func_codegen_data = matrices_list_test_func_codegen.generate_function(
+            output_dir, namespace="sf_codegen_matrices_list_cpp"
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "matrices_list_test_func.h"
+        output_function = (
+            matrices_list_test_func_codegen_data.function_dir / "matrices_list_test_func.h"
+        )
+        self.compare_or_update_file(expected_code_file, output_function)
+
+    def test_poses_list_codegen_cpp(self) -> None:
+        """
+        Tests that outputting a list of poses works as expected
+        """
+        output_dir = self.make_output_dir("sf_codegen_poses_list_cpp_")
+
+        def poses_list_test_func(x: sf.V3) -> T.List[sf.Pose3]:
+            return [
+                sf.Pose3(R=sf.Rot3(), t=sf.V3(x[0], x[1], x[2])),
+                sf.Pose3(R=sf.Rot3(), t=sf.V3(x[1], x[2], x[0])),
+            ]
+
+        poses_list_test_func_codegen = codegen.Codegen.function(
+            func=poses_list_test_func, config=codegen.CppConfig()
+        )
+        poses_list_test_func_codegen_data = poses_list_test_func_codegen.generate_function(
+            output_dir, namespace="sf_codegen_poses_list_cpp"
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "poses_list_test_func.h"
+        output_function = poses_list_test_func_codegen_data.function_dir / "poses_list_test_func.h"
+        self.compare_or_update_file(expected_code_file, output_function)
+
+    def test_poses_nested_list_codegen_cpp(self) -> None:
+        """
+        Tests that outputting a list of poses works as expected
+        """
+        output_dir = self.make_output_dir("sf_codegen_poses_nested_list_cpp_")
+
+        def poses_nested_list_test_func(x: sf.V3) -> T.List[T.List[sf.Pose3]]:
+            return [
+                [
+                    sf.Pose3(R=sf.Rot3(), t=sf.V3(x[0], x[1], x[2])),
+                    sf.Pose3(R=sf.Rot3(), t=sf.V3(x[1], x[2], x[0])),
+                ],
+                [
+                    sf.Pose3(
+                        R=sf.Rot3.from_storage([x[0], x[1], x[2], x[0]]), t=sf.V3(x[0], x[1], x[2])
+                    ),
+                    sf.Pose3(
+                        R=sf.Rot3.from_storage([x[1], x[2], x[0], x[1]]), t=sf.V3(x[1], x[2], x[0])
+                    ),
+                ],
+            ]
+
+        poses_nested_list_test_func_codegen = codegen.Codegen.function(
+            func=poses_nested_list_test_func, config=codegen.CppConfig()
+        )
+        poses_nested_list_test_func_codegen_data = (
+            poses_nested_list_test_func_codegen.generate_function(
+                output_dir, namespace="sf_codegen_poses_nested_list_cpp"
+            )
+        )
+
+        # Compare to expected
+        expected_code_file = TEST_DATA_DIR / "poses_nested_list_test_func.h"
+        output_function = (
+            poses_nested_list_test_func_codegen_data.function_dir / "poses_nested_list_test_func.h"
+        )
+        self.compare_or_update_file(expected_code_file, output_function)
+
 
 if __name__ == "__main__":
     TestCase.main()

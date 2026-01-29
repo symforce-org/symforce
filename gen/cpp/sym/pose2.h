@@ -72,6 +72,11 @@ class Pose2 {
   // Default construct to identity
   Pose2() : Pose2(GroupOps<Self>::Identity()) {}
 
+  // Access underlying storage
+  inline DataVec& Data() {
+    return data_;
+  }
+
   // Access underlying storage as const
   inline const DataVec& Data() const {
     return data_;

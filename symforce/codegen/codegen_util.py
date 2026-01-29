@@ -413,7 +413,7 @@ def get_formatted_list(
                         sub_index_val,
                         prefix=f"{key}[{i}]",
                         config=config,
-                        use_data=format_as_inputs,
+                        use_data=True,
                     )
                 )
 

@@ -51,6 +51,11 @@ class EquirectangularCameraCal {
     (void)normalize;
   }
 
+  // Access underlying storage
+  inline DataVec& Data() {
+    return data_;
+  }
+
   // Access underlying storage as const
   inline const DataVec& Data() const {
     return data_;
