@@ -51,7 +51,11 @@ def get_prior_docstring() -> str:
 
 
 def between_factor(
-    a: T.Element, b: T.Element, a_T_b: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
+    a: T.Element,
+    b: T.Element,
+    a_T_b: T.Element,
+    sqrt_info: sf.Matrix,
+    epsilon: sf.Scalar = sf.epsilon(),
 ) -> sf.Matrix:
     assert type(a) is type(b) is type(a_T_b)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(a)
@@ -68,7 +72,7 @@ def between_factor(
 
 
 def prior_factor(
-    value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = 0
+    value: T.Element, prior: T.Element, sqrt_info: sf.Matrix, epsilon: sf.Scalar = sf.epsilon()
 ) -> sf.Matrix:
     assert type(value) is type(prior)
     assert sqrt_info.rows == sqrt_info.cols == ops.LieGroupOps.tangent_dim(value)
@@ -144,7 +148,7 @@ def generate_pose3_extra_factors(output_dir: T.Openable) -> None:
         b: sf.Pose3,
         a_t_b: sf.Vector3,
         sqrt_info: sf.Matrix33,
-        epsilon: sf.Scalar = 0,
+        epsilon: sf.Scalar = sf.epsilon(),
     ) -> sf.Matrix:
         # NOTE(aaron): This is NOT the same as between_factor(a.t, b.t, a_t_b, sqrt_info, epsilon)
         # between_factor(a.t, b.t, a_t_b) would be penalizing the difference in the global frame
@@ -161,7 +165,7 @@ def generate_pose3_extra_factors(output_dir: T.Openable) -> None:
         b: sf.Pose3,
         translation_norm: sf.Scalar,
         sqrt_info: sf.Matrix11,
-        epsilon: sf.Scalar = 0,
+        epsilon: sf.Scalar = sf.epsilon(),
     ) -> sf.Matrix:
         """
         Residual that penalizes the difference between translation_norm and (a.t - b.t).norm().
@@ -174,12 +178,15 @@ def generate_pose3_extra_factors(output_dir: T.Openable) -> None:
         return sqrt_info * sf.M([error])
 
     def prior_factor_pose3_rotation(
-        value: sf.Pose3, prior: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = 0
+        value: sf.Pose3, prior: sf.Rot3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = sf.epsilon()
     ) -> sf.Matrix:
         return prior_factor(value.R, prior, sqrt_info, epsilon)
 
     def prior_factor_pose3_position(
-        value: sf.Pose3, prior: sf.Vector3, sqrt_info: sf.Matrix33, epsilon: sf.Scalar = 0
+        value: sf.Pose3,
+        prior: sf.Vector3,
+        sqrt_info: sf.Matrix33,
+        epsilon: sf.Scalar = sf.epsilon(),
     ) -> sf.Matrix:
         return prior_factor(value.t, prior, sqrt_info, epsilon)
 
