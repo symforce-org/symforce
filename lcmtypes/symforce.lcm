@@ -360,3 +360,21 @@ struct imu_integrated_measurement_t {
   imu_integrated_measurement_delta_t delta;
   imu_integrated_measurement_derivatives_t derivatives;
 }
+
+// Serialized form of MarginalizationFactor for double precision
+struct marginalization_factor_t {
+  eigen_lcm.SymmetricMatrixXd H;
+  eigen_lcm.VectorXd rhs;
+  double c;
+  values_t linearization_values;
+  key_t keys[];
+}
+
+// Serialized form of MarginalizationFactor for float precision
+struct marginalization_factorf_t {
+  eigen_lcm.SymmetricMatrixXf H;
+  eigen_lcm.VectorXf rhs;
+  float c;
+  valuesf_t linearization_values;
+  key_t keys[];
+}

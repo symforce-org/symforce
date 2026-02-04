@@ -11,6 +11,30 @@
 
 namespace sym {
 
+template <typename ScalarType>
+auto MarginalizationFactor<ScalarType>::FromLcmType(const LcmType& msg) -> MarginalizationFactor {
+  return MarginalizationFactor{
+      .H = msg.H,
+      .rhs = msg.rhs,
+      .c = msg.c,
+      .linearization_values = Values<Scalar>(msg.linearization_values),
+      .keys = std::vector<Key>(msg.keys.begin(), msg.keys.end()),
+  };
+}
+
+template <typename ScalarType>
+auto MarginalizationFactor<ScalarType>::GetLcmType() const -> LcmType {
+  std::vector<key_t> lcm_keys(keys.size());
+  for (size_t i = 0; i < keys.size(); ++i) {
+    lcm_keys[i] = keys[i].GetLcmType();
+  }
+  return LcmType{H, rhs, c, linearization_values.GetLcmType(), lcm_keys};
+}
+
+// Explicit instantiations
+template struct MarginalizationFactor<double>;
+template struct MarginalizationFactor<float>;
+
 std::vector<Key> ComputeMarginalizationKeyOrder(
     const std::unordered_set<Key>& keys_to_optimize,
     const std::unordered_set<Key>& keys_to_marginalize) {

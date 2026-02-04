@@ -8,10 +8,33 @@
 #include <unordered_set>
 #include <variant>
 
+#include <lcmtypes/sym/marginalization_factor_t.hpp>
+#include <lcmtypes/sym/marginalization_factorf_t.hpp>
+
 #include "./factor.h"
 #include "./values.h"
 
 namespace sym {
+
+namespace internal {
+
+template <typename Scalar>
+struct MarginalizationFactorLcmType {};
+
+template <>
+struct MarginalizationFactorLcmType<double> {
+  using Type = marginalization_factor_t;
+};
+
+template <>
+struct MarginalizationFactorLcmType<float> {
+  using Type = marginalization_factorf_t;
+};
+
+template <typename Scalar>
+using MarginalizationFactorLcmTypeT = typename MarginalizationFactorLcmType<Scalar>::Type;
+
+}  // namespace internal
 
 /**
  * Marginalization factors are linear approximations of information we remove from the optimization
@@ -32,16 +55,25 @@ namespace sym {
 template <typename ScalarType>
 struct MarginalizationFactor {
   using Scalar = ScalarType;
+  using LcmType = internal::MarginalizationFactorLcmTypeT<Scalar>;
 
   MatrixX<Scalar> H{};                    // Hessian = J.T * J
   VectorX<Scalar> rhs{};                  // RHS = J.T * b
   Scalar c{};                             // f = b.T*b
   Values<Scalar> linearization_values{};  // values used for linearization
   std::vector<Key> keys;                  // keys remaining in the problem that this factor touches
+
+  static MarginalizationFactor FromLcmType(const LcmType& msg);
+
+  LcmType GetLcmType() const;
 };
 
 using MarginalizationFactorf = MarginalizationFactor<float>;
 using MarginalizationFactord = MarginalizationFactor<double>;
+
+// Explicit instantiations
+extern template struct MarginalizationFactor<float>;
+extern template struct MarginalizationFactor<double>;
 
 // The marginalization operation computes the Schur complement of the linearized system. To do this
 // we must group all the keys that we want to marginalize together. Arbitrarily, we choose
