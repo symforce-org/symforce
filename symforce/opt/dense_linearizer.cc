@@ -173,7 +173,12 @@ void DenseLinearizer<Scalar>::InitialLinearization(const Values<Scalar>& values,
 
     // First, we evaluate into a temporary linearized factor
     factor_indices_.push_back(values.CreateIndex(factor.AllKeys()).entries);
-    factor.Linearize(values, factor_linearization, &factor_indices_.back());
+    factor.Linearize(values, &factor_linearization.residual,
+                     include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                         ? &factor_linearization.jacobian
+                         : nullptr,
+                     &factor_linearization.hessian, &factor_linearization.rhs,
+                     &factor_indices_.back());
     if (debug_checks_) {
       internal::CheckLinearizedFactor(name_, factor, values, factor_linearization,
                                       factor_indices_.back());
@@ -272,7 +277,12 @@ void DenseLinearizer<ScalarType>::Relinearize(const Values<ScalarType>& values,
     for (int i = 0; i < static_cast<int>(factors_->size()); i++) {
       const auto& factor = (*factors_)[i];
       auto& linearized_dense_factor = linearized_dense_factors_.at(i);
-      factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
+      factor.Linearize(values, &linearized_dense_factor.residual,
+                       include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                           ? &linearized_dense_factor.jacobian
+                           : nullptr,
+                       &linearized_dense_factor.hessian, &linearized_dense_factor.rhs,
+                       &factor_indices_[i]);
       if (debug_checks_) {
         internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
                                         factor_indices_.back());

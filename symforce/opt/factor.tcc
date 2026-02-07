@@ -13,19 +13,23 @@ namespace sym {
 
 template <typename Scalar>
 Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
-                       const std::vector<Key>& keys_to_optimize)
+                       const std::vector<Key>& keys_to_optimize,
+                       const bool requires_jacobian_to_compute_hessian)
     : hessian_func_(std::move(hessian_func)),
       sparse_hessian_func_(),
       keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
-      keys_(keys_to_func) {}
+      keys_(keys_to_func),
+      requires_jacobian_to_compute_hessian_(requires_jacobian_to_compute_hessian) {}
 
 template <typename Scalar>
 Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys_to_func,
-                       const std::vector<Key>& keys_to_optimize)
+                       const std::vector<Key>& keys_to_optimize,
+                       const bool requires_jacobian_to_compute_hessian)
     : hessian_func_(),
       sparse_hessian_func_(std::move(sparse_hessian_func)),
       keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
-      keys_(keys_to_func) {}
+      keys_(keys_to_func),
+      requires_jacobian_to_compute_hessian_(requires_jacobian_to_compute_hessian) {}
 
 // ------------------------------------------------------------------------------------------------
 // Factor::Jacobian constructor
@@ -82,7 +86,8 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
   // Dispatch to either the dynamic size or fixed size implementations
   return Factor<Scalar>(internal::JacobianDispatcher<is_dynamic, is_sparse, is_map, Scalar>{}(
                             std::forward<Functor>(func)),
-                        keys_to_func, keys_to_optimize);
+                        keys_to_func, keys_to_optimize,
+                        /* requires_jacobian_to_compute_hessian */ true);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -96,7 +101,8 @@ Factor<Scalar> Factor<Scalar>::Jacobian(Functor&& func, const std::vector<Key>& 
 template <typename Scalar>
 template <typename Functor>
 Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
-                                       const std::vector<Key>& keys_to_optimize) {
+                                       const std::vector<Key>& keys_to_optimize,
+                                       const bool requires_jacobian_to_compute_hessian) {
   using Traits = function_traits<Functor>;
 
   SYM_ASSERT(keys_to_func.size() >= keys_to_optimize.size());
@@ -148,7 +154,8 @@ Factor<Scalar> Factor<Scalar>::Hessian(Functor&& func, const std::vector<Key>& k
   return Factor<Scalar>(
       internal::HessianDispatcher<is_dynamic, jacobian_is_sparse, is_map, Scalar>{}(
           std::forward<Functor>(func)),
-      keys_to_func, keys_to_optimize);
+      keys_to_func, keys_to_optimize,
+      /* requires_jacobian_to_compute_hessian */ requires_jacobian_to_compute_hessian);
 }
 
 // ----------------------------------------------------------------------------

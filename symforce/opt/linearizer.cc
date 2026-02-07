@@ -73,8 +73,12 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
 
       if (factor.IsSparse()) {
         auto& linearized_sparse_factor = linearized_sparse_factors_.at(sparse_idx);
-        // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, linearized_sparse_factor, &factor_indices_[i]);
+        factor.Linearize(values, &linearized_sparse_factor.residual,
+                         include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                             ? &linearized_sparse_factor.jacobian
+                             : nullptr,
+                         &linearized_sparse_factor.hessian, &linearized_sparse_factor.rhs,
+                         &factor_indices_[i]);
         if (debug_checks_) {
           internal::CheckLinearizedFactor(name_, factor, values, linearized_sparse_factor,
                                           factor_indices_[i]);
@@ -87,8 +91,12 @@ void Linearizer<ScalarType>::Relinearize(const Values<Scalar>& values,
       } else {
         // Use temporary with the right size to avoid allocating after initialization.
         auto& linearized_dense_factor = linearized_dense_factors_.at(dense_idx);
-        // TODO: Only compute factor Jacobians when include_jacobians_ is true.
-        factor.Linearize(values, linearized_dense_factor, &factor_indices_[i]);
+        factor.Linearize(values, &linearized_dense_factor.residual,
+                         include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                             ? &linearized_dense_factor.jacobian
+                             : nullptr,
+                         &linearized_dense_factor.hessian, &linearized_dense_factor.rhs,
+                         &factor_indices_[i]);
         if (debug_checks_) {
           internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
                                           factor_indices_[i]);
@@ -192,7 +200,11 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
     if (factor.IsSparse()) {
       LinearizedSparseFactor& linearized_factor = linearized_sparse_factors_.at(sparse_idx);
       ++sparse_idx;
-      factor.Linearize(values, linearized_factor, &factor_indices_.back());
+      factor.Linearize(values, &linearized_factor.residual,
+                       include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                           ? &linearized_factor.jacobian
+                           : nullptr,
+                       &linearized_factor.hessian, &linearized_factor.rhs, &factor_indices_.back());
       if (debug_checks_) {
         internal::CheckLinearizedFactor(name_, factor, values, linearized_factor,
                                         factor_indices_.back());
@@ -220,7 +232,12 @@ void Linearizer<ScalarType>::BuildInitialLinearization(const Values<Scalar>& val
             linearized_factor.rhs.segment(key_helper.factor_offset, key_helper.tangent_dim);
       }
     } else {
-      factor.Linearize(values, linearized_dense_factor, &factor_indices_.back());
+      factor.Linearize(values, &linearized_dense_factor.residual,
+                       include_jacobians_ || factor.RequiresJacobianToComputeHessian()
+                           ? &linearized_dense_factor.jacobian
+                           : nullptr,
+                       &linearized_dense_factor.hessian, &linearized_dense_factor.rhs,
+                       &factor_indices_.back());
       if (debug_checks_) {
         internal::CheckLinearizedFactor(name_, factor, values, linearized_dense_factor,
                                         factor_indices_.back());

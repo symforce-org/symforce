@@ -110,11 +110,17 @@ class Factor {
    * @param keys_to_func: The set of input arguments, in order, accepted by func.
    * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
    *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   * @param requires_jacobian_to_compute_hessian: Whether the linearization function requires that
+   *    the jacobian is computed in order to compute the hessian (and therefore needs a non-null
+   *    jacobian argument if the hessian is requested).  Typically this is for functions that only
+   *    compute a residual and its jacobian, where SymForce computes the hessian as J^T J.
    */
   Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
-         const std::vector<Key>& keys_to_optimize = {});
+         const std::vector<Key>& keys_to_optimize = {},
+         bool requires_jacobian_to_compute_hessian = false);
   Factor(SparseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
-         const std::vector<Key>& keys_to_optimize = {});
+         const std::vector<Key>& keys_to_optimize = {},
+         bool requires_jacobian_to_compute_hessian = false);
 
   /**
    * Create from a function that computes the (dense/sparse) jacobian. The hessian will be computed
@@ -198,10 +204,14 @@ class Factor {
    * @param keys_to_func: The set of input arguments, in order, accepted by func.
    * @param keys_to_optimize: The set of input arguments that correspond to the derivative in func.
    *    Must be a subset of keys_to_func. If empty, then all keys_to_func are optimized.
+   * @param requires_jacobian_to_compute_hessian: Whether func requires that the jacobian is
+   *    computed in order to compute the hessian (and therefore needs a non-null jacobian argument
+   * if the hessian is requested).
    */
   template <typename Functor>
   static Factor Hessian(Functor&& func, const std::vector<Key>& keys_to_func,
-                        const std::vector<Key>& keys_to_optimize = {});
+                        const std::vector<Key>& keys_to_optimize = {},
+                        bool requires_jacobian_to_compute_hessian = false);
 
   // ----------------------------------------------------------------------------------------------
   // Linearization
@@ -249,6 +259,20 @@ class Factor {
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
+   * @brief Evaluate the factor at the given linearization point and output the numerical values of
+   * the residual, jacobian, hessian, and right-hand-side.
+   *
+   * @param residual Output residual vector, optional.
+   * @param jacobian Output dense jacobian matrix, optional.
+   * @param hessian Output dense hessian matrix, optional.
+   * @param rhs Output right-hand-side vector, optional.
+   * @param maybe_index_entry_cache Optional cache of index entries for the factor keys.
+   */
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
+                 MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
+
+  /**
    * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
    * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
    *
@@ -260,6 +284,40 @@ class Factor {
    *    `values.CreateIndex(factor.AllKeys()).entries`.
    */
   void Linearize(const Values<Scalar>& values, LinearizedDenseFactor& linearized_factor,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output the numerical values of the
+   * residual, jacobian, hessian, and right-hand-side.
+   *
+   * This overload can only be called if IsSparse() is true; otherwise, it will throw
+   *
+   * @param residual: Output residual vector, optional.
+   * @param jacobian: Output sparse jacobian matrix, optional.
+   * @param hessian: Output sparse hessian matrix, optional.
+   * @param rhs: Output right-hand-side vector, optional.
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
+   */
+  void Linearize(const Values<Scalar>& values, VectorX<Scalar>* residual,
+                 Eigen::SparseMatrix<Scalar>* jacobian, Eigen::SparseMatrix<Scalar>* hessian,
+                 VectorX<Scalar>* rhs,
+                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
+
+  /**
+   * Evaluate the factor at the given linearization point and output a LinearizedSparseFactor that
+   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
+   *
+   * This overload can only be called if IsSparse is true; otherwise, it will throw
+   *
+   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
+   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
+   *    prevents repeated hash lookups.  Can be computed as
+   *    `values.CreateIndex(factor.AllKeys()).entries`.
+   */
+  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
                  const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
   /**
@@ -277,20 +335,6 @@ class Factor {
       const Values<Scalar>& values,
       const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
 
-  /**
-   * Evaluate the factor at the given linearization point and output a LinearizedDenseFactor that
-   * contains the numerical values of the residual, jacobian, hessian, and right-hand-side.
-   *
-   * This overload can only be called if IsSparse is true; otherwise, it will throw
-   *
-   * @param maybe_index_entry_cache: Optional.  If provided, should be the index entries for each of
-   *    the inputs to the factor in the given Values.  For repeated linearization, caching this
-   *    prevents repeated hash lookups.  Can be computed as
-   *    `values.CreateIndex(factor.AllKeys()).entries`.
-   */
-  void Linearize(const Values<Scalar>& values, LinearizedSparseFactor& linearized_factor,
-                 const std::vector<index_entry_t>* maybe_index_entry_cache = nullptr) const;
-
   // ----------------------------------------------------------------------------------------------
   // Helpers
   // ----------------------------------------------------------------------------------------------
@@ -300,6 +344,16 @@ class Factor {
    */
   bool IsSparse() const {
     return static_cast<bool>(sparse_hessian_func_);  // operator bool
+  }
+
+  /**
+   * Does this factor require computing the Jacobian to compute the Hessian?
+   *
+   * If true, then when calling Linearize with a non-null `hessian` output, you must also provide a
+   * non-null `jacobian` output.
+   */
+  bool RequiresJacobianToComputeHessian() const {
+    return requires_jacobian_to_compute_hessian_;
   }
 
   /**
@@ -321,6 +375,9 @@ class Factor {
 
   // All keys required to evaluate the factor
   std::vector<Key> keys_;
+
+  // Whether this factor requires computing the Jacobian to compute the Hessian
+  bool requires_jacobian_to_compute_hessian_;
 };
 
 // Shorthand instantiations
