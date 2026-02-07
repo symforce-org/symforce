@@ -5,6 +5,8 @@
 
 #include "./marginalization.h"
 
+#include <Eigen/Cholesky>
+
 #include "./assert.h"
 #include "./dense_linearizer.h"
 #include "./tic_toc.h"
@@ -186,19 +188,31 @@ Factor<Scalar> CreateMarginalizationFactor(
         // We don't directly have a Jacobian or residual. The residual of the system would've been
         // some MxN matrix, but since we can compute and store only the quadratic form (NxN), we
         // have "lost" information.
-        if (residual != nullptr) {
+        if (jacobian != nullptr) {
+          // Computing a plausible jacobian for this factor is expensive, but this is only required
+          // when include_jacobians is on, which is generally for debugging purposes.
+          //
+          // We use the LLT decomposition to compute a Jacobian such that H = J.T * J.
+          Eigen::LLT<MatrixX<Scalar>> llt(marginalization_factor.H);
+
+          // We don't have a way to expose this failure to the user to be handled, so just assert
+          // here.
+          SYM_ASSERT(llt.info() == Eigen::Success, "LLT decomposition failed");
+
+          *jacobian = llt.matrixL().transpose();
+
+          if (residual != nullptr) {
+            // Compute a residual consistent with the jacobian, instead of a 1D residual that we
+            // do otherwise
+            *residual = llt.matrixL().solve(rhs_updated);
+          }
+        }
+        if (residual != nullptr && jacobian == nullptr) {
           // The error is computed as 0.5 * residual.T * residual. Our cost function is:
           // e(x) ~= 0.5 * dx.T * H * dx + rhs.T * dx + 0.5 * c
           // Therefore, we are storing the squared norm of the residual already. We return:
           // r = [sqrt(c)], such that 0.5 * r.T * r = 0.5 * c, as expected.
           *residual = VectorX<Scalar>::Constant(1, std::sqrt(c_updated));
-        }
-        if (jacobian != nullptr) {
-          // This shouldn't be required, but symforce linearizers always populate the argument. To
-          // compute a Jacobian such that it satisfied H = J.T * J, we would need to compute the
-          // Cholesky decomposition, which would be expensive without a benefit. Instead, we just
-          // fill in zeros with a size that matches H and the residual.
-          *jacobian = MatrixX<Scalar>::Zero(1, marginalization_factor.H.rows());
         }
         if (hessian) {
           *hessian = marginalization_factor.H;

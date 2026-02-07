@@ -168,6 +168,9 @@ TEST_CASE("Test optimizing with marginalization", "[marginalization]") {
   sym::optimizer_params_t params = sym::DefaultOptimizerParams();
   params.iterations = 1;
   params.initial_lambda = 0.0;
+  params.check_derivatives = true;
+  params.include_jacobians = true;
+  params.debug_stats = true;
 
   sym::Optimizer<double> optimizer_full(params, factors, "full",
                                         {sym::Key('x', 0), sym::Key('x', 1)});
