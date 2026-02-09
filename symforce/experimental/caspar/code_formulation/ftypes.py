@@ -415,12 +415,14 @@ class SinCos(Func):
 # NORMS
 class Norm(Func):
     def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
-        return f"{outs[0]} = {_fname(f'norm{len(args)}d', dtype)}({', '.join(args)});"
+        name = {2: "hypot", 3: "norm3d", 4: "norm4d"}[len(args)]
+        return f"{outs[0]} = {_fname(name, dtype)}({', '.join(args)});"
 
 
 class RNorm(Func):
     def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
-        return f"{outs[0]} = {_fname(f'rnorm{len(args)}d', dtype)}({', '.join(args)});"
+        name = {2: "rhypot", 3: "rnorm3d", 4: "rnorm4d"}[len(args)]
+        return f"{outs[0]} = {_fname(name, dtype)}({', '.join(args)});"
 
 
 class Ldexp(Func):
