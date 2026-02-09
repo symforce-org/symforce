@@ -8,10 +8,39 @@
 
 #include <cuda_runtime.h>
 
+#include <vector>
+
 #include "shared_indices.h"
 #include "solver_params.h"
 
 namespace caspar {
+
+enum class ExitReason {
+  MAX_ITERATIONS,
+  CONVERGED_SCORE_THRESHOLD,
+  CONVERGED_DIAG_EXIT
+};
+
+struct IterationData {
+  int solver_iter;
+  int pcg_iter;
+  double score_current;
+  double score_best;
+  double step_quality;
+  double diag;
+  double dt_inc;
+  double dt_tot;
+  bool step_accepted;
+};
+
+struct SolveResult {
+  double initial_score;
+  double final_score;
+  int iteration_count;
+  double runtime;
+  ExitReason exit_reason;
+  std::vector<IterationData> iterations;
+};
 
 class {{ solver.struct_name }} {
  public:
@@ -47,7 +76,7 @@ class {{ solver.struct_name }} {
   /**
    * Run the solver.
    */
-  {{solver.linear_t}} solve(bool print_progress = false);
+  SolveResult solve(bool print_progress = false, bool verbose_logging = false);
 
   /**
    * Finish the indices.

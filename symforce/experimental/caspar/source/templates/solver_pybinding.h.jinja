@@ -2,12 +2,40 @@
  # SymForce - Copyright 2025, Skydio, Inc.
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
+#include <pybind11/stl.h>
+
 #include "pybind_array_tools.h"
 #include "solver.h"
 
 namespace caspar {
 
 inline void add_solver_pybinding(pybind11::module_ module) {
+  py::enum_<ExitReason>(module, "ExitReason")
+      .value("MAX_ITERATIONS", ExitReason::MAX_ITERATIONS)
+      .value("CONVERGED_SCORE_THRESHOLD", ExitReason::CONVERGED_SCORE_THRESHOLD)
+      .value("CONVERGED_DIAG_EXIT", ExitReason::CONVERGED_DIAG_EXIT)
+      .export_values();
+
+  py::class_<IterationData>(module, "IterationData")
+      .def(py::init<>())
+      .def_readwrite("solver_iter", &IterationData::solver_iter)
+      .def_readwrite("pcg_iter", &IterationData::pcg_iter)
+      .def_readwrite("score_current", &IterationData::score_current)
+      .def_readwrite("score_best", &IterationData::score_best)
+      .def_readwrite("step_quality", &IterationData::step_quality)
+      .def_readwrite("diag", &IterationData::diag)
+      .def_readwrite("dt_inc", &IterationData::dt_inc)
+      .def_readwrite("dt_tot", &IterationData::dt_tot)
+      .def_readwrite("step_accepted", &IterationData::step_accepted);
+
+  py::class_<SolveResult>(module, "SolveResult")
+      .def(py::init<>())
+      .def_readwrite("initial_score", &SolveResult::initial_score)
+      .def_readwrite("final_score", &SolveResult::final_score)
+      .def_readwrite("iteration_count", &SolveResult::iteration_count)
+      .def_readwrite("runtime", &SolveResult::runtime)
+      .def_readwrite("exit_reason", &SolveResult::exit_reason)
+      .def_readwrite("iterations", &SolveResult::iterations);
   py::class_<{{solver.struct_name}}>(module, "{{solver.struct_name}}",
                                      "Class for solving Factor Graphs.")
       .def(py::init<SolverParams<double>,
@@ -23,7 +51,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
 
       .def("set_params", &{{solver.struct_name}}::set_params)
       .def("solve", &{{ solver.struct_name }}::solve, py::call_guard<py::gil_scoped_release>(),
-           py::arg("print_progress") = false)
+           py::arg("print_progress") = false, py::arg("verbose_logging") = false)
       .def("finish_indices", &{{solver.struct_name}}::finish_indices)
       .def("get_allocation_size", &{{solver.struct_name}}::get_allocation_size)
 

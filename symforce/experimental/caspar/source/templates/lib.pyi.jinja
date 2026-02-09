@@ -21,6 +21,30 @@ https://docs.scipy.org/doc/numpy-1.13.0/reference/arrays.interface.html#__array_
 CudaArray = T.Any
 
 {% if solver is not none %}
+class ExitReason:
+    MAX_ITERATIONS: int
+    CONVERGED_SCORE_THRESHOLD: int
+    CONVERGED_DIAG_EXIT: int
+
+class IterationData:
+    solver_iter: int
+    pcg_iter: int
+    score_current: float
+    score_best: float
+    step_quality: float
+    diag: float
+    dt_inc: float
+    dt_tot: float
+    step_accepted: bool
+
+class SolveResult:
+    initial_score: float
+    final_score: float
+    iteration_count: int
+    runtime: float
+    exit_reason: ExitReason
+    iterations: T.List[IterationData]
+
 class SolverParams:
     solver_iter_max: int
     pcg_iter_max: int
@@ -51,7 +75,7 @@ class {{solver.struct_name}}:
         Set the solver parameters.
         """
 
-    def solve(self, print_progress: bool = False) -> None:
+    def solve(self, print_progress: bool = False, verbose_logging: bool = False) -> SolveResult:
         """
         Run the solver.
         """

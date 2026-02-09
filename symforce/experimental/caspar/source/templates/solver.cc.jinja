@@ -109,7 +109,9 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
 }
 
 
-{{solver.linear_t}} {{ solver.struct_name }}::solve(bool print_progress) {
+SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_logging) {
+  SolveResult result;
+  result.exit_reason = ExitReason::MAX_ITERATIONS;
   {{solver.linear_t}} score_best;
   {{solver.linear_t}} score_best_pcg;
   {{solver.linear_t}} diag = params_.diag_init;
@@ -121,6 +123,7 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
   std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
   std::chrono::time_point<std::chrono::steady_clock> t_prev = t0;
   score_best = do_res_jac_first();
+  result.initial_score = score_best;
   if (print_progress) {
     printf("                                 score_init: % .6e\n", score_best);
   }
@@ -177,7 +180,10 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
       {% endfor %}
     }
 
+    const {{solver.linear_t}} diag_current = diag;
+    bool step_accepted = false;
     if (score_best_pcg < score_best * params_.solver_rel_decrease_min) {
+      step_accepted = true;
       quality = (score_best - score_best_pcg) / get_pred_decrease();
       const {{solver.linear_t}} quality_tmp = 2 * quality - 1;
       {{solver.linear_t}} scale =
@@ -195,30 +201,53 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
       quality = 0.0f;
       diag = diag * up_scale;
       if (diag > params_.diag_exit_value) {
+        result.exit_reason = ExitReason::CONVERGED_DIAG_EXIT;
         break;
       }
       cudaMemcpy({{solver_key("current_diag")}}, &diag, sizeof({{solver.linear_t}}), cudaMemcpyHostToDevice);
       up_scale *= 2;
     }
     const auto t_now = std::chrono::steady_clock::now();
+    const double dt_inc = std::chrono::duration<double>(t_now - t_prev).count();
+    const double dt_tot = std::chrono::duration<double>(t_now - t0).count();
+
+    if (verbose_logging) {
+      IterationData iter_data;
+      iter_data.solver_iter = solver_iter_;
+      iter_data.pcg_iter = pcg_iter_;
+      iter_data.score_current = score_best_pcg;
+      iter_data.score_best = score_best;
+      iter_data.step_quality = quality;
+      iter_data.diag = diag_current;
+      iter_data.dt_inc = dt_inc;
+      iter_data.dt_tot = dt_tot;
+      iter_data.step_accepted = step_accepted;
+      result.iterations.push_back(iter_data);
+    }
+
     if (print_progress) {
       printf("solver_iter: % 3d  ", solver_iter_);
       printf("pcg_iter: % 3d  ", pcg_iter_);
       printf("score_current: % 13.6e  ", score_best_pcg);
       printf("score_best: % 13.6e  ", score_best);
       printf("step_quality: % 7.3f  ", quality);
-      printf("diag: % 6.3e  ", diag);
-      printf("dt_inc: % 10.6f  ", (float)(t_now - t_prev).count() * 1e-9);
-      printf("dt_tot: % 10.6f  ", (float)(t_now - t0).count() * 1e-9);
+      printf("diag: % 6.3e  ", diag_current);
+      printf("dt_inc: % 10.6f  ", dt_inc);
+      printf("dt_tot: % 10.6f  ", dt_tot);
       t_prev = t_now;
       printf("\n");
     }
     if (score_best <= params_.score_exit_value) {
+      result.exit_reason = ExitReason::CONVERGED_SCORE_THRESHOLD;
       break;
     }
   }
 
-  return score_best;
+  const auto t_final = std::chrono::steady_clock::now();
+  result.final_score = score_best;
+  result.iteration_count = solver_iter_;
+  result.runtime = std::chrono::duration<double>(t_final - t0).count();
+  return result;
 }
 
 
