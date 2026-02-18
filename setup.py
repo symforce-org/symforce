@@ -410,7 +410,7 @@ if __name__ == "__main__":
                     "argh",
                     "coverage",
                     "jinja2~=3.0",
-                    "mypy~=1.14.0",
+                    "mypy~=1.19.1",
                     "numba",
                     # Base for https://github.com/sizmailov/pybind11-stubgen/pull/263
                     "pybind11-stubgen>=2.5.5",

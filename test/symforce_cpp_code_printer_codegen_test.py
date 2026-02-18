@@ -90,7 +90,7 @@ class SymforceCppCodePrinterTest(TestCase):
         output_dir = self.make_output_dir("sf_heaviside_test_")
 
         def heaviside(x: sf.Symbol) -> sf.Expr:
-            return sf.sympy.functions.special.delta_functions.Heaviside(x)
+            return sf.sympy.functions.special.delta_functions.Heaviside(x)  # type: ignore[attr-defined]
 
         heaviside_codegen = codegen.Codegen.function(func=heaviside, config=codegen.CppConfig())
         heaviside_codegen_data = heaviside_codegen.generate_function(
