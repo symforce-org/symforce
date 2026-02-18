@@ -25,6 +25,16 @@ struct LinearizedDenseFactorTypeHelper;
 template <typename _S>
 struct LinearizedSparseFactorTypeHelper;
 
+template <>
+struct LinearizedDenseFactorTypeHelper<double> {
+  using Type = linearized_dense_factor_t;
+};
+
+template <>
+struct LinearizedDenseFactorTypeHelper<float> {
+  using Type = linearized_dense_factorf_t;
+};
+
 // NOTE(aaron): Unlike the dense versions of these, we don't have SparseMatrix eigen_lcm types, so
 // we just defined these as structs, since we don't need to serialize them anyway
 struct linearized_sparse_factor_t {
@@ -47,6 +57,16 @@ struct linearized_sparse_factorf_t {
   static constexpr const char* getTypeName() {
     return "linearized_sparse_factorf_t";
   }
+};
+
+template <>
+struct LinearizedSparseFactorTypeHelper<double> {
+  using Type = linearized_sparse_factor_t;
+};
+
+template <>
+struct LinearizedSparseFactorTypeHelper<float> {
+  using Type = linearized_sparse_factorf_t;
 };
 
 /**
@@ -430,9 +450,9 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
 
 }  // namespace sym
 
-// Template method implementations
-#include "./factor.tcc"
-
 // Explicit instantiation declarations
 extern template class sym::Factor<double>;
 extern template class sym::Factor<float>;
+
+// Template method implementations
+#include "./factor.tcc"

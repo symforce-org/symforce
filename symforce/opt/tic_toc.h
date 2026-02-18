@@ -5,6 +5,10 @@
 
 #pragma once
 
+// include-cleaner doesn't know this provides SYM_TIME_SCOPE in the configuration when
+// SYMFORCE_TIC_TOC_HEADER is set.  Not sure if there's a better way to do this
+// IWYU pragma: always_keep
+
 /** @file
  * Utility for timing execution of various scopes in a program.  Timings are aggregated across all
  * runs of each scope in an execution, and optionally printed in a table on program exit.  Example

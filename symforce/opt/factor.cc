@@ -34,6 +34,26 @@ typename Factor<Scalar>::template HessianFunc<Matrix> HessianFuncFromJacobianFun
 }
 
 template <typename Scalar>
+Factor<Scalar>::Factor(DenseHessianFunc hessian_func, const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize,
+                       const bool requires_jacobian_to_compute_hessian)
+    : hessian_func_(std::move(hessian_func)),
+      sparse_hessian_func_(),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
+      keys_(keys_to_func),
+      requires_jacobian_to_compute_hessian_(requires_jacobian_to_compute_hessian) {}
+
+template <typename Scalar>
+Factor<Scalar>::Factor(SparseHessianFunc sparse_hessian_func, const std::vector<Key>& keys_to_func,
+                       const std::vector<Key>& keys_to_optimize,
+                       const bool requires_jacobian_to_compute_hessian)
+    : hessian_func_(),
+      sparse_hessian_func_(std::move(sparse_hessian_func)),
+      keys_to_optimize_(keys_to_optimize.empty() ? keys_to_func : keys_to_optimize),
+      keys_(keys_to_func),
+      requires_jacobian_to_compute_hessian_(requires_jacobian_to_compute_hessian) {}
+
+template <typename Scalar>
 Factor<Scalar>::Factor(const DenseJacobianFunc& jacobian_func, const std::vector<Key>& keys_to_func,
                        const std::vector<Key>& keys_to_optimize)
     : Factor(HessianFuncFromJacobianFunc<Scalar>(jacobian_func), keys_to_func, keys_to_optimize,
