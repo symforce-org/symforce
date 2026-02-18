@@ -210,12 +210,12 @@ class {{solver.struct_name}}:
 {% endif %}
 
 {% for typ in caslib.exposed_types %}
-def {{typ.__name__}}_stacked_to_caspar(stacked_data: CudaArray, out_cas_data: CudaArray) -> None:
+def {{camel_to_snake(typ.__name__)}}_stacked_to_caspar(stacked_data: CudaArray, out_cas_data: CudaArray) -> None:
     """
     Convert the stacked {{typ.__name__}} data to the caspar data format.
     """
 
-def {{typ.__name__}}_caspar_to_stacked(caspar_data: CudaArray, out_stacked_data: CudaArray) -> None:
+def {{camel_to_snake(typ.__name__)}}_caspar_to_stacked(caspar_data: CudaArray, out_stacked_data: CudaArray) -> None:
     """
     Convert the caspar {{typ.__name__}} data to the stacked data format.
     """

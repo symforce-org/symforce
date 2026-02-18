@@ -8,6 +8,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from symforce.python_util import snakecase_to_camelcase
+
 from ..code_formulation.dabseg_from_accessors import make_dabseg
 from ..code_formulation.dabseg_sorter import get_lines
 from ..memory.accessors import Accessor
@@ -50,11 +52,15 @@ class Kernel:
         self.code_lines, n_registers = get_lines(dabseg, dtype=self.kernel_t)
         self.registers = [f"r{i}" for i in range(n_registers)]
 
-        code = env.get_template("kernel.cu.jinja").render(kernel=self)
+        code = env.get_template("kernel.cu.jinja").render(
+            kernel=self, snake_to_camel=snakecase_to_camelcase
+        )
         code = EMPTY_BLOCK_PATTERN.sub("", code)
         write_if_different(code, out_dir.joinpath(f"kernel_{self.name}.cu"))
 
-        header = env.get_template("kernel.h.jinja").render(kernel=self)
+        header = env.get_template("kernel.h.jinja").render(
+            kernel=self, snake_to_camel=snakecase_to_camelcase
+        )
         write_if_different(header, out_dir.joinpath(f"kernel_{self.name}.h"))
 
     def __repr__(self) -> str:

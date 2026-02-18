@@ -11,7 +11,7 @@ namespace caspar {
 
 void add_casmappings_pybindings(pybind11::module_ module) {
   {% for nodetype in caslib.exposed_types %}
-  module.def("{{nodetype.__name__}}_stacked_to_caspar",
+  module.def("{{camel_to_snake(nodetype.__name__)}}_stacked_to_caspar",
       [](pybind11::object stacked_data, pybind11::object cas_data) {
         if (GetNumCols(stacked_data) != {{Ops.storage_dim(nodetype)}}) {
           throw std::runtime_error(
@@ -27,10 +27,10 @@ void add_casmappings_pybindings(pybind11::module_ module) {
           throw std::runtime_error(
             "The caspar data must have at least as many columns as stacked_data has rows.");
         }
-        {{nodetype.__name__}}_stacked_to_caspar(
+        {{nodetype.__name__}}StackedToCaspar(
           As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), As{{caslib.storage_t.capitalize()}}Ptr(cas_data), cas_stride, 0,  num_objects);
       });
-  module.def("{{nodetype.__name__}}_caspar_to_stacked",
+  module.def("{{camel_to_snake(nodetype.__name__)}}_caspar_to_stacked",
       [](pybind11::object cas_data, pybind11::object stacked_data) {
           if (GetNumCols(stacked_data) != {{Ops.storage_dim(nodetype)}}) {
               throw std::runtime_error(
@@ -46,7 +46,7 @@ void add_casmappings_pybindings(pybind11::module_ module) {
                   "The caspar data must have at least as many columns as stacked_data has rows.");
           }
 
-          {{nodetype.__name__}}_caspar_to_stacked(
+          {{nodetype.__name__}}CasparToStacked(
               As{{caslib.storage_t.capitalize()}}Ptr(cas_data), As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), cas_stride, 0, num_objects);
       });
   {% endfor %}

@@ -12,6 +12,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen.codegen import WARNING_MESSAGE
 from symforce.ops import LieGroupOps as Ops
+from symforce.python_util import snakecase_to_camelcase
 
 from ..code_generation.factor import Factor
 from ..code_generation.factor import dyn_part
@@ -217,7 +218,7 @@ class Solver:
         for thing in [
             "current_diag",
             "alpha_numerator",
-            "alpha_denumerator",
+            "alpha_denominator",
             "alpha",
             "neg_alpha",
             "beta_numerator",
@@ -352,7 +353,7 @@ class Solver:
         c_next = -k2 * eqkp1.c
         d_next = eqk.d - k1 * eqkm1.d - k2 * eqkp1.d
         self.add_kernel(
-            (ntype.__name__, "CR_down"),
+            (ntype.__name__, "cyclic_reduction_down"),
             [
                 ReadStrided("eqk", eqk, block_size=64, **self.accessor_kwargs),
                 ReadPairStridedWithDefault(
@@ -392,7 +393,7 @@ class Solver:
         )
 
         self.add_kernel(
-            (ntype.__name__, "solve_two"),
+            (ntype.__name__, "cyclic_reduction_solve_two"),
             [
                 ReadPairStridedWithDefault(
                     "eq", Pair(eqkm1, eqk), default=eq_zero, block_size=32, **self.accessor_kwargs
@@ -409,7 +410,7 @@ class Solver:
         rhs = eqk.d - eqk.a * xkm1 - eqk.c * xkp1
         soluk = sf.Matrix(eqk.bU.mat().mat.solve(eqk.bL.mat().mat.solve(rhs.mat)))
         self.add_kernel(
-            (ntype.__name__, "CR_up"),
+            (ntype.__name__, "cyclic_reduction_up"),
             [
                 ReadStrided("eqk", eqk, block_size=32, **self.accessor_kwargs),
                 ReadPairStridedWithDefault(
@@ -558,7 +559,7 @@ class Solver:
                 ],
             )
             self.add_kernel(
-                (name, "alpha_denumerator_or_beta_nummerator"),
+                (name, "alpha_denominator_or_beta_numerator"),
                 [
                     ReadSequential(f"{name}_p_kp1", p_kp1, **akws),
                     ReadSequential(f"{name}_w", w, **akws),
@@ -680,6 +681,7 @@ class Solver:
             num_blocks_key=num_blocks_key,
             num_max_key=num_max_key,
             num_arg_key=num_arg_key,
+            snake_to_camel=snakecase_to_camelcase,
             Ops=Ops,
         )
         header = env.get_template("solver.h.jinja").render(**kwargs)

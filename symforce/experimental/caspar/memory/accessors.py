@@ -223,14 +223,14 @@ class ReadSequential(_Sequential, _ReadAccessor):
     def read_template(self, idx: int) -> str:
         c = Common(self, idx)
         idx_str = f" global_thread_idx {self.stride_string()} {self.offset_string()}"
-        return f"read_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
+        return f"ReadIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
 
 
 class WriteSequential(_Sequential, _WriteAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
         idx_str = f" global_thread_idx {self.stride_string()} {self.offset_string()}"
-        return f"write_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
+        return f"WriteIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
 
 
 class _Strided:
@@ -253,7 +253,7 @@ class ReadStrided(_Strided, _ReadAccessor):
     def read_template(self, idx: int) -> str:
         c = Common(self, idx)
         idx_str = f" global_thread_idx * {c.name}_stride + {c.name}_offset"
-        return f"read_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
+        return f"ReadIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
 
 
 class ReadStridedWithDefault(_Strided, _ReadAccessor):
@@ -264,7 +264,7 @@ class ReadStridedWithDefault(_Strided, _ReadAccessor):
             f"{float(StorageOps.to_storage(self.default)[i]):06f}f" for i in c.elem_indices
         )
         return (
-            f"read_idx_with_default_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, "
+            f"ReadIdxWithDefault{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, "
             f"{c.name}_num_alloc, {idx_str}, {c.args}, {defaults});"
         )
 
@@ -273,7 +273,7 @@ class WriteStrided(_Strided, _WriteAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
         idx_str = f" global_thread_idx * {c.name}_stride + {c.name}_offset"
-        return f"write_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
+        return f"WriteIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {idx_str}, {c.args});"
 
 
 class AddSequential(_Sequential, _AddAccessor):
@@ -285,7 +285,7 @@ class AddSequential(_Sequential, _AddAccessor):
 
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return f"add_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx, {c.args});"
+        return f"AddIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx, {c.args});"
 
 
 class _Indexed(_UsingIndexData):
@@ -317,13 +317,13 @@ class _Indexed(_UsingIndexData):
 class ReadIndexed(_Indexed, _ReadAccessor):
     def read_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return f"read_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
+        return f"ReadIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
 
 
 class WriteIndexed(_Indexed, _WriteAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return f"write_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
+        return f"WriteIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_idx, {c.args});"
 
 
 class AddIndexed(_Indexed, _AddAccessor):
@@ -338,7 +338,7 @@ class AddIndexed(_Indexed, _AddAccessor):
 
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
-        return f"add_idx_{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.name}_idx, {c.args});"
+        return f"AddIdx{c.dim}{c.template_args}({c.name}, {c.offset}*{c.name}_num_alloc, {c.name}_idx, {c.args});"
 
 
 class ReadShared(_UsingIndexData, _UsingSharedMem, _ReadAccessor):
@@ -374,9 +374,9 @@ class ReadShared(_UsingIndexData, _UsingSharedMem, _ReadAccessor):
         c = Common(self, idx)
         return f"""
         }}}};
-        load_shared<{c.dim}, {c.kernel_t}, {c.storage_t}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, ({c.SharedT}*)inout_shared);
+        LoadShared<{c.dim}, {c.kernel_t}, {c.storage_t}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, ({c.SharedT}*)inout_shared);
         if (global_thread_idx < problem_size) {{{{
-        read_shared_{c.dim}<{c.kernel_t}>(({c.SharedT}*)inout_shared, {c.idx_name}_indices_loc[threadIdx.x].target, {c.args});
+        ReadShared{c.dim}<{c.kernel_t}>(({c.SharedT}*)inout_shared, {c.idx_name}_indices_loc[threadIdx.x].target, {c.args});
         }}}};
         __syncthreads();
         if (global_thread_idx < problem_size) {{{{
@@ -399,9 +399,9 @@ class ReadUnique(_UsingSharedMem, _ReadAccessor):
         c = Common(self, idx)
         return f"""
         }}}};
-        load_unique<{c.dim}, {c.kernel_t}, {c.storage_t}>({c.name}, {c.offset}, ({c.SharedT}*)inout_shared);
+        LoadUnique<{c.dim}, {c.kernel_t}, {c.storage_t}>({c.name}, {c.offset}, ({c.SharedT}*)inout_shared);
         if (global_thread_idx < problem_size) {{{{
-        read_shared_{c.dim}<{c.kernel_t}>(({c.SharedT}*)inout_shared, 0, {c.args});
+        ReadShared{c.dim}<{c.kernel_t}>(({c.SharedT}*)inout_shared, 0, {c.args});
         }}}};
         __syncthreads();
         if (global_thread_idx < problem_size) {{{{
@@ -442,9 +442,9 @@ class AddSharedSum(_UsingIndexData, _UsingSharedMem, _AddAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
         return f"""
-        write_sum_{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
+        WriteSum{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
         }}}};
-        flush_sum_shared<{c.dim}, {c.storage_t}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, ({c.SharedT}*)inout_shared);
+        FlushSumShared<{c.dim}, {c.storage_t}>({c.name}, {c.offset}*{c.name}_num_alloc, {c.idx_name}_indices_loc, ({c.SharedT}*)inout_shared);
         if (global_thread_idx < problem_size) {{{{
         """.strip()
 
@@ -478,9 +478,9 @@ class WriteBlockSum(_UsingSharedMem, _WriteAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
         return f"""
-        write_sum_{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
+        WriteSum{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
         }}}};
-        flush_sum_block<{c.dim}, {c.storage_t}>({c.name}, ({c.SharedT}*)inout_shared, global_thread_idx<problem_size);
+        FlushSumBlock<{c.dim}, {c.storage_t}>({c.name}, ({c.SharedT}*)inout_shared, global_thread_idx<problem_size);
         if (global_thread_idx < problem_size) {{{{
         """.strip()
 
@@ -514,9 +514,9 @@ class AddBlockSum(_UsingSharedMem, _AddAccessor):
     def write_template(self, idx: int) -> str:
         c = Common(self, idx)
         return f"""
-        write_sum_{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
+        WriteSum{c.dim}<{c.kernel_t}, {c.storage_t}>(({c.SharedT}*)inout_shared, {c.args});
         }}}};
-        flush_sum_block_add<{c.dim}, {c.storage_t}>({c.name}, ({c.SharedT}*)inout_shared, global_thread_idx<problem_size);
+        FlushSumBlockAdd<{c.dim}, {c.storage_t}>({c.name}, ({c.SharedT}*)inout_shared, global_thread_idx<problem_size);
         if (global_thread_idx < problem_size) {{{{
         """.strip()
 
@@ -540,7 +540,7 @@ class AddSum(_UsingSharedMem, _AddAccessor):
         c = Common(self, idx)
         return f"""
         }}}};
-        sum_store<{c.storage_t}>({self.name}_local, ({c.SharedT}*)inout_shared, {self.chunk_indices[idx][0]}, global_thread_idx < problem_size, {c.args});
+        SumStore<{c.storage_t}>({self.name}_local, ({c.SharedT}*)inout_shared, {self.chunk_indices[idx][0]}, global_thread_idx < problem_size, {c.args});
         if (global_thread_idx < problem_size) {{{{
         """.strip()
 
@@ -554,7 +554,7 @@ class AddSum(_UsingSharedMem, _AddAccessor):
 
     def post_calc_code(self) -> str:
         if StorageOps.storage_dim(self.storage) > 0:
-            return f"sum_flush_final<{self.storage_t}>({self.name}_local, {self.name}, {StorageOps.storage_dim(self.storage)});"
+            return f"SumFlushFinal<{self.storage_t}>({self.name}_local, {self.name}, {StorageOps.storage_dim(self.storage)});"
         return ""
 
 
@@ -585,7 +585,7 @@ class ReadPair(_Pairwise, _ReadAccessor):
         c = Common(self, idx)
         return f"""
         }}}};
-        read_and_shuffle_{c.dim}{c.template_args}(({c.SharedT}*)inout_shared,
+        ReadAndShuffle{c.dim}{c.template_args}(({c.SharedT}*)inout_shared,
         {c.name}, {c.offset}*{c.name}_num_alloc, global_thread_idx,
         threadIdx.x == {self.block_size - 1},
         global_thread_idx <= problem_size,
@@ -617,7 +617,7 @@ class ReadPairStridedWithDefault(_Pairwise, _ReadAccessor):
         c = Common(self, idx)
         return f"""
         }}}};
-        read_and_shuffle_with_default_{c.dim}{c.template_args}(({c.SharedT}*)inout_shared,
+        ReadAndShuffleWithDefault{c.dim}{c.template_args}(({c.SharedT}*)inout_shared,
         {c.name}, {c.offset}*{c.name}_num_alloc,
         global_thread_idx * {c.name}_stride + {c.name}_offset,
         threadIdx.x == {self.block_size - 1},
@@ -647,7 +647,7 @@ class AddPair(_Pairwise, _AddAccessor):
         template_args = f"<true, {self.block_size}, {c.kernel_t}, {c.storage_t}, {c.VecT}>"
         return f"""
         }}}};
-        shuffle_and_write_{c.dim}{template_args}(({c.SharedT}*)inout_shared,
+        ShuffleAndWrite{c.dim}{template_args}(({c.SharedT}*)inout_shared,
         {c.name}, {c.offset}*{c.name}_num_alloc,
         global_thread_idx, problem_size,
         {",".join(f"{{arg_{i}}}" for i in range(c.dim * 2))});
@@ -676,7 +676,7 @@ class WritePair(_Pairwise, _ReadAccessor):
         template_args = f"<false, {self.block_size}, {c.kernel_t}, {c.storage_t}, {c.VecT}>"
         return f"""
         }}}};
-        shuffle_and_write_{c.dim}{template_args}(({c.SharedT}*)inout_shared,
+        ShuffleAndWrite{c.dim}{template_args}(({c.SharedT}*)inout_shared,
         {c.name}, {c.offset}*{c.name}_num_alloc,
         global_thread_idx, problem_size,
         {",".join(f"{{arg_{i}}}" for i in range(c.dim * 2))});

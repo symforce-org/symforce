@@ -34,10 +34,10 @@ class Pose(sf.Pose3): ...
 class Landmark(sf.V3): ...
 
 
-class posMeasurement(sf.V3): ...
+class PositionMeasurement(sf.V3): ...
 
 
-class posSensorOffset(sf.V3): ...
+class PositionSensorOffset(sf.V3): ...
 
 
 class OdometryMeasurement(sf.V6): ...
@@ -63,9 +63,9 @@ def make_poses(
 @caslib.add_kernel
 def get_pos_measurements(
     pose: T.Annotated[sf.Pose3, mem.ReadIndexed],
-    pos_sensor_offset: T.Annotated[posSensorOffset, mem.ReadUnique],
-) -> T.Annotated[posMeasurement, mem.WriteSequential]:
-    return posMeasurement(pose * pos_sensor_offset)
+    pos_sensor_offset: T.Annotated[PositionSensorOffset, mem.ReadUnique],
+) -> T.Annotated[PositionMeasurement, mem.WriteSequential]:
+    return PositionMeasurement(pose * pos_sensor_offset)
 
 
 @caslib.add_kernel
@@ -89,8 +89,8 @@ def get_landmark_measurements(
 @caslib.add_factor
 def pos_error(
     pose: T.Annotated[Pose, mem.TunableShared],
-    pos_sensor_offset: T.Annotated[posSensorOffset, mem.TunableUnique],
-    pos_meas: T.Annotated[posMeasurement, mem.ConstantSequential],
+    pos_sensor_offset: T.Annotated[PositionSensorOffset, mem.TunableUnique],
+    pos_meas: T.Annotated[PositionMeasurement, mem.ConstantSequential],
 ) -> sf.V3:
     return get_pos_measurements(pose, pos_sensor_offset) - pos_meas
 
@@ -139,7 +139,7 @@ N_GNSS = 1 + (N_POSE - 1) // INTERVAL_GNSS
 N_LANDMARK_ERROR = N_POSE * MATCH_PER_LIDAR
 N_LM_HALF = N_LANDMARK_ERROR // 2
 
-pos_sensor_offset = to_tensor(posSensorOffset.from_tangent([0, 0, 0]))
+pos_sensor_offset = to_tensor(PositionSensorOffset.from_tangent([0, 0, 0]))
 landmark_sensor_offset = to_tensor(LandmarkSensorOffset.from_tangent([0, 0, 0, 0, 0, 0]))
 
 angles = torch.linspace(0, 2 * np.pi, N_POSE)[None, :]
@@ -151,7 +151,7 @@ landmarks_caspar = (torch.rand(mem.caspar_size(Landmark), N_LANDMARK) - 0.5) * 1
 odometry_caspar = torch.empty(mem.caspar_size(OdometryMeasurement), N_POSE - 1)
 lib.get_odometry_measurements(pose_caspar, odometry_caspar, N_POSE - 1)
 
-pos_meas_caspar = torch.empty(mem.caspar_size(posMeasurement), N_GNSS)
+pos_meas_caspar = torch.empty(mem.caspar_size(PositionMeasurement), N_GNSS)
 pos_indices = torch.arange(0, N_POSE, INTERVAL_GNSS, dtype=torch.int32)
 lib.get_pos_measurements(pose_caspar, pos_indices, pos_sensor_offset, pos_meas_caspar, N_GNSS)
 
@@ -186,7 +186,7 @@ landmarks_stacked = torch.empty(N_LANDMARK, mem.stacked_size(Landmark))
 lib.Landmark_caspar_to_stacked(landmarks_caspar, landmarks_stacked)
 odometry_stacked = torch.empty(N_POSE - 1, mem.stacked_size(OdometryMeasurement))
 lib.OdometryMeasurement_caspar_to_stacked(odometry_caspar, odometry_stacked)
-pos_meas_stacked = torch.empty(N_GNSS, mem.stacked_size(posMeasurement))
+pos_meas_stacked = torch.empty(N_GNSS, mem.stacked_size(PositionMeasurement))
 lib.posMeasurement_caspar_to_stacked(pos_meas_caspar, pos_meas_stacked)
 landmark_meas_stacked = torch.empty(N_LANDMARK_ERROR, mem.stacked_size(LandmarkMeasurement))
 lib.LandmarkMeasurement_caspar_to_stacked(landmark_meas_caspar, landmark_meas_stacked)

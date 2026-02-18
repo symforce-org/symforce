@@ -9,13 +9,13 @@
 namespace caspar {
 {% for nodetype in caslib.exposed_types%}
 
-cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const {{caslib.storage_t}}* stacked_data,
+cudaError_t {{nodetype.__name__}}StackedToCaspar(const {{caslib.storage_t}}* stacked_data,
                                                     {{caslib.storage_t}}* cas_data,
                                                     const unsigned int cas_stride,
                                                     const unsigned int cas_offset,
                                                     const unsigned int num_objects);
 
-cudaError_t {{nodetype.__name__}}_caspar_to_stacked(const {{caslib.storage_t}}* cas_data,
+cudaError_t {{nodetype.__name__}}CasparToStacked(const {{caslib.storage_t}}* cas_data,
                                                     {{caslib.storage_t}}* stacked_data,
                                                     const unsigned int cas_stride,
                                                     const unsigned int cas_offset,

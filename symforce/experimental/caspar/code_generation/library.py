@@ -13,6 +13,7 @@ from symforce import typing as T
 from symforce.experimental import caspar
 from symforce.experimental.caspar.memory.dtype import DType
 from symforce.ops import LieGroupOps as Ops
+from symforce.python_util import camelcase_to_snakecase
 
 from ..code_generation.factor import Factor
 from ..code_generation.kernel import Kernel
@@ -194,7 +195,10 @@ class CasparLibrary:
 
     def generate_stubs(self, out_dir: Path, solver: Solver | None) -> None:
         pyi = env.get_template("lib.pyi.jinja").render(
-            caslib=self, solver=solver, num_arg_key=num_arg_key
+            caslib=self,
+            solver=solver,
+            num_arg_key=num_arg_key,
+            camel_to_snake=camelcase_to_snakecase,
         )
         write_if_different(pyi, out_dir.joinpath(f"{self.name}.pyi"))
 
@@ -227,6 +231,7 @@ class CasparLibrary:
             caspar_size=caspar_size,
             Ops=Ops,
             len=len,
+            camel_to_snake=camelcase_to_snakecase,
         )
         definition = env.get_template("caspar_mappings.cu.jinja").render(**kwargs)
         write_if_different(definition, out_dir.joinpath("caspar_mappings.cu"))

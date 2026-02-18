@@ -56,11 +56,11 @@ inline void add_solver_pybinding(pybind11::module_ module) {
       .def("get_allocation_size", &{{solver.struct_name}}::get_allocation_size)
 
       {% for nodetype in solver.node_types %}
-        .def("set_{{nodetype.__name__}}_num", &{{solver.struct_name}}::set_{{nodetype.__name__}}_num)
+        .def("set_{{nodetype.__name__}}_num", &{{solver.struct_name}}::Set{{nodetype.__name__ }}Num)
         .def("set_{{nodetype.__name__}}_nodes_from_stacked_host",
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertHostMemory(stacked_data);
-               solver.set_{{nodetype.__name__}}_nodes_from_stacked_host(
+               solver.Set{{nodetype.__name__}}NodesFromStackedHost(
                    As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
@@ -70,7 +70,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
         .def("set_{{nodetype.__name__}}_nodes_from_stacked_device",
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertDeviceMemory(stacked_data);
-               solver.set_{{nodetype.__name__}}_nodes_from_stacked_device(
+               solver.Set{{nodetype.__name__}}NodesFromStackedDevice(
                    As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
@@ -80,7 +80,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
         .def("get_{{nodetype.__name__}}_nodes_to_stacked_host",
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertHostMemory(stacked_data);
-               solver.get_{{nodetype.__name__}}_nodes_to_stacked_host(
+               solver.Get{{nodetype.__name__}}NodesToStackedHost(
                    As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
@@ -90,7 +90,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
         .def("get_{{nodetype.__name__}}_nodes_to_stacked_device",
              []({{ solver.struct_name }} &solver, pybind11::object stacked_data, size_t offset) {
                AssertDeviceMemory(stacked_data);
-               solver.get_{{nodetype.__name__}}_nodes_to_stacked_device(
+               solver.Get{{nodetype.__name__}}NodesToStackedDevice(
                    As{{solver.storage_t.capitalize()}}Ptr(stacked_data),
                    offset,
                    GetNumRows(stacked_data));
@@ -100,14 +100,14 @@ inline void add_solver_pybinding(pybind11::module_ module) {
 
       {% endfor %}
       {% for factor in solver.factors %}
-        .def("set_{{factor.name}}_num", &{{solver.struct_name}}::set_{{factor.name}}_num)
+        .def("set_{{factor.name}}_num", &{{solver.struct_name}}::Set{{snake_to_camel(factor.name)}}Num)
 
         {% for argname, argtype in factor.node_arg_types.items() %}
           {% if factor.isnodeshared[argname] %}
           .def("set_{{factor.name}}_{{argname}}_indices_from_host",
                []({{ solver.struct_name }} &solver, pybind11::object indices) {
                  AssertHostMemory(indices);
-                 solver.set_{{factor.name}}_{{argname}}_indices_from_host(
+                 solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromHost(
                      AsUintPtr(indices),
                      GetNumRows(indices));
                }
@@ -115,7 +115,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
           .def("set_{{factor.name}}_{{argname}}_indices_from_device",
                []({{ solver.struct_name }} &solver, pybind11::object indices) {
                  AssertDeviceMemory(indices);
-                 solver.set_{{factor.name}}_{{argname}}_indices_from_device(
+                 solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromDevice(
                      AsUintPtr(indices),
                      GetNumRows(indices));
                }
@@ -136,7 +136,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                    {% endif %}
                    ) {
                  AssertDeviceMemory(stacked_data);
-                 solver.set_{{factor.name}}_{{argname}}_data_from_stacked_device(
+                 solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}DataFromStackedDevice(
                    {% if factor.isconstseq[argname] %}
                      As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% elif factor.isconstuniq[argname] %}
@@ -171,7 +171,7 @@ inline void add_solver_pybinding(pybind11::module_ module) {
                    {% endif %}
                    ) {
                  AssertHostMemory(stacked_data);
-                 solver.set_{{factor.name}}_{{argname}}_data_from_stacked_host(
+                 solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}DataFromStackedHost(
                    {% if factor.isconstseq[argname] %}
                      As{{solver.storage_t.capitalize()}}Ptr(stacked_data), offset, GetNumRows(stacked_data)
                    {% elif factor.isconstuniq[argname] %}
@@ -197,14 +197,14 @@ inline void add_solver_pybinding(pybind11::module_ module) {
         .def("set_{{factor.name}}_{{argname}}_indices_from_host",
             []({{ solver.struct_name }} &solver, pybind11::object indices) {
               AssertHostMemory(indices);
-              solver.set_{{factor.name}}_{{argname}}_indices_from_host(AsUintPtr(indices), GetNumRows(indices));
+              solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromHost(AsUintPtr(indices), GetNumRows(indices));
             },
             pybind11::arg("indices")
         )
         .def("set_{{factor.name}}_{{argname}}_indices_from_device",
             []({{ solver.struct_name }} &solver, pybind11::object indices) {
               AssertDeviceMemory(indices);
-              solver.set_{{factor.name}}_{{argname}}_indices_from_device(AsUintPtr(indices),GetNumRows(indices));
+              solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromDevice(AsUintPtr(indices),GetNumRows(indices));
             },
             pybind11::arg("indices")
         )
@@ -212,14 +212,14 @@ inline void add_solver_pybinding(pybind11::module_ module) {
         .def("set_{{factor.name}}_{{argname}}_indices_from_host",
             []({{ solver.struct_name }} &solver, pybind11::object indices) {
               AssertHostMemory(indices);
-              solver.set_{{factor.name}}_{{argname}}_indices_from_host(AsUintPtr(indices), GetNumRows(indices));
+              solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromHost(AsUintPtr(indices), GetNumRows(indices));
             },
             pybind11::arg("indices")
         )
         .def("set_{{factor.name}}_{{argname}}_indices_from_device",
             []({{ solver.struct_name }} &solver, pybind11::object indices) {
               AssertDeviceMemory(indices);
-              solver.set_{{factor.name}}_{{argname}}_indices_from_device(AsUintPtr(indices),GetNumRows(indices));
+              solver.Set{{snake_to_camel(factor.name)}}{{snake_to_camel(argname)}}IndicesFromDevice(AsUintPtr(indices),GetNumRows(indices));
             },
             pybind11::arg("indices")
         )

@@ -25,7 +25,7 @@ using namespace caspar;
 
 {% for kernel in caslib.kernels %}
 {% if kernel.expose_to_python %}
-void {{kernel.name}}_pybinding(
+void {{snake_to_camel(kernel.name)}}Pybinding(
     {% for accessor in kernel.accessors %}
     {% for name, typ in accessor.py_sig.items() %}
     {{typ}} {{name}},
@@ -38,7 +38,7 @@ void {{kernel.name}}_pybinding(
   {% endfor %}
   {% endfor %}
 
-  {{kernel.name}}(
+  {{snake_to_camel(kernel.name)}}(
       {% for accessor in kernel.accessors %}
       {% for arg in accessor.py_args %}
       {{arg}},
@@ -59,7 +59,7 @@ PYBIND11_MODULE({{caslib.name}}, module) {
   module.def("shared_indices", &caspar::shared_indices_pybinding);
   {% for kernel in caslib.kernels %}
   {% if kernel.expose_to_python %}
-  module.def("{{kernel.name}}", &{{kernel.name}}_pybinding);
+  module.def("{{kernel.name}}", &{{snake_to_camel(kernel.name)}}_pybinding);
   {% endif %}
   {% endfor %}
 

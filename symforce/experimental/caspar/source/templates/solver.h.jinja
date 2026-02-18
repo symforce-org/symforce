@@ -97,7 +97,7 @@ class {{ solver.struct_name }} {
     *
     * The offset can be used to start writing at a specific index.
     */
-    void set_{{nodetype.__name__}}_nodes_from_stacked_host(
+    void Set{{nodetype.__name__}}NodesFromStackedHost(
         const {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
@@ -105,7 +105,7 @@ class {{ solver.struct_name }} {
     *
     * The offset can be used to start writing at a specific index.
     */
-    void set_{{nodetype.__name__}}_nodes_from_stacked_device(
+    void Set{{nodetype.__name__}}NodesFromStackedDevice(
         const {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
@@ -113,7 +113,7 @@ class {{ solver.struct_name }} {
     *
     * The offset can be used to start reading from a specific index.
     */
-    void get_{{nodetype.__name__}}_nodes_to_stacked_host(
+    void Get{{nodetype.__name__}}NodesToStackedHost(
         {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
@@ -121,7 +121,7 @@ class {{ solver.struct_name }} {
     *
     * The offset can be used to start reading from a specific index.
     */
-    void get_{{nodetype.__name__}}_nodes_to_stacked_device(
+    void Get{{nodetype.__name__}}NodesToStackedDevice(
         {{solver.storage_t}}* const data, size_t offset, size_t num);
 
     /**
@@ -131,33 +131,33 @@ class {{ solver.struct_name }} {
     * change the problem between optimization runs. This is work in progress and can have
     * performance impacts.
     */
-    void set_{{nodetype.__name__}}_num(size_t num);
+    void Set{{nodetype.__name__ }}Num(size_t num);
 
   {% endfor %}
   {% for fac in solver.factors %}
-    {% for argname, argtype in fac.node_arg_types.items() %}
-        {% if not fac.isnodepair[argname] %}
+    {% for arg, argtype in fac.node_arg_types.items() %}
+        {% if not fac.isnodepair[arg] %}
             /**
-            * Set the indices for the {{argname}} argument for the {{fac.name}} factor from host.
+            * Set the indices for the {{arg}} argument for the {{snake_to_camel(fac.name)}} factor from host.
             */
-            void set_{{fac.name}}_{{argname}}_indices_from_host(
+            void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
                 const unsigned int* const indices, size_t num);
 
             /**
-            * Set the indices for the {{argname}} argument for the {{fac.name}} factor from device.
+            * Set the indices for the {{arg}} argument for the {{snake_to_camel(fac.name)}} factor from device.
             */
-            void set_{{fac.name}}_{{argname}}_indices_from_device(
+            void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
                 const unsigned int* const indices, size_t num);
 
         {% endif %}
     {% endfor %}
     {% for arg, argtype in fac.const_arg_types.items() %}
         /**
-        * Set the values for the {{arg}} consts {{fac.name}} factor from stacked host data.
+        * Set the values for the {{arg}} consts {{snake_to_camel(fac.name)}} factor from stacked host data.
         *
         * The offset can be used to start writing from a specific index.
         */
-        void set_{{fac.name}}_{{arg}}_data_from_stacked_host(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedHost(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -170,11 +170,11 @@ class {{ solver.struct_name }} {
           );
 
         /**
-        * Set the values for the {{arg}} consts {{fac.name}} factor from stacked device data.
+        * Set the values for the {{arg}} consts {{snake_to_camel(fac.name)}} factor from stacked device data.
         *
         * The offset can be used to start writing from a specific index.
         */
-        void set_{{fac.name}}_{{arg}}_data_from_stacked_device(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedDevice(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -186,25 +186,25 @@ class {{ solver.struct_name }} {
             {% endif %}      );
 
         {% if fac.isconstshared[arg] %}
-        void set_{{fac.name}}_{{arg}}_indices_from_host(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num);
-        void set_{{fac.name}}_{{arg}}_indices_from_device(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num);
         {% elif fac.isconstindexed[arg] %}
-        void set_{{fac.name}}_{{arg}}_indices_from_host(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num);
-        void set_{{fac.name}}_{{arg}}_indices_from_device(
+        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num);
         {% endif %}
     {% endfor %}
     /**
-    * Set the current number of {{fac.name}} factors.
+    * Set the current number of {{snake_to_camel(fac.name)}} factors.
     *
     * The value is set during initialization and this function is only needed if you want to
     * change the problem between optimization runs. This is work in progress and can have
     * performance impacts.
     */
-    void set_{{fac.name}}_num(size_t num);
+    void Set{{snake_to_camel(fac.name) }}Num(size_t num);
 
   {% endfor %}
 
@@ -228,23 +228,23 @@ class {{ solver.struct_name }} {
   {% endfor %}
 
   size_t get_nbytes();
-  {{solver.linear_t}} linearize_first();
-  void linearize();
-  {{solver.linear_t}} do_res_jac_first();
-  void do_res_jac();
-  void do_normalize();
-  void do_jtjp_direct();
-  void do_alpha_first();
-  void do_alpha();
-  void do_update_step_first();
-  void do_update_step();
-  void do_update_r_first();
-  void do_update_r();
-  {{solver.linear_t}} do_retract_score();
-  void do_beta();
-  void do_update_p();
-  void do_update_Mp();
-  {{solver.linear_t}} get_pred_decrease();
+  {{solver.linear_t}} LinearizeFirst();
+  void Linearize();
+  {{solver.linear_t}} DoResJacFirst();
+  void DoResJac();
+  void DoNormalize();
+  void DoJtjpDirect();
+  void DoAlphaFirst();
+  void DoAlpha();
+  void DoUpdateStepFirst();
+  void DoUpdateStep();
+  void DoUpdateRFirst();
+  void DoUpdateR();
+  {{solver.linear_t}} DoRetractScore();
+  void DoBeta();
+  void DoUpdateP();
+  void DoUpdateMp();
+  {{solver.linear_t}} GetPredDecrease();
 
   {% for name, datadesc in solver.fields.items() %}
   {{ datadesc.dtype }}* {{ name }};

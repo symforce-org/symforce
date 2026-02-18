@@ -17,7 +17,7 @@ namespace caspar {
 
 __global__ void
 __launch_bounds__({{kernel.block_size}}, 1)
-{{kernel.name}}_kernel(
+{{snake_to_camel(kernel.name)}}Kernel(
     {% for accessor in kernel.accessors %}
     {% for name, typ in accessor.kernel_sig.items() %}
       {{typ}} {{name}},
@@ -57,7 +57,7 @@ __launch_bounds__({{kernel.block_size}}, 1)
 }
 
 
-void {{kernel.name}} (
+void {{snake_to_camel(kernel.name)}} (
   {% for accessor in kernel.accessors %}
   {% for name, typ in accessor.kernel_sig.items() %}
   {{typ}} {{name}},
@@ -79,7 +79,7 @@ void {{kernel.name}} (
   {{accessor.pre_kernel_code()}}
   {% endif %}
   {% endfor %}
-  {{kernel.name}}_kernel<<<n_blocks, {{kernel.block_size}}>>>(
+  {{snake_to_camel(kernel.name)}}Kernel<<<n_blocks, {{kernel.block_size}}>>>(
       {% for accessor in kernel.accessors %}
       {% for name in accessor.kernel_sig %}
       {{name}},

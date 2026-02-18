@@ -19,7 +19,7 @@ namespace caspar {
 {% for nodetype in caslib.exposed_types%}
 
 __global__ __launch_bounds__(block_size, 1)
-void {{nodetype.__name__}}_stacked_to_caspar_kernel(const {{caslib.storage_t}}* const __restrict__ stacked_data,
+void {{nodetype.__name__}}StackedToCaspar_kernel(const {{caslib.storage_t}}* const __restrict__ stacked_data,
                           {{caslib.storage_t}}* const __restrict__ cas_data,
                           const unsigned int cas_stride,
                           const unsigned int cas_offset,
@@ -65,7 +65,7 @@ void {{nodetype.__name__}}_stacked_to_caspar_kernel(const {{caslib.storage_t}}* 
 }
 
 __global__ __launch_bounds__(block_size, 1)
-void {{nodetype.__name__}}_caspar_to_stacked_kernel(const {{caslib.storage_t}}* const __restrict__ cas_data,
+void {{nodetype.__name__}}CasparToStacked_kernel(const {{caslib.storage_t}}* const __restrict__ cas_data,
                              {{caslib.storage_t}}* const __restrict__ stacked_data,
                              const unsigned int cas_stride,
                              const unsigned int cas_offset,
@@ -110,7 +110,7 @@ void {{nodetype.__name__}}_caspar_to_stacked_kernel(const {{caslib.storage_t}}* 
   }
 }
 
-cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const {{caslib.storage_t}}* stacked_data,
+cudaError_t {{nodetype.__name__}}StackedToCaspar(const {{caslib.storage_t}}* stacked_data,
                                                   {{caslib.storage_t}}* cas_data,
                                                   const unsigned int cas_stride,
                                                   const unsigned int cas_offset,
@@ -118,19 +118,19 @@ cudaError_t {{nodetype.__name__}}_stacked_to_caspar(const {{caslib.storage_t}}* 
                                                   ) {
   const int num_blocks = (num_objects + block_size - 1) / block_size;
 
-  {{nodetype.__name__}}_stacked_to_caspar_kernel<<<num_blocks, block_size>>>(stacked_data, cas_data, cas_stride, cas_offset, num_objects);
+  {{nodetype.__name__}}StackedToCaspar_kernel<<<num_blocks, block_size>>>(stacked_data, cas_data, cas_stride, cas_offset, num_objects);
 
   return cudaGetLastError();
 }
 
-cudaError_t {{nodetype.__name__}}_caspar_to_stacked(const {{caslib.storage_t}}* cas_data,
+cudaError_t {{nodetype.__name__}}CasparToStacked(const {{caslib.storage_t}}* cas_data,
                                                     {{caslib.storage_t}}* stacked_data,
                                                     const unsigned int cas_stride,
                                                     const unsigned int cas_offset,
                                                     const unsigned int num_objects) {
   const int num_blocks = (num_objects + block_size - 1) / block_size;
 
-  {{nodetype.__name__}}_caspar_to_stacked_kernel<<<num_blocks, block_size>>>(cas_data, stacked_data, cas_stride, cas_offset, num_objects);
+  {{nodetype.__name__}}CasparToStacked_kernel<<<num_blocks, block_size>>>(cas_data, stacked_data, cas_stride, cas_offset, num_objects);
 
   return cudaGetLastError();
 }
