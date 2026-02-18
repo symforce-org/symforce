@@ -62,7 +62,7 @@ class CasparLibrary:
         self.exposed_types: list[T.LieGroupElement] = []
 
     def add_kernel(self, func: T.Callable) -> T.Callable:
-        signature = T.get_type_hints(func, include_extras=True)  # type: ignore[call-arg]
+        signature = T.get_type_hints(func, include_extras=True)
         for k, v in signature.items():
             if k == "return":
                 continue

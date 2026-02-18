@@ -12,17 +12,9 @@ Common type definitions.
 import abc
 import dataclasses
 import os
-import sys
 
 # Expose all types.
 from typing import *
-
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-
-if not TYPE_CHECKING and sys.version_info < (3, 9):
-    from typing_extensions import get_type_hints
-
 
 # This is kind of a heavy/unnecessary dependency,here so only import when type checking so we can
 # resolve the annotation below

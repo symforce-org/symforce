@@ -176,11 +176,6 @@ class SymforceRequirementsTest(TestCase):
 
     @requires_source_build
     @sympy_only
-    def test_requirements_py38(self) -> None:
-        self.check_requirements_for_version(8)
-
-    @requires_source_build
-    @sympy_only
     def test_requirements_py39(self) -> None:
         self.check_requirements_for_version(9)
 

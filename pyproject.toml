@@ -29,7 +29,6 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Education :: Computer Aided Instruction (CAI)",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -39,7 +38,7 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "readme", "dependencies", "optional-dependencies"]
 
 [project.urls]
@@ -54,7 +53,6 @@ Source = "https://github.com/symforce-org/symforce"
 # --------------------------------------------------------------------------------
 
 [tool.mypy]
-python_version = "3.8"
 warn_unused_configs = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
@@ -90,8 +88,6 @@ follow_imports = "silent"
 module = "matplotlib.*"
 follow_imports = "skip"
 follow_imports_for_stubs = true
-# the py3.8 version of matplotlib has no type stubs, so we fully ignore it
-ignore_missing_imports = true
 
 # Per https://github.com/sympy/sympy/pull/26158, sympy removed their py.typed marker, so we have to
 # tell mypy to typecheck it anyway

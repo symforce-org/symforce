@@ -16,7 +16,6 @@ import typing
 import numpy
 import numpy.typing
 import scipy.sparse
-import typing_extensions
 
 import lcmtypes.sym._imu_integrated_measurement_delta_t
 import lcmtypes.sym._imu_integrated_measurement_t
@@ -176,9 +175,7 @@ class ImuPreintegrator:
     def __init__(
         self, accel_bias: numpy.typing.ArrayLike, gyro_bias: numpy.typing.ArrayLike
     ) -> None: ...
-    def covariance(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[9, 9]"]: ...
+    def covariance(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[9, 9]"]: ...
     def integrate_measurement(
         self,
         measured_accel: numpy.typing.ArrayLike,
@@ -266,13 +263,11 @@ class Linearization:
         """
     def set_initialized(self, initialized: bool = True) -> None: ...
     @property
-    def residual(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
+    def residual(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
     @residual.setter
     def residual(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
-    def rhs(self) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
+    def rhs(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]: ...
     @rhs.setter
     def rhs(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
@@ -297,7 +292,7 @@ class OptimizationStats:
         The linearization at best_index (at optimized_values), filled out if populate_best_linearization=True
         """
     @best_linearization.setter
-    def best_linearization(self, arg1: Linearization) -> None: ...
+    def best_linearization(self, arg1: typing.Optional[Linearization]) -> None: ...
     @property
     def cholesky_factor_sparsity(
         self,
@@ -341,7 +336,7 @@ class OptimizationStats:
     @property
     def linear_solver_ordering(
         self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.int32], "[m, 1]"]:
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.int32], "[m, 1]"]:
         """
         Ordering used by the linear solver (filled out if debug_stats=True)
         """
@@ -369,7 +364,7 @@ class Optimizer:
     ) -> None: ...
     def compute_all_covariances(
         self, linearization: Linearization
-    ) -> dict[Key, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
+    ) -> dict[Key, typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
         """
         Get covariances for each optimized key at the given linearization
 
@@ -377,7 +372,7 @@ class Optimizer:
         """
     def compute_covariances(
         self, linearization: Linearization, keys: collections.abc.Sequence[Key]
-    ) -> dict[Key, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
+    ) -> dict[Key, typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]]:
         """
         Get covariances for the given subset of keys at the given linearization
 
@@ -393,7 +388,7 @@ class Optimizer:
         """
     def compute_full_covariance(
         self, linearization: Linearization
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]:
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, n]"]:
         """
         Get the full problem covariance at the given linearization
 
@@ -513,13 +508,9 @@ class PreintegratedImuMeasurements:
         ): ...
         def roll_forward_state(
             self, pose_i: sym.Pose3, vel_i: numpy.typing.ArrayLike, gravity: numpy.typing.ArrayLike
-        ) -> tuple[
-            sym.Pose3, typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]
-        ]: ...
+        ) -> tuple[sym.Pose3, typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]]: ...
         @property
-        def Dp(
-            self,
-        ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+        def Dp(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
         @Dp.setter
         def Dp(self, arg0: numpy.typing.ArrayLike) -> None: ...
         @property
@@ -527,9 +518,7 @@ class PreintegratedImuMeasurements:
         @Dt.setter
         def Dt(self, arg0: typing.SupportsFloat) -> None: ...
         @property
-        def Dv(
-            self,
-        ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+        def Dv(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
         @Dv.setter
         def Dv(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
@@ -548,45 +537,35 @@ class PreintegratedImuMeasurements:
         self,
     ) -> lcmtypes.sym._imu_integrated_measurement_t.imu_integrated_measurement_t: ...
     @property
-    def DR_D_gyro_bias(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    def DR_D_gyro_bias(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
     @DR_D_gyro_bias.setter
     def DR_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
     def Dp_D_accel_bias(
         self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
     @Dp_D_accel_bias.setter
     def Dp_D_accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
-    def Dp_D_gyro_bias(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    def Dp_D_gyro_bias(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
     @Dp_D_gyro_bias.setter
     def Dp_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
     def Dv_D_accel_bias(
         self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
     @Dv_D_accel_bias.setter
     def Dv_D_accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
-    def Dv_D_gyro_bias(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
+    def Dv_D_gyro_bias(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 3]"]: ...
     @Dv_D_gyro_bias.setter
     def Dv_D_gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
-    def accel_bias(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+    def accel_bias(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
     @accel_bias.setter
     def accel_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
     @property
-    def gyro_bias(
-        self,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
+    def gyro_bias(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[3, 1]"]: ...
     @gyro_bias.setter
     def gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
@@ -689,7 +668,7 @@ class Values:
         keys: collections.abc.Sequence[Key],
         epsilon: typing.SupportsFloat,
         tangent_dimension: typing.SupportsInt | None = None,
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
         """
         Compute the tangent space delta needed to transform this into others.
         Args:
@@ -701,7 +680,7 @@ class Values:
     @typing.overload
     def local_coordinates(
         self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: typing.SupportsFloat
-    ) -> typing_extensions.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
         """
         Compute the tangent space delta needed to transform this into others.
         Args:

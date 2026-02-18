@@ -17,7 +17,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Operating System :: OS Independent",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = ["argh", "jinja2", "numpy", "ply"]
 dynamic = ["version"]
 

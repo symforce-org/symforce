@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 
 # NOTE(aaron): This will use NEW policies up to CMake 4.0; this should
-# be the maximum tested CMake version, matching requirements/dev_py38.txt
+# be the maximum tested CMake version, matching requirements/dev_py39.txt
 cmake_minimum_required(VERSION 3.19...4.0)
 
 project(symforce)

@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04]
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12"]
         compiler:
           # Newest gcc on 24.04
           - C: gcc-14
@@ -29,7 +29,7 @@ jobs:
         include:
           # gcc 9 (Oldest gcc available on Ubuntu 22.04)
           - os: ubuntu-22.04
-            python: "3.8"
+            python: "3.9"
             compiler:
               C: gcc-9
               CXX: g++-9
@@ -45,7 +45,7 @@ jobs:
               warning_options: "-Wall;-Wextra;-Wno-dangling-reference;-Wno-array-bounds;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
           # Clang 11 (Oldest clang available on Ubuntu 22.04)
           - os: ubuntu-22.04
-            python: "3.8"
+            python: "3.9"
             compiler:
               C: clang-11
               CXX: clang++-11

@@ -11,7 +11,7 @@
 <a href="https://symforce.org"><img alt="Documentation" src="https://img.shields.io/badge/api-docs-blue" /></a>
 <a href="https://github.com/symforce-org/symforce"><img alt="Source Code" src="https://img.shields.io/badge/source-code-blue" /></a>
 <a href="https://github.com/symforce-org/symforce/issues"><img alt="Issues" src="https://img.shields.io/badge/issue-tracker-blue" /></a>
-<img alt="Python 3.8 | 3.9 | 3.10 | 3.11 | 3.12" src="https://img.shields.io/pypi/pyversions/symforce" />
+<img alt="Python 3.9 | 3.10 | 3.11 | 3.12" src="https://img.shields.io/pypi/pyversions/symforce" />
 <img alt="C++17" src="https://img.shields.io/badge/c++-17-blue" />
 <a href="https://pypi.org/project/symforce/"><img alt="PyPI" src="https://img.shields.io/pypi/v/symforce" /></a>
 <a href="https://github.com/symforce-org/symforce/tree/main/LICENSE"><img alt="Apache License" src="https://img.shields.io/pypi/l/symforce" /></a>
@@ -540,7 +540,7 @@ To learn more, visit the SymForce tutorials [here](https://symforce.org/#guides)
 
 For best results, you should build from the [latest tagged release](https://github.com/symforce-org/symforce/releases/latest).  You can also build from `main`, or from another branch, but everything is less guaranteed to work.
 
-SymForce requires Python 3.8 or later. The build is currently tested on Linux and macOS, SymForce on Windows is untested (see [#145](https://github.com/symforce-org/symforce/issues/145)).  We strongly suggest creating a virtual python environment.
+SymForce requires Python 3.9 or later. The build is currently tested on Linux and macOS, SymForce on Windows is untested (see [#145](https://github.com/symforce-org/symforce/issues/145)).  We strongly suggest creating a virtual python environment.
 
 Install the `gmp` package with one of:
 ```bash

@@ -398,7 +398,6 @@ if __name__ == "__main__":
                 f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
                 "sympy>=1.11",
                 f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
-                "typing-extensions; python_version<'3.9'",
                 "sortedcontainers",
             ]
         ),

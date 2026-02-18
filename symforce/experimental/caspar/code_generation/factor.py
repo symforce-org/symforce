@@ -96,7 +96,7 @@ class Factor:
         self.name = name or func.__name__
         self.func = func
         self.storage_t = dtype
-        self.signature = T.get_type_hints(func, include_extras=True)  # type: ignore[call-arg]
+        self.signature = T.get_type_hints(func, include_extras=True)
         self.signature.pop("return", None)  # We don't care about the return annotation
         self.kernels: dict[str, Kernel] = {}
         for k, v in self.signature.items():

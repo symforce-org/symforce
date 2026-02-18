@@ -95,6 +95,13 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             stubgen_output,
         )
 
+        # Ditto for setter args, this is https://github.com/pybind/pybind11/issues/3175
+        stubgen_output = re.sub(
+            r"def best_linearization\(self, arg1: Linearization\) -> None",
+            "def best_linearization(self, arg1: typing.Optional[Linearization]) -> None",
+            stubgen_output,
+        )
+
         stubgen_output = textwrap.dedent(
             """
             # -----------------------------------------------------------------------------
@@ -113,11 +120,10 @@ class SymforceCCSymStubsCodegenTest(TestCase):
 
         (output_dir / "cc_sym.pyi").write_text(stubgen_output)
 
-        if sys.version_info.minor < 9:
-            self.compare_or_update_file(
-                new_file=output_dir / "cc_sym.pyi",
-                path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / "cc_sym.pyi",
-            )
+        self.compare_or_update_file(
+            new_file=output_dir / "cc_sym.pyi",
+            path=path_util.symforce_data_root(__file__) / "symforce" / "pybind" / "cc_sym.pyi",
+        )
 
 
 if __name__ == "__main__":
