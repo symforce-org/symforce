@@ -20,17 +20,13 @@ auto MarginalizationFactor<ScalarType>::FromLcmType(const LcmType& msg) -> Margi
       .rhs = msg.rhs,
       .c = msg.c,
       .linearization_values = Values<Scalar>(msg.linearization_values),
-      .keys = std::vector<Key>(msg.keys.begin(), msg.keys.end()),
+      .index = msg.index,
   };
 }
 
 template <typename ScalarType>
 auto MarginalizationFactor<ScalarType>::GetLcmType() const -> LcmType {
-  std::vector<key_t> lcm_keys(keys.size());
-  for (size_t i = 0; i < keys.size(); ++i) {
-    lcm_keys[i] = keys[i].GetLcmType();
-  }
-  return LcmType{H, rhs, c, linearization_values.GetLcmType(), lcm_keys};
+  return LcmType{H, rhs, c, linearization_values.GetLcmType(), index};
 }
 
 // Explicit instantiations
@@ -109,10 +105,10 @@ std::variant<MarginalizationFactor<Scalar>, Eigen::ComputationInfo> ComputeSchur
 }
 
 template <typename Scalar>
-std::variant<MarginalizationFactor<Scalar>, Eigen::ComputationInfo> Marginalize(
-    const std::vector<Factor<Scalar>>& factors, const Values<Scalar>& values,
-    const std::unordered_set<Key>& keys_to_optimize,
-    const std::unordered_set<Key>& keys_to_marginalize) {
+std::variant<std::pair<MarginalizationFactor<Scalar>, std::vector<Key>>, Eigen::ComputationInfo>
+Marginalize(const std::vector<Factor<Scalar>>& factors, const Values<Scalar>& values,
+            const std::unordered_set<Key>& keys_to_optimize,
+            const std::unordered_set<Key>& keys_to_marginalize) {
   SYM_TIME_SCOPE("Marginalize");
   std::vector<Key> key_order =
       ComputeMarginalizationKeyOrder(keys_to_optimize, keys_to_marginalize);
@@ -154,75 +150,115 @@ std::variant<MarginalizationFactor<Scalar>, Eigen::ComputationInfo> Marginalize(
                                           keys_to_marginalize.end();
                                  }),
                   key_order.end());
-  marginalization_factor.keys = key_order;
 
   // Create a values object that contains just the remaining variables from the marginalization.
   marginalization_factor.linearization_values.UpdateOrSet(values.CreateIndex(key_order), values);
 
+  // Create the index we'll use for LocalCoordinates
+  marginalization_factor.index =
+      marginalization_factor.linearization_values.CreateIndex(key_order).entries;
+
   SYM_ASSERT_EQ(key_order.size(), keys_to_optimize.size() - keys_to_marginalize.size());
   SYM_ASSERT_EQ(marginalization_factor.linearization_values.Keys().size(), key_order.size());
 
-  return marginalization_factor;
+  return std::make_pair(std::move(marginalization_factor), std::move(key_order));
 }
 
 template <typename Scalar>
-Factor<Scalar> CreateMarginalizationFactor(
-    const MarginalizationFactor<Scalar>& marginalization_factor) {
-  const typename Factor<Scalar>::DenseHessianFunc hessian_func =
-      [&marginalization_factor](const Values<Scalar>& values,
-                                const std::vector<index_entry_t>& /* indices */,
-                                VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian,
-                                MatrixX<Scalar>* hessian, VectorX<Scalar>* rhs) {
-        // We need to perform the linear update, accounting for the delta of optimization
-        // variables since we computed the marginalization.
-        VectorX<Scalar> delta = marginalization_factor.linearization_values.LocalCoordinates(
-            values, marginalization_factor.keys, kDefaultEpsilond);
-
-        const VectorX<Scalar> H_delta = marginalization_factor.H * delta;
-
-        const VectorX<Scalar> rhs_updated = H_delta + marginalization_factor.rhs;
-
-        const Scalar c_updated = delta.dot(H_delta) + 2 * marginalization_factor.rhs.dot(delta) +
-                                 marginalization_factor.c;
-
-        // We don't directly have a Jacobian or residual. The residual of the system would've been
-        // some MxN matrix, but since we can compute and store only the quadratic form (NxN), we
-        // have "lost" information.
-        if (jacobian != nullptr) {
-          // Computing a plausible jacobian for this factor is expensive, but this is only required
-          // when include_jacobians is on, which is generally for debugging purposes.
-          //
-          // We use the LLT decomposition to compute a Jacobian such that H = J.T * J.
-          Eigen::LLT<MatrixX<Scalar>> llt(marginalization_factor.H);
-
-          // We don't have a way to expose this failure to the user to be handled, so just assert
-          // here.
-          SYM_ASSERT(llt.info() == Eigen::Success, "LLT decomposition failed");
-
-          *jacobian = llt.matrixL().transpose();
-
-          if (residual != nullptr) {
-            // Compute a residual consistent with the jacobian, instead of a 1D residual that we
-            // do otherwise
-            *residual = llt.matrixL().solve(rhs_updated);
+class MarginalizationFactorLinearizationFunctor {
+ public:
+  explicit MarginalizationFactorLinearizationFunctor(MarginalizationFactor<Scalar> f)
+      : factor_(std::move(f)), delta_([this]() {
+          int32_t tangent_dim = 0;
+          for (const auto& entry : factor_.index) {
+            tangent_dim += entry.tangent_dim;
           }
-        }
-        if (residual != nullptr && jacobian == nullptr) {
-          // The error is computed as 0.5 * residual.T * residual. Our cost function is:
-          // e(x) ~= 0.5 * dx.T * H * dx + rhs.T * dx + 0.5 * c
-          // Therefore, we are storing the squared norm of the residual already. We return:
-          // r = [sqrt(c)], such that 0.5 * r.T * r = 0.5 * c, as expected.
-          *residual = VectorX<Scalar>::Constant(1, std::sqrt(c_updated));
-        }
-        if (hessian) {
-          *hessian = marginalization_factor.H;
-        }
-        if (rhs) {
-          *rhs = rhs_updated;
-        }
-      };
+          return VectorX<Scalar>(tangent_dim);
+        }()) {}
 
-  return Factor<Scalar>(hessian_func, marginalization_factor.keys);
+  void operator()(const Values<Scalar>& values, const std::vector<index_entry_t>& keys_to_func,
+                  VectorX<Scalar>* residual, MatrixX<Scalar>* jacobian, MatrixX<Scalar>* hessian,
+                  VectorX<Scalar>* rhs) {
+    // We need to perform the linear update, accounting for the delta of optimization
+    // variables since we computed the marginalization.
+    //
+    // Implement this here, since we'd need a LocalCoordinates method that doesn't allocate, and
+    // gets the tangent dim from somewhere, and takes a vector<index_entry_t> instead of index_t,
+    // all of which are different from what it currently does.
+    {
+      SYM_ASSERT_EQ(keys_to_func.size(), factor_.index.size());
+      int32_t tangent_idx = 0;
+      for (int i = 0; i < static_cast<int>(keys_to_func.size()); ++i) {
+        LocalCoordinatesByType<Scalar>(
+            keys_to_func[i].type,
+            factor_.linearization_values.Data().data() + factor_.index[i].offset,
+            values.Data().data() + keys_to_func[i].offset, delta_.data() + tangent_idx,
+            kDefaultEpsilon<Scalar>, factor_.index[i].tangent_dim);
+        tangent_idx += factor_.index[i].tangent_dim;
+      }
+    }
+
+    H_delta_ = factor_.H * delta_;
+
+    if (rhs != nullptr) {
+      *rhs = H_delta_ + factor_.rhs;
+    }
+
+    const Scalar c_updated = delta_.dot(H_delta_) + 2 * factor_.rhs.dot(delta_) + factor_.c;
+
+    // We don't directly have a Jacobian or residual. The residual of the system would've been
+    // some MxN matrix, but since we can compute and store only the quadratic form (NxN), we
+    // have "lost" information.
+    if (jacobian != nullptr) {
+      // Computing a plausible jacobian for this factor is expensive, but this is only required
+      // when include_jacobians is on, which is generally for debugging purposes.
+      //
+      // We use the LLT decomposition to compute a Jacobian such that H = J.T * J.
+      llt_.compute(factor_.H);
+
+      // We don't have a way to expose this failure to the user to be handled, so just assert
+      // here.
+      SYM_ASSERT(llt_.info() == Eigen::Success, "LLT decomposition failed");
+
+      *jacobian = llt_.matrixL().transpose();
+
+      if (residual != nullptr) {
+        // Compute a residual consistent with the jacobian, instead of a 1D residual that we
+        // do otherwise
+        if (rhs != nullptr) {
+          *residual = llt_.matrixL().solve(*rhs);
+        } else {
+          *residual = llt_.matrixL().solve(H_delta_ + factor_.rhs);
+        }
+      }
+    }
+    if (residual != nullptr && jacobian == nullptr) {
+      // The error is computed as 0.5 * residual.T * residual. Our cost function is:
+      // e(x) ~= 0.5 * dx.T * H * dx + rhs.T * dx + 0.5 * c
+      // Therefore, we are storing the squared norm of the residual already. We return:
+      // r = [sqrt(c)], such that 0.5 * r.T * r = 0.5 * c, as expected.
+      *residual = VectorX<Scalar>::Constant(1, std::sqrt(c_updated));
+    }
+    if (hessian) {
+      *hessian = factor_.H;
+    }
+  }
+
+ private:
+  MarginalizationFactor<Scalar> factor_;
+
+  // Space for intermediate computations
+  VectorX<Scalar> delta_;
+  VectorX<Scalar> H_delta_;
+  Eigen::LLT<MatrixX<Scalar>> llt_;
+};
+
+template <typename Scalar>
+Factor<Scalar> CreateMarginalizationFactor(MarginalizationFactor<Scalar> marginalization_factor,
+                                           const std::vector<Key>& keys_to_func) {
+  return Factor<Scalar>(
+      MarginalizationFactorLinearizationFunctor<Scalar>{std::move(marginalization_factor)},
+      keys_to_func);
 }
 
 template std::variant<MarginalizationFactor<float>, Eigen::ComputationInfo>
@@ -232,18 +268,20 @@ template std::variant<MarginalizationFactor<double>, Eigen::ComputationInfo>
 ComputeSchurComplement<double>(const MatrixX<double>& H, const VectorX<double>& rhs, const double c,
                                const int delimiter);
 
-template std::variant<MarginalizationFactor<float>, Eigen::ComputationInfo> Marginalize(
-    const std::vector<Factor<float>>& factors, const Values<float>& values,
-    const std::unordered_set<Key>& keys_to_optimize,
-    const std::unordered_set<Key>& keys_to_marginalize);
-template std::variant<MarginalizationFactor<double>, Eigen::ComputationInfo> Marginalize(
-    const std::vector<Factor<double>>& factors, const Values<double>& values,
-    const std::unordered_set<Key>& keys_to_optimize,
-    const std::unordered_set<Key>& keys_to_marginalize);
+template std::variant<std::pair<MarginalizationFactor<float>, std::vector<Key>>,
+                      Eigen::ComputationInfo>
+Marginalize(const std::vector<Factor<float>>& factors, const Values<float>& values,
+            const std::unordered_set<Key>& keys_to_optimize,
+            const std::unordered_set<Key>& keys_to_marginalize);
+template std::variant<std::pair<MarginalizationFactor<double>, std::vector<Key>>,
+                      Eigen::ComputationInfo>
+Marginalize(const std::vector<Factor<double>>& factors, const Values<double>& values,
+            const std::unordered_set<Key>& keys_to_optimize,
+            const std::unordered_set<Key>& keys_to_marginalize);
 
 template Factor<float> CreateMarginalizationFactor<float>(
-    const MarginalizationFactor<float>& marginalization_factor);
+    MarginalizationFactor<float> marginalization_factor, const std::vector<Key>& keys_to_func);
 template Factor<double> CreateMarginalizationFactor<double>(
-    const MarginalizationFactor<double>& marginalization_factor);
+    MarginalizationFactor<double> marginalization_factor, const std::vector<Key>& keys_to_func);
 
 }  // namespace sym

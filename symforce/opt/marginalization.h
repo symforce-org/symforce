@@ -61,7 +61,7 @@ struct MarginalizationFactor {
   VectorX<Scalar> rhs{};                  // RHS = J.T * b
   Scalar c{};                             // f = b.T*b
   Values<Scalar> linearization_values{};  // values used for linearization
-  std::vector<Key> keys;                  // keys remaining in the problem that this factor touches
+  std::vector<index_entry_t> index;  // index into linearization_values for the keys for this factor
 
   static MarginalizationFactor FromLcmType(const LcmType& msg);
 
@@ -93,37 +93,52 @@ ComputeSchurComplement(const MatrixX<Scalar>& H, const VectorX<Scalar>& rhs, Sca
  * factor. This assumes all factors passed in should be included in the computation.
  *
  * Given the factors, we compute a linearization at the provided values. The system becomes:
- * E = 0.5 | x_u x_l | * | H_uu H_ul | * | x_u | + | rhs_u rhs_l | * | x_u | + 0.5 C
- *                       | H_lu H_ll |   | x_l |                     | x_l |
+ *
+ *     E = 0.5 | x_u x_l | * | H_uu H_ul | * | x_u | + | rhs_u rhs_l | * | x_u | + 0.5 C
+ *                           | H_lu H_ll |   | x_l |                     | x_l |
+ *
  * where x_u are the states to be marginalized and x_l are the Markov blanket (the states that
- * remain and have factors that connect to the marginalized states). We use the the Schur complement
+ * remain and have factors that connect to the marginalized states). We use the Schur complement
  * to eliminate x_u, giving the final system:
- * E = 0.5 x_l.T * H * x_l + rhs.T * x_l + 0.5 * c', where
- * H = H_ll - H_lu * H_uu^{-1} * H_ul = H_ll - H_ul.T * H_uu^{-1} * H_ul
- * rhs = rhs_l - H_lu * H_uu^{-1} * rhs_u = rhs_l - H_ul.T * H_uu^{-1} * rhs_u
- * c' = c - rhs_u.T * A^{-1} rhs_u
+ *
+ *     E = 0.5 x_l.T * H * x_l + rhs.T * x_l + 0.5 * c', where
+ *     H = H_ll - H_lu * H_uu^{-1} * H_ul = H_ll - H_ul.T * H_uu^{-1} * H_ul
+ *     rhs = rhs_l - H_lu * H_uu^{-1} * rhs_u = rhs_l - H_ul.T * H_uu^{-1} * rhs_u
+ *     c' = c - rhs_u.T * A^{-1} rhs_u
+ *
  * There are a few references for the H and rhs expressions above (ex: OKVIS paper). For the
  * constant term, find the optimum for x_u (by taking the partial derivative wrt x_u), then
  * x_u* = - A^{-1} * ( B * x_l + rhs_u ) (after substituting and simplifying).
+ *
+ * @returns If successful, returns the MarginalizationFactor, and the keys the MarginalizationFactor
+ *   touches (the remaining keys after marginalization).  If the computation fails, returns the
+ *   Eigen::ComputationInfo error.
  */
 template <typename Scalar>
-[[nodiscard]] std::variant<MarginalizationFactor<Scalar>, Eigen::ComputationInfo> Marginalize(
-    const std::vector<Factor<Scalar>>& factors, const Values<Scalar>& values,
-    const std::unordered_set<Key>& keys_to_optimize,
-    const std::unordered_set<Key>& keys_to_marginalize);
+[[nodiscard]] std::variant<std::pair<MarginalizationFactor<Scalar>, std::vector<Key>>,
+                           Eigen::ComputationInfo>
+Marginalize(const std::vector<Factor<Scalar>>& factors, const Values<Scalar>& values,
+            const std::unordered_set<Key>& keys_to_optimize,
+            const std::unordered_set<Key>& keys_to_marginalize);
 
 /**
- * Create a symforce::Factord representing the marginalization prior to be used in an optimization
+ * Create a sym::Factor representing the marginalization prior to be used in an optimization
  * or future marginalization operation. Building on the derivation above, we can substitute in a
  * new dx = dx' + delta_x and simplify to get:
- * e(x) ~= 0.5 * (dx' + delta_x).T * H * (dx' + delta_x) + rhs.T * (dx' + delta_x) + 0.5 * f
- *       = 0.5 * dx'.T * H * dx' + (rhs + H * delta_x).T * dx'
- *         + 0.5 * (delta_x.T * H * delta_x + 2 * rhs.T * delta_x + c)
+ *
+ *     e(x) ~= 0.5 * (dx' + delta_x).T * H * (dx' + delta_x) + rhs.T * (dx' + delta_x) + 0.5 * f
+ *           = 0.5 * dx'.T * H * dx' + (rhs + H * delta_x).T * dx'
+ *             + 0.5 * (delta_x.T * H * delta_x + 2 * rhs.T * delta_x + c)
+ *
  * Thus, the Hessian remains unchanged, the updated rhs is (rhs + H * delta_x), and the updated
  * constant term is (delta_x.T * H * delta_x + 2 * rhs.T * delta_x + c).
+ *
+ * @param marginalization_factor The marginalization factor returned by sym::Marginalize
+ * @param keys_to_func The keys that the marginalization factor touches, returned by
+ *   sym::Marginalize
  */
 template <typename Scalar>
 [[nodiscard]] Factor<Scalar> CreateMarginalizationFactor(
-    const MarginalizationFactor<Scalar>& marginalization_factor);
+    MarginalizationFactor<Scalar> marginalization_factor, const std::vector<Key>& keys_to_func);
 
 }  // namespace sym

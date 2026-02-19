@@ -64,10 +64,12 @@ TEST_CASE("Test simple marginalization", "[marginalization]") {
   const auto marginalization_factor_or_info =
       sym::Marginalize(factors, values, keys_to_optimize, keys_to_marginalize);
 
-  CHECK(std::holds_alternative<sym::MarginalizationFactord>(marginalization_factor_or_info));
+  CHECK(std::holds_alternative<std::pair<sym::MarginalizationFactord, std::vector<sym::Key>>>(
+      marginalization_factor_or_info));
 
-  const auto& marginalization_factor =
-      std::get<sym::MarginalizationFactord>(marginalization_factor_or_info);
+  const auto& [marginalization_factor, marginalization_keys] =
+      std::get<std::pair<sym::MarginalizationFactord, std::vector<sym::Key>>>(
+          marginalization_factor_or_info);
 
   // We had 10 variables, and we marginalized 3 of them.
   CHECK(marginalization_factor.linearization_values.NumEntries() == 7);
@@ -76,8 +78,8 @@ TEST_CASE("Test simple marginalization", "[marginalization]") {
   for (int i = 0; i < 10; i++) {
     const sym::Key key = sym::Key('x', i);
     const bool key_in_marginalization_factor =
-        std::find(marginalization_factor.keys.begin(), marginalization_factor.keys.end(), key) !=
-        marginalization_factor.keys.end();
+        std::find(marginalization_keys.begin(), marginalization_keys.end(), key) !=
+        marginalization_keys.end();
     const bool key_in_values = marginalization_factor.linearization_values.Has(key);
     if (keys_to_marginalize.find(key) == keys_to_marginalize.end()) {
       // If the key is not marginalized, it should be in the marginalization factor.
@@ -189,16 +191,19 @@ TEST_CASE("Test optimizing with marginalization", "[marginalization]") {
   CHECK(std::abs(full_optimization_stats.iterations[1].new_error) < 1e-6);
 
   // Marginalized x0, leaving just x1.
-  const auto marginalization_factor_or_info =
+  auto marginalization_factor_or_info =
       sym::Marginalize(factors, values, {sym::Key('x', 0), sym::Key('x', 1)}, {sym::Key('x', 0)});
 
-  CHECK(std::holds_alternative<sym::MarginalizationFactord>(marginalization_factor_or_info));
-  const auto& marginalization_factor =
-      std::get<sym::MarginalizationFactord>(marginalization_factor_or_info);
+  CHECK(std::holds_alternative<std::pair<sym::MarginalizationFactord, std::vector<sym::Key>>>(
+      marginalization_factor_or_info));
+  auto& [marginalization_factor, marginalization_keys] =
+      std::get<std::pair<sym::MarginalizationFactord, std::vector<sym::Key>>>(
+          marginalization_factor_or_info);
 
   // All factors end up being marginalized, so we are left with just the marginal.
   std::vector<sym::Factord> factors_after_marginalization;
-  factors_after_marginalization.push_back(sym::CreateMarginalizationFactor(marginalization_factor));
+  factors_after_marginalization.push_back(
+      sym::CreateMarginalizationFactor(std::move(marginalization_factor), marginalization_keys));
   sym::Optimizer<double> optimizer_post_marginalization(params, factors_after_marginalization,
                                                         "post_marginalization",
                                                         std::vector<sym::Key>{sym::Key('x', 1)});
