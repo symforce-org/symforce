@@ -14,8 +14,8 @@ symforce.set_epsilon_to_number(float(10 * np.finfo(np.float32).eps))
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.experimental.caspar import CasparLibrary
-from symforce.experimental.caspar import memory as mem
+from symforce.caspar import CasparLibrary
+from symforce.caspar import memory as mem
 
 
 @dataclass

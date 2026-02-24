@@ -15,9 +15,9 @@ symforce.set_epsilon_to_number(1e-15 if USE_DOUBLE else 1e-6)
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.experimental.caspar import CasparLibrary
-from symforce.experimental.caspar import memory as mem
-from symforce.experimental.caspar.examples.bal.bal_loader import load_bal
+from symforce.caspar import CasparLibrary
+from symforce.caspar import memory as mem
+from symforce.caspar.examples.bal.bal_loader import load_bal
 
 
 @dataclass

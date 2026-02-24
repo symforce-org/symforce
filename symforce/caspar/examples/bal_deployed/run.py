@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from symforce.experimental.caspar.examples.bal_deployed.generated import (  # type: ignore[import-not-found]
+from symforce.caspar.examples.bal_deployed.generated import (  # type: ignore[import-not-found]
     caspar_lib,
 )
 

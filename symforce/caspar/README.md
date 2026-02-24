@@ -1,6 +1,6 @@
 # Caspar
 
-Caspar is an experimental extension of SymForce.
+Caspar is an extension of SymForce.
 It enables the generation of optimized CUDA kernels from symbolic functions and includes a custom pipeline for generating and solving factor graphs using CUDA.
 
 ## Usage

@@ -20,8 +20,8 @@ import torch
 
 import symforce.symbolic as sf
 from symforce import typing as T
-from symforce.experimental.caspar import CasparLibrary
-from symforce.experimental.caspar import memory as mem
+from symforce.caspar import CasparLibrary
+from symforce.caspar import memory as mem
 
 caslib = CasparLibrary()
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     caslib.compile(out_dir)
 
     # Can also be imported using: lib = caslib.import_lib(out_dir)
-    from symforce.experimental.caspar.examples.kernel_example.generated import (  # type: ignore[import-not-found]
+    from symforce.caspar.examples.kernel_example.generated import (  # type: ignore[import-not-found]
         caspar_lib as lib,
     )
 

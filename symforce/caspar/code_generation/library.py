@@ -9,9 +9,9 @@ import logging
 import shutil
 from pathlib import Path
 
+from symforce import caspar
 from symforce import typing as T
-from symforce.experimental import caspar
-from symforce.experimental.caspar.memory.dtype import DType
+from symforce.caspar.memory.dtype import DType
 from symforce.ops import LieGroupOps as Ops
 from symforce.python_util import camelcase_to_snakecase
 
