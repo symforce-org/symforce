@@ -595,7 +595,9 @@ template <typename T, typename = void>
 struct has_eigen_format : std::false_type {};
 
 template <typename T>
-struct has_eigen_format<T, std::void_t<decltype(&T::format)>> : std::true_type {};
+struct has_eigen_format<
+    T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value>>
+    : std::true_type {};
 
 // Helper trait: check for toRotationMatrix method (quaternions)
 template <typename T, typename = void>
