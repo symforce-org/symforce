@@ -58,6 +58,12 @@ class Matrix(Storage):
     # Type that represents this or any subclasses
     MatrixT = _T.TypeVar("MatrixT", bound="Matrix")
 
+    # Prevent numpy from trying to handle arithmetic with Matrix via ufuncs.
+    # Without this, e.g. np.float64(x) * matrix returns an ndarray instead of
+    # deferring to Matrix.__rmul__.
+    # See https://numpy.org/neps/nep-0013-ufunc-overrides.html#turning-ufuncs-off
+    __array_ufunc__: None = None
+
     # Static dimensions of this type. (-1, -1) means there is no size information, like if
     # we are using sf.Matrix directly instead of sf.Matrix31.
     # Once a matrix is constructed it should be of a type where the .shape instance variable matches
@@ -714,6 +720,8 @@ class Matrix(Storage):
             return self.applyfunc(lambda x: x + right)
         elif isinstance(right, Matrix):
             return self.__class__(self.mat + right.mat)
+        elif isinstance(right, np.ndarray):
+            return self + Matrix(right)
         else:
             return self.__class__(self.mat + right)
 

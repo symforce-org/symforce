@@ -142,6 +142,42 @@ class GeoMatrixTest(LieGroupOpsTestMixin, TestCase):
 
         self.assertEqual(diag_matrix.det(), 4)
 
+    def test_numpy_interop(self) -> None:
+        """
+        Tests that arithmetic between sf.Matrix and numpy scalars returns sf.Matrix,
+        and that accumulating an ndarray into an sf.Matrix works.
+
+        Tests:
+            Matrix.__rmul__ with numpy scalar
+            Matrix.__mul__ with numpy scalar
+            Matrix.__add__ with ndarray
+        """
+        v = sf.V3(1, 2, 3)
+        s = np.float64(2.0)
+        expected = sf.V3(2.0, 4.0, 6.0)
+
+        # Right-multiply: matrix * np_scalar
+        result_right = v * s
+        self.assertIsInstance(result_right, sf.Matrix)
+        self.assertStorageNear(result_right, expected)
+
+        # Left-multiply: np_scalar * matrix
+        result_left = s * v
+        self.assertIsInstance(result_left, sf.Matrix)
+        self.assertStorageNear(result_left, expected)
+
+        # Accumulation: sf.Matrix += np_scalar * sf.Matrix (the original bug)
+        ac_sum = sf.V3(0, 0, 0)
+        ac_sum += s * v
+        self.assertIsInstance(ac_sum, sf.Matrix)
+        self.assertStorageNear(ac_sum, expected)
+
+        # Accumulation with ndarray directly
+        ac_sum2 = sf.V3(1, 2, 3)
+        ac_sum2 += np.array([10, 20, 30])
+        self.assertIsInstance(ac_sum2, sf.Matrix)
+        self.assertStorageNear(ac_sum2, sf.V3(11, 22, 33))
+
     def test_symbolic_operations(self) -> None:
         """
         Tests:
