@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include <cstdint>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -34,7 +35,7 @@ template <typename T, typename = void>
 struct is_resizable : std::false_type {};
 
 template <typename T>
-struct is_resizable<T, decltype(std::declval<T&>().clear(), void())> : std::true_type {};
+struct is_resizable<T, decltype(std::declval<T &>().clear(), void())> : std::true_type {};
 
 template <typename T>
 constexpr bool is_resizable_v = is_resizable<T>::value;
@@ -200,9 +201,13 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
         // Too many fields for this type
         return 1;
     }
-    if (std::is_same<T, bool>::value) {
+    if constexpr (std::is_same_v<T, bool>) {
         // Force bool to be printed as a word
         stream << std::boolalpha << item;
+    } else if constexpr (std::is_floating_point_v<T>) {
+        const auto default_precision{stream.precision()};
+        constexpr auto max_precision{std::numeric_limits<T>::digits10 + 1};
+        stream << std::setprecision(max_precision) << item << std::setprecision(default_precision);
     } else {
         // Force char to be printed as int
         stream << +item;
@@ -341,8 +346,8 @@ inline uint32_t show_field<std::string, true>(std::ostream &stream, const uint32
 // for signed integral types
 template <typename T,
           std::enable_if_t<std::is_integral<T>::value && std::is_signed<T>::value, bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -367,8 +372,8 @@ template <typename T,
 // for unsigned integral types
 template <typename T,
           std::enable_if_t<std::is_integral<T>::value && !std::is_signed<T>::value, bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -392,8 +397,8 @@ template <typename T,
 
 // for floating types
 template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -418,8 +423,8 @@ template <typename T, std::enable_if_t<std::is_floating_point<T>::value, bool> =
 // for booleans
 template <>
 [[nodiscard]] inline uint32_t store_field<bool, true>(const uint32_t field_indices[],
-                                                                   uint32_t num_fields, bool &item,
-                                                                   const char *const value)
+                                                      uint32_t num_fields, bool &item,
+                                                      const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -445,8 +450,8 @@ template <>
 
 // for enums
 template <typename T, std::enable_if_t<std::is_enum<typename T::option_t>::value, bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
@@ -467,8 +472,8 @@ template <typename T, std::enable_if_t<std::is_enum<typename T::option_t>::value
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::store_field)>::value,
                            bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields == 0) {
         return 1;
@@ -479,31 +484,31 @@ template <typename T,
 // Forward declare the eigen specializations, however they are defined in lcm_reflection_eigen.hpp
 template <typename T, std::enable_if_t<std::is_member_function_pointer<decltype(&T::format)>::value,
                                        bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value);
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value);
 template <typename T,
           std::enable_if_t<std::is_member_function_pointer<decltype(&T::toRotationMatrix)>::value,
                            bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value);
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value);
 
 // for arrays, lists. value of nullptr is special here, it means to delete at that index
 // forward declared because they recursively reference each other.
 template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value);
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value);
 
 template <
     typename T,
     std::enable_if_t<is_iterable_v<T> && std::is_member_function_pointer<decltype(&T::fill)>::value,
                      bool> = true>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value);
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value);
 
 // for vectors (handles resizing)
 template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bool>>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields == 0) {
         // Not enough fields for this type
@@ -541,8 +546,8 @@ template <typename T, std::enable_if_t<is_iterable_v<T> && is_resizable_v<T>, bo
 template <typename T,
           std::enable_if_t<
               is_iterable_v<T> && std::is_member_function_pointer<decltype(&T::fill)>::value, bool>>
-[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields,
-                                                T &item, const char *const value)
+[[nodiscard]] uint32_t store_field(const uint32_t field_indices[], uint32_t num_fields, T &item,
+                                   const char *const value)
 {
     if (num_fields == 0) {
         // Not enough fields for this type
@@ -556,8 +561,9 @@ template <typename T,
 
 // for strings (specialization of the above for iterables)
 template <>
-[[nodiscard]] inline uint32_t store_field<std::string, true>(
-    const uint32_t field_indices[], uint32_t num_fields, std::string &item, const char *const value)
+[[nodiscard]] inline uint32_t store_field<std::string, true>(const uint32_t field_indices[],
+                                                             uint32_t num_fields, std::string &item,
+                                                             const char *const value)
 {
     if (num_fields != 0) {
         // Too many fields for this type
