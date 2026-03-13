@@ -442,19 +442,9 @@ class TsStruct(StructBuilder, TsBase):
         primitive_includes = set()
         lcm_includes = set()
         for member in self.members + self.constants:
-            # add types used by auto members of simple dynamic arrays
-            if member.ndim:
-                for dim in member.dims:
-                    if dim.auto_member:
-                        # don't check TS_DUPLICATE_TYPES because auto_members
-                        # can't be boolean/string (they are always array sizes)
-                        primitive_includes.add(
-                            TsInclude(
-                                member=dim.auto_member,
-                                is_primitive=True,
-                                prefix=self.args.typescript_library_path,
-                            )
-                        )
+            # NOTE: We intentionally do NOT import types for auto_members (dynamic array sizes).
+            # Auto-member types like int32_t are only used in method names (e.g., decoder.decode_int32_t()),
+            # not as type annotations, so importing them causes TS6133 "declared but never read" errors.
 
             if member.type_ref.is_primitive_type():
                 # bail if we don't need to import the type
