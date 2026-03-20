@@ -5,7 +5,23 @@
 
 #include <vector>
 
+#if defined(__GNUC__) && __GNUC__ >= 11
+// Suppress:
+//
+// eigen/Eigen/src/Core/CommaInitializer.h:74:36: error: array subscript 0 is outside array
+// bounds of 'Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1> >::Scalar [0]'
+// [-Werror=array-bounds=]
+// 74 | m_xpr.coeffRef(m_row, m_col++) = s;
+// | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+//
+// on Eigen 3.3 and GCC 11+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
 #include <Eigen/Core>
+#if defined(__GNUC__) && __GNUC__ >= 11
+#pragma GCC diagnostic pop
+#endif
 #include <Eigen/SparseCore>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_template_test_macros.hpp>
