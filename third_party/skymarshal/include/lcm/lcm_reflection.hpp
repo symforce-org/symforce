@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+#include <cmath>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
@@ -190,6 +191,10 @@ struct FormatSettings {
     // TODO(michael.dresser): Add shape information when in this output mode so that the original
     // matrix can be reconstructed from the 1D array.
     bool eigen_no_nested_arrays = false;
+
+    // JSON does not allow to serialize non-finite floats properly, which implies that signals like
+    // +/- NaN or +/- Inf cannot be deserialized. This flag replaces such values with null.
+    bool replace_float_signals_with_null = false;
 };
 
 // for arithmetic types and bools
@@ -205,9 +210,14 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
         // Force bool to be printed as a word
         stream << std::boolalpha << item;
     } else if constexpr (std::is_floating_point_v<T>) {
-        const auto default_precision{stream.precision()};
-        constexpr auto max_precision{std::numeric_limits<T>::digits10 + 1};
-        stream << std::setprecision(max_precision) << item << std::setprecision(default_precision);
+        if (settings.replace_float_signals_with_null && !std::isfinite(item)) {
+            stream << "null";
+        } else {
+            const auto default_precision{stream.precision()};
+            constexpr auto max_precision{std::numeric_limits<T>::digits10 + 1};
+            stream << std::setprecision(max_precision) << item
+                   << std::setprecision(default_precision);
+        }
     } else {
         // Force char to be printed as int
         stream << +item;
