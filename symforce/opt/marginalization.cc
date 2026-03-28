@@ -5,6 +5,8 @@
 
 #include "./marginalization.h"
 
+#include <optional>
+
 #include <Eigen/Cholesky>
 
 #include "./assert.h"
@@ -214,21 +216,25 @@ class MarginalizationFactorLinearizationFunctor {
       // when include_jacobians is on, which is generally for debugging purposes.
       //
       // We use the LLT decomposition to compute a Jacobian such that H = J.T * J.
-      llt_.compute(factor_.H);
+      if (!llt_) {
+        llt_.emplace(factor_.H);
+      } else {
+        llt_->compute(factor_.H);
+      }
 
       // We don't have a way to expose this failure to the user to be handled, so just assert
       // here.
-      SYM_ASSERT(llt_.info() == Eigen::Success, "LLT decomposition failed");
+      SYM_ASSERT(llt_->info() == Eigen::Success, "LLT decomposition failed");
 
-      *jacobian = llt_.matrixL().transpose();
+      *jacobian = llt_->matrixL().transpose();
 
       if (residual != nullptr) {
         // Compute a residual consistent with the jacobian, instead of a 1D residual that we
         // do otherwise
         if (rhs != nullptr) {
-          *residual = llt_.matrixL().solve(*rhs);
+          *residual = llt_->matrixL().solve(*rhs);
         } else {
-          *residual = llt_.matrixL().solve(H_delta_ + factor_.rhs);
+          *residual = llt_->matrixL().solve(H_delta_ + factor_.rhs);
         }
       }
     }
@@ -250,7 +256,7 @@ class MarginalizationFactorLinearizationFunctor {
   // Space for intermediate computations
   VectorX<Scalar> delta_;
   VectorX<Scalar> H_delta_;
-  Eigen::LLT<MatrixX<Scalar>> llt_;
+  std::optional<Eigen::LLT<MatrixX<Scalar>>> llt_;
 };
 
 template <typename Scalar>
