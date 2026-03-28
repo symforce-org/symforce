@@ -807,6 +807,8 @@ int TestJacobianFunctor<Scalar>::copies = 0;
 TEMPLATE_TEST_CASE("Test Jacobian functors has minimal copies", "[factors]", double, float) {
   using Scalar = TestType;
 
+  TestJacobianFunctor<Scalar>::copies = 0;
+
   sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'});
   sym::Factor<Scalar>::Jacobian(TestJacobianFunctor<Scalar>(), {'x'}, {'x'});
   CHECK(TestJacobianFunctor<Scalar>::copies == 0);
@@ -863,6 +865,8 @@ int TestHessianFunctor<Scalar>::copies = 0;
 
 TEMPLATE_TEST_CASE("Test Hessian functors has minimal copies", "[factors]", double, float) {
   using Scalar = TestType;
+
+  TestHessianFunctor<Scalar>::copies = 0;
 
   sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'});
   sym::Factor<Scalar>::Hessian(TestHessianFunctor<Scalar>(), {'x'}, {'x'});
