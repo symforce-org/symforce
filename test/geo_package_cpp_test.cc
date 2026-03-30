@@ -308,9 +308,9 @@ void IsCloseCommonTest(Generator& gen, Scalar tol) {
     CHECK(!sym::LieGroupOps<T>::IsClose(element, different_element, tol));
 
     // Test that close elements are close
-    const T close_element = [&element, tol] {
+    const T close_element = [&element, &gen, tol] {
       using TangentVec = typename sym::LieGroupOps<T>::TangentVec;
-      TangentVec small_tangent = TangentVec::Random();
+      TangentVec small_tangent = sym::StorageOps<TangentVec>::Random(gen);
       if (small_tangent(0) == 0.0) {
         small_tangent(0) = 1.0;
       }
