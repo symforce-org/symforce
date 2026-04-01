@@ -223,7 +223,7 @@ TEMPLATE_TEST_CASE("Test Matrix storage ops", "[geo_package]", sym::Vector1<doub
 TEST_CASE("Test Matrix storage order is consistent with symbolic storage order") {
   const auto m = (Eigen::Matrix3d() << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0).finished();
 
-  std::array<double, sym::StorageOps<Eigen::Matrix3d>::StorageDim()> storage;
+  std::array<double, sym::StorageOps<Eigen::Matrix3d>::StorageDim()> storage{};
   sym::StorageOps<Eigen::Matrix3d>::ToStorage(m, storage.data());
 
   const std::array<double, 9> symbolic_storage = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0};

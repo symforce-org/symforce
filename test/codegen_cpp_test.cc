@@ -33,7 +33,7 @@ TEST_CASE("Generated C++ compiles", "[codegen_cpp_test]") {
 
   double foo;
   double bar;
-  std::array<double, 3> scalar_vec_out;
+  std::array<double, 3> scalar_vec_out{};
   std::array<codegen_cpp_test::values_vec_t, 3> values_vec_out;
   std::array<std::array<codegen_cpp_test::values_vec_t, 1>, 2> values_vec_2D_out;
 

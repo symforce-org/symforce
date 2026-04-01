@@ -147,7 +147,7 @@ TEMPLATE_TEST_CASE("Test storage ops", "[cam_package]", {{ ", ".join(cpp_cam_typ
   CHECK(cam_cal.Data().rows() == storage_dim);
   CHECK(cam_cal.Data().cols() == 1);
 
-  std::array<Scalar, storage_dim> arr;
+  std::array<Scalar, storage_dim> arr{};
   cam_cal.ToStorage(arr.data());
   for (int i = 0; i < static_cast<int>(arr.size()); ++i) {
     CHECK(arr[i] == cam_cal.Data()[i]);

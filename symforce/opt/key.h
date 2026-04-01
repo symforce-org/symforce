@@ -67,7 +67,7 @@ class Key {
   }
 
   key_t GetLcmType() const noexcept {
-    key_t key;
+    key_t key{};
     key.letter = letter_;
     key.subscript = sub_;
     key.superscript = super_;

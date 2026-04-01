@@ -106,7 +106,8 @@ std::vector<Key> Values<Scalar>::Keys(const bool sort_by_offset) const {
       while (!visited[j]) {
         visited[j] = true;
         if (indices[j] == i) {
-          keys[j] = std::move(tmp);
+          keys[j] =            // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
+              std::move(tmp);  // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
         } else {
           keys[j] = std::move(keys[indices[j]]);
         }

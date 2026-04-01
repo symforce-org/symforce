@@ -508,7 +508,7 @@ TEMPLATE_TEST_CASE("Test StorageOps", "[slam]", float, double) {
   }
 
   {
-    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage;
+    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage{};
     pim.ToStorage(storage.data());
     const auto pim2 = sym::PreintegratedImuMeasurements<Scalar>::FromStorage(storage.data());
 
@@ -516,7 +516,7 @@ TEMPLATE_TEST_CASE("Test StorageOps", "[slam]", float, double) {
   }
 
   {
-    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage;
+    std::array<Scalar, sym::PreintegratedImuMeasurements<Scalar>::StorageDim()> storage{};
     sym::StorageOps<sym::PreintegratedImuMeasurements<Scalar>>::ToStorage(pim, storage.data());
     const auto pim2 =
         sym::StorageOps<sym::PreintegratedImuMeasurements<Scalar>>::FromStorage(storage.data());

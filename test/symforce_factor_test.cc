@@ -816,7 +816,7 @@ TEMPLATE_TEST_CASE("Test Jacobian functors has minimal copies", "[factors]", dou
   {
     TestJacobianFunctor<Scalar> f{};
     sym::Factor<Scalar>::Jacobian(std::move(f), {'x'});
-    CHECK(f.is_moved);                                // f should be moved
+    CHECK(f.is_moved);  // NOLINT(bugprone-use-after-move) - intentionally testing move semantics
     CHECK(TestJacobianFunctor<Scalar>::copies == 0);  // should not be copied
   }
 
@@ -875,7 +875,7 @@ TEMPLATE_TEST_CASE("Test Hessian functors has minimal copies", "[factors]", doub
   {
     TestHessianFunctor<Scalar> f{};
     sym::Factor<Scalar>::Hessian(std::move(f), {'x'});
-    CHECK(f.is_moved);                               // f should be moved
+    CHECK(f.is_moved);  // NOLINT(bugprone-use-after-move) - intentionally testing move semantics
     CHECK(TestHessianFunctor<Scalar>::copies == 0);  // should not be copied
   }
 

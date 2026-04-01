@@ -34,7 +34,7 @@ void ExplicitTemplateInstantiationTestHelper() {
   // Initialize outputs
   Scalar foo;
   Scalar bar;
-  std::array<Scalar, 3> scalar_vec_out;
+  std::array<Scalar, 3> scalar_vec_out{};
   std::array<codegen_explicit_template_instantiation_test::values_vec_t, 3> values_vec_out;
   std::array<std::array<codegen_explicit_template_instantiation_test::values_vec_t, 1>, 2>
       values_vec_2D_out;

@@ -221,7 +221,7 @@ TEST_CASE("Test Matrix storage order is consistent with symbolic storage order")
     [7.0, 8.0, 9.0],
   ])%}
 
-  std::array<double, sym::StorageOps<Eigen::Matrix3d>::StorageDim()> storage;
+  std::array<double, sym::StorageOps<Eigen::Matrix3d>::StorageDim()> storage{};
   sym::StorageOps<Eigen::Matrix3d>::ToStorage(m, storage.data());
 
   const std::array<double, {{ symbolic_m.storage_dim() }}> symbolic_storage = {

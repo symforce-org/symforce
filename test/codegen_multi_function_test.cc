@@ -83,7 +83,7 @@ TEST_CASE("Multi-function codegen compiles", "[codegen_multi_function]") {
       outputs_1.big_matrix_from_small_matrix.isApprox(expected_big_matrix_from_small_matrix, 1e-8));
   CHECK(outputs_1.small_matrix_from_big_matrix.isApprox(inputs.big_matrix.block<4, 4>(0, 0), 1e-8));
 
-  codegen_multi_function_test::outputs_2_t outputs_2;
+  codegen_multi_function_test::outputs_2_t outputs_2{};
   codegen_multi_function_test::CodegenMultiFunctionTest2<double>(inputs, &outputs_2);
   CHECK(outputs_2.foo == Catch::Approx(std::pow(inputs.y, 3) + inputs.x).epsilon(1e-8));
 }

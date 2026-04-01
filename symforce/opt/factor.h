@@ -397,7 +397,7 @@ class Factor {
   std::vector<Key> keys_;
 
   // Whether this factor requires computing the Jacobian to compute the Hessian
-  bool requires_jacobian_to_compute_hessian_;
+  bool requires_jacobian_to_compute_hessian_{false};
 };
 
 // Shorthand instantiations

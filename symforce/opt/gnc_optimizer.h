@@ -34,7 +34,7 @@ class GncOptimizer : public BaseOptimizerType {
         gnc_params_(gnc_params),
         gnc_mu_key_(gnc_mu_key) {}
 
-  virtual ~GncOptimizer() = default;
+  ~GncOptimizer() override = default;
 
   /**
    * Optimize the given values in-place.  This will optimize until convergence with the convex cost,

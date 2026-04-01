@@ -110,8 +110,8 @@ class SparseSchurSolver {
   struct SparsityInformation {
     // Information about a single block on the diagonal of C
     struct CBlock {
-      int start_idx;
-      int dim;
+      int start_idx{0};
+      int dim{0};
       std::vector<int> col_starts_in_C_inv;
     };
 
