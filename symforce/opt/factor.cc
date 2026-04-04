@@ -6,7 +6,6 @@
 #include "./factor.h"
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <fmt/ranges.h>
 
 #include "./assert.h"

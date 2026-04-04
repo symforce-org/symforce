@@ -8,7 +8,6 @@
 
 #include <Eigen/Core>
 #include <Eigen/SparseCore>
-#include <fmt/ostream.h>
 
 // Import all the known types.
 #include <lcmtypes/sym/type_t.hpp>
