@@ -5,7 +5,7 @@ NOTE: if running with bazel, should run from the skymarshal directory
 from __future__ import annotations
 
 import argparse
-import imp
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -119,8 +119,19 @@ def regenerate_lextab(write: bool = False) -> None:
 
         if not write:
             # if not writing out, do a check to see if the files match
-            cached = Lextab(imp.load_source("cached", lextab))
-            generated = Lextab(imp.load_source("generated", generated_path))
+            cached_spec = importlib.util.spec_from_file_location("cached", lextab)
+            if cached_spec is None or cached_spec.loader is None:
+                raise ImportError(f"Failed to load module spec from {lextab}")
+            cached_module = importlib.util.module_from_spec(cached_spec)
+            cached_spec.loader.exec_module(cached_module)
+            cached = Lextab(cached_module)
+
+            generated_spec = importlib.util.spec_from_file_location("generated", generated_path)
+            if generated_spec is None or generated_spec.loader is None:
+                raise ImportError(f"Failed to load module spec from {generated_path}")
+            generated_module = importlib.util.module_from_spec(generated_spec)
+            generated_spec.loader.exec_module(generated_module)
+            generated = Lextab(generated_module)
             if not cached == generated:
                 raise LexerGenerationError("Attribute mismatches between generated and cached")
         else:
