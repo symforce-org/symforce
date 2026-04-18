@@ -195,7 +195,37 @@ struct FormatSettings {
     // JSON does not allow to serialize non-finite floats properly, which implies that signals like
     // +/- NaN or +/- Inf cannot be deserialized. This flag replaces such values with null.
     bool replace_float_signals_with_null = false;
+
+    // When true, JSON-special characters in string fields are escaped (e.g. newlines become \n,
+    // backslashes become \\, etc.). Required for output that will be parsed as JSON.
+    bool escape_json_strings = false;
 };
+
+// Write a JSON-escaped version of the string to the stream.
+// Escapes: " \ and control characters U+0000-U+001F per RFC 8259.
+inline void _write_json_escaped_string(std::ostream &stream, const std::string &s)
+{
+    for (const char ch : s) {
+        switch (ch) {
+            case '"':  stream << "\\\""; break;
+            case '\\': stream << "\\\\"; break;
+            case '\b': stream << "\\b";  break;
+            case '\f': stream << "\\f";  break;
+            case '\n': stream << "\\n";  break;
+            case '\r': stream << "\\r";  break;
+            case '\t': stream << "\\t";  break;
+            default:
+                if (static_cast<unsigned char>(ch) < 0x20) {
+                    stream << "\\u00"
+                           << "0123456789abcdef"[(static_cast<unsigned char>(ch) >> 4) & 0xf]
+                           << "0123456789abcdef"[static_cast<unsigned char>(ch) & 0xf];
+                } else {
+                    stream << ch;
+                }
+                break;
+        }
+    }
+}
 
 // for arithmetic types and bools
 template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
@@ -337,7 +367,13 @@ inline uint32_t show_field<std::string, true>(std::ostream &stream, const uint32
         // Too many fields for this type
         return 1;
     }
-    stream << "\"" << item << "\"";
+    stream << "\"";
+    if (settings.escape_json_strings) {
+        _write_json_escaped_string(stream, item);
+    } else {
+        stream << item;
+    }
+    stream << "\"";
     return 0;
 }
 
