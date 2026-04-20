@@ -9,7 +9,7 @@ _range = _re.compile('([0-9]*:[0-9]+|[a-zA-Z]?:[a-zA-Z])')
 
 
 def symbols(names, **args):
-    """
+    r"""
     Transform strings into instances of :class:`Symbol` class.
     :func:`symbols` function returns a sequence of symbols with names taken
     from ``names`` argument, which can be a comma or whitespace delimited
@@ -86,7 +86,7 @@ def symbols(names, **args):
 
     if isinstance(names, str):
         marker = 0
-        literals = ['\,', '\:', '\ ']
+        literals = [r'\,', r'\:', r'\ ']
         for i in range(len(literals)):
             lit = literals.pop(0)
             if lit in names:
