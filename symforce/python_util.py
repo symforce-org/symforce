@@ -107,6 +107,16 @@ def snakecase_to_camelcase(s: str) -> str:
     )
 
 
+def parts_to_pascal(s: str) -> str:
+    """
+    Join underscore-separated parts into PascalCase, preserving internal capitalization.
+
+    Unlike snakecase_to_camelcase, this does not lowercase the interior of each part, so
+    already-PascalCase parts are preserved: "PinholePose_update_p" -> "PinholePoseUpdateP".
+    """
+    return "".join(part[0].upper() + part[1:] for part in s.split("_") if part)
+
+
 def snakecase_to_lower_camelcase(s: str) -> str:
     """
     Convert snake_case -> lowerCamelCase
