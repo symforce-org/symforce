@@ -19,6 +19,8 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   endif()
 endif()
 
+find_package(CUDAToolkit REQUIRED)
+
 include(FetchContent)
 find_package(pybind11 2.13.6 QUIET)
 if(NOT pybind11_FOUND)
@@ -41,6 +43,7 @@ list(FILTER CUDA_HEADERS EXCLUDE REGEX "pybind.*")
 
 add_library({{caslib.name}}_core STATIC ${CUDA_SOURCES} ${CUDA_HEADERS})
 target_include_directories({{caslib.name}}_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries({{caslib.name}}_core PUBLIC CUDA::cudart)
 target_compile_options({{caslib.name}}_core PRIVATE
   $<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>
 )
