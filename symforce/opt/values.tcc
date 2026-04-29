@@ -10,6 +10,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "./fmt_compat.h"
+
 #include "./assert.h"
 #include "./values.h"
 
