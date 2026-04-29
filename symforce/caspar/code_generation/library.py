@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import shutil
+import subprocess
 from pathlib import Path
 
 from symforce import caspar
@@ -147,17 +148,24 @@ class CasparLibrary:
         self.generate_kernels(out_dir)
 
     @staticmethod
-    def compile(out_dir: Path, debug: bool = False) -> None:
-        import subprocess
-
+    def compile(
+        out_dir: Path,
+        debug: bool = False,
+        cuda_architectures: str | None = None,
+        jobs: int | None = None,
+    ) -> None:
         build_dir = out_dir / "build"
         build_dir.mkdir(exist_ok=True)
         logging.info(f"Compiling {out_dir}")
-        if debug:
-            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Debug", ".."], cwd=build_dir, check=True)
-        else:
-            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Release", ".."], cwd=build_dir, check=True)
-        subprocess.run(["make", "-j"], cwd=build_dir, check=True)
+        cmake_args = ["cmake", f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}"]
+        if cuda_architectures is not None:
+            cmake_args.append(f"-DCMAKE_CUDA_ARCHITECTURES={cuda_architectures}")
+        cmake_args.append("..")
+        subprocess.run(cmake_args, cwd=build_dir, check=True)
+        build_args = ["cmake", "--build", "."]
+        if jobs is not None:
+            build_args += ["--parallel", str(jobs)]
+        subprocess.run(build_args, cwd=build_dir, check=True)
 
     # This function has no annotated return type, so that type inference in IDEs can get more
     # specific typing than ModuleType
