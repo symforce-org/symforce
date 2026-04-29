@@ -14,6 +14,7 @@ from symforce import typing as T
 from symforce.caspar.memory.dtype import DType
 from symforce.ops import LieGroupOps as Ops
 from symforce.python_util import camelcase_to_snakecase
+from symforce.python_util import snakecase_to_camelcase
 
 from ..code_generation.factor import Factor
 from ..code_generation.kernel import Kernel
@@ -241,7 +242,9 @@ class CasparLibrary:
         write_if_different(definition, out_dir.joinpath("caspar_mappings_pybinding.h"))
 
     def generate_binding_file(self, out_dir: Path, solver: Solver | None) -> None:
-        binding = env.get_template("pybinding.cc.jinja").render(caslib=self, solver=solver)
+        binding = env.get_template("pybinding.cc.jinja").render(
+            caslib=self, solver=solver, snake_to_camel=snakecase_to_camelcase
+        )
         write_if_different(binding, out_dir.joinpath("pybinding.cc"))
 
     def generate_buildfiles(self, out_dir: Path) -> None:
