@@ -12,11 +12,7 @@ project(caspar_library LANGUAGES CXX CUDA)
 
 # SASS for Turing/Ampere/Ada (sm_75–89) + PTX fallback for forward JIT-compatibility. sm_75 minimum required by cooperative_groups::reduce.
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
-    set(CMAKE_CUDA_ARCHITECTURES native)
-  else()
-    set(CMAKE_CUDA_ARCHITECTURES 75 80 86 89 75-virtual)
-  endif()
+  set(CMAKE_CUDA_ARCHITECTURES 75 80 86 89 75-virtual)
 endif()
 
 find_package(CUDAToolkit REQUIRED)
