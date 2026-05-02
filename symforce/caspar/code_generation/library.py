@@ -150,20 +150,23 @@ class CasparLibrary:
             insert_sorted_unique(self.exposed_types, factor.arg_types.values())
             return func_or_name
 
-    def generate(self, out_dir: Path, use_symlinks: bool = False) -> None:
+    def generate(
+        self, out_dir: Path, use_symlinks: bool = False, python_bindings: bool = True
+    ) -> None:
         out_dir.mkdir(exist_ok=True, parents=True)
 
         for fac in self.factors:
             self.kernels.extend(fac.make_kernels())
 
-        self.generate_castype_mappings(out_dir)
+        self.generate_castype_mappings(out_dir, python_bindings)
         self.generate_links(out_dir, use_symlinks)
         if solver := (Solver(self) if self.factors else None):
             self.kernels.extend(solver.make_kernels())
-            solver.generate(out_dir)
-        self.generate_binding_file(out_dir, solver)
-        self.generate_stubs(out_dir, solver)
-        self.generate_buildfiles(out_dir)
+            solver.generate(out_dir, python_bindings)
+        if python_bindings:
+            self.generate_binding_file(out_dir, solver)
+            self.generate_stubs(out_dir, solver)
+        self.generate_buildfiles(out_dir, python_bindings)
         self.generate_kernels(out_dir)
 
     @staticmethod
@@ -246,7 +249,7 @@ class CasparLibrary:
             else:
                 copy_if_different(f, f_new)
 
-    def generate_castype_mappings(self, out_dir: Path) -> None:
+    def generate_castype_mappings(self, out_dir: Path, python_bindings: bool = True) -> None:
         """
         Generates code to perform mapping between stacked format (array of structs)
         and the caspar layout of the corresponding types.
@@ -263,14 +266,15 @@ class CasparLibrary:
         write_if_different(definition, out_dir.joinpath("caspar_mappings.cu"))
         definition = env.get_template("caspar_mappings.h.jinja").render(**kwargs)
         write_if_different(definition, out_dir.joinpath("caspar_mappings.h"))
-        definition = env.get_template("caspar_mappings_pybinding.h.jinja").render(**kwargs)
-        write_if_different(definition, out_dir.joinpath("caspar_mappings_pybinding.h"))
+        if python_bindings:
+            definition = env.get_template("caspar_mappings_pybinding.h.jinja").render(**kwargs)
+            write_if_different(definition, out_dir.joinpath("caspar_mappings_pybinding.h"))
 
     def generate_binding_file(self, out_dir: Path, solver: Solver | None) -> None:
         binding = env.get_template("pybinding.cc.jinja").render(caslib=self, solver=solver)
         write_if_different(binding, out_dir.joinpath("pybinding.cc"))
 
-    def generate_buildfiles(self, out_dir: Path) -> None:
+    def generate_buildfiles(self, out_dir: Path, python_bindings: bool = True) -> None:
         for template in env.list_templates(filter_func=lambda t: t.startswith("buildfiles")):
-            content = env.get_template(template).render(caslib=self)
+            content = env.get_template(template).render(caslib=self, python_bindings=python_bindings)
             write_if_different(content, out_dir.joinpath(Path(template).stem))

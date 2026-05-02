@@ -669,7 +669,7 @@ class Solver:
             )
         return list(self.kernels.values())
 
-    def generate(self, out_dir: Path) -> None:
+    def generate(self, out_dir: Path, python_bindings: bool = True) -> None:
         kwargs = dict(
             solver=self,
             name_key=name_key,
@@ -688,5 +688,6 @@ class Solver:
         write_if_different(header, out_dir.joinpath("solver.h"))
         definition = env.get_template("solver.cc.jinja").render(**kwargs)
         write_if_different(definition, out_dir.joinpath("solver.cc"))
-        definition = env.get_template("solver_pybinding.h.jinja").render(**kwargs)
-        write_if_different(definition, out_dir.joinpath("solver_pybinding.h"))
+        if python_bindings:
+            definition = env.get_template("solver_pybinding.h.jinja").render(**kwargs)
+            write_if_different(definition, out_dir.joinpath("solver_pybinding.h"))
