@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import shutil
+import subprocess
 from pathlib import Path
 
 from symforce import caspar
@@ -46,6 +47,25 @@ def insert_sorted_unique(
                 hi = mid
         if lo == len(container) or container[lo] != item:
             container.insert(lo, item)
+
+
+def _real_cuda_arch_string() -> str:
+    """Return a CMake CUDA_ARCHITECTURES string with SASS-only targets for all detected GPUs.
+
+    Using -real (no PTX embedding) avoids cudaErrorUnsupportedPtxVersion when the nvcc version
+    exceeds the installed CUDA driver version.
+    """
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "--query-gpu=compute_cap", "--format=csv,noheader"],
+            capture_output=True, text=True, check=True, timeout=10,
+        ).stdout
+        caps = sorted({cap.replace(".", "") for cap in out.strip().splitlines() if cap.strip()})
+        if caps:
+            return ";".join(f"{cap}-real" for cap in caps)
+    except Exception:
+        pass
+    return "native"
 
 
 class CasparLibrary:
@@ -130,34 +150,43 @@ class CasparLibrary:
             insert_sorted_unique(self.exposed_types, factor.arg_types.values())
             return func_or_name
 
-    def generate(self, out_dir: Path, use_symlinks: bool = False) -> None:
+    def generate(
+        self, out_dir: Path, use_symlinks: bool = False, python_bindings: bool = True
+    ) -> None:
         out_dir.mkdir(exist_ok=True, parents=True)
 
         for fac in self.factors:
             self.kernels.extend(fac.make_kernels())
 
-        self.generate_castype_mappings(out_dir)
+        self.generate_castype_mappings(out_dir, python_bindings)
         self.generate_links(out_dir, use_symlinks)
         if solver := (Solver(self) if self.factors else None):
             self.kernels.extend(solver.make_kernels())
-            solver.generate(out_dir)
-        self.generate_binding_file(out_dir, solver)
-        self.generate_stubs(out_dir, solver)
-        self.generate_buildfiles(out_dir)
+            solver.generate(out_dir, python_bindings)
+        if python_bindings:
+            self.generate_binding_file(out_dir, solver)
+            self.generate_stubs(out_dir, solver)
+        self.generate_buildfiles(out_dir, python_bindings)
         self.generate_kernels(out_dir)
 
     @staticmethod
-    def compile(out_dir: Path, debug: bool = False) -> None:
-        import subprocess
-
+    def compile(
+        out_dir: Path,
+        debug: bool = False,
+        cuda_arch: str | None = None,
+        jobs: int | None = None,
+    ) -> None:
         build_dir = out_dir / "build"
-        build_dir.mkdir(exist_ok=True)
-        logging.info(f"Compiling {out_dir}")
-        if debug:
-            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Debug", ".."], cwd=build_dir, check=True)
-        else:
-            subprocess.run(["cmake", "-DCMAKE_BUILD_TYPE=Release", ".."], cwd=build_dir, check=True)
-        subprocess.run(["make", "-j"], cwd=build_dir, check=True)
+        config_cmd = [
+            "cmake", "-S", out_dir, "-B", build_dir,
+            f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}",
+            f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch if cuda_arch is not None else _real_cuda_arch_string()}",
+        ]
+        subprocess.run(config_cmd, check=True)
+        build_cmd = ["cmake", "--build", build_dir, "--parallel"]
+        if jobs:
+            build_cmd.append(str(jobs))
+        subprocess.run(build_cmd, check=True)
 
     # This function has no annotated return type, so that type inference in IDEs can get more
     # specific typing than ModuleType
@@ -220,7 +249,7 @@ class CasparLibrary:
             else:
                 copy_if_different(f, f_new)
 
-    def generate_castype_mappings(self, out_dir: Path) -> None:
+    def generate_castype_mappings(self, out_dir: Path, python_bindings: bool = True) -> None:
         """
         Generates code to perform mapping between stacked format (array of structs)
         and the caspar layout of the corresponding types.
@@ -237,14 +266,15 @@ class CasparLibrary:
         write_if_different(definition, out_dir.joinpath("caspar_mappings.cu"))
         definition = env.get_template("caspar_mappings.h.jinja").render(**kwargs)
         write_if_different(definition, out_dir.joinpath("caspar_mappings.h"))
-        definition = env.get_template("caspar_mappings_pybinding.h.jinja").render(**kwargs)
-        write_if_different(definition, out_dir.joinpath("caspar_mappings_pybinding.h"))
+        if python_bindings:
+            definition = env.get_template("caspar_mappings_pybinding.h.jinja").render(**kwargs)
+            write_if_different(definition, out_dir.joinpath("caspar_mappings_pybinding.h"))
 
     def generate_binding_file(self, out_dir: Path, solver: Solver | None) -> None:
         binding = env.get_template("pybinding.cc.jinja").render(caslib=self, solver=solver)
         write_if_different(binding, out_dir.joinpath("pybinding.cc"))
 
-    def generate_buildfiles(self, out_dir: Path) -> None:
+    def generate_buildfiles(self, out_dir: Path, python_bindings: bool = True) -> None:
         for template in env.list_templates(filter_func=lambda t: t.startswith("buildfiles")):
-            content = env.get_template(template).render(caslib=self)
+            content = env.get_template(template).render(caslib=self, python_bindings=python_bindings)
             write_if_different(content, out_dir.joinpath(Path(template).stem))
