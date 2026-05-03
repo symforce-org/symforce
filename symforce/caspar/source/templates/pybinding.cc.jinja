@@ -59,7 +59,7 @@ PYBIND11_MODULE({{caslib.name}}, module) {
   module.def("shared_indices", &caspar::shared_indices_pybinding);
   {% for kernel in caslib.kernels %}
   {% if kernel.expose_to_python %}
-  module.def("{{kernel.name}}", &{{snake_to_camel(kernel.name)}}_pybinding);
+  module.def("{{kernel.name}}", &{{snake_to_camel(kernel.name)}}Pybinding);
   {% endif %}
   {% endfor %}
 

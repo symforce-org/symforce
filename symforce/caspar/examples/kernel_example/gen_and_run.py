@@ -44,15 +44,12 @@ if __name__ == "__main__":
     caslib.generate(out_dir)
     caslib.compile(out_dir)
 
-    # Can also be imported using: lib = caslib.import_lib(out_dir)
-    from symforce.caspar.examples.kernel_example.generated import (  # type: ignore[import-not-found]
-        caspar_lib as lib,
-    )
+    lib = caslib.import_lib(out_dir)
 
     N = 100
     arg0_stacked = torch.rand(N, sf.V3.storage_dim(), device="cuda")
     arg0_caspar = torch.empty(mem.caspar_size(sf.V3.storage_dim()), N, device="cuda")
-    lib.Matrix31_stacked_to_caspar(arg0_stacked, arg0_caspar)
+    lib.matrix31_stacked_to_caspar(arg0_stacked, arg0_caspar)
 
     arg0_indices = torch.randint(0, N, (N,), device="cuda", dtype=torch.int32)
     arg0_indices_shared = torch.empty(N, 2, device="cuda", dtype=torch.int32)
@@ -60,7 +57,7 @@ if __name__ == "__main__":
 
     arg1_stacked = torch.rand(1, 6, device="cuda")
     arg1_caspar = torch.empty(mem.caspar_size(6), 1, device="cuda")
-    lib.Matrix61_stacked_to_caspar(arg1_stacked, arg1_caspar)
+    lib.matrix61_stacked_to_caspar(arg1_stacked, arg1_caspar)
 
     BLOCK_SIZE = 1024
     OUT0_IDX_MAX = 10
@@ -87,8 +84,8 @@ if __name__ == "__main__":
     out0_sharedsum = torch.zeros(OUT0_IDX_MAX, 2, device="cuda")
     out1_indexed = torch.empty(N, 1, device="cuda")
 
-    lib.Matrix21_caspar_to_stacked(out0_caspar, out0_sharedsum)
-    lib.Symbol_caspar_to_stacked(out1_caspar, out1_indexed)
+    lib.matrix21_caspar_to_stacked(out0_caspar, out0_sharedsum)
+    lib.symbol_caspar_to_stacked(out1_caspar, out1_indexed)
 
     # Check the results
     sincos = 2 * torch.stack([torch.sin(arg0_stacked[:, 0]), torch.cos(arg0_stacked[:, 0])], dim=1)
