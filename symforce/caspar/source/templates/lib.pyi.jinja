@@ -68,6 +68,7 @@ class {{solver.struct_name}}:
                  {% for thing in solver.size_contributors %}
                  {{num_arg_key(thing)}}: int = 0,
                  {% endfor %}
+                 device_id: int = 0
     ): ...
 
     def set_params(self, params: SolverParams) -> None:

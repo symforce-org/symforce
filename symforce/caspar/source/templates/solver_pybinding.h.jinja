@@ -41,12 +41,14 @@ inline void add_solver_pybinding(pybind11::module_ module) {
       .def(py::init<SolverParams<double>,
            {% for thing in solver.size_contributors %}
              size_t{{ ", " if not loop.last else "" }}
-           {% endfor %}>(),
+           {% endfor %},
+           int>(),
            py::arg("params"),
            py::kw_only(),
            {% for thing in solver.size_contributors %}
-             py::arg("{{num_arg_key(thing)}}") = 0{{ ", " if not loop.last else "" }}
+             py::arg("{{num_arg_key(thing)}}") = 0{{ ", " }}
            {% endfor %}
+           py::arg("device_id") = 0
        )
 
       .def("set_params", &{{solver.struct_name}}::set_params)

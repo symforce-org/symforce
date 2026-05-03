@@ -68,10 +68,12 @@ namespace caspar {
 {{ solver.struct_name }}::{{ solver.struct_name }}(
     const SolverParams<double> &params,
     {% for thing in solver.size_contributors %}
-    size_t {{num_arg_key(thing)}}{{ ", " if not loop.last else "" }}
+    size_t {{num_arg_key(thing)}}{{ ", " }}
     {% endfor %}
+    int device_id
     )
     : params_(params),
+      device_id_(device_id),
       {% for thing in solver.size_contributors %}
       {{num_key(thing)}}({{num_arg_key(thing)}}),
       {{num_max_key(thing)}}({{num_arg_key(thing)}}){{ ", " if not loop.last else "" }}
@@ -85,6 +87,24 @@ namespace caspar {
     throw std::runtime_error("params.diag_init must be positive");
   }
   allocation_size_ = get_nbytes();
+
+  if (device_id_ < 0) {
+    throw std::runtime_error("Invalid CUDA device id: " + std::to_string(device_id_));
+  }
+  if (device_id_ != 0) {
+    int deviceCount;
+    cudaGetDeviceCount(&deviceCount);
+    if (deviceCount <= device_id_) {
+      throw std::runtime_error("CUDA detected " + std::to_string(deviceCount) +
+                               " devices, but device " + std::to_string(device_id_) +
+                               " was requested (0-indexed)");
+    }
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, device_id_);
+    printf("Non-default CUDA device %d with compute capability %d.%d selected\n",
+        device_id_, deviceProp.major, deviceProp.minor);
+  }
+  cudaSetDevice(device_id_);
   cudaMalloc(&origin_ptr_, allocation_size_);
 
   size_t offset = 0;
@@ -97,6 +117,7 @@ namespace caspar {
 }
 
 {{ solver.struct_name }}::~{{ solver.struct_name }}(){
+  cudaSetDevice(device_id_);
   cudaFree(origin_ptr_);
 }
 
@@ -110,6 +131,7 @@ size_t {{ solver.struct_name }}::get_allocation_size(){
 
 
 SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_logging) {
+  cudaSetDevice(device_id_);
   SolveResult result;
   result.exit_reason = ExitReason::MAX_ITERATIONS;
   {{solver.linear_t}} score_best;
@@ -634,6 +656,7 @@ void {{ solver.struct_name }}::finish_indices() {
 
 {% for nodetype in solver.node_types %}
 void {{ solver.struct_name }}::Set{{nodetype.__name__}}Num(const size_t num) {
+    cudaSetDevice(device_id_);
     if (num > {{num_max_key(nodetype)}}) {
         throw std::runtime_error(std::to_string(num) + " > {{num_max_key(nodetype)}}");
     }
@@ -642,6 +665,7 @@ void {{ solver.struct_name }}::Set{{nodetype.__name__}}Num(const size_t num) {
 
 void {{ solver.struct_name }}::Set{{nodetype.__name__}}NodesFromStackedHost(
     const {{solver.storage_t}}* const data, const size_t offset, const size_t num) {
+  cudaSetDevice(device_id_);
   if (offset + num > {{num_key(nodetype)}}){
     throw std::runtime_error(std::to_string(offset + num) + " > {{num_key(nodetype)}}");
   }
@@ -654,6 +678,7 @@ void {{ solver.struct_name }}::Set{{nodetype.__name__}}NodesFromStackedHost(
 
 void {{ solver.struct_name }}::Set{{nodetype.__name__}}NodesFromStackedDevice(
     const {{solver.storage_t}}* const data, const size_t offset, const size_t num) {
+  cudaSetDevice(device_id_);
   if (offset + num > {{num_key(nodetype)}}){
     throw std::runtime_error(std::to_string(offset + num) + " > {{num_key(nodetype)}}");
   }
@@ -663,6 +688,7 @@ void {{ solver.struct_name }}::Set{{nodetype.__name__}}NodesFromStackedDevice(
 
 void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedHost(
     {{solver.storage_t}}* const data, const size_t offset, const size_t num) {
+  cudaSetDevice(device_id_);
   if (offset + num > {{num_key(nodetype)}}){
     throw std::runtime_error(std::to_string(offset + num) + " > {{num_key(nodetype)}}");
   }
@@ -675,6 +701,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedHost(
 
 void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
     {{solver.storage_t}}* const data, const size_t offset, const size_t num) {
+  cudaSetDevice(device_id_);
   if (offset + num > {{num_key(nodetype)}}){
     throw std::runtime_error(std::to_string(offset + num) + " > {{num_key(nodetype)}}");
   }
@@ -686,6 +713,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
 
 {% for fac in solver.factors %}
   void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}Num(const size_t num) {
+    cudaSetDevice(device_id_);
     if (num > {{num_max_key(fac)}}){
       throw std::runtime_error(std::to_string(num) + " > {{num_max_key(fac)}}");
     }
@@ -695,6 +723,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
     {% if fac.isnodeshared[arg] %}
       void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
           const unsigned int* const indices, size_t num) {
+        cudaSetDevice(device_id_);
         if (num != {{num_key(fac)}}){
           throw std::runtime_error(
               std::to_string(num)
@@ -708,7 +737,8 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
       void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
           const unsigned int* const indices, size_t num) {
         indices_valid_ = false;
-
+        cudaSetDevice(device_id_);
+        
         if (num != {{num_key(fac)}}){
           throw std::runtime_error(
               std::to_string(num)
@@ -737,6 +767,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% endif %}
           ) {
+      cudaSetDevice(device_id_);
       {% if fac.isconstuniq[arg] %}
       const size_t offset = 0;
       const size_t num = 1;
@@ -769,6 +800,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
           {% elif fac.isconstindexed[arg] %}
             const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% endif %}        ) {
+      cudaSetDevice(device_id_);
       {% if fac.isconstuniq[arg] %}
       const size_t offset = 0;
       const size_t num = 1;
@@ -791,6 +823,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
     {% if fac.isconstshared[arg] %}
       void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num) {
+          cudaSetDevice(device_id_);
           if (num != {{num_key(fac)}}){
             throw std::runtime_error(
                 std::to_string(num)
@@ -804,7 +837,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
         void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
-
+          cudaSetDevice(device_id_);
           if (num != {{num_key(fac)}}){
             throw std::runtime_error(
                 std::to_string(num)
@@ -824,6 +857,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
       void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
+          cudaSetDevice(device_id_);
           if (num != {{num_key(fac)}}){
             throw std::runtime_error(
                 std::to_string(num)
@@ -836,6 +870,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
         void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
+          cudaSetDevice(device_id_);
           if (num != {{num_key(fac)}}){
             throw std::runtime_error(
                 std::to_string(num)

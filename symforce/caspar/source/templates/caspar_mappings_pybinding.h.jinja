@@ -27,6 +27,7 @@ void add_casmappings_pybindings(pybind11::module_ module) {
           throw std::runtime_error(
             "The caspar data must have at least as many columns as stacked_data has rows.");
         }
+        cudaSetDevice(GetDeviceId(stacked_data));
         {{nodetype.__name__}}StackedToCaspar(
           As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), As{{caslib.storage_t.capitalize()}}Ptr(cas_data), cas_stride, 0,  num_objects);
       });
@@ -45,7 +46,7 @@ void add_casmappings_pybindings(pybind11::module_ module) {
               throw std::runtime_error(
                   "The caspar data must have at least as many columns as stacked_data has rows.");
           }
-
+          cudaSetDevice(GetDeviceId(cas_data));
           {{nodetype.__name__}}CasparToStacked(
               As{{caslib.storage_t.capitalize()}}Ptr(cas_data), As{{caslib.storage_t.capitalize()}}Ptr(stacked_data), cas_stride, 0, num_objects);
       });

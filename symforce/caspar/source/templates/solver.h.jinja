@@ -55,8 +55,9 @@ class {{ solver.struct_name }} {
   {{ solver.struct_name }}(
       const SolverParams<double> &params,
       {% for thing in solver.size_contributors %}
-      size_t {{num_arg_key(thing)}}{{ ", " if not loop.last else "" }}
+      size_t {{num_arg_key(thing)}}{{ ", " }}
       {% endfor %}
+      int device_id = 0
   );
 
   // This class is managing cuda memory and cannot be copied.
@@ -210,6 +211,7 @@ class {{ solver.struct_name }} {
 
  private:
   SolverParams<{{solver.linear_t}}> params_;
+  int device_id_;
   uint8_t* origin_ptr_;
   size_t scratch_inout_size_;
   size_t allocation_size_;
