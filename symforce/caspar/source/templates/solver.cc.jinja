@@ -88,19 +88,21 @@ namespace caspar {
   }
   allocation_size_ = get_nbytes();
 
-  if (device_id_ != 0){
-    if (device_id_ < 0){
-      std::runtime_error("Invalid CUDA device id: %d", device_id_);
-    }
+  if (device_id_ < 0) {
+    throw std::runtime_error("Invalid CUDA device id: " + std::to_string(device_id_));
+  }
+  if (device_id_ != 0) {
     int deviceCount;
     cudaGetDeviceCount(&deviceCount);
-    if(deviceCount < 2){
-      std::runtime_error("CUDA detected %d devices, but %d was requested", deviceCount, device_id_);
+    if (deviceCount <= device_id_) {
+      throw std::runtime_error("CUDA detected " + std::to_string(deviceCount) +
+                               " devices, but device " + std::to_string(device_id_) +
+                               " was requested (0-indexed)");
     }
     cudaDeviceProp deviceProp;
-    cudaGetDeviceProperties(&deviceProp, device_id);
-    printf("Non-default CUDA device %d with compute capability %d.%d. selected\n",
-        device, deviceProp.major, deviceProp.minor);
+    cudaGetDeviceProperties(&deviceProp, device_id_);
+    printf("Non-default CUDA device %d with compute capability %d.%d selected\n",
+        device_id_, deviceProp.major, deviceProp.minor);
   }
   cudaSetDevice(device_id_);
   cudaMalloc(&origin_ptr_, allocation_size_);
