@@ -8,9 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from symforce.caspar.examples.bal_deployed.generated import (  # type: ignore[import-not-found]
-    caspar_lib,
-)
+from generated import caspar_lib  # type: ignore[import-not-found]
 
 try:
     npz_path = Path(sys.argv[1])
