@@ -163,7 +163,7 @@ class CasparLibrary:
             self.kernels.extend(fac.make_kernels())
 
         self.generate_castype_mappings(out_dir, python_bindings)
-        self.generate_links(out_dir, use_symlinks)
+        self.generate_links(out_dir, use_symlinks, python_bindings)
         if solver := (Solver(self) if self.factors else None):
             self.kernels.extend(solver.make_kernels())
             solver.generate(out_dir, python_bindings)
@@ -245,9 +245,13 @@ class CasparLibrary:
             kernel.generate(out_dir)
 
     @staticmethod
-    def generate_links(out_dir: Path, use_symlinks: bool = True) -> None:
+    def generate_links(
+        out_dir: Path, use_symlinks: bool = True, python_bindings: bool = True
+    ) -> None:
         for f in Path(caspar.__file__).parent.glob("source/runtime/*"):
             if f.is_dir():  # Skip directories like __pycache__
+                continue
+            if not python_bindings and "pybind" in f.name:
                 continue
             f_new = out_dir / f.name
             if use_symlinks:

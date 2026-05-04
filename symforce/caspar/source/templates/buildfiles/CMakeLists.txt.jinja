@@ -57,7 +57,7 @@ set_target_properties({{caslib.name}}_core PROPERTIES
 if(CASPAR_BUILD_PYTHON_BINDINGS)
   file(GLOB CPP_SOURCES "pybind*.cc")
 
-  pybind11_add_module({{caslib.name}} ${CPP_SOURCES})
+  pybind11_add_module({{caslib.name}} ${CPP_SOURCES} ${CPP_HEADERS})
   target_link_libraries({{caslib.name}} PRIVATE {{caslib.name}}_core)
 
   set_target_properties({{caslib.name}} PROPERTIES
