@@ -50,7 +50,8 @@ def insert_sorted_unique(
 
 
 def _real_cuda_arch_string() -> str:
-    """Return a CMake CUDA_ARCHITECTURES string with SASS-only targets for all detected GPUs.
+    """
+    Return a CMake CUDA_ARCHITECTURES string with SASS-only targets for all detected GPUs.
 
     Using -real (no PTX embedding) avoids cudaErrorUnsupportedPtxVersion when the nvcc version
     exceeds the installed CUDA driver version.
@@ -58,7 +59,10 @@ def _real_cuda_arch_string() -> str:
     try:
         out = subprocess.run(
             ["nvidia-smi", "--query-gpu=compute_cap", "--format=csv,noheader"],
-            capture_output=True, text=True, check=True, timeout=10,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=10,
         ).stdout
         caps = sorted({cap.replace(".", "") for cap in out.strip().splitlines() if cap.strip()})
         if caps:
@@ -177,13 +181,17 @@ class CasparLibrary:
         jobs: int | None = None,
     ) -> None:
         build_dir = out_dir / "build"
-        config_cmd = [
-            "cmake", "-S", out_dir, "-B", build_dir,
+        config_cmd: list[str | Path] = [
+            "cmake",
+            "-S",
+            out_dir,
+            "-B",
+            build_dir,
             f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}",
             f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch if cuda_arch is not None else _real_cuda_arch_string()}",
         ]
         subprocess.run(config_cmd, check=True)
-        build_cmd = ["cmake", "--build", build_dir, "--parallel"]
+        build_cmd: list[str | Path] = ["cmake", "--build", build_dir, "--parallel"]
         if jobs:
             build_cmd.append(str(jobs))
         subprocess.run(build_cmd, check=True)
