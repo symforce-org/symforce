@@ -243,7 +243,7 @@ class CasparLibrary:
 
     def generate_binding_file(self, out_dir: Path, solver: Solver | None) -> None:
         binding = env.get_template("pybinding.cc.jinja").render(
-            caslib=self, solver=solver, snake_to_camel=parts_to_pascal
+            caslib=self, solver=solver, parts_to_pascal=parts_to_pascal
         )
         write_if_different(binding, out_dir.joinpath("pybinding.cc"))
 
