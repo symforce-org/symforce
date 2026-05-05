@@ -123,6 +123,7 @@ out_dir = Path(__file__).resolve().parent / "generated"
 caslib.generate(out_dir)  # Can be commented out after the first run to avoid regenerating (slow)
 caslib.compile(out_dir)  # Can be commented out after the first run to avoid recompiling (slow)
 
+
 # Can also be imported using:
 # lib = caslib.import_lib(out_dir)
 from generated import caspar_lib as lib  # type: ignore[import-not-found, unused-ignore]
@@ -181,15 +182,15 @@ lib.get_landmark_measurements(
 
 # Map the generated Caspar data to regular array of structs (AOS) format.
 pose_stacked = torch.empty(N_POSE, mem.stacked_size(Pose))
-lib.Pose_caspar_to_stacked(pose_caspar, pose_stacked)
+lib.pose_caspar_to_stacked(pose_caspar, pose_stacked)
 landmarks_stacked = torch.empty(N_LANDMARK, mem.stacked_size(Landmark))
-lib.Landmark_caspar_to_stacked(landmarks_caspar, landmarks_stacked)
+lib.landmark_caspar_to_stacked(landmarks_caspar, landmarks_stacked)
 odometry_stacked = torch.empty(N_POSE - 1, mem.stacked_size(OdometryMeasurement))
-lib.OdometryMeasurement_caspar_to_stacked(odometry_caspar, odometry_stacked)
+lib.odometry_measurement_caspar_to_stacked(odometry_caspar, odometry_stacked)
 pos_meas_stacked = torch.empty(N_GNSS, mem.stacked_size(PositionMeasurement))
-lib.posMeasurement_caspar_to_stacked(pos_meas_caspar, pos_meas_stacked)
+lib.position_measurement_caspar_to_stacked(pos_meas_caspar, pos_meas_stacked)
 landmark_meas_stacked = torch.empty(N_LANDMARK_ERROR, mem.stacked_size(LandmarkMeasurement))
-lib.LandmarkMeasurement_caspar_to_stacked(landmark_meas_caspar, landmark_meas_stacked)
+lib.landmark_measurement_caspar_to_stacked(landmark_meas_caspar, landmark_meas_stacked)
 
 
 # Add some noise to the data.
@@ -210,7 +211,7 @@ solver = lib.GraphSolver(
     params,
     Pose_num_max=N_POSE,
     Landmark_num_max=N_LANDMARK,
-    posSensorOffset_num_max=1,
+    PositionSensorOffset_num_max=1,
     LandmarkSensorOffset_num_max=1,
     pos_error_num_max=N_GNSS,
     landmark_error_num_max=N_LANDMARK_ERROR,
@@ -218,7 +219,7 @@ solver = lib.GraphSolver(
 )
 
 
-solver.set_posSensorOffset_nodes_from_stacked_device(pos_sensor_offset)
+solver.set_PositionSensorOffset_nodes_from_stacked_device(pos_sensor_offset)
 solver.set_LandmarkSensorOffset_nodes_from_stacked_device(landmark_sensor_offset)
 
 # To demonstrade how to update the solver dynamically we start by loading and optimizing only half the problem.

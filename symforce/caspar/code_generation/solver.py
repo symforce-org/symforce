@@ -12,7 +12,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen.codegen import WARNING_MESSAGE
 from symforce.ops import LieGroupOps as Ops
-from symforce.python_util import snakecase_to_camelcase
+from symforce.python_util import parts_to_pascal
 
 from ..code_generation.factor import Factor
 from ..code_generation.factor import dyn_part
@@ -681,7 +681,7 @@ class Solver:
             num_blocks_key=num_blocks_key,
             num_max_key=num_max_key,
             num_arg_key=num_arg_key,
-            snake_to_camel=snakecase_to_camelcase,
+            parts_to_pascal=parts_to_pascal,
             Ops=Ops,
         )
         header = env.get_template("solver.h.jinja").render(**kwargs)

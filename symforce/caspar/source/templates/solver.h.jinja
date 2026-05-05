@@ -138,26 +138,26 @@ class {{ solver.struct_name }} {
     {% for arg, argtype in fac.node_arg_types.items() %}
         {% if not fac.isnodepair[arg] %}
             /**
-            * Set the indices for the {{arg}} argument for the {{snake_to_camel(fac.name)}} factor from host.
+            * Set the indices for the {{arg}} argument for the {{parts_to_pascal(fac.name)}} factor from host.
             */
-            void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+            void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
                 const unsigned int* const indices, size_t num);
 
             /**
-            * Set the indices for the {{arg}} argument for the {{snake_to_camel(fac.name)}} factor from device.
+            * Set the indices for the {{arg}} argument for the {{parts_to_pascal(fac.name)}} factor from device.
             */
-            void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+            void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
                 const unsigned int* const indices, size_t num);
 
         {% endif %}
     {% endfor %}
     {% for arg, argtype in fac.const_arg_types.items() %}
         /**
-        * Set the values for the {{arg}} consts {{snake_to_camel(fac.name)}} factor from stacked host data.
+        * Set the values for the {{arg}} consts {{parts_to_pascal(fac.name)}} factor from stacked host data.
         *
         * The offset can be used to start writing from a specific index.
         */
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedHost(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}DataFromStackedHost(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -170,11 +170,11 @@ class {{ solver.struct_name }} {
           );
 
         /**
-        * Set the values for the {{arg}} consts {{snake_to_camel(fac.name)}} factor from stacked device data.
+        * Set the values for the {{arg}} consts {{parts_to_pascal(fac.name)}} factor from stacked device data.
         *
         * The offset can be used to start writing from a specific index.
         */
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedDevice(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}DataFromStackedDevice(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -186,25 +186,25 @@ class {{ solver.struct_name }} {
             {% endif %}      );
 
         {% if fac.isconstshared[arg] %}
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num);
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num);
         {% elif fac.isconstindexed[arg] %}
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num);
-        void Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+        void Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num);
         {% endif %}
     {% endfor %}
     /**
-    * Set the current number of {{snake_to_camel(fac.name)}} factors.
+    * Set the current number of {{parts_to_pascal(fac.name)}} factors.
     *
     * The value is set during initialization and this function is only needed if you want to
     * change the problem between optimization runs. This is work in progress and can have
     * performance impacts.
     */
-    void Set{{snake_to_camel(fac.name) }}Num(size_t num);
+    void Set{{parts_to_pascal(fac.name) }}Num(size_t num);
 
   {% endfor %}
 
