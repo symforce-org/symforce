@@ -274,7 +274,7 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
 
     {% for fac in solver.factors %}
 
-    {{snake_to_camel(fac.name)}}ResJac{{isfirst}}(
+    {{parts_to_pascal(fac.name)}}ResJac{{isfirst}}(
         {% for arg, typ in fac.arg_types.items() %}
           {% if fac.isnode[arg] %}
             {% if fac.isnodepair[arg] %}
@@ -424,7 +424,7 @@ void {{ solver.struct_name }}::DoUpdateMp() {
 void {{ solver.struct_name }}::DoJtjpDirect() {
     {% for fac in solver.factors %}
     {% if not fac.solved_by_preconditioner %}
-      {{snake_to_camel(fac.name)}}JtjnjtrDirect(
+      {{parts_to_pascal(fac.name)}}JtjnjtrDirect(
       {% for arg, nodetype in fac.node_arg_types.items() %}
         {% if fac.isnodepair[arg] %}
             {{node_key(nodetype, "p")}},
@@ -560,7 +560,7 @@ void {{ solver.struct_name }}::DoUpdateR() {
     {% endfor %}
     Zero({{solver_key("res_tot")}}, {{solver_key("res_tot")}}+1);
     {% for fac in solver.factors %}
-    {{snake_to_camel(fac.name)}}Score(
+    {{parts_to_pascal(fac.name)}}Score(
         {% for arg, typ in fac.arg_types.items() %}
           {% if fac.isnode[arg] %}
             {% if fac.isnodepair[arg] %}
@@ -708,8 +708,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
 {% endfor%}
 
 {% for fac in solver.factors %}
-  void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}Num(const size_t num) {
-    cudaSetDevice(device_id_);
+  void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}Num(const size_t num) {
     if (num > {{num_max_key(fac)}}){
       throw std::runtime_error(std::to_string(num) + " > {{num_max_key(fac)}}");
     }
@@ -717,7 +716,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
   }
   {% for arg, argtype in fac.node_arg_types.items() %}
     {% if fac.isnodeshared[arg] %}
-      void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+      void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
           const unsigned int* const indices, size_t num) {
         cudaSetDevice(device_id_);
         if (num != {{num_key(fac)}}){
@@ -727,10 +726,10 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
         }
         cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
                   cudaMemcpyHostToDevice);
-        Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice((unsigned int*)marker__scratch_inout_, num);
+        Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice((unsigned int*)marker__scratch_inout_, num);
       }
 
-      void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+      void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
           const unsigned int* const indices, size_t num) {
         indices_valid_ = false;
         cudaSetDevice(device_id_);
@@ -752,7 +751,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
     {% endif %}
   {% endfor %}
   {% for arg, argtype in fac.const_arg_types.items() %}
-    void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedHost(
+    void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}DataFromStackedHost(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -786,7 +785,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
                                             offset, num);
     }
 
-    void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}DataFromStackedDevice(
+    void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}DataFromStackedDevice(
           {% if fac.isconstseq[arg] %}
           const {{solver.storage_t}}* const data, size_t offset, size_t num
           {% elif fac.isconstuniq[arg] %}
@@ -817,7 +816,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
                                             offset, num);
     }
     {% if fac.isconstshared[arg] %}
-      void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+      void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num) {
           cudaSetDevice(device_id_);
           if (num != {{num_key(fac)}}){
@@ -827,10 +826,10 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
           }
           cudaMemcpy((unsigned int*)marker__scratch_inout_, indices, num * sizeof(unsigned int),
                     cudaMemcpyHostToDevice);
-          Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice((unsigned int*)marker__scratch_inout_, num);
+          Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice((unsigned int*)marker__scratch_inout_, num);
         }
 
-        void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+        void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
           cudaSetDevice(device_id_);
@@ -850,7 +849,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
 
         }
     {% elif fac.isconstindexed[arg] %}
-      void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromHost(
+      void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromHost(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
           cudaSetDevice(device_id_);
@@ -863,7 +862,7 @@ void {{solver.struct_name}}::Get{{nodetype.__name__}}NodesToStackedDevice(
                     cudaMemcpyHostToDevice);
         }
 
-        void {{ solver.struct_name }}::Set{{snake_to_camel(fac.name)}}{{snake_to_camel(arg)}}IndicesFromDevice(
+        void {{ solver.struct_name }}::Set{{parts_to_pascal(fac.name)}}{{parts_to_pascal(arg)}}IndicesFromDevice(
             const unsigned int* const indices, size_t num) {
           indices_valid_ = false;
           cudaSetDevice(device_id_);

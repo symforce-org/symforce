@@ -44,7 +44,8 @@ if __name__ == "__main__":
     caslib.generate(out_dir)
     caslib.compile(out_dir)
 
-    lib = caslib.import_lib(out_dir)
+    # lib = caslib.import_lib(out_dir)
+    from generated import caspar_lib as lib  # type: ignore[import-not-found, unused-ignore]
 
     N = 100
     arg0_stacked = torch.rand(N, sf.V3.storage_dim(), device="cuda")

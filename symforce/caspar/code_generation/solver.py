@@ -12,7 +12,7 @@ import symforce.symbolic as sf
 from symforce import typing as T
 from symforce.codegen.codegen import WARNING_MESSAGE
 from symforce.ops import LieGroupOps as Ops
-from symforce.python_util import snakecase_to_camelcase
+from symforce.python_util import parts_to_pascal
 
 from ..code_generation.factor import Factor
 from ..code_generation.factor import dyn_part
@@ -669,7 +669,7 @@ class Solver:
             )
         return list(self.kernels.values())
 
-    def generate(self, out_dir: Path) -> None:
+    def generate(self, out_dir: Path, python_bindings: bool = True) -> None:
         kwargs = dict(
             solver=self,
             name_key=name_key,
@@ -681,12 +681,13 @@ class Solver:
             num_blocks_key=num_blocks_key,
             num_max_key=num_max_key,
             num_arg_key=num_arg_key,
-            snake_to_camel=snakecase_to_camelcase,
+            parts_to_pascal=parts_to_pascal,
             Ops=Ops,
         )
         header = env.get_template("solver.h.jinja").render(**kwargs)
         write_if_different(header, out_dir.joinpath("solver.h"))
         definition = env.get_template("solver.cc.jinja").render(**kwargs)
         write_if_different(definition, out_dir.joinpath("solver.cc"))
-        definition = env.get_template("solver_pybinding.h.jinja").render(**kwargs)
-        write_if_different(definition, out_dir.joinpath("solver_pybinding.h"))
+        if python_bindings:
+            definition = env.get_template("solver_pybinding.h.jinja").render(**kwargs)
+            write_if_different(definition, out_dir.joinpath("solver_pybinding.h"))

@@ -53,13 +53,13 @@ class Kernel:
         self.registers = [f"r{i}" for i in range(n_registers)]
 
         code = env.get_template("kernel.cu.jinja").render(
-            kernel=self, snake_to_camel=parts_to_pascal
+            kernel=self, parts_to_pascal=parts_to_pascal
         )
         code = EMPTY_BLOCK_PATTERN.sub("", code)
         write_if_different(code, out_dir.joinpath(f"kernel_{self.name}.cu"))
 
         header = env.get_template("kernel.h.jinja").render(
-            kernel=self, snake_to_camel=parts_to_pascal
+            kernel=self, parts_to_pascal=parts_to_pascal
         )
         write_if_different(header, out_dir.joinpath(f"kernel_{self.name}.h"))
 

@@ -10,7 +10,7 @@
 
 namespace caspar {
 
-void {{snake_to_camel(kernel.name)}} (
+void {{parts_to_pascal(kernel.name)}} (
     {% for desc in kernel.accessors %}
     {% for name, typ in desc.kernel_sig.items() %}
     {{ typ }} {{ name }},

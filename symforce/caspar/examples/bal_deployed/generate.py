@@ -39,7 +39,7 @@ caslib = CasparLibrary()
 def fac_reprojection(
     cam: T.Annotated[Cam, mem.TunableShared],
     point: T.Annotated[Point, mem.TunableShared],
-    pixel: T.Annotated[Pixel, mem.Constant],
+    pixel: T.Annotated[Pixel, mem.ConstantSequential],
 ) -> sf.V2:
     cam_T_world = cam.pose
     intrinsics = cam.calib
