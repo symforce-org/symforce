@@ -57,8 +57,8 @@ class EnumType:
         self.lcm_package = package_name
 
         # filenames for generated converter sources
-        self.filename_h = f"{self.djinni_namespace}/converters/{snakecase_name}.h"
-        self.filename_cc = f"{self.djinni_namespace}/converters/{snakecase_name}.cc"
+        self.filename_h = f"{self.djinni_namespace}/{self.lcm_package}/{snakecase_name}.h"
+        self.filename_cc = f"{self.djinni_namespace}/{self.lcm_package}/{snakecase_name}.cc"
 
         # header paths to the underlying type definitions
         self.djinni_header = f"djinni/{self.djinni_namespace}/{snakecase_name}.hpp"
