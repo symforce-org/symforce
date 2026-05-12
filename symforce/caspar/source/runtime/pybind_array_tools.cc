@@ -169,6 +169,23 @@ void AssertUint2Vec(const py::object& obj) {
   Assert2DNxk(obj, 2);
 }
 
+int GetDeviceId(const py::object& obj) {
+  try {
+    auto interface = obj.attr("__cuda_array_interface__").cast<py::dict>();
+    auto data = interface["data"].cast<py::tuple>();
+    void* ptr = reinterpret_cast<void*>(data[0].cast<size_t>());
+    cudaPointerAttributes attrs;
+    cudaError_t err = cudaPointerGetAttributes(&attrs, ptr);
+    if (err != cudaSuccess) {
+      cudaGetLastError();
+      return -1;
+    }
+    return attrs.device;
+  } catch (...) {
+    return -1;  // Fallback if interface or attributes aren't available
+  }
+}
+
 float* AsFloatPtr(const py::object& obj) {
   AssertFloatVec(obj);
   py::tuple data = GetInterface(obj)["data"].cast<py::tuple>();

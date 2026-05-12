@@ -30,6 +30,8 @@ void AssertDeviceMemory(const py::object& obj);
 void AssertNumRowsEquals(const py::object& obj, size_t n);
 void AssertNumColsEquals(const py::object& obj, size_t n);
 
+int GetDeviceId(const py::object& obj);
+
 float* AsFloatPtr(const py::object& obj);
 double* AsDoublePtr(const py::object& obj);
 int* AsIntPtr(const py::object& obj);
