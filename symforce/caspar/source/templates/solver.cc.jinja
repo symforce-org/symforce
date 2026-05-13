@@ -141,6 +141,7 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
   std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
   std::chrono::time_point<std::chrono::steady_clock> t_prev = t0;
   score_best = DoResJacFirst();
+  result.initial_score = score_best;
   if (print_progress) {
     printf("                                 score_init: % .6e\n", score_best);
   }
