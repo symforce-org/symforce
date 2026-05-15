@@ -18,7 +18,7 @@ namespace SymEngine
 
 void eval_mpfr(mpfr_ptr result, const Basic &b, mpfr_rnd_t rnd);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_MPFR
 

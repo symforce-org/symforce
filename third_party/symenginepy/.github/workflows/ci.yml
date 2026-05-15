@@ -10,117 +10,130 @@ jobs:
         include:
           - BUILD_TYPE: Debug
             WITH_BFD: yes
-            PYTHON_VERSION: 3.6
+            PYTHON_VERSION: '3.12'
             TEST_SYMPY: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Debug
             WITH_BFD: yes
-            PYTHON_VERSION: 3.9
+            PYTHON_VERSION: '3.11'
             TEST_SYMPY: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            PYTHON_VERSION: '3.10'
+            TEST_SYMPY: yes
+            OS: ubuntu-20.04
+            CC: gcc
+
+          - BUILD_TYPE: Debug
+            WITH_BFD: yes
+            PYTHON_VERSION: '3.9'
+            TEST_SYMPY: yes
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.7
+            PYTHON_VERSION: '3.8'
             BUILD_SHARED_LIBS: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.7
+            PYTHON_VERSION: '3.8'
             WITH_MPFR: yes
             INTEGER_CLASS: gmpxx
             WITH_NUMPY: no
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.8
+            PYTHON_VERSION: '3.8'
             WITH_MPC: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
             WITH_MPFR: yes
-            PYTHON_VERSION: 3.8
-            OS: ubuntu-16.04
+            PYTHON_VERSION: '3.8'
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.9
+            PYTHON_VERSION: '3.9'
             WITH_MPC: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.6
+            PYTHON_VERSION: '3.9'
             WITH_MPC: yes
             INTEGER_CLASS: flint
             WITH_FLINT: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: gcc
 
-          - BUILD_TYPE: Debug
-            PYTHON_VERSION: 3.7
-            WITH_BFD: yes
-            WITH_PIRANHA: yes
-            OS: ubuntu-16.04
-            CC: gcc
-            EXTRA_APT_PACKAGES: "g++-4.8"
+          #- BUILD_TYPE: Debug
+          #  PYTHON_VERSION: '3.9'
+          #  WITH_BFD: yes
+          #  WITH_PIRANHA: yes
+          #  OS: ubuntu-20.04
+          #  CC: gcc
 
           - BUILD_TYPE: Debug
-            PYTHON_VERSION: 3.8
+            PYTHON_VERSION: '3.8'
             WITH_BFD: yes
             BUILD_SHARED_LIBS: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: clang
     
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.7
+            PYTHON_VERSION: '3.8'
             WITH_NUMPY: yes
-            OS: ubuntu-16.04
+            OS: ubuntu-20.04
             CC: clang
  
           - BUILD_TYPE: Debug
-            PYTHON_VERSION: 3.6
+            PYTHON_VERSION: '3.10'
             WITH_SYMPY: yes
-            WITH_LLVM: 8.0
+            WITH_LLVM: 14
             WITH_SCIPY: yes
-            OS: ubuntu-16.04
-            CC: gcc-4.8
-            CXX: g++-4.8
-            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
-            EXTRA_APT_PACKAGES: 'g++-4.8 libstdc++-4.8-dev binutils-dev llvm-8-dev'
+            INTEGER_CLASS: 'boostmp'
+            PYTEST_ADDOPTS: '-k "not integer_nthroot"'
+            OS: ubuntu-22.04
+            EXTRA_APT_REPOSITORY: 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-14 main'
+            EXTRA_APT_PACKAGES: 'llvm-14'
 
           - BUILD_TYPE: Debug
-            PYTHON_VERSION: 3.7
+            PYTHON_VERSION: '3.8'
             WITH_SCIPY: yes
             WITH_LLVM: 5.0
             OS: macos-latest
             CC: clang
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.9
+            PYTHON_VERSION: '3.9'
             WITH_NUMPY: no
             OS: macos-latest
             CC: clang
 
           - BUILD_TYPE: Debug
-            PYTHON_VERSION: 3.7
+            PYTHON_VERSION: '3.8'
             WITH_NUMPY: no
             OS: macos-latest
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.6
+            PYTHON_VERSION: '3.8'
             OS: macos-latest
             CC: gcc
 
           - BUILD_TYPE: Release
-            PYTHON_VERSION: 3.6
-            OS: ubuntu-16.04
+            PYTHON_VERSION: '3.8'
+            OS: ubuntu-20.04
             WITH_MPC: yes
             WITH_MPFR: yes
             WITH_FLINT: yes
@@ -132,13 +145,14 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Build and test symengine
       shell: bash
       run: |
         source bin/test_symengine_unix.sh
       env:
+        PYTEST_ADDOPTS: ${{ matrix.PYTEST_ADDOPTS }}
         USE_GLIBCXX_DEBUG: ${{ matrix.USE_GLIBCXX_DEBUG }}
         WITH_MPFR: ${{ matrix.WITH_MPFR }}
         BUILD_BENCHMARKS: ${{ matrix.BUILD_BENCHMARKS }}
@@ -169,6 +183,7 @@ jobs:
         WITH_MPC: ${{ matrix.WITH_MPC }}
         MAKEFLAGS: ${{ matrix.MAKEFLAGS }}
         BUILD_SHARED_LIBS: ${{ matrix.BUILD_SHARED_LIBS }}
+        PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
 
     - name: Deploy Documentation
       if: ${{ (github.ref == 'refs/heads/main' && github.repository == 'Symengine/symengine.py') || (github.ref == 'refs/heads/master' && github.repository == 'Symengine/symengine.py')}}

@@ -73,7 +73,7 @@ struct divexact_impl<SymEngine::rational_class> {
         r = x / y;
     }
 };
-}
+} // namespace math
 
 template <>
 struct has_exact_ring_operations<SymEngine::integer_class> {
@@ -83,7 +83,7 @@ template <>
 struct has_exact_ring_operations<SymEngine::rational_class> {
     static const bool value = true;
 };
-}
+} // namespace piranha
 #endif
 
 // need definition for piranha::rational too
@@ -100,8 +100,8 @@ struct gcd_impl<SymEngine::rational_class, SymEngine::rational_class> {
         return SymEngine::rational_class(1);
     }
 };
-}
-}
+} // namespace math
+} // namespace piranha
 
 namespace SymEngine
 {
@@ -119,9 +119,7 @@ private:
     ptr_type ptr_;
 
 public:
-    PiranhaForIter(ptr_type ptr) : ptr_{ptr}
-    {
-    }
+    PiranhaForIter(ptr_type ptr) : ptr_{ptr} {}
 
     bool operator==(const PiranhaForIter &rhs)
     {
@@ -186,7 +184,7 @@ public:
             if (it.second != 0)
                 p.insert(term(it.second, pmonomial{it.first}));
 
-        return std::move(p);
+        return p;
     }
 
     static RCP<const Poly> from_vec(const RCP<const Basic> &var,
@@ -368,7 +366,7 @@ bool divides_upoly(const UPiranhaPoly<Container, BaseType, Poly> &a,
         return false;
     }
 }
-}
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_PIRANHA
 

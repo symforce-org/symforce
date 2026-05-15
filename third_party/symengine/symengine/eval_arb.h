@@ -22,7 +22,7 @@ namespace SymEngine
 // also.
 void eval_arb(arb_t result, const Basic &b, long precision = 53);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_ARB
 

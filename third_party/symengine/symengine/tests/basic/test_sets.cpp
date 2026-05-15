@@ -8,67 +8,77 @@
 #include <symengine/add.h>
 #include <symengine/pow.h>
 
+using SymEngine::add;
 using SymEngine::Basic;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::Rational;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::Number;
-using SymEngine::RCP;
-using SymEngine::Interval;
-using SymEngine::interval;
-using SymEngine::FiniteSet;
-using SymEngine::finiteset;
-using SymEngine::Set;
-using SymEngine::Reals;
-using SymEngine::reals;
-using SymEngine::Rationals;
-using SymEngine::rationals;
-using SymEngine::Integers;
-using SymEngine::integers;
-using SymEngine::EmptySet;
-using SymEngine::emptyset;
-using SymEngine::UniversalSet;
-using SymEngine::universalset;
-using SymEngine::Union;
-using SymEngine::set_union;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::Complex;
-using SymEngine::symbol;
-using SymEngine::is_a;
 using SymEngine::boolean;
-using SymEngine::Inf;
-using SymEngine::NegInf;
-using SymEngine::NotImplementedError;
-using SymEngine::SymEngineException;
-using SymEngine::boolTrue;
+using SymEngine::Boolean;
 using SymEngine::boolFalse;
-using SymEngine::Contains;
-using SymEngine::make_rcp;
-using SymEngine::set_set;
-using SymEngine::set_intersection;
-using SymEngine::real_double;
-using SymEngine::rational_class;
-using SymEngine::set_complement;
+using SymEngine::boolTrue;
 using SymEngine::Complement;
-using SymEngine::down_cast;
+using SymEngine::Complex;
+using SymEngine::Complexes;
+using SymEngine::complexes;
 using SymEngine::ConditionSet;
 using SymEngine::conditionset;
-using SymEngine::mul;
-using SymEngine::add;
-using SymEngine::Gt;
+using SymEngine::Contains;
+using SymEngine::down_cast;
+using SymEngine::dummy;
+using SymEngine::EmptySet;
+using SymEngine::emptyset;
 using SymEngine::Eq;
-using SymEngine::Le;
-using SymEngine::pi;
-using SymEngine::Symbol;
-using SymEngine::Boolean;
-using SymEngine::sin;
-using SymEngine::Not;
-using SymEngine::logical_and;
+using SymEngine::FiniteSet;
+using SymEngine::finiteset;
+using SymEngine::Gt;
 using SymEngine::ImageSet;
 using SymEngine::imageset;
-using SymEngine::dummy;
+using SymEngine::Inf;
+using SymEngine::infty;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::Integers;
+using SymEngine::integers;
+using SymEngine::Interval;
+using SymEngine::interval;
+using SymEngine::is_a;
+using SymEngine::Le;
+using SymEngine::logical_and;
+using SymEngine::make_rcp;
+using SymEngine::max;
+using SymEngine::min;
+using SymEngine::mul;
+using SymEngine::Naturals;
+using SymEngine::naturals;
+using SymEngine::Naturals0;
+using SymEngine::naturals0;
+using SymEngine::NegInf;
+using SymEngine::Not;
+using SymEngine::NotImplementedError;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::Rationals;
+using SymEngine::rationals;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::real_double;
+using SymEngine::Reals;
+using SymEngine::reals;
+using SymEngine::Set;
+using SymEngine::set_complement;
+using SymEngine::set_intersection;
+using SymEngine::set_set;
+using SymEngine::set_union;
+using SymEngine::sin;
+using SymEngine::sup;
+using SymEngine::symbol;
+using SymEngine::Symbol;
+using SymEngine::SymEngineException;
+using SymEngine::Union;
+using SymEngine::UniversalSet;
+using SymEngine::universalset;
+using SymEngine::zero;
 
 TEST_CASE("Interval : Basic", "[basic]")
 {
@@ -225,8 +235,78 @@ TEST_CASE("Interval : Basic", "[basic]")
     REQUIRE(eq(*r5->get_args()[2], *boolean(r5->get_left_open())));
     REQUIRE(eq(*r5->get_args()[3], *boolean(r5->get_right_open())));
     RCP<const Number> c1 = Complex::from_two_nums(*i2, *i20);
-    CHECK_THROWS_AS(interval(c1, one), NotImplementedError &);
-    CHECK_THROWS_AS(r5->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(interval(c1, one), NotImplementedError);
+    CHECK_THROWS_AS(r5->diff(symbol("x")), SymEngineException);
+}
+
+TEST_CASE("Complexes : Basic", "[basic]")
+{
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Set> r0 = complexes();
+    RCP<const Set> r1 = reals();
+    RCP<const Set> r2 = interval(zero, one);
+    RCP<const Set> r3 = finiteset({zero, one, integer(2)});
+    RCP<const Number> i1 = integer(3);
+    RCP<const Number> i2 = integer(5);
+    RCP<const Number> c1 = Complex::from_two_nums(*i1, *i2);
+    RCP<const Set> r4 = finiteset({zero, one, integer(2), c1});
+    RCP<const Set> r5 = finiteset({c1});
+    RCP<const Set> r6 = set_union({r1, r5});
+    RCP<const Set> r7 = finiteset({real_double(2.0), c1, x});
+    RCP<const Set> r8 = finiteset({x});
+    RCP<const Set> r9 = set_union({r0, r8});
+    RCP<const Set> r12 = universalset();
+    RCP<const Set> r13 = emptyset();
+    RCP<const Set> r14 = set_complement(universalset(), complexes());
+
+    REQUIRE(is_a<Complexes>(*r0));
+    REQUIRE(not is_a<UniversalSet>(*r0));
+    REQUIRE(r1->is_subset(r0));
+    REQUIRE(r2->is_subset(r0));
+    REQUIRE(r1->is_proper_subset(r0));
+    REQUIRE(r2->is_proper_subset(r0));
+    REQUIRE(r0->is_superset(r1));
+    REQUIRE(r0->is_superset(r2));
+    REQUIRE(eq(*r0, *r0->set_intersection(r0)));
+    REQUIRE(eq(*r2, *r0->set_intersection(r2)));
+    REQUIRE(eq(*r2, *r2->set_intersection(r0)));
+    REQUIRE(eq(*r3, *r0->set_intersection(r3)));
+    REQUIRE(eq(*r3, *r3->set_intersection(r0)));
+    REQUIRE(eq(*r4, *r4->set_intersection(r0)));
+    REQUIRE(eq(*r4, *r0->set_intersection(r4)));
+    REQUIRE(eq(*r0, *r0->set_intersection(r12)));
+    REQUIRE(eq(*r0, *r12->set_intersection(r0)));
+    REQUIRE(eq(*r0, *r0->set_union(r0)));
+    REQUIRE(eq(*r0, *r0->set_union(r1)));
+    REQUIRE(eq(*r0, *r0->set_union(r2)));
+    REQUIRE(eq(*r0, *r2->set_union(r0)));
+    REQUIRE(eq(*r0, *r3->set_union(r0)));
+    REQUIRE(eq(*r0, *r0->set_union(r3)));
+    REQUIRE(eq(*r0, *r0->set_union(r4)));
+    REQUIRE(eq(*r0, *r4->set_union(r0)));
+    REQUIRE(eq(*r9, *r7->set_union(r0)));
+    REQUIRE(eq(*r12, *r0->set_union(r12)));
+    REQUIRE(eq(*r12, *r12->set_union(r0)));
+    REQUIRE(eq(*r0->set_complement(r2), *emptyset()));
+    REQUIRE(eq(*r0->set_complement(r0), *emptyset()));
+    REQUIRE(eq(*r0->set_complement(r13), *emptyset()));
+    REQUIRE(eq(*r0->set_complement(r12), *r14));
+    REQUIRE(eq(*r0->set_complement(r3), *emptyset()));
+    REQUIRE(eq(*r0->set_complement(r4), *emptyset()));
+    REQUIRE(eq(*r12->set_complement(r0), *emptyset()));
+    REQUIRE(eq(*r13->set_complement(r0), *r0));
+    REQUIRE(r0->__str__() == "Complexes");
+    REQUIRE(r0->__hash__() == complexes()->__hash__());
+    REQUIRE(not r0->is_proper_subset(r0));
+    REQUIRE(not r0->__eq__(*r2));
+    REQUIRE(r0->__eq__(*r0));
+    REQUIRE(r0->compare(*complexes()) == 0);
+    REQUIRE(eq(*r0->contains(zero), *boolTrue));
+    REQUIRE(eq(*r0->contains(c1), *boolTrue));
+    REQUIRE(eq(*r0->contains(r0), *boolFalse));
+    REQUIRE(eq(*r0->contains(x), *make_rcp<Contains>(x, r0)));
+    REQUIRE(r0->get_args().empty());
+    CHECK_THROWS_AS(r0->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("Reals : Basic", "[basic]")
@@ -244,8 +324,8 @@ TEST_CASE("Reals : Basic", "[basic]")
     RCP<const Set> r7 = finiteset({real_double(2.0), c1, x});
     RCP<const Set> r8 = finiteset({c1, x});
     RCP<const Set> r9 = set_union({r1, r8});
-    // RCP<const Set> r10 = finiteset({real_double(2.0), x});
-    // RCP<const Set> r11 = set_intersection({r10, r1});
+    RCP<const Set> r10 = finiteset({real_double(2.0), x});
+    RCP<const Set> r11 = set_intersection({r10, r1});
     RCP<const Set> r12 = universalset();
     RCP<const Set> r13 = emptyset();
     RCP<const Set> r14 = set_complement(universalset(), reals());
@@ -266,8 +346,7 @@ TEST_CASE("Reals : Basic", "[basic]")
     REQUIRE(eq(*r1, *r12->set_intersection(r1)));
     REQUIRE(eq(*r13, *r1->set_intersection(r5)));
     REQUIRE(eq(*r13, *r5->set_intersection(r1)));
-    // Following doesn't work since we cannot yet create the set intersection
-    // REQUIRE(eq(*r11, *r1->set_intersection(r7)));
+    REQUIRE(eq(*r11, *r1->set_intersection(r7)));
     REQUIRE(eq(*r1, *r1->set_union(r1)));
     REQUIRE(eq(*r1, *r1->set_union(r2)));
     REQUIRE(eq(*r1, *r2->set_union(r1)));
@@ -298,7 +377,7 @@ TEST_CASE("Reals : Basic", "[basic]")
     REQUIRE(eq(*r1->contains(zero), *boolTrue));
     REQUIRE(eq(*r1->contains(x), *make_rcp<Contains>(x, r1)));
     REQUIRE(r1->get_args().empty());
-    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("Rationals : Basic", "[basic]")
@@ -375,7 +454,7 @@ TEST_CASE("Rationals : Basic", "[basic]")
     REQUIRE(r1->__str__() == "Rationals");
     REQUIRE(r1->__hash__() == rationals()->__hash__());
     REQUIRE(r1->get_args().empty());
-    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("Integers : Basic", "[basic]")
@@ -468,7 +547,199 @@ TEST_CASE("Integers : Basic", "[basic]")
     REQUIRE(r1->get_args().empty());
     REQUIRE(r1->__str__() == "Integers");
     REQUIRE(r1->__hash__() == integers()->__hash__());
-    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
+}
+
+TEST_CASE("Naturals : Basic", "[basic]")
+{
+    RCP<const Number> i1 = integer(3);
+    RCP<const Number> i2 = integer(5);
+    RCP<const Number> c1 = Complex::from_two_nums(*i1, *i2);
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Number> rat1 = Rational::from_two_ints(*integer(5), *integer(6));
+    RCP<const Number> rat2 = Rational::from_two_ints(*integer(17), *integer(8));
+    RCP<const Set> r1 = naturals();
+    RCP<const Set> r2 = interval(zero, one);
+    RCP<const Set> r3 = finiteset({zero, one});
+    RCP<const Set> r4 = reals();
+    RCP<const Set> r5 = set_union({r1, r2});
+    RCP<const Set> r6 = universalset();
+    RCP<const Set> r7 = finiteset({zero, one, c1, x});
+    RCP<const Set> r8 = finiteset({zero, c1, x});
+    RCP<const Set> r9 = set_union({r1, r8});
+    RCP<const Set> r10 = emptyset();
+    RCP<const Set> r11 = interval(zero, rat2);
+    RCP<const Set> r12 = finiteset({one, integer(2)});
+    RCP<const Set> r13 = interval(zero, one, true, true);
+    RCP<const Set> r14 = interval(zero, rat2, true, false);
+    RCP<const Set> r15 = finiteset({one, integer(2)});
+    RCP<const Set> r16 = finiteset({zero, one, c1});
+    RCP<const Set> r17 = set_complement(reals(), naturals());
+    RCP<const Set> r18 = set_complement(universalset(), naturals());
+    RCP<const Set> r19 = set_complement(naturals(), r3);
+    RCP<const Set> r20 = finiteset({zero, c1});
+    RCP<const Set> r21 = set_complement(naturals(), r16);
+    RCP<const Set> r22 = set_complement(naturals(), r2);
+    RCP<const Set> r23 = finiteset({zero});
+    RCP<const Set> r24 = set_union({r23, r1});
+    RCP<const Set> r25 = finiteset({one});
+
+    REQUIRE(is_a<Naturals>(*r1));
+    REQUIRE(r1->is_subset(r4));
+    REQUIRE(r1->is_proper_subset(r4));
+    REQUIRE(r4->is_superset(r1));
+    REQUIRE(eq(*r10, *r1->set_complement(r1)));
+    REQUIRE(eq(*r17, *r1->set_complement(r4)));
+    REQUIRE(eq(*r10, *r4->set_complement(r1)));
+    REQUIRE(eq(*r10, *r4->set_complement(r10)));
+    REQUIRE(eq(*r1, *r10->set_complement(r1)));
+    REQUIRE(eq(*r10, *r6->set_complement(r1)));
+    REQUIRE(eq(*r18, *r1->set_complement(r6)));
+    REQUIRE(eq(*r23, *r1->set_complement(r3)));
+    REQUIRE(eq(*r19, *r3->set_complement(r1)));
+    REQUIRE(eq(*r20, *r1->set_complement(r16)));
+    REQUIRE(eq(*r21, *r16->set_complement(r1)));
+    REQUIRE(eq(*r22, *r2->set_complement(r1)));
+    REQUIRE(eq(*r1, *r1->set_union(r1)));
+    REQUIRE(eq(*r5, *r1->set_union(r2)));
+    REQUIRE(eq(*r5, *r2->set_union(r1)));
+    REQUIRE(eq(*r24, *r1->set_union(r3)));
+    REQUIRE(eq(*r24, *r3->set_union(r1)));
+    REQUIRE(eq(*r4, *r1->set_union(r4)));
+    REQUIRE(eq(*r4, *r4->set_union(r1)));
+    REQUIRE(eq(*r6, *r1->set_union(r6)));
+    REQUIRE(eq(*r6, *r6->set_union(r1)));
+    REQUIRE(eq(*r9, *r1->set_union(r7)));
+    REQUIRE(eq(*r9, *r7->set_union(r1)));
+    REQUIRE(eq(*r1, *r1->set_union(r10)));
+    REQUIRE(eq(*r1, *r10->set_union(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r4->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r4)));
+    REQUIRE(eq(*r10, *r1->set_intersection(r10)));
+    REQUIRE(eq(*r10, *r10->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r6)));
+    REQUIRE(eq(*r1, *r6->set_intersection(r1)));
+    REQUIRE(eq(*r25, *r1->set_intersection(r2)));
+    REQUIRE(eq(*r25, *r2->set_intersection(r1)));
+    REQUIRE(eq(*r12, *r1->set_intersection(r11)));
+    REQUIRE(eq(*r12, *r11->set_intersection(r1)));
+    REQUIRE(eq(*r10, *r1->set_intersection(r13)));
+    REQUIRE(eq(*r10, *r13->set_intersection(r1)));
+    REQUIRE(eq(*r15, *r1->set_intersection(r14)));
+    REQUIRE(eq(*r15, *r14->set_intersection(r1)));
+    REQUIRE(eq(*r25, *r1->set_intersection(r16)));
+    REQUIRE(eq(*r25, *r16->set_intersection(r1)));
+    REQUIRE(eq(*r25, *r1->set_intersection(r3)));
+    REQUIRE(eq(*r25, *r3->set_intersection(r1)));
+    REQUIRE(eq(*r1->contains(zero), *boolFalse));
+    REQUIRE(eq(*r1->contains(one), *boolTrue));
+    REQUIRE(eq(*r1->contains(c1), *boolFalse));
+    REQUIRE(eq(*r1->contains(r1), *boolFalse));
+    REQUIRE(eq(*r1->contains(rat1), *boolFalse));
+    REQUIRE(eq(*r1->contains(x), *make_rcp<Contains>(x, r1)));
+    REQUIRE(r1->__eq__(*r1));
+    REQUIRE(!r1->__eq__(*r2));
+    REQUIRE(r1->compare(*naturals()) == 0);
+    REQUIRE(r1->get_args().empty());
+    REQUIRE(r1->__str__() == "Naturals");
+    REQUIRE(r1->__hash__() == naturals()->__hash__());
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
+}
+
+TEST_CASE("Naturals0 : Basic", "[basic]")
+{
+    RCP<const Number> i1 = integer(3);
+    RCP<const Number> i2 = integer(5);
+    RCP<const Number> c1 = Complex::from_two_nums(*i1, *i2);
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Number> rat1 = Rational::from_two_ints(*integer(5), *integer(6));
+    RCP<const Number> rat2 = Rational::from_two_ints(*integer(17), *integer(8));
+    RCP<const Set> r1 = naturals0();
+    RCP<const Set> r2 = interval(zero, one);
+    RCP<const Set> r3 = finiteset({zero, one});
+    RCP<const Set> r4 = reals();
+    RCP<const Set> r5 = set_union({r1, r2});
+    RCP<const Set> r6 = universalset();
+    RCP<const Set> r7 = finiteset({zero, one, c1, x});
+    RCP<const Set> r8 = finiteset({c1, x});
+    RCP<const Set> r9 = set_union({r1, r8});
+    RCP<const Set> r10 = emptyset();
+    RCP<const Set> r11 = interval(zero, rat2);
+    RCP<const Set> r12 = finiteset({zero, one, integer(2)});
+    RCP<const Set> r13 = interval(zero, one, true, true);
+    RCP<const Set> r14 = interval(zero, rat2, true, false);
+    RCP<const Set> r15 = finiteset({one, integer(2)});
+    RCP<const Set> r16 = finiteset({zero, one, c1});
+    RCP<const Set> r17 = set_complement(reals(), naturals0());
+    RCP<const Set> r18 = set_complement(universalset(), naturals0());
+    RCP<const Set> r19 = set_complement(naturals0(), r3);
+    RCP<const Set> r20 = finiteset({c1});
+    RCP<const Set> r21 = set_complement(naturals0(), r16);
+    RCP<const Set> r22 = set_complement(naturals0(), r2);
+    RCP<const Set> r23 = finiteset({zero});
+    RCP<const Set> r24 = set_union({r23, r1});
+
+    REQUIRE(is_a<Naturals0>(*r1));
+    REQUIRE(r1->is_subset(r4));
+    REQUIRE(r1->is_proper_subset(r4));
+    REQUIRE(r4->is_superset(r1));
+    REQUIRE(eq(*r10, *r1->set_complement(r1)));
+    REQUIRE(eq(*r17, *r1->set_complement(r4)));
+    REQUIRE(eq(*r10, *r4->set_complement(r1)));
+    REQUIRE(eq(*r1, *r10->set_complement(r1)));
+    REQUIRE(eq(*r10, *r6->set_complement(r1)));
+    REQUIRE(eq(*r18, *r1->set_complement(r6)));
+    REQUIRE(eq(*r10, *r1->set_complement(r3)));
+    REQUIRE(eq(*r19, *r3->set_complement(r1)));
+    REQUIRE(eq(*r20, *r1->set_complement(r16)));
+    REQUIRE(eq(*r21, *r16->set_complement(r1)));
+    REQUIRE(eq(*r22, *r2->set_complement(r1)));
+    REQUIRE(eq(*r1, *r1->set_union(r1)));
+    REQUIRE(eq(*r5, *r1->set_union(r2)));
+    REQUIRE(eq(*r5, *r2->set_union(r1)));
+    REQUIRE(eq(*r1, *r1->set_union(r3)));
+    REQUIRE(eq(*r1, *r3->set_union(r1)));
+    REQUIRE(eq(*r4, *r1->set_union(r4)));
+    REQUIRE(eq(*r4, *r4->set_union(r1)));
+    REQUIRE(eq(*r6, *r1->set_union(r6)));
+    REQUIRE(eq(*r6, *r6->set_union(r1)));
+    REQUIRE(eq(*r9, *r1->set_union(r7)));
+    REQUIRE(eq(*r9, *r7->set_union(r1)));
+    REQUIRE(eq(*r1, *r1->set_union(r10)));
+    REQUIRE(eq(*r1, *r10->set_union(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r4->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r4)));
+    REQUIRE(eq(*r10, *r1->set_intersection(r10)));
+    REQUIRE(eq(*r10, *r10->set_intersection(r1)));
+    REQUIRE(eq(*r1, *r1->set_intersection(r6)));
+    REQUIRE(eq(*r1, *r6->set_intersection(r1)));
+    REQUIRE(eq(*r3, *r1->set_intersection(r2)));
+    REQUIRE(eq(*r3, *r2->set_intersection(r1)));
+    REQUIRE(eq(*r12, *r1->set_intersection(r11)));
+    REQUIRE(eq(*r12, *r11->set_intersection(r1)));
+    REQUIRE(eq(*r10, *r1->set_intersection(r13)));
+    REQUIRE(eq(*r10, *r13->set_intersection(r1)));
+    REQUIRE(eq(*r15, *r1->set_intersection(r14)));
+    REQUIRE(eq(*r15, *r14->set_intersection(r1)));
+    REQUIRE(eq(*r3, *r1->set_intersection(r16)));
+    REQUIRE(eq(*r3, *r16->set_intersection(r1)));
+    REQUIRE(eq(*r3, *r1->set_intersection(r3)));
+    REQUIRE(eq(*r3, *r3->set_intersection(r1)));
+    REQUIRE(eq(*r1->contains(zero), *boolTrue));
+    REQUIRE(eq(*r1->contains(one), *boolTrue));
+    REQUIRE(eq(*r1->contains(c1), *boolFalse));
+    REQUIRE(eq(*r1->contains(r1), *boolFalse));
+    REQUIRE(eq(*r1->contains(rat1), *boolFalse));
+    REQUIRE(eq(*r1->contains(x), *make_rcp<Contains>(x, r1)));
+    REQUIRE(r1->__eq__(*r1));
+    REQUIRE(!r1->__eq__(*r2));
+    REQUIRE(r1->compare(*naturals0()) == 0);
+    REQUIRE(r1->get_args().empty());
+    REQUIRE(r1->__str__() == "Naturals0");
+    REQUIRE(r1->__hash__() == naturals0()->__hash__());
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("EmptySet : Basic", "[basic]")
@@ -497,7 +768,7 @@ TEST_CASE("EmptySet : Basic", "[basic]")
     REQUIRE(r1->compare(*emptyset()) == 0);
     REQUIRE(eq(*r1->contains(zero), *boolFalse));
     REQUIRE(r1->get_args().empty());
-    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("UniversalSet : Basic", "[basic]")
@@ -536,7 +807,7 @@ TEST_CASE("UniversalSet : Basic", "[basic]")
     REQUIRE(not r1->__eq__(*r2));
     REQUIRE(r1->compare(*universalset()) == 0);
     REQUIRE(r1->get_args().empty());
-    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(r1->diff(symbol("x")), SymEngineException);
 }
 
 TEST_CASE("FiniteSet : Basic", "[basic]")
@@ -545,13 +816,9 @@ TEST_CASE("FiniteSet : Basic", "[basic]")
     RCP<const Set> r2 = finiteset({zero, one, integer(2)});
     RCP<const Set> r3 = r1->set_union(r2); // {0, 1, 2, x}
     REQUIRE(eq(*r3, *set_union({r1, r2})));
-    r3 = r1->set_intersection(r2); // {0, 1}
-    REQUIRE(eq(*r3, *finiteset({zero, one})));
-    REQUIRE(r3->__hash__() == finiteset({zero, one})->__hash__());
-    REQUIRE(r3->compare(*r2) == -1);
+    r3 = r1->set_intersection(r2);
     REQUIRE(eq(*r3->contains(one), *boolTrue));
     REQUIRE(eq(*r3->contains(zero), *boolTrue));
-    REQUIRE(eq(*r3->contains(integer(3)), *boolFalse));
     REQUIRE(r3->is_subset(r2));
     REQUIRE(r3->is_proper_subset(r2));
     REQUIRE(r1->get_args().size() == 3);
@@ -764,10 +1031,12 @@ TEST_CASE("Complement : Basic", "[basic]")
     REQUIRE(r2->compare(*r1) == 1);
     REQUIRE(r1->compare(*r2) == -1);
 
-    CHECK_THROWS_AS(r2->set_intersection(finiteset({symbol("x")})),
-                    SymEngineException &);
-    CHECK_THROWS_AS(r2->set_intersection(finiteset({zero, integer(2)})),
-                    SymEngineException &);
+    auto r5 = r2->set_intersection(finiteset({symbol("x")}));
+    auto r6 = set_intersection({r2, finiteset({symbol("x")})});
+    REQUIRE(eq(*r5, *r6));
+    auto r7 = r2->set_intersection(finiteset({zero, integer(2)}));
+    auto r8 = set_intersection({r2, finiteset({zero, integer(2)})});
+    REQUIRE(eq(*r7, *r8));
 
     r2 = set_complement(i1, f1);
     REQUIRE(is_a<Complement>(*r2));
@@ -812,9 +1081,19 @@ TEST_CASE("set_intersection : Basic", "[basic]")
     r1 = set_intersection({r2, interval(integer(-10), integer(10))});
     REQUIRE(eq(*r1, *r2));
 
-    CHECK_THROWS_AS(set_intersection({finiteset({symbol("x"), symbol("y")}),
-                                      interval(integer(-10), integer(10))}),
-                    SymEngineException &);
+    r1 = finiteset({symbol("x")});
+    r2 = finiteset({symbol("y")});
+    auto r3 = set_intersection({r1, r2});
+    auto r4 = r1->set_intersection(r2);
+    REQUIRE(eq(*r3, *r4));
+
+    r3 = finiteset({symbol("x"), symbol("y")});
+    r4 = interval(integer(-10), integer(10));
+    auto r5 = set_intersection({r3, r4});
+    auto r6 = r3->set_intersection(r4);
+    auto r7 = r4->set_intersection(r3);
+    REQUIRE(eq(*r5, *r6));
+    REQUIRE(eq(*r5, *r7));
 
     // One of the arg is Union
     i1 = interval(zero, one);
@@ -831,6 +1110,14 @@ TEST_CASE("set_intersection : Basic", "[basic]")
     i3 = interval(one, integer(3), true, true);
     r1 = set_intersection({r2, i3});
     REQUIRE(eq(*r1, *e));
+
+    auto s1 = reals();
+    auto s2 = finiteset({symbol("x")});
+    auto s3 = set_intersection({s1, s2});
+    REQUIRE(s3->__str__() == "Intersection(Reals, {x})");
+    REQUIRE(!s3->__eq__(*s1));
+
+    REQUIRE(eq(*s3->set_intersection(s1), *s3));
 }
 
 TEST_CASE("set_complement : Basic", "[basic]")
@@ -1007,7 +1294,7 @@ TEST_CASE("ImageSet : Basic", "[basic]")
     REQUIRE(eq(*r3.get_symbol(), *x));
     REQUIRE(eq(*r3.get_expr(), *mul(x, x)));
     REQUIRE(eq(*r3.get_baseset(), *i1));
-    CHECK_THROWS_AS(r1->contains(one), SymEngineException &);
+    CHECK_THROWS_AS(r1->contains(one), SymEngineException);
 
     r2 = imageset(x, mul(x, x), interval(zero, Inf));
     REQUIRE(r2->compare(*r1) == 1);
@@ -1020,12 +1307,12 @@ TEST_CASE("ImageSet : Basic", "[basic]")
     REQUIRE(is_a<Union>(*r1));
     REQUIRE(eq(*r1, *set_union({r1, finiteset({one})})));
 
-    CHECK_THROWS_AS(r1->set_intersection(i1), SymEngineException &);
+    REQUIRE(eq(*r1->set_intersection(i1), *set_intersection({r1, i1})));
 
     r1 = imageset(x, one, i1);
     REQUIRE(eq(*r1, *finiteset({one})));
 
-    CHECK_THROWS_AS(imageset(sin(x), x, i1), SymEngineException &);
+    CHECK_THROWS_AS(imageset(sin(x), x, i1), SymEngineException);
 
     r1 = imageset(x, x, i1);
     REQUIRE(eq(*r1, *i1));
@@ -1074,4 +1361,135 @@ TEST_CASE("ImageSet : Basic", "[basic]")
 
     auto xD = dummy("x");
     REQUIRE(is_a<ImageSet>(*imageset(xD, mul(xD, xD), i1)));
+}
+
+TEST_CASE("sup : Basic", "[basic]")
+{
+    REQUIRE(eq(*sup(*reals()), *infty(1)));
+    REQUIRE(eq(*sup(*rationals()), *infty(1)));
+    REQUIRE(eq(*sup(*integers()), *infty(1)));
+    REQUIRE(eq(*sup(*naturals()), *infty(1)));
+    REQUIRE(eq(*sup(*naturals0()), *infty(1)));
+    REQUIRE(eq(*sup(*interval(one, integer(2), true, true)), *integer(2)));
+    REQUIRE(eq(*sup(*interval(one, integer(2), false, false)), *integer(2)));
+
+    RCP<const Set> r1 = finiteset({zero, one, symbol("x")});
+    RCP<const Set> r2 = finiteset({zero, one, integer(2)});
+    REQUIRE(eq(*sup(*r1), *max({one, symbol("x")})));
+    REQUIRE(eq(*sup(*r2), *integer(2)));
+
+    RCP<const Set> r3 = set_union(
+        {interval(integer(-1), integer(1)), finiteset({integer(-23)})});
+    REQUIRE(eq(*sup(*r3), *integer(1)));
+
+    RCP<const Number> rat1 = Rational::from_two_ints(*integer(5), *integer(6));
+    RCP<const Set> r4 = set_union({integers(), finiteset({rat1})});
+    REQUIRE(eq(*sup(*r4), *infty(1)));
+
+    CHECK_THROWS_AS(sup(*emptyset()), SymEngineException);
+    CHECK_THROWS_AS(sup(*rationals()->set_complement(reals())),
+                    NotImplementedError);
+
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Set> i1 = interval(zero, one);
+    r1 = imageset(x, mul(x, x), i1);
+    CHECK_THROWS_AS(sup(*r1), NotImplementedError);
+}
+
+TEST_CASE("inf : Basic", "[basic]")
+{
+    REQUIRE(eq(*inf(*reals()), *infty(-1)));
+    REQUIRE(eq(*inf(*rationals()), *infty(-1)));
+    REQUIRE(eq(*inf(*integers()), *infty(-1)));
+    REQUIRE(eq(*inf(*naturals()), *integer(1)));
+    REQUIRE(eq(*inf(*naturals0()), *integer(0)));
+    REQUIRE(eq(*inf(*interval(one, integer(2), true, true)), *integer(1)));
+    REQUIRE(eq(*inf(*interval(one, integer(2), false, false)), *integer(1)));
+
+    RCP<const Set> r1 = finiteset({zero, one, symbol("x")});
+    RCP<const Set> r2 = finiteset({zero, one, integer(2)});
+    REQUIRE(eq(*inf(*r1), *min({zero, symbol("x")})));
+    REQUIRE(eq(*inf(*r2), *integer(0)));
+
+    RCP<const Set> r3 = set_union(
+        {interval(integer(-1), integer(1)), finiteset({integer(-23)})});
+    REQUIRE(eq(*inf(*r3), *integer(-23)));
+
+    RCP<const Number> rat1 = Rational::from_two_ints(*integer(5), *integer(6));
+    RCP<const Set> r4 = set_union({integers(), finiteset({rat1})});
+    REQUIRE(eq(*inf(*r4), *infty(-1)));
+
+    CHECK_THROWS_AS(inf(*emptyset()), SymEngineException);
+    CHECK_THROWS_AS(inf(*rationals()->set_complement(reals())),
+                    NotImplementedError);
+
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Set> i1 = interval(zero, one);
+    r1 = imageset(x, mul(x, x), i1);
+    CHECK_THROWS_AS(inf(*r1), NotImplementedError);
+}
+
+TEST_CASE("boundary : Basic", "[basic]")
+{
+    auto i1 = interval(integer(1), integer(2));
+    auto i2 = interval(integer(3), integer(4));
+    REQUIRE(eq(*boundary(*emptyset()), *emptyset()));
+    REQUIRE(eq(*boundary(*universalset()), *emptyset()));
+    REQUIRE(eq(*boundary(*complexes()), *emptyset()));
+    REQUIRE(eq(*boundary(*reals()), *emptyset()));
+    REQUIRE(eq(*boundary(*rationals()), *reals()));
+    REQUIRE(eq(*boundary(*integers()), *integers()));
+    REQUIRE(eq(*boundary(*naturals()), *naturals()));
+    REQUIRE(eq(*boundary(*naturals0()), *naturals0()));
+    REQUIRE(eq(*boundary(*i1), *finiteset({integer(1), integer(2)})));
+    REQUIRE(eq(*boundary(*finiteset({integer(1), integer(2)})),
+               *finiteset({integer(1), integer(2)})));
+    REQUIRE(eq(*boundary(*set_union({i1, i2})),
+               *finiteset({integer(1), integer(2), integer(3), integer(4)})));
+
+    RCP<const Symbol> x = symbol("x");
+    auto r1 = imageset(x, mul(x, x), i1);
+    CHECK_THROWS_AS(boundary(*r1), NotImplementedError);
+    CHECK_THROWS_AS(boundary(*rationals()->set_complement(reals())),
+                    NotImplementedError);
+}
+
+TEST_CASE("closure : Basic", "[basic]")
+{
+    auto i1 = interval(integer(1), integer(2));
+    auto i2 = interval(integer(1), integer(2), true, true);
+    auto i3 = interval(integer(3), integer(4));
+    REQUIRE(eq(*closure(*emptyset()), *emptyset()));
+    REQUIRE(eq(*closure(*universalset()), *universalset()));
+    REQUIRE(eq(*closure(*complexes()), *complexes()));
+    REQUIRE(eq(*closure(*reals()), *reals()));
+    REQUIRE(eq(*closure(*rationals()), *reals()));
+    REQUIRE(eq(*closure(*integers()), *integers()));
+    REQUIRE(eq(*closure(*naturals()), *naturals()));
+    REQUIRE(eq(*closure(*naturals0()), *naturals0()));
+    REQUIRE(eq(*closure(*finiteset({integer(1), integer(2)})),
+               *finiteset({integer(1), integer(2)})));
+    REQUIRE(eq(*closure(*i1), *i1));
+    REQUIRE(eq(*closure(*i2), *i1));
+    REQUIRE(eq(*closure(*set_union({i1, i3})), *set_union({i1, i3})));
+}
+
+TEST_CASE("interior : Basic", "[basic]")
+{
+    auto i1 = interval(integer(1), integer(2));
+    auto i2 = interval(integer(1), integer(2), true, true);
+    auto i3 = interval(integer(3), integer(4));
+    auto i4 = interval(integer(3), integer(4), true, true);
+    REQUIRE(eq(*interior(*emptyset()), *emptyset()));
+    REQUIRE(eq(*interior(*universalset()), *universalset()));
+    REQUIRE(eq(*interior(*complexes()), *complexes()));
+    REQUIRE(eq(*interior(*reals()), *reals()));
+    REQUIRE(eq(*interior(*rationals()), *emptyset()));
+    REQUIRE(eq(*interior(*integers()), *emptyset()));
+    REQUIRE(eq(*interior(*naturals()), *emptyset()));
+    REQUIRE(eq(*interior(*naturals0()), *emptyset()));
+    REQUIRE(eq(*interior(*finiteset({integer(1), integer(2)})), *emptyset()));
+    REQUIRE(eq(*interior(*i1), *i2));
+    REQUIRE(eq(*interior(*i2), *i2));
+    REQUIRE(eq(*interior(*set_union({i1, i3})), *set_union({i2, i4})));
 }

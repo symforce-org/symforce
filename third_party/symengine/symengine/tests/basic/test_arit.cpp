@@ -4,55 +4,60 @@
 #include <symengine/add.h>
 #include <symengine/pow.h>
 #include <symengine/complex_double.h>
+#include <symengine/real_mpfr.h>
 #include <symengine/symengine_exception.h>
 #include <symengine/symengine_casts.h>
 
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
-using SymEngine::Pow;
-using SymEngine::Log;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::umap_basic_num;
-using SymEngine::map_vec_uint;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::Complex;
+using SymEngine::complex_double;
+using SymEngine::ComplexDouble;
+using SymEngine::ComplexInf;
+using SymEngine::div;
+using SymEngine::down_cast;
+using SymEngine::E;
+using SymEngine::exp;
+using SymEngine::I;
+using SymEngine::Inf;
 using SymEngine::Integer;
 using SymEngine::integer;
-using SymEngine::multinomial_coefficients;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::sin;
-using SymEngine::RCP;
-using SymEngine::sqrt;
-using SymEngine::pow;
-using SymEngine::add;
-using SymEngine::mul;
-using SymEngine::div;
-using SymEngine::sub;
-using SymEngine::exp;
-using SymEngine::E;
-using SymEngine::Rational;
-using SymEngine::Complex;
-using SymEngine::Number;
-using SymEngine::I;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::RealDouble;
-using SymEngine::ComplexDouble;
-using SymEngine::real_double;
-using SymEngine::complex_double;
-using SymEngine::rational_class;
 using SymEngine::is_a;
-using SymEngine::set_basic;
-using SymEngine::SymEngineException;
-using SymEngine::Inf;
-using SymEngine::NegInf;
-using SymEngine::ComplexInf;
-using SymEngine::down_cast;
-using SymEngine::pi;
-using SymEngine::minus_one;
-using SymEngine::Nan;
+using SymEngine::Log;
 using SymEngine::make_rcp;
+using SymEngine::map_vec_uint;
+using SymEngine::minus_one;
+using SymEngine::Mul;
+using SymEngine::mul;
+using SymEngine::multinomial_coefficients;
+using SymEngine::Nan;
+using SymEngine::NegInf;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::Pow;
+using SymEngine::pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::real_double;
+using SymEngine::RealDouble;
+using SymEngine::set_basic;
+using SymEngine::sin;
+using SymEngine::sqrt;
+using SymEngine::sub;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::umap_basic_num;
+using SymEngine::zero;
+#ifdef HAVE_SYMENGINE_MPFR
+using SymEngine::mpfr_class;
+using SymEngine::real_mpfr;
+#endif
 
 TEST_CASE("Add: arit", "[arit]")
 {
@@ -288,6 +293,36 @@ TEST_CASE("Mul: arit", "[arit]")
               real_double(0.2)});
     REQUIRE(std::abs(down_cast<const RealDouble &>(*r2).i - 0.03) < 1e-12);
 
+    r1 = real_double(0.1);
+    r2 = div(exp(add(x, r1)), exp(x));
+    REQUIRE(is_a<RealDouble>(*r2));
+    REQUIRE(std::abs(down_cast<const RealDouble &>(*r2).i - 1.10517091807565)
+            < 1e-10);
+
+    // Real * 0 = 0 * Real = 0
+    r1 = real_double(0.0);
+    r2 = integer(0);
+    r3 = mul(r1, r2);
+    REQUIRE(eq(*r3, *integer(0)));
+    r1 = real_double(4.5);
+    r3 = mul(r2, r1);
+    REQUIRE(eq(*r3, *integer(0)));
+    // 0 / Real = 0
+    r3 = div(r2, r1);
+    REQUIRE(eq(*r3, *integer(0)));
+
+#ifdef HAVE_SYMENGINE_MPFR
+    mpfr_class a(60);
+    mpfr_set_ui(a.get_mpfr_t(), 1, MPFR_RNDN);
+    r1 = real_mpfr(a);
+    r3 = mul(r1, r2);
+    REQUIRE(eq(*r3, *integer(0)));
+    r3 = mul(r2, r1);
+    REQUIRE(eq(*r3, *integer(0)));
+    r3 = div(r2, r1);
+    REQUIRE(eq(*r3, *integer(0)));
+#endif
+
     r1 = complex_double(std::complex<double>(0.1, 0.2));
     r2 = Complex::from_two_nums(*Rational::from_mpq(rational_class(1, 2)),
                                 *Rational::from_mpq(rational_class(7, 5)));
@@ -328,7 +363,7 @@ TEST_CASE("Mul: arit", "[arit]")
     REQUIRE(s.size() == 2);
 
     CHECK_THROWS_AS(Complex::from_two_nums(*one, *real_double(1.0)),
-                    SymEngineException &);
+                    SymEngineException);
 
     r1 = mul({});
     REQUIRE(eq(*r1, *one));

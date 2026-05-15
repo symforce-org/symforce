@@ -16,7 +16,7 @@ class BooleanAtom;
 class Boolean;
 inline bool is_a_Boolean(const Basic &b);
 RCP<const BooleanAtom> boolean(bool b);
-}
+} // namespace SymEngine
 #include <symengine/logic.h>
 
 namespace SymEngine
@@ -25,7 +25,7 @@ typedef std::set<RCP<const Set>, RCPBasicKeyLess> set_set;
 class Set : public Basic
 {
 public:
-    virtual vec_basic get_args() const = 0;
+    vec_basic get_args() const override = 0;
     virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const = 0;
     virtual RCP<const Set> set_union(const RCP<const Set> &o) const = 0;
     virtual RCP<const Set> set_complement(const RCP<const Set> &o) const = 0;
@@ -51,30 +51,29 @@ public:
 class EmptySet : public Set
 {
 public:
-    EmptySet()
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
+    EmptySet(){SYMENGINE_ASSIGN_TYPEID()}
 
     IMPLEMENT_TYPEID(SYMENGINE_EMPTYSET)
-    // EmptySet(EmptySet const&) = delete;
-    void operator=(EmptySet const &) = delete;
+        // EmptySet(EmptySet const&) = delete;
+        void
+        operator=(EmptySet const &)
+        = delete;
     const static RCP<const EmptySet> &getInstance();
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {};
     }
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override
     {
         return boolean(false);
     };
@@ -93,21 +92,21 @@ public:
     // UniversalSet(UniversalSet const&) = delete;
     void operator=(UniversalSet const &) = delete;
     const static RCP<const UniversalSet> &getInstance();
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {};
     }
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override
     {
         return boolean(true);
     };
@@ -120,10 +119,10 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_FINITESET)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return vec_basic(container_.begin(), container_.end());
     }
@@ -131,10 +130,10 @@ public:
     FiniteSet(const set_basic &container);
     static bool is_canonical(const set_basic &container);
 
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
     RCP<const Set> create(const set_basic &container) const;
 
     inline const set_basic &get_container() const
@@ -152,9 +151,9 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_INTERVAL)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
 
     Interval(const RCP<const Number> &start, const RCP<const Number> &end,
              const bool left_open = false, const bool right_open = false);
@@ -168,11 +167,11 @@ public:
                              const RCP<const Number> &end, bool left_open,
                              bool right_open);
 
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
-    virtual vec_basic get_args() const;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
+    vec_basic get_args() const override;
 
     inline const RCP<const Number> &get_start() const
     {
@@ -192,6 +191,35 @@ public:
     }
 };
 
+class Complexes : public Set
+{
+public:
+    Complexes()
+    {
+        SYMENGINE_ASSIGN_TYPEID()
+    }
+
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_COMPLEXES)
+    void operator=(Complexes const &) = delete;
+    const static RCP<const Complexes> &getInstance();
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
+    {
+        return {};
+    }
+
+    template <typename T_, typename... Args>
+    friend inline RCP<T_> make_rcp(Args &&...args);
+
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
+};
+
 class Reals : public Set
 {
 public:
@@ -204,21 +232,21 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_REALS)
     void operator=(Reals const &) = delete;
     const static RCP<const Reals> &getInstance();
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {};
     }
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 };
 
 class Rationals : public Set
@@ -233,21 +261,21 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_RATIONALS)
     void operator=(Rationals const &) = delete;
     const static RCP<const Rationals> &getInstance();
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {};
     }
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 };
 
 class Integers : public Set
@@ -262,21 +290,79 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_INTEGERS)
     void operator=(Integers const &) = delete;
     const static RCP<const Integers> &getInstance();
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {};
     }
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
+};
+
+class Naturals : public Set
+{
+public:
+    Naturals()
+    {
+        SYMENGINE_ASSIGN_TYPEID()
+    }
+
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_NATURALS)
+    void operator=(Naturals const &) = delete;
+    const static RCP<const Naturals> &getInstance();
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
+    {
+        return {};
+    }
+
+    template <typename T_, typename... Args>
+    friend inline RCP<T_> make_rcp(Args &&...args);
+
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
+};
+
+class Naturals0 : public Set
+{
+public:
+    Naturals0()
+    {
+        SYMENGINE_ASSIGN_TYPEID()
+    }
+
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_NATURALS0)
+    void operator=(Naturals0 const &) = delete;
+    const static RCP<const Naturals0> &getInstance();
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
+    {
+        return {};
+    }
+
+    template <typename T_, typename... Args>
+    friend inline RCP<T_> make_rcp(Args &&...args);
+
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 };
 
 class Union : public Set
@@ -286,17 +372,44 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_UNION)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const;
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override;
     Union(const set_set &in);
     static bool is_canonical(const set_set &in);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
+
+    inline const set_set &get_container() const
+    {
+        return this->container_;
+    }
+
+    RCP<const Set> create(const set_set &in) const;
+};
+
+class Intersection : public Set
+{
+private:
+    set_set container_;
+
+public:
+    IMPLEMENT_TYPEID(SYMENGINE_INTERSECTION)
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override;
+    Intersection(const set_set &in);
+    static bool is_canonical(const set_set &in);
+
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 
     inline const set_set &get_container() const
     {
@@ -315,19 +428,19 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_COMPLEMENT)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {universe_, container_};
     }
     Complement(const RCP<const Set> &universe, const RCP<const Set> &container);
 
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 
     inline const RCP<const Set> &get_universe() const
     {
@@ -347,10 +460,10 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_CONDITIONSET)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {sym, condition_};
     }
@@ -358,10 +471,10 @@ public:
                  const RCP<const Boolean> &condition);
     static bool is_canonical(const RCP<const Basic> &sym,
                              const RCP<const Boolean> &condition);
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
     inline const RCP<const Basic> &get_symbol() const
     {
         return this->sym;
@@ -382,10 +495,10 @@ private:
 
 public:
     IMPLEMENT_TYPEID(SYMENGINE_IMAGESET)
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
-    virtual vec_basic get_args() const
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
+    vec_basic get_args() const override
     {
         return {sym_, expr_, base_};
     }
@@ -395,10 +508,10 @@ public:
     static bool is_canonical(const RCP<const Basic> &sym,
                              const RCP<const Basic> &expr,
                              const RCP<const Set> &base);
-    virtual RCP<const Set> set_intersection(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_union(const RCP<const Set> &o) const;
-    virtual RCP<const Set> set_complement(const RCP<const Set> &o) const;
-    virtual RCP<const Boolean> contains(const RCP<const Basic> &a) const;
+    RCP<const Set> set_intersection(const RCP<const Set> &o) const override;
+    RCP<const Set> set_union(const RCP<const Set> &o) const override;
+    RCP<const Set> set_complement(const RCP<const Set> &o) const override;
+    RCP<const Boolean> contains(const RCP<const Basic> &a) const override;
 
     inline const RCP<const Basic> &get_symbol() const
     {
@@ -426,11 +539,21 @@ inline bool is_a_Set(const Basic &b)
             || b.get_type_code() == SYMENGINE_COMPLEMENT
             || b.get_type_code() == SYMENGINE_CONDITIONSET
             || b.get_type_code() == SYMENGINE_INTERVAL
+            || b.get_type_code() == SYMENGINE_COMPLEXES
             || b.get_type_code() == SYMENGINE_REALS
             || b.get_type_code() == SYMENGINE_RATIONALS
             || b.get_type_code() == SYMENGINE_INTEGERS
+            || b.get_type_code() == SYMENGINE_NATURALS
+            || b.get_type_code() == SYMENGINE_NATURALS0
             || b.get_type_code() == SYMENGINE_UNION
+            || b.get_type_code() == SYMENGINE_INTERSECTION
             || b.get_type_code() == SYMENGINE_IMAGESET);
+}
+
+//! \return RCP<const Complexes>
+inline RCP<const Complexes> complexes()
+{
+    return Complexes::getInstance();
 }
 
 //! \return RCP<const Reals>
@@ -445,10 +568,22 @@ inline RCP<const Rationals> rationals()
     return Rationals::getInstance();
 }
 
-//! \return RCP<const Reals>
+//! \return RCP<const Integers>
 inline RCP<const Integers> integers()
 {
     return Integers::getInstance();
+}
+
+//! \return RCP<const Naturals>
+inline RCP<const Naturals> naturals()
+{
+    return Naturals::getInstance();
+}
+
+//! \return RCP<const Naturals>
+inline RCP<const Naturals0> naturals0()
+{
+    return Naturals0::getInstance();
 }
 
 //! \return RCP<const EmptySet>
@@ -547,5 +682,12 @@ RCP<const Set> set_complement(const RCP<const Set> &universe,
 //! \return RCP<const Set>
 RCP<const Set> conditionset(const RCP<const Basic> &sym,
                             const RCP<const Boolean> &condition);
-}
+
+RCP<const Basic> sup(const Set &s);
+RCP<const Basic> inf(const Set &s);
+RCP<const Set> boundary(const Set &s);
+RCP<const Set> interior(const Set &s);
+RCP<const Set> closure(const Set &s);
+
+} // namespace SymEngine
 #endif

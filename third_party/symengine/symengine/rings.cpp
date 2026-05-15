@@ -104,4 +104,4 @@ void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C)
     */
 }
 
-} // SymEngine
+} // namespace SymEngine

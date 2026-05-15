@@ -30,7 +30,7 @@ Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
   const Eigen::Matrix<Scalar, 4, 1>& _R1 = R1.Data();
 
   // Intermediate terms (13)
-  const Scalar _tmp0 = std::pow(_R1[2], Scalar(2));
+  const Scalar _tmp0 = std::pow(_R1[0], Scalar(2));
   const Scalar _tmp1 = std::fabs(_R1[3]);
   const Scalar _tmp2 = 1 - e;
   const Scalar _tmp3 = 4 * ((((-_tmp1 + _tmp2) > 0) - ((-_tmp1 + _tmp2) < 0)) + 1) *
@@ -39,17 +39,17 @@ Scalar IdentityDistJacobian(const sym::Rot3<Scalar>& R1, const Scalar e) {
   const Scalar _tmp4 = std::min<Scalar>(_tmp1, _tmp2);
   const Scalar _tmp5 = std::acos(_tmp4);
   const Scalar _tmp6 = 1 - std::pow(_tmp4, Scalar(2));
-  const Scalar _tmp7 = _tmp4 * std::pow(_tmp5, Scalar(2)) / std::pow(_tmp6, Scalar(2));
+  const Scalar _tmp7 = _tmp5 / (_tmp6 * std::sqrt(_tmp6));
   const Scalar _tmp8 = _tmp3 * _tmp7;
-  const Scalar _tmp9 = std::pow(_R1[1], Scalar(2)) * _tmp3;
-  const Scalar _tmp10 = _tmp5 / (_tmp6 * std::sqrt(_tmp6));
-  const Scalar _tmp11 = std::pow(_R1[0], Scalar(2));
+  const Scalar _tmp9 = std::pow(_R1[2], Scalar(2)) * _tmp3;
+  const Scalar _tmp10 = _tmp4 * std::pow(_tmp5, Scalar(2)) / std::pow(_tmp6, Scalar(2));
+  const Scalar _tmp11 = std::pow(_R1[1], Scalar(2));
   const Scalar _tmp12 = _tmp10 * _tmp3;
 
   // Output terms (1)
   Scalar _dist_D_R1;
 
-  _dist_D_R1 = -_tmp0 * _tmp12 + _tmp0 * _tmp8 - _tmp10 * _tmp9 - _tmp11 * _tmp12 + _tmp11 * _tmp8 +
+  _dist_D_R1 = _tmp0 * _tmp12 - _tmp0 * _tmp8 + _tmp10 * _tmp9 + _tmp11 * _tmp12 - _tmp11 * _tmp8 -
                _tmp7 * _tmp9;
 
   return _dist_D_R1;

@@ -50,8 +50,17 @@ RCP<const Number> Rational::from_two_ints(const Integer &n, const Integer &d)
             return ComplexInf;
         }
     }
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+    // workaround https://github.com/boostorg/rational/issues/27
+    rational_class q;
+    if (d.as_integer_class() < 0) {
+        q = rational_class(-n.as_integer_class(), -d.as_integer_class());
+    } else {
+        q = rational_class(n.as_integer_class(), d.as_integer_class());
+    }
+#else
     rational_class q(n.as_integer_class(), d.as_integer_class());
-
+#endif
     // This is potentially slow, but has to be done, since 'n/d' might not be
     // in canonical form.
     canonicalize(q);
@@ -68,6 +77,13 @@ RCP<const Number> Rational::from_two_ints(long n, long d)
             return ComplexInf;
         }
     }
+#if SYMENGINE_INTEGER_CLASS == SYMENGINE_BOOSTMP
+    // workaround https://github.com/boostorg/rational/issues/27
+    if (d < 0) {
+        d *= -1;
+        n *= -1;
+    }
+#endif
     rational_class q(n, d);
 
     // This is potentially slow, but has to be done, since 'n/d' might not be
@@ -219,4 +235,4 @@ RCP<const Basic> Rational::rpowrat(const Integer &other) const
     return Mul::from_dict(coef, std::move(surd));
 }
 
-} // SymEngine
+} // namespace SymEngine

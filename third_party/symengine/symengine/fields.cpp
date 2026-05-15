@@ -858,4 +858,4 @@ GaloisFieldDict::gf_factor() const
     }
     return std::make_pair(lc, factors);
 }
-}
+} // namespace SymEngine

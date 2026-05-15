@@ -17,21 +17,21 @@ private:
     fmpz_t mp;
 
 public:
-    template <typename T,
-              typename std::enable_if<std::is_integral<T>::value
-                                          && std::is_unsigned<T>::value,
-                                      int>::type
-              = 0>
+    template <
+        typename T,
+        typename std::enable_if<
+            std::is_integral<T>::value && std::is_unsigned<T>::value, int>::type
+        = 0>
     inline fmpz_wrapper(const T i)
     {
         fmpz_init(mp);
         fmpz_set_ui(mp, i);
     }
-    template <typename T,
-              typename std::enable_if<std::is_integral<T>::value
-                                          && std::is_signed<T>::value,
-                                      int>::type
-              = 0>
+    template <
+        typename T,
+        typename std::enable_if<
+            std::is_integral<T>::value && std::is_signed<T>::value, int>::type
+        = 0>
     inline fmpz_wrapper(const T i)
     {
         fmpz_init(mp);
@@ -299,21 +299,21 @@ public:
         fmpq_init(mp);
         fmpq_set(mp, m);
     }
-    template <typename T,
-              typename std::enable_if<std::is_integral<T>::value
-                                          && std::is_unsigned<T>::value,
-                                      int>::type
-              = 0>
+    template <
+        typename T,
+        typename std::enable_if<
+            std::is_integral<T>::value && std::is_unsigned<T>::value, int>::type
+        = 0>
     fmpq_wrapper(const T i)
     {
         fmpq_init(mp);
         fmpz_set_ui(fmpq_numref(mp), i);
     }
-    template <typename T,
-              typename std::enable_if<std::is_integral<T>::value
-                                          && std::is_signed<T>::value,
-                                      int>::type
-              = 0>
+    template <
+        typename T,
+        typename std::enable_if<
+            std::is_integral<T>::value && std::is_signed<T>::value, int>::type
+        = 0>
     fmpq_wrapper(const T i)
     {
         fmpq_init(mp);
@@ -1000,6 +1000,6 @@ public:
     }
 };
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // SYMENGINE_FLINT_WRAPPER_H

@@ -1,7 +1,7 @@
 from symengine.sympy_compat import (Integer, Rational, S, Basic, Add, Mul,
     Pow, symbols, Symbol, log, sin, cos, sech, csch, zeros, atan2, nan, Number, Float,
     Min, Max, RealDouble, have_mpfr, Abs)
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 
 
 def test_Integer():
@@ -183,7 +183,7 @@ def test_subclass_symbol():
             return Symbol.__new__(cls, name)
 
         def __init__(self, name, extra_attribute):
-            super(Wrapper, self).__init__(name)
+            super().__init__(name)
             self.extra_attribute = extra_attribute
 
     # Instantiate the subclass

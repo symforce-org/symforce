@@ -12,16 +12,16 @@
 #include <symengine/monomials.h>
 
 using SymEngine::Basic;
+using SymEngine::expr2poly;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::poly_mul;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
 using SymEngine::umap_basic_num;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::expr2poly;
-using SymEngine::poly_mul;
 using SymEngine::umap_vec_mpz;
-using SymEngine::RCP;
-using SymEngine::print_stack_on_segfault;
 
 int main(int argc, char *argv[])
 {

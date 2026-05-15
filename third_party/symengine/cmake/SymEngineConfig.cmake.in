@@ -33,6 +33,14 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
+if (POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW) # needed for llvm >= 16
+endif ()
+
 set(SYMENGINE_CXX_FLAGS "@CMAKE_CXX_FLAGS@")
 set(SYMENGINE_CXX_FLAGS_RELEASE "@CMAKE_CXX_FLAGS_RELEASE@")
 set(SYMENGINE_CXX_FLAGS_DEBUG "@CMAKE_CXX_FLAGS_DEBUG@")
@@ -54,12 +62,17 @@ if(SYMENGINE_BUILD_TREE)
     set(SYMENGINE_INSTALL_CMAKE_DIR "${SYMENGINE_CMAKE_DIR}")
     set(SYMENGINE_INCLUDE_DIRS @CONF_INCLUDE_DIRS@ ${SYMENGINE_CMAKE_DIR})
     if (TARGET teuchos)
-        set(SYMENGINE_INCLUDE_DIRS ${SYMENGINE_INCLUDE_DIRS} ${SYMENGINE_CMAKE_DIR}/symengine/teuchos)
+        set(SYMENGINE_INCLUDE_DIRS ${SYMENGINE_INCLUDE_DIRS} ${SYMENGINE_CMAKE_DIR}/symengine/utilities/teuchos)
     endif()
 else()
     set(SYMENGINE_INSTALL_CMAKE_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_CMAKE_DIR@")
     set(SYMENGINE_INCLUDE_DIRS "${SYMENGINE_CMAKE_DIR}/@DEF_INSTALL_CMAKE_DIR_REL@/include")
+    if (NOT @WITH_SYSTEM_CEREAL@)
+        set(SYMENGINE_INCLUDE_DIRS ${SYMENGINE_INCLUDE_DIRS}
+            "${SYMENGINE_CMAKE_DIR}/@DEF_INSTALL_CMAKE_DIR_REL@/include/symengine/utilities/cereal/include")
+    endif()
 endif()
+
 
 @SYMENGINE_PKG_FINDS@
 
@@ -67,7 +80,8 @@ set(SYMENGINE_LLVM_COMPONENTS @SYMENGINE_LLVM_COMPONENTS@)
 
 if (NOT "${SYMENGINE_LLVM_COMPONENTS}" STREQUAL "")
     find_package(LLVM REQUIRED ${SYMENGINE_LLVM_COMPONENTS} HINTS @LLVM_DIR@)
-    llvm_map_components_to_libnames(llvm_libs ${SYMENGINE_LLVM_COMPONENTS})
+    llvm_map_components_to_libnames(llvm_libs_direct ${SYMENGINE_LLVM_COMPONENTS})
+    llvm_expand_dependencies(llvm_libs ${llvm_libs_direct})
     set(SYMENGINE_LIBRARIES ${SYMENGINE_LIBRARIES} ${llvm_libs})
 else()
     set(SYMENGINE_LLVM_INCLUDE_DIRS)

@@ -57,4 +57,4 @@ hash_t MatrixBase::hash() const
     return seed;
 }
 
-} // SymEngine
+} // namespace SymEngine

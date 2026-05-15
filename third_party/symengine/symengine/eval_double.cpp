@@ -484,11 +484,11 @@ public:
 
 /*
  * These two seem to be equivalent and about the same fast.
-*/
+ */
 // typedef double (*fn)(const Basic &);
 typedef std::function<double(const Basic &)> fn;
 
-std::vector<fn> init_eval_double()
+static inline std::vector<fn> init_eval_double()
 {
     std::vector<fn> table;
     table.assign(TypeID_Count, [](const Basic &x) -> double {
@@ -771,8 +771,6 @@ std::vector<fn> init_eval_double()
     return table;
 }
 
-const static std::vector<fn> table_eval_double = init_eval_double();
-
 double eval_double(const Basic &b)
 {
     EvalRealDoubleVisitorFinal v;
@@ -787,6 +785,7 @@ std::complex<double> eval_complex_double(const Basic &b)
 
 double eval_double_single_dispatch(const Basic &b)
 {
+    static const std::vector<fn> table_eval_double = init_eval_double();
     return table_eval_double[b.get_type_code()](b);
 }
 
@@ -806,4 +805,4 @@ double eval_double_visitor_pattern(const Basic &b)
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
 
-} // SymEngine
+} // namespace SymEngine

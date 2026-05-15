@@ -87,7 +87,7 @@ public:
     static Expression exp(const Expression &c);
     static Expression log(const Expression &c);
 };
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_PIRANHA
 

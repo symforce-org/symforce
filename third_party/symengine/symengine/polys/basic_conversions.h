@@ -134,32 +134,25 @@ public:
 
     template <
         typename Poly,
-        typename
-        = enable_if_t<((std::is_base_of<UIntPolyBase<typename P::container_type,
-                                                     P>,
-                                        P>::value
-                        and std::is_base_of<UIntPolyBase<
-                                                typename Poly::container_type,
-                                                Poly>,
-                                            Poly>::value)
-                       or (std::is_base_of<URatPolyBase<
-                                               typename P::container_type, P>,
-                                           P>::value
-                           and (std::is_base_of<UIntPolyBase<typename Poly::
-                                                                 container_type,
-                                                             Poly>,
-                                                Poly>::value
-                                or std::is_base_of<URatPolyBase<
-                                                       typename Poly::
-                                                           container_type,
-                                                       Poly>,
-                                                   Poly>::value))
-                       or (std::is_same<P, UExprPoly>::value
-                           and std::is_base_of<UPolyBase<typename Poly::
-                                                             container_type,
-                                                         Poly>,
-                                               Poly>::value))
-                      and not std::is_same<Poly, GaloisField>::value>>
+        typename = enable_if_t<
+            ((std::is_base_of<UIntPolyBase<typename P::container_type, P>,
+                              P>::value
+              and std::is_base_of<
+                  UIntPolyBase<typename Poly::container_type, Poly>,
+                  Poly>::value)
+             or (std::is_base_of<URatPolyBase<typename P::container_type, P>,
+                                 P>::value
+                 and (std::is_base_of<
+                          UIntPolyBase<typename Poly::container_type, Poly>,
+                          Poly>::value
+                      or std::is_base_of<
+                          URatPolyBase<typename Poly::container_type, Poly>,
+                          Poly>::value))
+             or (std::is_same<P, UExprPoly>::value
+                 and std::is_base_of<
+                     UPolyBase<typename Poly::container_type, Poly>,
+                     Poly>::value))
+            and not std::is_same<Poly, GaloisField>::value>>
     void bvisit(const Poly &x)
     {
         dict = (P::from_poly(x))->get_poly();
@@ -227,9 +220,7 @@ public:
     using BasicToUPolyBase<UExprPoly, BasicToUExprPoly>::bvisit;
     using BasicToUPolyBase<UExprPoly, BasicToUExprPoly>::apply;
 
-    BasicToUExprPoly(const RCP<const Basic> &gen) : BasicToUPolyBase(gen)
-    {
-    }
+    BasicToUExprPoly(const RCP<const Basic> &gen) : BasicToUPolyBase(gen) {}
 
     void bvisit(const Rational &x)
     {
@@ -493,9 +484,7 @@ public:
     using BasicToMPolyBase<MIntPoly, BasicToMIntPoly>::bvisit;
     using BasicToMPolyBase<MIntPoly, BasicToMIntPoly>::apply;
 
-    BasicToMIntPoly(const set_basic &gens) : BasicToMPolyBase(gens)
-    {
-    }
+    BasicToMIntPoly(const set_basic &gens) : BasicToMPolyBase(gens) {}
 
     void bvisit(const Rational &x)
     {
@@ -519,9 +508,7 @@ public:
     using BasicToMPolyBase<MExprPoly, BasicToMExprPoly>::bvisit;
     using BasicToMPolyBase<MExprPoly, BasicToMExprPoly>::apply;
 
-    BasicToMExprPoly(const set_basic &gens) : BasicToMPolyBase(gens)
-    {
-    }
+    BasicToMExprPoly(const set_basic &gens) : BasicToMPolyBase(gens) {}
 
     void bvisit(const Rational &x)
     {
@@ -564,9 +551,9 @@ RCP<const P> from_basic(const RCP<const Basic> &basic, set_basic &gens,
 }
 
 template <typename P>
-enable_if_t<std::is_base_of<MSymEnginePoly<typename P::container_type, P>,
-                            P>::value,
-            RCP<const P>>
+enable_if_t<
+    std::is_base_of<MSymEnginePoly<typename P::container_type, P>, P>::value,
+    RCP<const P>>
 from_basic(const RCP<const Basic> &basic, bool ex = false)
 {
     RCP<const Basic> exp = basic;
@@ -580,6 +567,6 @@ from_basic(const RCP<const Basic> &basic, bool ex = false)
 
     return P::from_container(gens, _basic_to_mpoly<P>(exp, gens));
 }
-}
+} // namespace SymEngine
 
 #endif

@@ -56,13 +56,13 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Eigen::Matrix<Scalar, 6, 1>& _target_calibration = target_calibration.Data();
 
   // Intermediate terms (63)
-  const Scalar _tmp0 = 2 * _target_pose[0];
+  const Scalar _tmp0 = 2 * _target_pose[1];
   const Scalar _tmp1 = _target_pose[2] * _tmp0;
-  const Scalar _tmp2 = 2 * _target_pose[3];
-  const Scalar _tmp3 = _target_pose[1] * _tmp2;
-  const Scalar _tmp4 = 2 * _source_pose[0] * _source_pose[2];
-  const Scalar _tmp5 = 2 * _source_pose[3];
-  const Scalar _tmp6 = _source_pose[1] * _tmp5;
+  const Scalar _tmp2 = 2 * _target_pose[0] * _target_pose[3];
+  const Scalar _tmp3 = 2 * _source_pose[3];
+  const Scalar _tmp4 = _source_pose[0] * _tmp3;
+  const Scalar _tmp5 = 2 * _source_pose[1];
+  const Scalar _tmp6 = _source_pose[2] * _tmp5;
   const Scalar _tmp7 = -_source_calibration[2] + source_pixel(0, 0);
   const Scalar _tmp8 = std::pow(_tmp7, Scalar(2)) / std::pow(_source_calibration[0], Scalar(2));
   const Scalar _tmp9 = -_source_calibration[3] + source_pixel(1, 0);
@@ -88,39 +88,39 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
       std::pow(Scalar(_tmp10 * _tmp24 + std::pow(_tmp23, Scalar(2)) + _tmp24 * _tmp8 + epsilon),
                Scalar(Scalar(-1) / Scalar(2)));
   const Scalar _tmp26 = _tmp23 * _tmp25;
-  const Scalar _tmp27 = -2 * std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp28 = 1 - 2 * std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp27 = _source_pose[0] * _tmp5;
+  const Scalar _tmp28 = _source_pose[2] * _tmp3;
   const Scalar _tmp29 = _tmp22 * _tmp25;
   const Scalar _tmp30 = _tmp29 * _tmp7 / _source_calibration[0];
-  const Scalar _tmp31 = 2 * _source_pose[1];
-  const Scalar _tmp32 = _source_pose[0] * _tmp31;
-  const Scalar _tmp33 = _source_pose[2] * _tmp5;
-  const Scalar _tmp34 = _tmp29 * _tmp9 / _source_calibration[1];
-  const Scalar _tmp35 = _tmp26 * (_tmp4 + _tmp6) + _tmp30 * (_tmp27 + _tmp28) +
-                        _tmp34 * (_tmp32 - _tmp33) +
-                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
-  const Scalar _tmp36 = 2 * _target_pose[1] * _target_pose[2];
-  const Scalar _tmp37 = _target_pose[3] * _tmp0;
-  const Scalar _tmp38 = _source_pose[0] * _tmp5;
-  const Scalar _tmp39 = _source_pose[2] * _tmp31;
-  const Scalar _tmp40 = -2 * std::pow(_source_pose[0], Scalar(2));
-  const Scalar _tmp41 = _tmp26 * (-_tmp38 + _tmp39) + _tmp30 * (_tmp32 + _tmp33) +
-                        _tmp34 * (_tmp28 + _tmp40) +
+  const Scalar _tmp31 = -2 * std::pow(_source_pose[0], Scalar(2));
+  const Scalar _tmp32 = 1 - 2 * std::pow(_source_pose[2], Scalar(2));
+  const Scalar _tmp33 = _tmp29 * _tmp9 / _source_calibration[1];
+  const Scalar _tmp34 = _tmp26 * (-_tmp4 + _tmp6) + _tmp30 * (_tmp27 + _tmp28) +
+                        _tmp33 * (_tmp31 + _tmp32) +
                         source_inverse_range * (_source_pose[5] - _target_pose[5]);
+  const Scalar _tmp35 = 2 * _target_pose[2];
+  const Scalar _tmp36 = _target_pose[0] * _tmp35;
+  const Scalar _tmp37 = _target_pose[3] * _tmp0;
+  const Scalar _tmp38 = 2 * _source_pose[0] * _source_pose[2];
+  const Scalar _tmp39 = _source_pose[1] * _tmp3;
+  const Scalar _tmp40 = -2 * std::pow(_source_pose[1], Scalar(2));
+  const Scalar _tmp41 = _tmp26 * (_tmp38 + _tmp39) + _tmp30 * (_tmp32 + _tmp40) +
+                        _tmp33 * (_tmp27 - _tmp28) +
+                        source_inverse_range * (_source_pose[4] - _target_pose[4]);
   const Scalar _tmp42 = -2 * std::pow(_target_pose[1], Scalar(2));
   const Scalar _tmp43 = 1 - 2 * std::pow(_target_pose[0], Scalar(2));
-  const Scalar _tmp44 = _tmp26 * (_tmp27 + _tmp40 + 1) + _tmp30 * (_tmp4 - _tmp6) +
-                        _tmp34 * (_tmp38 + _tmp39) +
+  const Scalar _tmp44 = _tmp26 * (_tmp31 + _tmp40 + 1) + _tmp30 * (_tmp38 - _tmp39) +
+                        _tmp33 * (_tmp4 + _tmp6) +
                         source_inverse_range * (_source_pose[6] - _target_pose[6]);
   const Scalar _tmp45 =
-      _tmp35 * (_tmp1 + _tmp3) + _tmp41 * (_tmp36 - _tmp37) + _tmp44 * (_tmp42 + _tmp43);
-  const Scalar _tmp46 = _target_pose[2] * _tmp2;
-  const Scalar _tmp47 = _target_pose[1] * _tmp0;
-  const Scalar _tmp48 = -2 * std::pow(_target_pose[2], Scalar(2));
+      _tmp34 * (_tmp1 - _tmp2) + _tmp41 * (_tmp36 + _tmp37) + _tmp44 * (_tmp42 + _tmp43);
+  const Scalar _tmp46 = -2 * std::pow(_target_pose[2], Scalar(2));
+  const Scalar _tmp47 = _target_pose[3] * _tmp35;
+  const Scalar _tmp48 = _target_pose[0] * _tmp0;
   const Scalar _tmp49 =
-      _tmp35 * (-_tmp46 + _tmp47) + _tmp41 * (_tmp43 + _tmp48) + _tmp44 * (_tmp36 + _tmp37);
+      _tmp34 * (_tmp43 + _tmp46) + _tmp41 * (-_tmp47 + _tmp48) + _tmp44 * (_tmp1 + _tmp2);
   const Scalar _tmp50 =
-      _tmp35 * (_tmp42 + _tmp48 + 1) + _tmp41 * (_tmp46 + _tmp47) + _tmp44 * (_tmp1 - _tmp3);
+      _tmp34 * (_tmp47 + _tmp48) + _tmp41 * (_tmp42 + _tmp46 + 1) + _tmp44 * (_tmp36 - _tmp37);
   const Scalar _tmp51 =
       std::pow(_tmp49, Scalar(2)) + std::pow(_tmp50, Scalar(2)) + std::pow(epsilon, Scalar(2));
   const Scalar _tmp52 = std::sqrt(Scalar(std::pow(_tmp45, Scalar(2)) + _tmp51));
@@ -133,11 +133,11 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
       (std::max<Scalar>(epsilon,
                         _tmp53 * (_tmp56 + 1) +
                             _tmp55 * std::sqrt(Scalar(_tmp51 + std::pow(_tmp53, Scalar(2))))));
-  const Scalar _tmp58 = std::pow(_target_calibration[4], Scalar(2));
-  const Scalar _tmp59 = (Scalar(1) / Scalar(2)) * _tmp54 + _tmp55 + Scalar(-1) / Scalar(2);
-  const Scalar _tmp60 = (Scalar(1) / Scalar(2)) * _tmp54 + _tmp56 + Scalar(1) / Scalar(2);
-  const Scalar _tmp61 = std::pow(_tmp60, Scalar(2)) / std::pow(_tmp59, Scalar(2));
-  const Scalar _tmp62 = _tmp58 * _tmp61 - _tmp58 + 1;
+  const Scalar _tmp58 = (Scalar(1) / Scalar(2)) * _tmp54 + _tmp55 + Scalar(-1) / Scalar(2);
+  const Scalar _tmp59 = (Scalar(1) / Scalar(2)) * _tmp54 + _tmp56 + Scalar(1) / Scalar(2);
+  const Scalar _tmp60 = std::pow(_tmp59, Scalar(2)) / std::pow(_tmp58, Scalar(2));
+  const Scalar _tmp61 = std::pow(_target_calibration[4], Scalar(2));
+  const Scalar _tmp62 = _tmp60 * _tmp61 - _tmp61 + 1;
 
   // Output terms (2)
   if (reprojection_delta != nullptr) {
@@ -165,18 +165,18 @@ void DoubleSphereReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                     1 - std::max<Scalar>(
                             0, -(((_tmp45 -
                                    _tmp52 *
-                                       (_target_calibration[4] * _tmp61 - _target_calibration[4] -
-                                        _tmp60 *
+                                       (_target_calibration[4] * _tmp60 - _target_calibration[4] -
+                                        _tmp59 *
                                             std::sqrt(Scalar(
                                                 std::max<Scalar>(_tmp62, std::sqrt(epsilon)))) /
-                                            _tmp59)) > 0) -
+                                            _tmp58)) > 0) -
                                  ((_tmp45 -
                                    _tmp52 *
-                                       (_target_calibration[4] * _tmp61 - _target_calibration[4] -
-                                        _tmp60 *
+                                       (_target_calibration[4] * _tmp60 - _target_calibration[4] -
+                                        _tmp59 *
                                             std::sqrt(Scalar(
                                                 std::max<Scalar>(_tmp62, std::sqrt(epsilon)))) /
-                                            _tmp59)) < 0)))))) *
+                                            _tmp58)) < 0)))))) *
         std::min<Scalar>(1 - std::max<Scalar>(0, -(((_tmp12) > 0) - ((_tmp12) < 0))),
                          1 - std::max<Scalar>(0, -(((_tmp20) > 0) - ((_tmp20) < 0))));
   }

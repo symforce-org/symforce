@@ -82,4 +82,4 @@ RCP<const SeriesCoeffInterface> series_invfunc(const RCP<const Basic> &ex,
 #endif
 }
 
-} // SymEngine
+} // namespace SymEngine

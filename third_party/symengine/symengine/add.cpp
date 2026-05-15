@@ -62,16 +62,14 @@ namespace SymEngine
  *    the dictionary.
  */
 Add::Add(const RCP<const Number> &coef, add_operands_map &&dict)
-    : coef_{coef}, dict_{std::move(dict)}
-{
-    SYMENGINE_ASSIGN_TYPEID()
-    SYMENGINE_ASSERT(is_canonical(coef, dict_))
-}
+    : coef_{coef},
+      dict_{std::move(dict)} {SYMENGINE_ASSIGN_TYPEID()
+                                  SYMENGINE_ASSERT(is_canonical(coef, dict_))}
 
-/**
- * @details This uses `Basic.hash()` to give a cached version of the hash.
- */
-hash_t Add::__hash__() const
+      /**
+       * @details This uses `Basic.hash()` to give a cached version of the hash.
+       */
+      hash_t Add::__hash__() const
 {
     hash_t seed = SYMENGINE_ADD, temp;
     hash_combine<Basic>(seed, *coef_);

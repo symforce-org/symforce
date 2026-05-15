@@ -103,8 +103,6 @@ public:
     PrecedenceEnum getPrecedence(const RCP<const Basic> &x);
 };
 
-std::vector<std::string> init_str_printer_names();
-
 class StrPrinter : public BaseVisitor<StrPrinter>
 {
 private:
@@ -132,9 +130,12 @@ public:
     void bvisit(const Rational &x);
     void bvisit(const Complex &x);
     void bvisit(const Interval &x);
+    void bvisit(const Complexes &x);
     void bvisit(const Reals &x);
     void bvisit(const Rationals &x);
     void bvisit(const Integers &x);
+    void bvisit(const Naturals &x);
+    void bvisit(const Naturals0 &x);
     void bvisit(const Piecewise &x);
     void bvisit(const EmptySet &x);
     void bvisit(const FiniteSet &x);
@@ -147,6 +148,7 @@ public:
     void bvisit(const Xor &x);
     void bvisit(const Not &x);
     void bvisit(const Union &x);
+    void bvisit(const Intersection &x);
     void bvisit(const Complement &x);
     void bvisit(const ImageSet &x);
     void bvisit(const Add &x);
@@ -189,6 +191,9 @@ public:
     void bvisit(const ComplexMPC &x);
 #endif
     void bvisit(const NumberWrapper &x);
+    void bvisit(const Tuple &x);
+    void bvisit(const IdentityMatrix &x);
+    void bvisit(const ZeroMatrix &x);
     void bvisit(const DataBufferElement &x);
 
     std::string apply(const RCP<const Basic> &b);
@@ -200,13 +205,13 @@ class JuliaStrPrinter : public BaseVisitor<JuliaStrPrinter, StrPrinter>
 {
 public:
     using StrPrinter::bvisit;
-    virtual void _print_pow(std::ostringstream &o, const RCP<const Basic> &a,
-                            const RCP<const Basic> &b);
-    virtual std::string get_imag_symbol();
+    void _print_pow(std::ostringstream &o, const RCP<const Basic> &a,
+                    const RCP<const Basic> &b) override;
+    std::string get_imag_symbol() override;
     void bvisit(const Constant &x);
     void bvisit(const NaN &x);
     void bvisit(const Infty &x);
 };
-}
+} // namespace SymEngine
 
 #endif // SYMENGINE_STR_PRINTER_H

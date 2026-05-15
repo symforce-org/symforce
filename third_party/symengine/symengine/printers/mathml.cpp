@@ -23,8 +23,6 @@ std::vector<std::string> init_mathml_printer_names()
     names[SYMENGINE_ASECH] = "arcsech";
     return names;
 }
-const std::vector<std::string> MathMLPrinter::names_
-    = init_mathml_printer_names();
 
 void MathMLPrinter::bvisit(const Basic &x)
 {
@@ -106,6 +104,11 @@ void MathMLPrinter::bvisit(const Piecewise &x)
 void MathMLPrinter::bvisit(const EmptySet &x)
 {
     s << "<emptyset/>";
+}
+
+void MathMLPrinter::bvisit(const Complexes &x)
+{
+    s << "<complexes/>";
 }
 
 void MathMLPrinter::bvisit(const Reals &x)
@@ -273,6 +276,7 @@ void MathMLPrinter::bvisit(const Constant &x)
 
 void MathMLPrinter::bvisit(const Function &x)
 {
+    static const std::vector<std::string> names_ = init_mathml_printer_names();
     s << "<apply>";
     s << "<" << names_[x.get_type_code()] << "/>";
     const auto &args = x.get_args();
@@ -351,4 +355,4 @@ std::string mathml(const Basic &x)
     MathMLPrinter m;
     return m.apply(x);
 }
-}
+} // namespace SymEngine

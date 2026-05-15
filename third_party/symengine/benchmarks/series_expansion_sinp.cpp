@@ -11,17 +11,17 @@
 #include <symengine/integer.h>
 #include <symengine/series_piranha.h>
 
-using SymEngine::UPSeriesPiranha;
 using SymEngine::Basic;
+using SymEngine::cos;
+using SymEngine::integer;
+using SymEngine::mul;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::series;
+using SymEngine::sin;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::mul;
-using SymEngine::sin;
-using SymEngine::cos;
-using SymEngine::RCP;
-using SymEngine::series;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::integer;
+using SymEngine::UPSeriesPiranha;
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +43,6 @@ int main(int argc, char *argv[])
 }
 #else
 
-int main(int, char *[])
-{
-}
+int main(int, char *[]) {}
 
 #endif

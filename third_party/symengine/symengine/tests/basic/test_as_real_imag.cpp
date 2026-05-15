@@ -3,41 +3,42 @@
 #include <symengine/as_real_imag.cpp>
 #include <symengine/symengine_casts.h>
 
-using SymEngine::Basic;
-using SymEngine::rational;
-using SymEngine::one;
-using SymEngine::Complex;
-using SymEngine::Symbol;
-using SymEngine::I;
-using SymEngine::sqrt;
-using SymEngine::RCP;
 using SymEngine::Abs;
-using SymEngine::zero;
-using SymEngine::neg;
-using SymEngine::integer;
-using SymEngine::mul;
 using SymEngine::add;
+using SymEngine::asin;
+using SymEngine::asinh;
+using SymEngine::Basic;
+using SymEngine::Complex;
+using SymEngine::ComplexInf;
+using SymEngine::cos;
+using SymEngine::cosh;
+using SymEngine::cot;
+using SymEngine::coth;
+using SymEngine::csc;
+using SymEngine::csch;
+using SymEngine::I;
+using SymEngine::Inf;
+using SymEngine::integer;
+using SymEngine::minus_one;
+using SymEngine::mul;
+using SymEngine::Nan;
+using SymEngine::neg;
+using SymEngine::one;
+using SymEngine::rational;
 using SymEngine::Rational;
+using SymEngine::RCP;
+using SymEngine::sec;
+using SymEngine::sech;
+using SymEngine::sin;
+using SymEngine::sinh;
+using SymEngine::sqrt;
+using SymEngine::sub;
+using SymEngine::Symbol;
 using SymEngine::symbol;
 using SymEngine::SymEngineException;
-using SymEngine::Nan;
-using SymEngine::Inf;
-using SymEngine::ComplexInf;
-using SymEngine::minus_one;
-using SymEngine::sin;
-using SymEngine::cos;
 using SymEngine::tan;
-using SymEngine::cot;
-using SymEngine::csc;
-using SymEngine::sec;
-using SymEngine::asin;
-using SymEngine::sinh;
-using SymEngine::cosh;
 using SymEngine::tanh;
-using SymEngine::coth;
-using SymEngine::csch;
-using SymEngine::sech;
-using SymEngine::asinh;
+using SymEngine::zero;
 
 TEST_CASE("RealImag: Number and Symbol", "[as_real_imag]")
 {
@@ -69,7 +70,7 @@ TEST_CASE("RealImag: Number and Symbol", "[as_real_imag]")
     // Symbol
     CHECK_THROWS_AS(
         as_real_imag(mul(add(i2, I), symbol("x")), outArg(re), outArg(im)),
-        SymEngineException &);
+        SymEngineException);
 }
 
 TEST_CASE("RealImag: Mul", "[as_real_imag]")
@@ -92,7 +93,7 @@ TEST_CASE("RealImag: Mul", "[as_real_imag]")
 
     CHECK_THROWS_AS(as_real_imag(mul(add(i2, I), add(i2, mul(symbol("x"), I))),
                                  outArg(re), outArg(im)),
-                    SymEngineException &);
+                    SymEngineException);
 }
 
 TEST_CASE("RealImag: Add", "[as_real_imag]")
@@ -120,6 +121,11 @@ TEST_CASE("RealImag: Pow", "[as_real_imag]")
     REQUIRE(eq(*re, *div(one, i2)));
     REQUIRE(eq(*im, *div(sqrt(integer(3)), i2)));
 
+    as_real_imag(pow(sub(add(i2, sqrt(i2)), sub(sqrt(i2), I)), 2), outArg(re),
+                 outArg(im));
+    REQUIRE(eq(*re, *integer(3)));
+    REQUIRE(eq(*im, *integer(4)));
+
     as_real_imag(sqrt(neg(I)), outArg(re), outArg(im));
     REQUIRE(eq(*re, *div(sqrt(i2), i2)));
     REQUIRE(eq(*im, *neg(div(sqrt(i2), i2))));
@@ -129,7 +135,7 @@ TEST_CASE("RealImag: Pow", "[as_real_imag]")
     REQUIRE(eq(*im, *div(sqrt(i2), i2)));
 
     CHECK_THROWS_AS(as_real_imag(pow(I, symbol("x")), outArg(re), outArg(im)),
-                    SymEngineException &);
+                    SymEngineException);
 }
 
 TEST_CASE("RealImag: Trigonometric functions", "[as_real_imag]")
@@ -256,9 +262,9 @@ TEST_CASE("RealImag: Trigonometric functions", "[as_real_imag]")
                          add(pow(sin(one), i2), pow(sinh(i2), i2)))));
 
     CHECK_THROWS_AS(as_real_imag(asin(i2), outArg(re), outArg(im)),
-                    SymEngineException &);
+                    SymEngineException);
     CHECK_THROWS_AS(as_real_imag(asinh(i2), outArg(re), outArg(im)),
-                    SymEngineException &);
+                    SymEngineException);
 }
 
 TEST_CASE("RealImag: Absolute Value Function", "[as_real_imag]")

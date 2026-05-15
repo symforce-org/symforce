@@ -11,12 +11,10 @@
 namespace SymEngine
 {
 
-ComplexMPC::ComplexMPC(mpc_class i) : i{std::move(i)}
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+ComplexMPC::ComplexMPC(mpc_class i)
+    : i{std::move(i)} {SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t ComplexMPC::__hash__() const
+      hash_t ComplexMPC::__hash__() const
 {
     hash_t seed = SYMENGINE_COMPLEX_MPC;
     hash_combine_impl(seed, mpc_realref(i.get_mpc_t()));
@@ -632,8 +630,8 @@ RCP<const Number> ComplexMPC::rpow(const RealDouble &other) const
 }
 
 /*! Raise `other` to power ComplexMPC
-* \param other of type ComplexDouble
-* */
+ * \param other of type ComplexDouble
+ * */
 RCP<const Number> ComplexMPC::rpow(const ComplexDouble &other) const
 {
     mpc_class t(get_prec());
@@ -643,8 +641,8 @@ RCP<const Number> ComplexMPC::rpow(const ComplexDouble &other) const
 }
 
 /*! Raise `other` to power ComplexMPC
-* \param other of type RealMPFR
-* */
+ * \param other of type RealMPFR
+ * */
 RCP<const Number> ComplexMPC::rpow(const RealMPFR &other) const
 {
     mpc_class t(std::max(get_prec(), other.get_prec()));
@@ -656,7 +654,7 @@ RCP<const Number> ComplexMPC::rpow(const RealMPFR &other) const
 //! Evaluate functions with double precision
 class EvaluateMPC : public Evaluate
 {
-    virtual RCP<const Basic> sin(const Basic &x) const
+    RCP<const Basic> sin(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -665,7 +663,7 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> cos(const Basic &x) const
+    RCP<const Basic> cos(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -674,7 +672,7 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> tan(const Basic &x) const
+    RCP<const Basic> tan(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -683,7 +681,7 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> cot(const Basic &x) const
+    RCP<const Basic> cot(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -693,7 +691,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> sec(const Basic &x) const
+    RCP<const Basic> sec(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -703,7 +701,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> csc(const Basic &x) const
+    RCP<const Basic> csc(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -713,7 +711,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> asin(const Basic &x) const
+    RCP<const Basic> asin(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -722,7 +720,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acos(const Basic &x) const
+    RCP<const Basic> acos(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -731,7 +729,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> atan(const Basic &x) const
+    RCP<const Basic> atan(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -740,7 +738,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acot(const Basic &x) const
+    RCP<const Basic> acot(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -750,7 +748,7 @@ class EvaluateMPC : public Evaluate
         mpc_atan(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> asec(const Basic &x) const
+    RCP<const Basic> asec(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -760,7 +758,7 @@ class EvaluateMPC : public Evaluate
         mpc_acos(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acsc(const Basic &x) const
+    RCP<const Basic> acsc(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -770,7 +768,7 @@ class EvaluateMPC : public Evaluate
         mpc_asin(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> sinh(const Basic &x) const
+    RCP<const Basic> sinh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -779,7 +777,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> csch(const Basic &x) const
+    RCP<const Basic> csch(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -789,7 +787,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> cosh(const Basic &x) const
+    RCP<const Basic> cosh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -798,7 +796,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> sech(const Basic &x) const
+    RCP<const Basic> sech(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -808,7 +806,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> tanh(const Basic &x) const
+    RCP<const Basic> tanh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -817,7 +815,7 @@ class EvaluateMPC : public Evaluate
                  MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> coth(const Basic &x) const
+    RCP<const Basic> coth(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -827,7 +825,7 @@ class EvaluateMPC : public Evaluate
         mpc_ui_div(t.get_mpc_t(), 1, t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> asinh(const Basic &x) const
+    RCP<const Basic> asinh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -836,7 +834,7 @@ class EvaluateMPC : public Evaluate
                   MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acsch(const Basic &x) const
+    RCP<const Basic> acsch(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -846,7 +844,7 @@ class EvaluateMPC : public Evaluate
         mpc_asinh(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acosh(const Basic &x) const
+    RCP<const Basic> acosh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -855,7 +853,7 @@ class EvaluateMPC : public Evaluate
                   MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> atanh(const Basic &x) const
+    RCP<const Basic> atanh(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -864,7 +862,7 @@ class EvaluateMPC : public Evaluate
                   MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> acoth(const Basic &x) const
+    RCP<const Basic> acoth(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -874,7 +872,7 @@ class EvaluateMPC : public Evaluate
         mpc_atanh(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> asech(const Basic &x) const
+    RCP<const Basic> asech(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -884,7 +882,7 @@ class EvaluateMPC : public Evaluate
         mpc_acosh(t.get_mpc_t(), t.get_mpc_t(), MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> log(const Basic &x) const
+    RCP<const Basic> log(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -893,7 +891,7 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> abs(const Basic &x) const
+    RCP<const Basic> abs(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpfr_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -902,11 +900,11 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return real_mpfr(std::move(t));
     }
-    virtual RCP<const Basic> gamma(Basic const &aConst) const
+    RCP<const Basic> gamma(Basic const &aConst) const override
     {
         throw NotImplementedError("Not Implemented.");
     }
-    virtual RCP<const Basic> exp(const Basic &x) const override
+    RCP<const Basic> exp(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         mpc_class t(down_cast<const ComplexMPC &>(x).as_mpc().get_prec());
@@ -915,7 +913,7 @@ class EvaluateMPC : public Evaluate
                 MPFR_RNDN);
         return complex_mpc(std::move(t));
     }
-    virtual RCP<const Basic> floor(const Basic &x) const override
+    RCP<const Basic> floor(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         integer_class re, im;
@@ -932,7 +930,7 @@ class EvaluateMPC : public Evaluate
         return Complex::from_two_nums(*integer(std::move(re)),
                                       *integer(std::move(im)));
     }
-    virtual RCP<const Basic> ceiling(const Basic &x) const override
+    RCP<const Basic> ceiling(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         integer_class re, im;
@@ -949,7 +947,7 @@ class EvaluateMPC : public Evaluate
         return Complex::from_two_nums(*integer(std::move(re)),
                                       *integer(std::move(im)));
     }
-    virtual RCP<const Basic> truncate(const Basic &x) const override
+    RCP<const Basic> truncate(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         integer_class re, im;
@@ -966,12 +964,12 @@ class EvaluateMPC : public Evaluate
         return Complex::from_two_nums(*integer(std::move(re)),
                                       *integer(std::move(im)));
     }
-    virtual RCP<const Basic> erf(const Basic &x) const override
+    RCP<const Basic> erf(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         throw NotImplementedError("erf is not implemented in mpc");
     }
-    virtual RCP<const Basic> erfc(const Basic &x) const override
+    RCP<const Basic> erfc(const Basic &x) const override
     {
         SYMENGINE_ASSERT(is_a<ComplexMPC>(x))
         throw NotImplementedError("erfc is not implemented in mpc");
@@ -984,5 +982,5 @@ Evaluate &ComplexMPC::get_eval() const
     return evaluate_mpc;
 }
 
-} // SymEngine
+} // namespace SymEngine
 #endif // HAVE_SYMENGINE_MPC

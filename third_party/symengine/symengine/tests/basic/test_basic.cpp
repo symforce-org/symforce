@@ -6,60 +6,65 @@
 #include <symengine/symengine_exception.h>
 #include <cstring>
 
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::FunctionSymbol;
-using SymEngine::umap_basic_num;
-using SymEngine::map_basic_num;
-using SymEngine::map_basic_basic;
-using SymEngine::umap_basic_basic;
-using SymEngine::map_uint_mpz;
 using SymEngine::add_operands_map;
-using SymEngine::unified_compare;
-using SymEngine::map_int_Expr;
-using SymEngine::multiset_basic;
-using SymEngine::vec_basic;
-using SymEngine::set_basic;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::Rational;
-using SymEngine::real_double;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::Number;
-using SymEngine::pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
+using SymEngine::atoms;
+using SymEngine::Basic;
+using SymEngine::coeff;
 using SymEngine::Complex;
 using SymEngine::complex_double;
-using SymEngine::has_symbol;
-using SymEngine::coeff;
-using SymEngine::is_a;
-using SymEngine::rcp_static_cast;
-using SymEngine::set_basic;
+using SymEngine::ComplexInf;
+using SymEngine::diff;
+using SymEngine::down_cast;
+using SymEngine::EulerGamma;
 using SymEngine::free_symbols;
 using SymEngine::function_symbol;
-using SymEngine::rational_class;
-using SymEngine::pi;
-using SymEngine::diff;
-using SymEngine::sdiff;
-using SymEngine::down_cast;
-using SymEngine::NotImplementedError;
-using SymEngine::ComplexInf;
+using SymEngine::FunctionSymbol;
+using SymEngine::has_symbol;
+using SymEngine::I;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::is_a;
+using SymEngine::make_rcp;
+using SymEngine::map_basic_basic;
+using SymEngine::map_basic_num;
+using SymEngine::map_int_Expr;
+using SymEngine::map_uint_mpz;
+using SymEngine::Mul;
+using SymEngine::multiset_basic;
 using SymEngine::Nan;
-using SymEngine::EulerGamma;
-using SymEngine::atoms;
-using SymEngine::tribool;
+using SymEngine::NotImplementedError;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::RCP;
+using SymEngine::rcp_static_cast;
+using SymEngine::real_double;
+using SymEngine::sdiff;
+using SymEngine::set_basic;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::umap_basic_basic;
+using SymEngine::umap_basic_num;
+using SymEngine::unified_compare;
+using SymEngine::vec_basic;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 
 TEST_CASE("Test version", "[basic]")
 {
     REQUIRE(std::strcmp(SymEngine::get_version(), SYMENGINE_VERSION) == 0);
+}
+
+TEST_CASE("Test type_code_name", "[basic]")
+{
+    REQUIRE(type_code_name(SymEngine::SYMENGINE_UNEVALUATED_EXPR)
+            == "UnevaluatedExpr");
 }
 
 TEST_CASE("Symbol hash: Basic", "[basic]")
@@ -79,6 +84,23 @@ TEST_CASE("Symbol hash: Basic", "[basic]")
 
     // This checks that the hash of the Symbols are ordered:
     REQUIRE(hash_fn(*x) < hash_fn(*y));
+}
+
+TEST_CASE("Symbol string serialization: Basic", "[basic]")
+{
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Symbol> x2
+        = rcp_static_cast<const Symbol>(Basic::loads(x->dumps()));
+    RCP<const Symbol> y = symbol("y");
+
+    REQUIRE(x->__eq__(*x));
+    REQUIRE(x->__eq__(*x2));
+    REQUIRE(not(x2->__eq__(*y)));
+    REQUIRE(x2->__neq__(*y));
+
+    std::hash<Basic> hash_fn;
+    // Hashes of x and x2 must be the same:
+    REQUIRE(hash_fn(*x) == hash_fn(*x2));
 }
 
 TEST_CASE("Symbol dict: Basic", "[basic]")
@@ -567,6 +589,10 @@ TEST_CASE("Diff: Basic", "[basic]")
     // Test that this doesn't segfault
     r1 = pow(sqrt(div(x, i3)), real_double(2.0));
     r1 = diff(r1, x);
+
+    r1 = diff(pow(neg(x), I), x);
+    r2 = mul(neg(I), pow(neg(x), sub(I, one)));
+    REQUIRE(eq(*r1, *r2));
 }
 
 TEST_CASE("compare: Basic", "[basic]")
@@ -715,7 +741,7 @@ TEST_CASE("compare: Basic", "[basic]")
     CHECK(r1->__cmp__(*r2) != 0);
     CHECK(r1->__cmp__(*r1) == 0);
 
-    CHECK_THROWS_AS(r2->expand_as_exp(), NotImplementedError &);
+    CHECK_THROWS_AS(r2->expand_as_exp(), NotImplementedError);
 
     r1 = pi;
     r2 = EulerGamma;
@@ -911,11 +937,11 @@ TEST_CASE("Complex: Basic", "[basic]")
 
     c1 = Complex::from_two_nums(*integer(2), *integer(5));
     c2 = Rational::from_two_ints(4, 5);
-    CHECK_THROWS_AS(c2->div(*c1), NotImplementedError &);
+    CHECK_THROWS_AS(c2->div(*c1), NotImplementedError);
 
     c1 = Complex::from_two_nums(*integer(2), *integer(5));
     c2 = integer(3);
-    CHECK_THROWS_AS(c2->pow(*c1), NotImplementedError &);
+    CHECK_THROWS_AS(c2->pow(*c1), NotImplementedError);
 }
 
 TEST_CASE("has_symbol: Basic", "[basic]")
@@ -1101,51 +1127,4 @@ TEST_CASE("args: Basic", "[basic]")
 
     r1 = log(pi);
     REQUIRE(vec_basic_eq_perm(r1->get_args(), {pi}));
-}
-
-TEST_CASE("tribool", "[basic]")
-{
-    REQUIRE(!is_true(tribool::indeterminate));
-    REQUIRE(!is_true(tribool::trifalse));
-    REQUIRE(is_true(tribool::tritrue));
-
-    REQUIRE(!is_false(tribool::indeterminate));
-    REQUIRE(is_false(tribool::trifalse));
-    REQUIRE(!is_false(tribool::tritrue));
-
-    REQUIRE(is_indeterminate(tribool::indeterminate));
-    REQUIRE(!is_indeterminate(tribool::trifalse));
-    REQUIRE(!is_indeterminate(tribool::tritrue));
-
-    REQUIRE(is_false(and_tribool(tribool::trifalse, tribool::trifalse)));
-    REQUIRE(is_false(and_tribool(tribool::trifalse, tribool::indeterminate)));
-    REQUIRE(is_false(and_tribool(tribool::trifalse, tribool::tritrue)));
-    REQUIRE(is_false(and_tribool(tribool::indeterminate, tribool::trifalse)));
-    REQUIRE(is_false(and_tribool(tribool::tritrue, tribool::trifalse)));
-    REQUIRE(is_indeterminate(
-        and_tribool(tribool::indeterminate, tribool::indeterminate)));
-    REQUIRE(is_indeterminate(
-        and_tribool(tribool::tritrue, tribool::indeterminate)));
-    REQUIRE(is_indeterminate(
-        and_tribool(tribool::indeterminate, tribool::tritrue)));
-    REQUIRE(is_true(and_tribool(tribool::tritrue, tribool::tritrue)));
-
-    REQUIRE(is_true(not_tribool(tribool::trifalse)));
-    REQUIRE(is_false(not_tribool(tribool::tritrue)));
-    REQUIRE(is_indeterminate(not_tribool(tribool::indeterminate)));
-
-    REQUIRE(is_false(andwk_tribool(tribool::trifalse, tribool::trifalse)));
-    REQUIRE(is_indeterminate(
-        andwk_tribool(tribool::trifalse, tribool::indeterminate)));
-    REQUIRE(is_false(andwk_tribool(tribool::trifalse, tribool::tritrue)));
-    REQUIRE(is_indeterminate(
-        andwk_tribool(tribool::indeterminate, tribool::trifalse)));
-    REQUIRE(is_false(andwk_tribool(tribool::tritrue, tribool::trifalse)));
-    REQUIRE(is_indeterminate(
-        andwk_tribool(tribool::indeterminate, tribool::indeterminate)));
-    REQUIRE(is_indeterminate(
-        andwk_tribool(tribool::tritrue, tribool::indeterminate)));
-    REQUIRE(is_indeterminate(
-        andwk_tribool(tribool::indeterminate, tribool::tritrue)));
-    REQUIRE(is_true(andwk_tribool(tribool::tritrue, tribool::tritrue)));
 }

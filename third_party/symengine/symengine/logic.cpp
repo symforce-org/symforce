@@ -8,12 +8,10 @@ RCP<const Boolean> Boolean::logical_not() const
     return make_rcp<const Not>(this->rcp_from_this_cast<const Boolean>());
 }
 
-BooleanAtom::BooleanAtom(bool b) : b_{b}
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+BooleanAtom::BooleanAtom(bool b)
+    : b_{b} {SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t BooleanAtom::__hash__() const
+      hash_t BooleanAtom::__hash__() const
 {
     hash_t seed = SYMENGINE_BOOLEAN_ATOM;
     if (b_)
@@ -52,16 +50,21 @@ RCP<const Boolean> BooleanAtom::logical_not() const
     return boolean(not this->get_val());
 }
 
-RCP<const BooleanAtom> boolTrue = make_rcp<BooleanAtom>(true);
-RCP<const BooleanAtom> boolFalse = make_rcp<BooleanAtom>(false);
+#define DEFINE_CONST_BOOL(n, v)                                                \
+    RCP<const BooleanAtom> n = []() {                                          \
+        static const RCP<const BooleanAtom> c = make_rcp<BooleanAtom>(v);      \
+        return c;                                                              \
+    }()
+
+DEFINE_CONST_BOOL(boolTrue, true);
+DEFINE_CONST_BOOL(boolFalse, false);
+
+#undef DEFINE_CONST_BOOL
 
 Contains::Contains(const RCP<const Basic> &expr, const RCP<const Set> &set)
-    : expr_{expr}, set_{set}
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : expr_{expr}, set_{set} {SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t Contains::__hash__() const
+      hash_t Contains::__hash__() const
 {
     hash_t seed = SYMENGINE_CONTAINS;
     hash_combine<Basic>(seed, *expr_);
@@ -120,9 +123,60 @@ RCP<const Boolean> contains(const RCP<const Basic> &expr,
     }
 }
 
+RCP<const Basic> piecewise(const PiecewiseVec &vec)
+{
+    PiecewiseVec new_vec;
+    set_boolean conditions;
+    for (auto &p : vec) {
+        if (eq(*p.second, *boolFalse)) {
+            continue;
+        } else if (eq(*p.second, *boolTrue)) {
+            new_vec.push_back(p);
+            conditions.insert(p.second);
+            break;
+        } else if (conditions.find(p.second) == conditions.end()) {
+            new_vec.push_back(p);
+            conditions.insert(p.second);
+        }
+    }
+    if (new_vec.size() == 0) {
+        throw DomainError("piecewise undefined for this domain.");
+    } else if (new_vec.size() == 1 and eq(*new_vec[0].second, *boolTrue)) {
+        return new_vec[0].first;
+    }
+    return make_rcp<Piecewise>(std::move(new_vec));
+}
+
 Piecewise::Piecewise(PiecewiseVec &&vec) : vec_(vec)
 {
     SYMENGINE_ASSIGN_TYPEID()
+    SYMENGINE_ASSERT(is_canonical(vec_));
+}
+
+bool Piecewise::is_canonical(const PiecewiseVec &vec)
+{
+    set_boolean conditions;
+    bool found_true = false;
+    for (auto &p : vec) {
+        if (found_true) {
+            return false;
+        }
+        if (eq(*p.second, *boolFalse)) {
+            return false;
+        } else if (eq(*p.second, *boolTrue)) {
+            found_true = true;
+        } else if (conditions.find(p.second) == conditions.end()) {
+            conditions.insert(p.second);
+        } else {
+            return false;
+        }
+    }
+    if (vec.size() == 0) {
+        return false;
+    } else if (vec.size() == 1 and eq(*vec[0].second, *boolTrue)) {
+        return false;
+    }
+    return true;
 }
 
 hash_t Piecewise::__hash__() const
@@ -436,7 +490,7 @@ RCP<const Boolean> and_or(const set_boolean &s, const bool &op_x_notx)
             if (is_a<Contains>(**it)
                 and is_a<Symbol>(*down_cast<const Contains &>(**it).get_expr())
                 and is_a<FiniteSet>(
-                        *down_cast<const Contains &>(**it).get_set())) {
+                    *down_cast<const Contains &>(**it).get_set())) {
                 auto sym = down_cast<const Contains &>(**it).get_expr();
                 // iterate through args and check for the condition that
                 // defines the domain of sym.
@@ -763,4 +817,4 @@ RCP<const Boolean> logical_xnor(const vec_boolean &s)
 {
     return logical_not(logical_xor(s));
 }
-}
+} // namespace SymEngine

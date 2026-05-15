@@ -34,44 +34,44 @@ public:
     //! \return true if canonical
     bool is_canonical(const RCP<const Number> &num) const;
     //! \return size of the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
 
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
     // Implement these
-    bool __eq__(const Basic &o) const;
-    int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
 
-    virtual vec_basic get_args() const
+    vec_basic get_args() const override
     {
         return {_direction};
     }
 
     //! \return `true` if `0`
-    inline bool is_zero() const
+    inline bool is_zero() const override
     {
         return false;
     }
     //! \return `true` if `1`
-    inline bool is_one() const
+    inline bool is_one() const override
     {
         return false;
     }
     //! \return `true` if `-1`
-    inline bool is_minus_one() const
+    inline bool is_minus_one() const override
     {
         return false;
     }
 
     //! \return `true` if this number is an exact number
-    inline virtual bool is_exact() const
+    inline bool is_exact() const override
     {
         return false;
     }
     // //! Get `Evaluate` singleton to evaluate numerically
-    virtual Evaluate &get_eval() const;
+    Evaluate &get_eval() const override;
 
     inline RCP<const Number> get_direction() const
     {
@@ -82,29 +82,29 @@ public:
     bool is_positive_infinity() const;
     bool is_negative_infinity() const;
 
-    inline bool is_positive() const
+    inline bool is_positive() const override
     {
         return is_positive_infinity();
     }
 
-    inline bool is_negative() const
+    inline bool is_negative() const override
     {
         return is_negative_infinity();
     }
 
-    inline bool is_complex() const
+    inline bool is_complex() const override
     {
         return is_unsigned_infinity();
     }
     //! \return the conjugate if the class is complex
-    virtual RCP<const Basic> conjugate() const;
+    RCP<const Basic> conjugate() const override;
 
     // Think about it again
-    RCP<const Number> add(const Number &other) const;
-    RCP<const Number> mul(const Number &other) const;
-    RCP<const Number> div(const Number &other) const;
-    RCP<const Number> pow(const Number &other) const;
-    RCP<const Number> rpow(const Number &other) const;
+    RCP<const Number> add(const Number &other) const override;
+    RCP<const Number> mul(const Number &other) const override;
+    RCP<const Number> div(const Number &other) const override;
+    RCP<const Number> pow(const Number &other) const override;
+    RCP<const Number> rpow(const Number &other) const override;
 };
 
 inline RCP<const Infty> infty(int n = 1)
@@ -114,5 +114,5 @@ inline RCP<const Infty> infty(int n = 1)
 
 RCP<const Infty> infty(const RCP<const Number> &direction);
 
-} // SymEngine
+} // namespace SymEngine
 #endif

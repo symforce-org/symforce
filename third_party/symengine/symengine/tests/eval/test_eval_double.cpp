@@ -7,65 +7,64 @@
 #include <symengine/symengine_exception.h>
 #include <symengine/subs.h>
 
+using SymEngine::acos;
+using SymEngine::acosh;
+using SymEngine::acot;
+using SymEngine::acoth;
+using SymEngine::acsc;
+using SymEngine::asec;
+using SymEngine::asin;
+using SymEngine::asinh;
+using SymEngine::atan;
+using SymEngine::atanh;
 using SymEngine::Basic;
-using SymEngine::constant;
+using SymEngine::boolean;
+using SymEngine::boolTrue;
+using SymEngine::Catalan;
 using SymEngine::Complex;
 using SymEngine::complex_double;
-using SymEngine::real_double;
-using SymEngine::Rational;
-using SymEngine::symbol;
-using SymEngine::integer;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::pow;
-using SymEngine::RCP;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::levi_civita;
-using SymEngine::zeta;
-using SymEngine::sin;
+using SymEngine::constant;
 using SymEngine::cos;
-using SymEngine::tan;
-using SymEngine::sec;
-using SymEngine::csc;
-using SymEngine::cot;
-using SymEngine::asin;
-using SymEngine::acos;
-using SymEngine::atan;
-using SymEngine::asec;
-using SymEngine::acsc;
-using SymEngine::acot;
-using SymEngine::sinh;
 using SymEngine::cosh;
-using SymEngine::tanh;
+using SymEngine::cot;
 using SymEngine::coth;
-using SymEngine::asinh;
-using SymEngine::acosh;
-using SymEngine::atanh;
-using SymEngine::acoth;
+using SymEngine::csc;
+using SymEngine::E;
 using SymEngine::erf;
 using SymEngine::erfc;
-using SymEngine::log;
-using SymEngine::pi;
-using SymEngine::E;
 using SymEngine::EulerGamma;
-using SymEngine::Catalan;
-using SymEngine::GoldenRatio;
-using SymEngine::loggamma;
 using SymEngine::gamma;
-using SymEngine::vec_basic;
-using SymEngine::rational_class;
+using SymEngine::GoldenRatio;
+using SymEngine::Gt;
+using SymEngine::integer;
+using SymEngine::levi_civita;
+using SymEngine::log;
+using SymEngine::loggamma;
 using SymEngine::max;
 using SymEngine::min;
-using SymEngine::min;
-using SymEngine::boolean;
-using SymEngine::PiecewiseVec;
-using SymEngine::piecewise;
-using SymEngine::Gt;
-using SymEngine::subs;
-using SymEngine::boolTrue;
-using SymEngine::rcp_static_cast;
 using SymEngine::NotImplementedError;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::piecewise;
+using SymEngine::PiecewiseVec;
+using SymEngine::pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::RCP;
+using SymEngine::rcp_static_cast;
+using SymEngine::real_double;
+using SymEngine::sec;
+using SymEngine::sin;
+using SymEngine::sinh;
+using SymEngine::subs;
+using SymEngine::symbol;
 using SymEngine::SymEngineException;
+using SymEngine::tan;
+using SymEngine::tanh;
+using SymEngine::vec_basic;
+using SymEngine::zero;
+using SymEngine::zeta;
 
 TEST_CASE("eval_double: eval_double", "[eval_double]")
 {
@@ -163,23 +162,23 @@ TEST_CASE("eval_double: eval_double", "[eval_double]")
     }
 
     // Symbol must raise an exception
-    CHECK_THROWS_AS(eval_double(*symbol("x")), SymEngineException &);
+    CHECK_THROWS_AS(eval_double(*symbol("x")), SymEngineException);
     CHECK_THROWS_AS(eval_double_single_dispatch(*symbol("x")),
-                    NotImplementedError &);
+                    NotImplementedError);
 
     // TODO: this is not implemented yet, so we check that it raises an
     // exception for now
-    CHECK_THROWS_AS(eval_double(*levi_civita({r1})), NotImplementedError &);
+    CHECK_THROWS_AS(eval_double(*levi_civita({r1})), NotImplementedError);
     CHECK_THROWS_AS(eval_double_single_dispatch(*levi_civita({r1})),
-                    NotImplementedError &);
+                    NotImplementedError);
 
-    CHECK_THROWS_AS(eval_double(*zeta(r1, r2)), NotImplementedError &);
+    CHECK_THROWS_AS(eval_double(*zeta(r1, r2)), NotImplementedError);
     CHECK_THROWS_AS(eval_double_single_dispatch(*zeta(r1, r2)),
-                    NotImplementedError &);
+                    NotImplementedError);
 
-    CHECK_THROWS_AS(eval_double(*constant("dummy")), NotImplementedError &);
+    CHECK_THROWS_AS(eval_double(*constant("dummy")), NotImplementedError);
     CHECK_THROWS_AS(eval_double_single_dispatch(*constant("dummy")),
-                    NotImplementedError &);
+                    NotImplementedError);
     // ... we don't test the rest of functions that are not implemented.
 }
 

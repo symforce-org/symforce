@@ -67,10 +67,9 @@ bool Mul::is_canonical(const RCP<const Number> &coef,
         if (is_a<Pow>(*p.first) && is_a<Integer>(*p.second))
             return false;
         // e.g. 0.5^2.0 should be represented as 0.25
-        if (is_a_Number(*p.first)
-            and not down_cast<const Number &>(*p.first).is_exact()
-            and is_a_Number(*p.second)
-            and not down_cast<const Number &>(*p.second).is_exact())
+        if (is_a_Number(*p.first) and is_a_Number(*p.second)
+            and (not down_cast<const Number &>(*p.first).is_exact()
+                 or not down_cast<const Number &>(*p.second).is_exact()))
             return false;
     }
     return true;
@@ -182,13 +181,12 @@ void Mul::dict_add_term_new(const Ptr<RCP<const Number>> &coef,
     auto it = d.find(t);
     if (it == d.end()) {
         // Don't check for `exp = 0` here
-        // `pow` for Complex is not expanded by default
-        if (is_a<Integer>(*t) or is_a<Rational>(*t)) {
+        if (is_a<Integer>(*t) or is_a<Rational>(*t) or is_a<Complex>(*t)) {
             if (is_a<Integer>(*exp)) {
                 imulnum(outArg(*coef),
                         pownum(rcp_static_cast<const Number>(t),
                                rcp_static_cast<const Number>(exp)));
-            } else if (is_a<Rational>(*exp)) {
+            } else if (is_a<Rational>(*exp) and not is_a<Complex>(*t)) {
                 RCP<const Basic> res;
                 if (is_a<Integer>(*t)) {
                     res = down_cast<const Rational &>(*exp).rpowrat(
@@ -208,17 +206,18 @@ void Mul::dict_add_term_new(const Ptr<RCP<const Number>> &coef,
                 } else {
                     insert(d, t, exp);
                 }
+            } else if (is_a_Number(*exp)
+                       and not down_cast<const Number &>(*exp).is_exact()) {
+                imulnum(outArg(*coef), down_cast<const Number &>(*t).pow(
+                                           down_cast<const Number &>(*exp)));
             } else {
                 insert(d, t, exp);
             }
-        } else if (is_a<Integer>(*exp) and is_a<Complex>(*t)) {
-            if (down_cast<const Integer &>(*exp).is_one()) {
-                imulnum(outArg(*coef), rcp_static_cast<const Number>(t));
-            } else if (down_cast<const Integer &>(*exp).is_minus_one()) {
-                idivnum(outArg(*coef), rcp_static_cast<const Number>(t));
-            } else {
-                insert(d, t, exp);
-            }
+        } else if (is_a_Number(*t) and is_a_Number(*exp)
+                   and (not down_cast<const Number &>(*exp).is_exact()
+                        or not down_cast<const Number &>(*t).is_exact())) {
+            imulnum(outArg(*coef), down_cast<const Number &>(*t).pow(
+                                       down_cast<const Number &>(*exp)));
         } else {
             insert(d, t, exp);
         }
@@ -232,8 +231,7 @@ void Mul::dict_add_term_new(const Ptr<RCP<const Number>> &coef,
             it->second = add(it->second, exp);
 
         if (is_a<Integer>(*it->second)) {
-            // `pow` for Complex is not expanded by default
-            if (is_a<Integer>(*t) or is_a<Rational>(*t)) {
+            if (is_a<Integer>(*t) or is_a<Rational>(*t) or is_a<Complex>(*t)) {
                 if (not down_cast<const Integer &>(*(it->second)).is_zero()) {
                     imulnum(outArg(*coef),
                             pownum(rcp_static_cast<const Number>(t),
@@ -243,16 +241,6 @@ void Mul::dict_add_term_new(const Ptr<RCP<const Number>> &coef,
                 return;
             } else if (down_cast<const Integer &>(*(it->second)).is_zero()) {
                 d.erase(it);
-                return;
-            } else if (is_a<Complex>(*t)) {
-                if (down_cast<const Integer &>(*(it->second)).is_one()) {
-                    imulnum(outArg(*coef), rcp_static_cast<const Number>(t));
-                    d.erase(it);
-                } else if (down_cast<const Integer &>(*(it->second))
-                               .is_minus_one()) {
-                    idivnum(outArg(*coef), rcp_static_cast<const Number>(t));
-                    d.erase(it);
-                }
                 return;
             }
         } else if (is_a<Rational>(*it->second)) {
@@ -296,6 +284,23 @@ void Mul::dict_add_term_new(const Ptr<RCP<const Number>> &coef,
                     d.erase(it);
                     m->power_num(outArg(*coef), d, exp_);
                 }
+            } else if (eq(*it->first, *E)) {
+                RCP<const Number> p = rcp_static_cast<const Number>(it->second);
+                if (not p->is_exact()) {
+                    // Evaluate E**0.2, but not E**2
+                    RCP<const Basic> exp_ = p->get_eval().exp(*p);
+                    if (is_a_Number(*exp_)) {
+                        imulnum(outArg(*coef),
+                                rcp_static_cast<const Number>(exp_));
+                        d.erase(it);
+                    }
+                }
+            } else if (is_a_Number(*t)
+                       and (not down_cast<const Number &>(*it->second)
+                                    .is_exact()
+                            or not down_cast<const Number &>(*t).is_exact())) {
+                imulnum(outArg(*coef), down_cast<const Number &>(*t).pow(
+                                           down_cast<const Number &>(*exp)));
             }
         }
     }
@@ -466,7 +471,7 @@ void Mul::power_num(const Ptr<RCP<const Number>> &coef, map_basic_basic &d,
             }
         }
     } else {
-        if (coef_->is_negative()) {
+        if (coef_->is_negative() and not coef_->is_minus_one()) {
             // (-3*x*y)**(1/2) -> 3**(1/2)*(-x*y)**(1/2)
             new_coef = pow(coef_->mul(*minus_one), exp);
             map_basic_basic d1 = dict_;
@@ -518,4 +523,4 @@ vec_basic Mul::get_args() const
     return args;
 }
 
-} // SymEngine
+} // namespace SymEngine

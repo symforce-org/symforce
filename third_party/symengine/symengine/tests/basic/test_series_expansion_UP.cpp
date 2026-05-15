@@ -3,29 +3,29 @@
 #include <chrono>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
-using SymEngine::Basic;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::rational;
-using SymEngine::Symbol;
-using SymEngine::Number;
-using SymEngine::symbol;
 using SymEngine::Add;
-using SymEngine::RCP;
 using SymEngine::add;
-using SymEngine::sin;
+using SymEngine::Basic;
 using SymEngine::cos;
-using SymEngine::umap_short_basic;
-using SymEngine::neg;
 using SymEngine::EulerGamma;
 using SymEngine::gamma;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::neg;
+using SymEngine::Number;
 using SymEngine::one;
+using SymEngine::rational;
+using SymEngine::RCP;
+using SymEngine::sin;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::umap_short_basic;
 
 #ifdef HAVE_SYMENGINE_PIRANHA
 
-using SymEngine::UPSeriesPiranha;
 using SymEngine::p_expr;
+using SymEngine::UPSeriesPiranha;
 #define series_coeff(EX, SYM, PREC, COEFF)                                     \
     UPSeriesPiranha::series(EX, SYM->get_name(), PREC)                         \
         ->get_poly()                                                           \
@@ -287,6 +287,6 @@ TEST_CASE("Check error when expansion called without Piranha ",
     RCP<const Symbol> x = symbol("x");
     auto ex1 = lambertw(x);
     REQUIRE_THROWS_AS(UPSeriesPiranha::series(ex1, "x", 10),
-                      SymEngineException &);
+                      SymEngineException);
 }
 #endif

@@ -8,42 +8,42 @@
 #include <symengine/constants.h>
 #include <symengine/symengine_exception.h>
 #include <symengine/functions.h>
+#include <symengine/add.h>
 #include <symengine/pow.h>
 #include <symengine/complex_double.h>
 
+using SymEngine::add;
 using SymEngine::Basic;
-using SymEngine::Number;
-using SymEngine::is_a;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::Rational;
-using SymEngine::rational;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::minus_one;
-using SymEngine::RCP;
-using SymEngine::Infty;
-using SymEngine::infty;
-using SymEngine::rcp_dynamic_cast;
 using SymEngine::Complex;
-using SymEngine::Inf;
-using SymEngine::NegInf;
+using SymEngine::complex_double;
 using SymEngine::ComplexInf;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::Complex;
-using SymEngine::NotImplementedError;
-using SymEngine::SymEngineException;
 using SymEngine::DomainError;
-using SymEngine::pi;
-using SymEngine::gamma;
-using SymEngine::I;
-using SymEngine::Nan;
 using SymEngine::erf;
 using SymEngine::erfc;
+using SymEngine::gamma;
 using SymEngine::I;
+using SymEngine::Inf;
+using SymEngine::Infty;
+using SymEngine::infty;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::is_a;
 using SymEngine::make_rcp;
-using SymEngine::complex_double;
+using SymEngine::minus_one;
+using SymEngine::Nan;
+using SymEngine::NegInf;
+using SymEngine::NotImplementedError;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::Rational;
+using SymEngine::rational;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::zero;
 
 TEST_CASE("Constructors for Infinity", "[Infinity]")
 {
@@ -63,10 +63,10 @@ TEST_CASE("Constructors for Infinity", "[Infinity]")
     REQUIRE(eq(*c, *ComplexInf));
 
     CHECK_THROWS_AS(a->is_canonical(complex_double(std::complex<double>(2, 3))),
-                    NotImplementedError &);
+                    NotImplementedError);
     CHECK_THROWS_AS(
         a->is_canonical(Complex::from_two_nums(*integer(1), *integer(2))),
-        NotImplementedError &);
+        NotImplementedError);
 
     REQUIRE(not(a->is_canonical(integer(2))));
 
@@ -88,7 +88,7 @@ TEST_CASE("Constructors for Infinity", "[Infinity]")
     REQUIRE(eq(inf2, *NegInf));
 
     // RCP<const Number> cx = Complex::from_two_nums(*integer(1), *integer(1));
-    // CHECK_THROWS_AS(Infty::from_direction(cx), SymEngineException&);
+    // CHECK_THROWS_AS(Infty::from_direction(cx), SymEngineException);
 }
 
 TEST_CASE("Hash Size for Infinity", "[Infinity]")
@@ -227,7 +227,7 @@ TEST_CASE("Multiplication with Infinity", "[Infinity]")
     REQUIRE(eq(*n2, *Nan));
 
     RCP<const Number> cx = Complex::from_two_nums(*integer(1), *integer(1));
-    CHECK_THROWS_AS(c->mul(*cx), NotImplementedError &);
+    CHECK_THROWS_AS(c->mul(*cx), NotImplementedError);
 }
 
 TEST_CASE("Division of Infinity", "[Infinity]")
@@ -297,8 +297,8 @@ TEST_CASE("Powers of Infinity", "[Infinity]")
     REQUIRE(eq(*n1, *Nan));
 
     RCP<const Number> cx = Complex::from_two_nums(*integer(1), *integer(1));
-    CHECK_THROWS_AS(b->pow(*integer(2)), NotImplementedError &);
-    CHECK_THROWS_AS(b->pow(*cx), NotImplementedError &);
+    CHECK_THROWS_AS(b->pow(*integer(2)), NotImplementedError);
+    CHECK_THROWS_AS(b->pow(*cx), NotImplementedError);
 }
 
 TEST_CASE("Powers to Infinity", "[Infinity]")
@@ -326,11 +326,15 @@ TEST_CASE("Powers to Infinity", "[Infinity]")
     n1 = rational(3, 3)->pow(*c);
 
     RCP<const Number> cx = Complex::from_two_nums(*integer(1), *integer(1));
-    CHECK_THROWS_AS(integer(-10)->pow(*a), NotImplementedError &);
-    CHECK_THROWS_AS(integer(0)->pow(*b), SymEngineException &);
-    CHECK_THROWS_AS(integer(10)->pow(*c), SymEngineException &);
-    CHECK_THROWS_AS(integer(-3)->pow(*c), SymEngineException &);
-    CHECK_THROWS_AS(cx->pow(*c), NotImplementedError &);
+    CHECK_THROWS_AS(integer(-10)->pow(*a), NotImplementedError);
+    CHECK_THROWS_AS(integer(0)->pow(*b), SymEngineException);
+    CHECK_THROWS_AS(integer(10)->pow(*c), SymEngineException);
+    CHECK_THROWS_AS(integer(-3)->pow(*c), SymEngineException);
+    CHECK_THROWS_AS(cx->pow(*c), NotImplementedError);
+
+    RCP<const Basic> x = symbol("x");
+    RCP<const Basic> r = exp(add(c, x));
+    CHECK_THROWS_AS(div(r, exp(x)), DomainError);
 }
 
 TEST_CASE("Evaluate Class of Infinity", "[Infinity]")
@@ -340,34 +344,34 @@ TEST_CASE("Evaluate Class of Infinity", "[Infinity]")
     RCP<const Infty> c = ComplexInf;
     RCP<const Basic> r1, r2;
 
-    CHECK_THROWS_AS(sin(Inf), DomainError &);
-    CHECK_THROWS_AS(cos(Inf), DomainError &);
-    CHECK_THROWS_AS(tan(Inf), DomainError &);
-    CHECK_THROWS_AS(csc(Inf), DomainError &);
-    CHECK_THROWS_AS(sec(Inf), DomainError &);
-    CHECK_THROWS_AS(cot(Inf), DomainError &);
-    CHECK_THROWS_AS(asin(Inf), DomainError &);
-    CHECK_THROWS_AS(acos(Inf), DomainError &);
-    CHECK_THROWS_AS(acsc(Inf), DomainError &);
-    CHECK_THROWS_AS(asec(Inf), DomainError &);
-    CHECK_THROWS_AS(sin(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(asech(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(erfc(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(atan(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(acot(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(sinh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(csch(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(cosh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(sech(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(tanh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(coth(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(asinh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(acosh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(atanh(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(acoth(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(acsch(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(exp(ComplexInf), DomainError &);
-    CHECK_THROWS_AS(erf(ComplexInf), DomainError &);
+    CHECK_THROWS_AS(sin(Inf), DomainError);
+    CHECK_THROWS_AS(cos(Inf), DomainError);
+    CHECK_THROWS_AS(tan(Inf), DomainError);
+    CHECK_THROWS_AS(csc(Inf), DomainError);
+    CHECK_THROWS_AS(sec(Inf), DomainError);
+    CHECK_THROWS_AS(cot(Inf), DomainError);
+    CHECK_THROWS_AS(asin(Inf), DomainError);
+    CHECK_THROWS_AS(acos(Inf), DomainError);
+    CHECK_THROWS_AS(acsc(Inf), DomainError);
+    CHECK_THROWS_AS(asec(Inf), DomainError);
+    CHECK_THROWS_AS(sin(ComplexInf), DomainError);
+    CHECK_THROWS_AS(asech(ComplexInf), DomainError);
+    CHECK_THROWS_AS(erfc(ComplexInf), DomainError);
+    CHECK_THROWS_AS(atan(ComplexInf), DomainError);
+    CHECK_THROWS_AS(acot(ComplexInf), DomainError);
+    CHECK_THROWS_AS(sinh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(csch(ComplexInf), DomainError);
+    CHECK_THROWS_AS(cosh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(sech(ComplexInf), DomainError);
+    CHECK_THROWS_AS(tanh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(coth(ComplexInf), DomainError);
+    CHECK_THROWS_AS(asinh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(acosh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(atanh(ComplexInf), DomainError);
+    CHECK_THROWS_AS(acoth(ComplexInf), DomainError);
+    CHECK_THROWS_AS(acsch(ComplexInf), DomainError);
+    CHECK_THROWS_AS(exp(ComplexInf), DomainError);
+    CHECK_THROWS_AS(erf(ComplexInf), DomainError);
 
     r1 = atan(Inf);
     REQUIRE(eq(*r1, *div(pi, integer(2))));

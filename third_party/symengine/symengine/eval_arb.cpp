@@ -14,9 +14,7 @@ protected:
     arb_ptr result_;
 
 public:
-    EvalArbVisitor(long precision) : prec_{precision}
-    {
-    }
+    EvalArbVisitor(long precision) : prec_{precision} {}
 
     void apply(arb_ptr result, const Basic &b)
     {
@@ -456,6 +454,6 @@ void eval_arb(arb_t result, const Basic &b, long precision)
     v.apply(result, b);
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_ARB

@@ -113,17 +113,17 @@ class Unit3(object):
         _tmp6 = _tmp0 + _tmp5
         _tmp7 = 2 / (_tmp3**2 + _tmp6)
         _tmp8 = 2 / _tmp6
-        _tmp9 = _tmp2 * _tmp4 * _tmp7
-        _tmp10 = _self[1] * _tmp9
-        _tmp11 = _self[1] * _tmp1 * _tmp4 * _tmp8
+        _tmp9 = _self[1] * _tmp1 * _tmp4 * _tmp8
+        _tmp10 = _tmp2 * _tmp4 * _tmp7
+        _tmp11 = _self[1] * _tmp10
 
         # Output terms
         _res = numpy.zeros((3, 2))
         _res[0, 0] = _self[1] * _tmp2 * _tmp3 * _tmp7
         _res[1, 0] = -_tmp1 * (-_tmp0 * _tmp8 + 1) - _tmp2 * (-_tmp0 * _tmp7 + 1)
-        _res[2, 0] = _tmp10 + _tmp11
-        _res[0, 1] = -_tmp3 * _tmp9
-        _res[1, 1] = -_tmp10 - _tmp11
+        _res[2, 0] = _tmp11 + _tmp9
+        _res[0, 1] = -_tmp10 * _tmp3
+        _res[1, 1] = -_tmp11 - _tmp9
         _res[2, 1] = _tmp1 * (-_tmp5 * _tmp8 + 1) + _tmp2 * (-_tmp5 * _tmp7 + 1)
         return _res
 

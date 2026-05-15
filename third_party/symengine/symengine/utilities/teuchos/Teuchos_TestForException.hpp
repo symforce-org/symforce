@@ -75,6 +75,8 @@ TEUCHOS_LIB_DLL_EXPORT void TestForException_setEnableStacktrace(bool enableStra
  * exceptions are thrown. */
 TEUCHOS_LIB_DLL_EXPORT bool TestForException_getEnableStacktrace();
 
+/** \brief Prints the message to std::cerr and calls std::terminate. */
+TEUCHOS_LIB_DLL_EXPORT [[noreturn]] void TestForTermination_terminate(const std::string &msg);
 
 } // namespace Teuchos
 
@@ -358,6 +360,20 @@ catch(const std::exception &except) { \
   throw std::runtime_error(omsg.str()); \
 }
 
+#define TEUCHOS_TEST_FOR_TERMINATION(terminate_test, msg) \
+{ \
+const bool call_terminate = (terminate_test); \
+if (call_terminate) { \
+std::ostringstream omsg; \
+omsg \
+<< __FILE__ << ":" << __LINE__ << ":\n\n" \
+<< "Terminate test that evaluated to true: "#terminate_test \
+<< "\n\n" \
+<< msg << "\n\n"; \
+auto str = omsg.str(); \
+Teuchos::TestForTermination_terminate(str); \
+} \
+}
 
 //
 // Deprecated functions

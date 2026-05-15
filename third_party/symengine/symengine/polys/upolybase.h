@@ -108,12 +108,8 @@ public:
     typedef Key key_type;
 
 public:
-    ODictWrapper() SYMENGINE_NOEXCEPT
-    {
-    }
-    ~ODictWrapper() SYMENGINE_NOEXCEPT
-    {
-    }
+    ODictWrapper() SYMENGINE_NOEXCEPT {}
+    ~ODictWrapper() SYMENGINE_NOEXCEPT {}
 
     ODictWrapper(const int &i)
     {
@@ -304,9 +300,9 @@ public:
         return static_cast<Wrapper &>(*this);
     }
 
-    bool operator==(const Wrapper &other) const
+    friend bool operator==(const Wrapper &a, const Wrapper &b)
     {
-        return dict_ == other.dict_;
+        return a.dict_ == b.dict_;
     }
 
     bool operator!=(const Wrapper &other) const
@@ -370,14 +366,14 @@ public:
     typedef Container container_type;
 
     //! \returns `-1`,`0` or `1` after comparing
-    virtual int compare(const Basic &o) const = 0;
-    virtual hash_t __hash__() const = 0;
+    int compare(const Basic &o) const override = 0;
+    hash_t __hash__() const override = 0;
 
     // return `degree` + 1. `0` returned for zero poly.
     virtual int size() const = 0;
 
     //! \returns `true` if two objects are equal
-    inline bool __eq__(const Basic &o) const
+    inline bool __eq__(const Basic &o) const override
     {
         if (is_a<Poly>(o))
             return eq(*var_, *(down_cast<const Poly &>(o).var_))
@@ -395,7 +391,7 @@ public:
         return poly_;
     }
 
-    inline vec_basic get_args() const
+    inline vec_basic get_args() const override
     {
         return {};
     }
@@ -592,13 +588,12 @@ protected:
     long i_;
 
 public:
-    ContainerBaseIter(RCP<const T> ptr, long x) : ptr_{ptr}, i_{x}
-    {
-    }
+    ContainerBaseIter(RCP<const T> ptr, long x) : ptr_{ptr}, i_{x} {}
 
-    bool operator==(const ContainerBaseIter &rhs)
+    friend bool operator==(const ContainerBaseIter &lhs,
+                           const ContainerBaseIter &rhs)
     {
-        return (ptr_ == rhs.ptr_) and (i_ == rhs.i_);
+        return (lhs.ptr_ == rhs.ptr_) and (lhs.i_ == rhs.i_);
     }
 
     bool operator!=(const ContainerBaseIter &rhs)
@@ -724,6 +719,6 @@ RCP<const Poly> quo_upoly(const Poly &a, const Poly &b)
     dict /= b.get_poly();
     return Poly::from_dict(a.get_var(), std::move(dict));
 }
-}
+} // namespace SymEngine
 
 #endif // SYMENGINE_UINT_BASE_H

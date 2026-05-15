@@ -4,19 +4,20 @@
 #include <symengine/symengine_exception.h>
 #include <symengine/real_double.h>
 
-using SymEngine::print_stack_on_segfault;
-using SymEngine::RCP;
+using SymEngine::Basic;
+using SymEngine::ComplexInf;
 using SymEngine::Integer;
 using SymEngine::integer;
-using SymEngine::Rational;
-using SymEngine::rational;
-using SymEngine::RealDouble;
-using SymEngine::real_double;
-using SymEngine::Number;
 using SymEngine::is_a;
 using SymEngine::NotImplementedError;
+using SymEngine::Number;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational;
+using SymEngine::RCP;
+using SymEngine::real_double;
+using SymEngine::RealDouble;
 using SymEngine::SymEngineException;
-using SymEngine::ComplexInf;
 
 TEST_CASE("Rational", "[rational]")
 {
@@ -47,7 +48,10 @@ TEST_CASE("Rational", "[rational]")
     r1 = q->div(*r2);
     REQUIRE(eq(*r1, *ComplexInf));
 
-    CHECK_THROWS_AS(q->pow(*q10_25), NotImplementedError &);
+    CHECK_THROWS_AS(q->pow(*q10_25), NotImplementedError);
+
+    RCP<const Basic> r3 = Basic::loads(r1->dumps());
+    REQUIRE(eq(*r1, *r3));
 }
 
 TEST_CASE("Rational compare", "[rational compare]")
@@ -70,7 +74,7 @@ TEST_CASE("Rational compare", "[rational compare]")
     REQUIRE(qm1_27->compare(*i0) == -1);
     REQUIRE(qm1_27->compare(*i2) == -1);
 
-    CHECK_THROWS_AS(q2_5->compare(*r), SymEngineException &);
+    CHECK_THROWS_AS(q2_5->compare(*r), SymEngineException);
 }
 
 TEST_CASE("Rational is_power, nth root", "[rational is_power, nth root]")
@@ -90,5 +94,5 @@ TEST_CASE("Rational is_power, nth root", "[rational is_power, nth root]")
     REQUIRE(res->__eq__(*qm1_3));
     REQUIRE(q9_25->nth_root(outArg(res), 2));
     REQUIRE(res->__eq__(*q3_5));
-    CHECK_THROWS_AS(q9_25->nth_root(outArg(res), 0), SymEngineException &);
+    CHECK_THROWS_AS(q9_25->nth_root(outArg(res), 0), SymEngineException);
 }

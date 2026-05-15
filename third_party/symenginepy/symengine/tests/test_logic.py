@@ -1,4 +1,4 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 from symengine.lib.symengine_wrapper import (true, false, Eq, Ne, Ge, Gt, Le, Lt, Symbol,
                                             I, And, Or, Not, Nand, Nor, Xor, Xnor, Piecewise,
                                             Contains, Interval, FiniteSet, oo, log)
@@ -44,6 +44,7 @@ def test_And():
     assert And(True, False) == false
     assert And(False, False) == false
     assert And(True, True, True) == true
+    raises(TypeError, lambda: x < y and y < 1)
 
 
 def test_Or():
@@ -54,6 +55,7 @@ def test_Or():
     assert Or(True, False) == true
     assert Or(False, False) == false
     assert Or(True, False, False) == true
+    raises(TypeError, lambda: x < y or y < 1)
 
 
 def test_Nor():
@@ -116,4 +118,4 @@ def test_Contains():
     assert Contains(x, Interval(1, 1)) != false
     assert Contains(oo, Interval(-oo, oo)) == false
     assert Contains(-oo, Interval(-oo, oo)) == false
-    
+

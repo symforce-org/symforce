@@ -1,4 +1,4 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 from symengine.lib.symengine_wrapper import (series, have_piranha, have_flint,
     Symbol, Integer, sin, cos, exp, sqrt, E)
 

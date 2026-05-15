@@ -125,6 +125,6 @@ RCP<const Poly> pow_upoly(const USymEnginePoly<Container, BaseType, Poly> &a,
     auto dict = Poly::container_type::pow(a.get_poly(), p);
     return Poly::from_container(a.get_var(), std::move(dict));
 }
-}
+} // namespace SymEngine
 
 #endif

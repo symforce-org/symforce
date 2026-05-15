@@ -11,9 +11,7 @@
 namespace SymEngine
 {
 // ----------------------------- CSRMatrix ------------------------------------
-CSRMatrix::CSRMatrix()
-{
-}
+CSRMatrix::CSRMatrix() {}
 
 CSRMatrix::CSRMatrix(unsigned row, unsigned col) : row_(row), col_(col)
 {
@@ -159,6 +157,19 @@ void CSRMatrix::set(unsigned i, unsigned j, const RCP<const Basic> &e)
                 p_[l]--;
         }
     }
+}
+
+tribool CSRMatrix::is_real(const Assumptions *assumptions) const
+{
+    RealVisitor visitor(assumptions);
+    tribool cur = tribool::tritrue;
+    for (auto &e : x_) {
+        cur = and_tribool(cur, visitor.apply(*e));
+        if (is_false(cur)) {
+            return cur;
+        }
+    }
+    return cur;
 }
 
 unsigned CSRMatrix::rank() const
@@ -759,4 +770,4 @@ void csr_binop_csr_canonical(
         CSRMatrix::csr_sum_duplicates(C.p_, C.j_, C.x_, A.row_);
 }
 
-} // SymEngine
+} // namespace SymEngine

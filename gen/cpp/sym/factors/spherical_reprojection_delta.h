@@ -56,8 +56,8 @@ void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp0 = 2 * _target_pose[3];
   const Scalar _tmp1 = _target_pose[2] * _tmp0;
   const Scalar _tmp2 = 2 * _target_pose[0] * _target_pose[1];
-  const Scalar _tmp3 = 2 * _source_pose[0];
-  const Scalar _tmp4 = _source_pose[1] * _tmp3;
+  const Scalar _tmp3 = 2 * _source_pose[1];
+  const Scalar _tmp4 = _source_pose[0] * _tmp3;
   const Scalar _tmp5 = 2 * _source_pose[3];
   const Scalar _tmp6 = _source_pose[2] * _tmp5;
   const Scalar _tmp7 = std::pow(Scalar(epsilon + std::pow(p_camera_source(0, 0), Scalar(2)) +
@@ -69,7 +69,7 @@ void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp10 = -2 * std::pow(_source_pose[0], Scalar(2));
   const Scalar _tmp11 = _tmp7 * p_camera_source(1, 0);
   const Scalar _tmp12 = _source_pose[0] * _tmp5;
-  const Scalar _tmp13 = 2 * _source_pose[1] * _source_pose[2];
+  const Scalar _tmp13 = _source_pose[2] * _tmp3;
   const Scalar _tmp14 = _tmp7 * p_camera_source(2, 0);
   const Scalar _tmp15 = _tmp11 * (_tmp10 + _tmp9 + 1) + _tmp14 * (-_tmp12 + _tmp13) +
                         _tmp8 * (_tmp4 + _tmp6) +
@@ -78,7 +78,7 @@ void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
   const Scalar _tmp17 = _target_pose[0] * _tmp16;
   const Scalar _tmp18 = _target_pose[1] * _tmp0;
   const Scalar _tmp19 = 1 - 2 * std::pow(_source_pose[1], Scalar(2));
-  const Scalar _tmp20 = _source_pose[2] * _tmp3;
+  const Scalar _tmp20 = 2 * _source_pose[0] * _source_pose[2];
   const Scalar _tmp21 = _source_pose[1] * _tmp5;
   const Scalar _tmp22 = _tmp11 * (_tmp12 + _tmp13) + _tmp14 * (_tmp10 + _tmp19) +
                         _tmp8 * (_tmp20 - _tmp21) +
@@ -111,21 +111,21 @@ void SphericalReprojectionDelta(const sym::Pose3<Scalar>& source_pose,
                         _target_calibration[6] * std::pow(_tmp37, Scalar(5)) +
                         _target_calibration[7] * std::pow(_tmp37, Scalar(7)) +
                         _target_calibration[8] * std::pow(_tmp37, Scalar(9)) + _tmp37;
-  const Scalar _tmp39 = std::pow(_tmp38, Scalar(2)) / _tmp33;
-  const Scalar _tmp40 = _target_calibration[9] * _tmp39;
-  const Scalar _tmp41 = _target_calibration[10] * _tmp39;
-  const Scalar _tmp42 = 2 * _tmp26 * _tmp31;
-  const Scalar _tmp43 = _tmp38 / _tmp34;
+  const Scalar _tmp39 = _tmp38 / _tmp34;
+  const Scalar _tmp40 = std::pow(_tmp38, Scalar(2)) / _tmp33;
+  const Scalar _tmp41 = _target_calibration[9] * _tmp40;
+  const Scalar _tmp42 = _target_calibration[10] * _tmp40;
+  const Scalar _tmp43 = 2 * _tmp26 * _tmp31;
 
   // Output terms (2)
   if (reprojection_delta != nullptr) {
     Eigen::Matrix<Scalar, 2, 1>& _reprojection_delta = (*reprojection_delta);
 
-    _reprojection_delta(0, 0) = _target_calibration[0] * (_tmp26 * _tmp43 + 3 * _tmp27 * _tmp40 +
-                                                          _tmp32 * _tmp40 + _tmp41 * _tmp42) +
+    _reprojection_delta(0, 0) = _target_calibration[0] * (_tmp26 * _tmp39 + 3 * _tmp27 * _tmp41 +
+                                                          _tmp32 * _tmp41 + _tmp42 * _tmp43) +
                                 _target_calibration[2] - target_pixel(0, 0);
-    _reprojection_delta(1, 0) = _target_calibration[1] * (_tmp27 * _tmp41 + _tmp31 * _tmp43 +
-                                                          3 * _tmp32 * _tmp41 + _tmp40 * _tmp42) +
+    _reprojection_delta(1, 0) = _target_calibration[1] * (_tmp27 * _tmp42 + _tmp31 * _tmp39 +
+                                                          3 * _tmp32 * _tmp42 + _tmp41 * _tmp43) +
                                 _target_calibration[3] - target_pixel(1, 0);
   }
 

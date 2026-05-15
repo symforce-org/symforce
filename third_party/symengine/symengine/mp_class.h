@@ -3,6 +3,7 @@
 
 #include <symengine/symengine_config.h>
 #include <symengine/symengine_casts.h>
+#include <cstring>
 #if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
 #include <symengine/mp_wrapper.h>
 #endif
@@ -12,6 +13,7 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <symengine/symengine_rcp.h>
+#include <ios>
 #elif SYMENGINE_INTEGER_CLASS == SYMENGINE_PIRANHA
 #include <piranha/mp_integer.hpp>
 #include <piranha/mp_rational.hpp>
@@ -50,10 +52,9 @@ namespace SymEngine
 typedef boost::multiprecision::number<boost::multiprecision::cpp_int_backend<>,
                                       boost::multiprecision::et_off>
     integer_class;
-typedef boost::multiprecision::
-    number<boost::multiprecision::cpp_rational_backend,
-           boost::multiprecision::et_off>
-        rational_class;
+typedef boost::multiprecision::number<
+    boost::multiprecision::cpp_rational_backend, boost::multiprecision::et_off>
+    rational_class;
 #elif SYMENGINE_INTEGER_CLASS == SYMENGINE_PIRANHA
 typedef piranha::integer integer_class;
 typedef piranha::rational rational_class;
@@ -82,7 +83,7 @@ inline rational_class operator"" _q(const char *str)
 {
     return rational_class(integer_class(str));
 }
-}
+} // namespace literals
 
 #if SYMENGINE_INTEGER_CLASS == SYMENGINE_GMPXX                                 \
     || SYMENGINE_INTEGER_CLASS == SYMENGINE_GMP
@@ -116,9 +117,22 @@ inline void mp_set_d(integer_class &i, double a)
     mpz_set_d(i.get_mpz_t(), a);
 }
 
-inline void mp_demote(integer_class &i)
+inline void mp_set_str(integer_class &i, const std::string &a)
 {
+    mpz_set_str(i.get_mpz_t(), a.c_str(), 0);
 }
+
+inline std::string mp_get_hex_str(const integer_class &i)
+{
+    void (*freefunc)(void *, size_t);
+    mp_get_memory_functions(NULL, NULL, &freefunc);
+    char *c = mpz_get_str(NULL, 16, i.get_mpz_t());
+    std::string r = std::string(c);
+    freefunc(c, strlen(c) + 1);
+    return r;
+}
+
+inline void mp_demote(integer_class &i) {}
 
 inline bool mp_fits_ulong_p(const integer_class &i)
 {
@@ -296,6 +310,13 @@ inline rational_class mp_abs(const rational_class &i)
     return res;
 }
 
+inline integer_class mp_primorial(unsigned long n)
+{
+    integer_class res;
+    mpz_primorial_ui(res.get_mpz_t(), n);
+    return res;
+}
+
 #elif SYMENGINE_INTEGER_CLASS == SYMENGINE_PIRANHA
 // Helper functions for piranha::integer
 inline piranha::integer mp_abs(const piranha::integer &i)
@@ -308,9 +329,7 @@ inline piranha::integer mp_sqrt(const piranha::integer &i)
     return i.sqrt();
 }
 
-inline void mp_demote(piranha::integer &i)
-{
-}
+inline void mp_demote(piranha::integer &i) {}
 
 inline mpz_ptr get_mpz_t(piranha::integer &i)
 {
@@ -450,6 +469,25 @@ inline void mp_set_d(piranha::integer &i, double a)
     i = a;
 }
 
+inline void mp_set_str(integer_class &i, const std::string &a)
+{
+    mpz_t m;
+    mpz_init(m);
+    mpz_set_str(m, a.c_str(), 0);
+    i = integer_class(m);
+}
+
+inline std::string mp_get_hex_str(const integer_class &i)
+{
+
+    void (*freefunc)(void *, size_t);
+    mp_get_memory_functions(NULL, NULL, &freefunc);
+    char *c = mpz_get_str(NULL, 16, i.get_mpz_view());
+    std::string r = std::string(c);
+    freefunc(c, strlen(c) + 1);
+    return r;
+}
+
 inline bool mp_fits_ulong_p(const piranha::integer &i)
 {
     return mpz_fits_ulong_p(i.get_mpz_view()) != 0;
@@ -464,6 +502,13 @@ inline void mp_addmul(integer_class &r, const integer_class &a,
                       const integer_class &b)
 {
     piranha::math::multiply_accumulate(r, a, b);
+}
+
+inline integer_class mp_primorial(unsigned long n)
+{
+    integer_class res;
+    mpz_primorial_ui(get_mpz_t(res), n);
+    return res;
 }
 
 // Helper functions for piranha::rational
@@ -564,6 +609,21 @@ inline double mp_get_d(const fmpz_wrapper &i)
 inline void mp_set_d(fmpz_wrapper &i, double a)
 {
     return fmpz_set_d(i.get_fmpz_t(), a);
+}
+
+inline void mp_set_str(fmpz_wrapper &i, const std::string &a)
+{
+    fmpz_set_str(i.get_fmpz_t(), a.c_str(), 0);
+}
+
+inline std::string mp_get_hex_str(const fmpz_wrapper &i)
+{
+    void (*freefunc)(void *, size_t);
+    mp_get_memory_functions(NULL, NULL, &freefunc);
+    char *c = fmpz_get_str(NULL, 16, i.get_fmpz_t());
+    std::string r = std::string(c);
+    freefunc(c, strlen(c) + 1);
+    return r;
 }
 
 inline fmpz_wrapper mp_abs(const fmpz_wrapper &i)
@@ -685,6 +745,13 @@ inline void mp_addmul(fmpz_wrapper &r, const fmpz_wrapper &a,
     fmpz_addmul(r.get_fmpz_t(), a.get_fmpz_t(), b.get_fmpz_t());
 }
 
+inline integer_class mp_primorial(unsigned long n)
+{
+    fmpz_wrapper res;
+    fmpz_primorial(res.get_fmpz_t(), n);
+    return res;
+}
+
 // helper functions for fmpq
 
 inline const fmpz_wrapper &get_den(const fmpq_wrapper &i)
@@ -768,6 +835,20 @@ inline double mp_get_d(const integer_class &i)
 inline void mp_set_d(integer_class &i, double a)
 {
     i.assign(a);
+}
+
+inline void mp_set_str(integer_class &i, const std::string &a)
+{
+    i = integer_class(a.c_str());
+}
+
+inline std::string mp_get_hex_str(const integer_class &i)
+{
+    if (mp_sign(i) >= 0) {
+        return i.str(0, std::ios_base::hex);
+    } else {
+        return std::string("-") + (-i).str(0, std::ios_base::hex);
+    }
 }
 
 inline unsigned long mp_get_ui(const integer_class &i)
@@ -909,6 +990,9 @@ inline rational_class mp_abs(const rational_class &i)
 
 inline bool mp_divisible_p(const integer_class &a, const integer_class &b)
 {
+    if (b == 0) {
+        return (a == 0);
+    }
     return a % b == 0;
 }
 
@@ -964,6 +1048,8 @@ int mp_legendre(const integer_class &a, const integer_class &n);
 int mp_jacobi(const integer_class &a, const integer_class &n);
 
 int mp_kronecker(const integer_class &a, const integer_class &n);
+
+integer_class mp_primorial(unsigned long n);
 
 class mp_randstate
 {
@@ -1169,7 +1255,7 @@ private:
 
 #endif // SYMENGINE_INTEGER_CLASS == Piranha or Flint or GMP or GMPXX
 
-} // SymEngine namespace
+} // namespace SymEngine
 
 #if !defined(HAVE_SYMENGINE_GMP) && defined(HAVE_SYMENGINE_BOOST)              \
     && BOOST_VERSION < 105900
@@ -1181,8 +1267,8 @@ template <>
 struct make_unsigned_imp<SymEngine::integer_class> {
     typedef SymEngine::integer_class type;
 };
-}
-}
+} // namespace detail
+} // namespace boost
 #endif
 
 #endif // SYMENGINE_INTEGER_CLASS_H

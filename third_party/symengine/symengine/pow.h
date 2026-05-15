@@ -24,13 +24,13 @@ public:
     //! Pow Constructor
     Pow(const RCP<const Basic> &base, const RCP<const Basic> &exp);
     //! \return Size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     //! \return `true` if canonical
     bool is_canonical(const Basic &base, const Basic &exp) const;
     //! \return `base` of `base**exp`
@@ -44,7 +44,7 @@ public:
         return exp_;
     }
 
-    virtual vec_basic get_args() const;
+    vec_basic get_args() const override;
 };
 
 //! \return Pow from `a` and `b`
@@ -68,6 +68,6 @@ inline RCP<const Basic> cbrt(const RCP<const Basic> &x)
     return pow(x, div(one, integer(3)));
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

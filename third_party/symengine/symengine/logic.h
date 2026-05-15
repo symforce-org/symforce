@@ -31,13 +31,13 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_BOOLEAN_ATOM)
     BooleanAtom(bool b);
     //! \return the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
     bool get_val() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
-    virtual RCP<const Boolean> logical_not() const;
+    int compare(const Basic &o) const override;
+    RCP<const Boolean> logical_not() const override;
 };
 
 extern SYMENGINE_EXPORT RCP<const BooleanAtom> boolTrue;
@@ -60,15 +60,15 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_CONTAINS)
     //! Constructor
     Contains(const RCP<const Basic> &expr, const RCP<const Set> &set);
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
     RCP<const Basic> get_expr() const;
     RCP<const Set> get_set() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
     RCP<const Basic> create(const RCP<const Basic> &lhs,
                             const RCP<const Set> &rhs) const;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
 };
 
 RCP<const Boolean> contains(const RCP<const Basic> &expr,
@@ -88,20 +88,18 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_PIECEWISE)
     //! Constructor
     Piecewise(PiecewiseVec &&vec);
-    hash_t __hash__() const;
+    bool is_canonical(const PiecewiseVec &vec);
+    hash_t __hash__() const override;
     const PiecewiseVec &get_vec() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
 };
 
 // Vec is vector of pairs of RCP<const Basic> and RCP<const Boolean> to
 // represent (Expr, Condition) pairs
-inline RCP<const Basic> piecewise(PiecewiseVec &&vec)
-{
-    return make_rcp<Piecewise>(std::move(vec));
-}
+RCP<const Basic> piecewise(const PiecewiseVec &vec);
 
 class And : public Boolean
 {
@@ -113,14 +111,14 @@ public:
     And(const set_boolean &s);
     bool is_canonical(const set_boolean &container_);
     //! \return the hash
-    hash_t __hash__() const;
-    virtual vec_basic get_args() const;
+    hash_t __hash__() const override;
+    vec_basic get_args() const override;
     RCP<const Basic> create(const set_boolean &a) const;
-    virtual bool __eq__(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
     const set_boolean &get_container() const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class Or : public Boolean
@@ -133,13 +131,13 @@ public:
     Or(const set_boolean &s);
     bool is_canonical(const set_boolean &container_);
     //! \return the hash
-    hash_t __hash__() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
+    hash_t __hash__() const override;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
     const set_boolean &get_container() const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class Not : public Boolean
@@ -152,13 +150,13 @@ public:
     Not(const RCP<const Boolean> &s);
     bool is_canonical(const RCP<const Boolean> &s);
     //! \return the hash
-    hash_t __hash__() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
+    hash_t __hash__() const override;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
     //! Structural equality comparator
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
     RCP<const Boolean> get_arg() const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class Xor : public Boolean
@@ -170,10 +168,10 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_XOR)
     Xor(const vec_boolean &s);
     bool is_canonical(const vec_boolean &container_);
-    hash_t __hash__() const;
-    virtual vec_basic get_args() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    vec_basic get_args() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     const vec_boolean &get_container() const;
 };
 
@@ -193,9 +191,9 @@ class Equality : public Relational
 public:
     IMPLEMENT_TYPEID(SYMENGINE_EQUALITY)
     Equality(const RCP<const Basic> &lhs, const RCP<const Basic> &rhs);
-    virtual RCP<const Basic> create(const RCP<const Basic> &lhs,
-                                    const RCP<const Basic> &rhs) const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Basic> create(const RCP<const Basic> &lhs,
+                            const RCP<const Basic> &rhs) const override;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class Unequality : public Relational
@@ -204,9 +202,9 @@ class Unequality : public Relational
 public:
     IMPLEMENT_TYPEID(SYMENGINE_UNEQUALITY)
     Unequality(const RCP<const Basic> &lhs, const RCP<const Basic> &rhs);
-    virtual RCP<const Basic> create(const RCP<const Basic> &lhs,
-                                    const RCP<const Basic> &rhs) const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Basic> create(const RCP<const Basic> &lhs,
+                            const RCP<const Basic> &rhs) const override;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class LessThan : public Relational
@@ -215,9 +213,9 @@ class LessThan : public Relational
 public:
     IMPLEMENT_TYPEID(SYMENGINE_LESSTHAN)
     LessThan(const RCP<const Basic> &lhs, const RCP<const Basic> &rhs);
-    virtual RCP<const Basic> create(const RCP<const Basic> &lhs,
-                                    const RCP<const Basic> &rhs) const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Basic> create(const RCP<const Basic> &lhs,
+                            const RCP<const Basic> &rhs) const override;
+    RCP<const Boolean> logical_not() const override;
 };
 
 class StrictLessThan : public Relational
@@ -226,9 +224,9 @@ class StrictLessThan : public Relational
 public:
     IMPLEMENT_TYPEID(SYMENGINE_STRICTLESSTHAN)
     StrictLessThan(const RCP<const Basic> &lhs, const RCP<const Basic> &rhs);
-    virtual RCP<const Basic> create(const RCP<const Basic> &lhs,
-                                    const RCP<const Basic> &rhs) const;
-    virtual RCP<const Boolean> logical_not() const;
+    RCP<const Basic> create(const RCP<const Basic> &lhs,
+                            const RCP<const Basic> &rhs) const override;
+    RCP<const Boolean> logical_not() const override;
 };
 
 inline bool is_a_Relational(const Basic &b)
@@ -271,6 +269,6 @@ RCP<const Boolean> logical_not(const RCP<const Boolean> &s);
 RCP<const Boolean> logical_nor(const set_boolean &s);
 RCP<const Boolean> logical_xor(const vec_boolean &s);
 RCP<const Boolean> logical_xnor(const vec_boolean &s);
-} // SymEngine
+} // namespace SymEngine
 
 #endif

@@ -34,7 +34,7 @@ public:
     BipartiteGraph(map<Edge, TEdgeValue> &edges)
     {
         _edges = edges;
-        for (const pair<Edge, TEdgeValue> &p : edges) {
+        for (const pair<const Edge, TEdgeValue> &p : edges) {
             TLeft nl = get<0>(p.first);
             TRight nr = get<1>(p.first);
             _left.insert(nl);
@@ -81,14 +81,14 @@ public:
     void __delitem__(const Edge &key)
     {
         _edges.erase(key);
-        for (const pair<Edge, TEdgeValue> &p : _edges) {
+        for (const pair<const Edge, TEdgeValue> &p : _edges) {
             TLeft l = get<0>(p.first);
             if (l == get<0>(key)) {
                 _left.erase(get<0>(key));
                 break;
             }
         }
-        for (const pair<Edge, TEdgeValue> &p : _edges) {
+        for (const pair<const Edge, TEdgeValue> &p : _edges) {
             TRight l = get<1>(p.first);
             if (l == get<1>(key)) {
                 _right.erase(get<0>(key));
@@ -105,7 +105,7 @@ public:
     without_nodes(const Edge &edge) const
     {
         BipartiteGraph<TLeft, TRight, TEdgeValue> new_graph;
-        for (const pair<Edge, TEdgeValue> &p : _edges) {
+        for (const pair<const Edge, TEdgeValue> &p : _edges) {
             Edge node = p.first;
             TEdgeValue v = p.second;
             TLeft &n1 = get<0>(node);
@@ -124,7 +124,7 @@ public:
     without_edge(const Edge &edge) const
     {
         BipartiteGraph<TLeft, TRight, TEdgeValue> new_graph;
-        for (const pair<Edge, TEdgeValue> &p : _edges) {
+        for (const pair<const Edge, TEdgeValue> &p : _edges) {
             Edge e2 = p.first;
             TEdgeValue v = p.second;
             if (edge == e2) {
@@ -139,7 +139,7 @@ public:
     {
         map<TLeft, set<TRight>> directed_graph;
 
-        for (const pair<Edge, TEdgeValue> &p : _edges) {
+        for (const pair<const Edge, TEdgeValue> &p : _edges) {
             TLeft left = get<0>(p.first);
             TRight right = get<1>(p.first);
             auto elem = directed_graph.find(left);
@@ -181,7 +181,7 @@ public:
     _DirectedMatchGraph(BipartiteGraph<TLeft, TRight, TEdgeValue> graph,
                         map<TLeft, TRight> matching)
     {
-        for (const pair<Edge, TEdgeValue> &p : graph._edges) {
+        for (const pair<const Edge, TEdgeValue> &p : graph._edges) {
             TLeft tail = get<0>(p.first);
             TRight head = get<1>(p.first);
             auto elem = matching.find(tail);
@@ -204,7 +204,7 @@ public:
     NodeList find_cycle() const
     {
         set<Node> visited;
-        for (const pair<Node, NodeSet> &n : _map) {
+        for (const pair<const Node, NodeSet> &n : _map) {
             NodeList node_list;
             NodeList cycle;
             cycle = _find_cycle(n.first, node_list, visited);
@@ -328,7 +328,7 @@ generator<map<TLeft, TRight>> _enum_maximum_matchings_iter(
 
         vector<tuple<TLeft, TRight, TEdgeValue>> edges;
 
-        for (const pair<Edge, TEdgeValue> &p : graph_plus._edges) {
+        for (const pair<const Edge, TEdgeValue> &p : graph_plus._edges) {
             TLeft left = get<0>(p.first);
             TRight right = get<1>(p.first);
             if ((left == get<0>(edge)) && (right == get<1>(edge))) {
@@ -362,7 +362,7 @@ generator<map<TLeft, TRight>> _enum_maximum_matchings_iter(
         bool left2found = false;
         TRight right;
 
-        for (const pair<Node, NodeSet> &p : directed_match_graph._map) {
+        for (const pair<const Node, NodeSet> &p : directed_match_graph._map) {
             int part1 = get<0>(p.first);
             TLeft node1 = get<1>(p.first);
             if ((part1 == LEFT)

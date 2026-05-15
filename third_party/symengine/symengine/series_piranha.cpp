@@ -5,13 +5,10 @@ namespace SymEngine
 
 URatPSeriesPiranha::URatPSeriesPiranha(pp_t p, const std::string varname,
                                        const unsigned degree)
-    : SeriesBase(std::move(p), varname, degree)
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
-RCP<const URatPSeriesPiranha>
-URatPSeriesPiranha::series(const RCP<const Basic> &t, const std::string &x,
-                           unsigned int prec)
+    : SeriesBase(std::move(p), varname, degree){SYMENGINE_ASSIGN_TYPEID()} RCP<
+        const URatPSeriesPiranha> URatPSeriesPiranha::
+          series(const RCP<const Basic> &t, const std::string &x,
+                 unsigned int prec)
 {
     SeriesVisitor<pp_t, piranha::rational, URatPSeriesPiranha> visitor(pp_t(x),
                                                                        x, prec);
@@ -87,7 +84,7 @@ RCP<const Basic> URatPSeriesPiranha::as_basic() const
             Add::coef_dict_add_term(outArg(co_basic), dict_, one, term);
         }
     }
-    return std::move(Add::from_dict(zcoef, std::move(dict_)));
+    return Add::from_dict(zcoef, std::move(dict_));
 }
 
 umap_int_basic URatPSeriesPiranha::as_dict() const
@@ -179,14 +176,10 @@ pp_t URatPSeriesPiranha::subs(const pp_t &s, const pp_t &var, const pp_t &r,
 
 UPSeriesPiranha::UPSeriesPiranha(p_expr p, const std::string varname,
                                  const unsigned degree)
-    : SeriesBase(std::move(p), varname, degree)
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : SeriesBase(std::move(p), varname, degree){SYMENGINE_ASSIGN_TYPEID()}
 
-RCP<const UPSeriesPiranha> UPSeriesPiranha::series(const RCP<const Basic> &t,
-                                                   const std::string &x,
-                                                   unsigned int prec)
+      RCP<const UPSeriesPiranha> UPSeriesPiranha::series(
+          const RCP<const Basic> &t, const std::string &x, unsigned int prec)
 {
     SeriesVisitor<p_expr, Expression, UPSeriesPiranha> visitor(p_expr(x), x,
                                                                prec);
@@ -239,7 +232,7 @@ RCP<const Basic> UPSeriesPiranha::as_basic() const
             Add::coef_dict_add_term(outArg(coef), dict_, one, term);
         }
     }
-    return std::move(Add::from_dict(one, std::move(dict_)));
+    return Add::from_dict(one, std::move(dict_));
 }
 
 umap_int_basic UPSeriesPiranha::as_dict() const
@@ -374,4 +367,4 @@ Expression UPSeriesPiranha::log(const Expression &c)
 {
     return SymEngine::log(c.get_basic());
 }
-}
+} // namespace SymEngine

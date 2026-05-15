@@ -16,24 +16,24 @@ using SymEngine::UIntPolyPiranha;
 using SymEngine::UIntPolyFlint;
 #endif
 
-using SymEngine::SymEngineException;
-using SymEngine::UIntPoly;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::integer;
+using SymEngine::integer_class;
+using SymEngine::make_rcp;
+using SymEngine::map_uint_mpz;
+using SymEngine::one;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_uint_mpz;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::integer;
-using SymEngine::vec_basic_eq_perm;
-using SymEngine::integer_class;
+using SymEngine::SymEngineException;
 using SymEngine::UIntDict;
-using SymEngine::add;
+using SymEngine::UIntPoly;
+using SymEngine::vec_basic_eq_perm;
 using SymEngine::vec_integer_class;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 
@@ -82,7 +82,7 @@ TEST_CASE("Adding two UIntPoly", "[UIntPoly]")
 
     RCP<const UIntPoly> g
         = UIntPoly::from_dict(y, {{0, 2_z}, {1, 3_z}, {2, 4_z}});
-    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException &);
+    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException);
 }
 
 TEST_CASE("Negative of a UIntPoly", "[UIntPoly]")
@@ -116,7 +116,7 @@ TEST_CASE("Subtracting two UIntPoly", "[UIntPoly]")
     REQUIRE(d->__str__() == "-x**2 - 2*x + 1");
     d = sub_upoly(*a, *c);
     REQUIRE(d->__str__() == "x**2 + 2*x - 1");
-    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException &);
+    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException);
 }
 
 TEST_CASE("Multiplication of two UIntPoly", "[UIntPoly]")
@@ -156,7 +156,7 @@ TEST_CASE("Multiplication of two UIntPoly", "[UIntPoly]")
     REQUIRE(mul_upoly(*c, *a)->__str__() == "-x**2 - 2*x - 1");
 
     c = UIntPoly::from_dict(y, {{0, -1_z}});
-    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException &);
+    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException);
 }
 
 TEST_CASE("Comparing two UIntPoly", "[UIntPoly]")

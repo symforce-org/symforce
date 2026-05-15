@@ -138,4 +138,4 @@ void as_numer_denom(const RCP<const Basic> &x,
     v.apply(*x);
 }
 
-} // SymEngine
+} // namespace SymEngine

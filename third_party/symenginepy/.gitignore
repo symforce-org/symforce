@@ -18,6 +18,8 @@ cython_test.cpp
 *.vcxproj
 *.filters
 symengine/lib/symengine_wrapper.cpp
+symengine/lib/symengine_wrapper.pyx
+symengine/lib/symengine_wrapper.pxd
 
 # Config Files
 symengine/lib/config.pxi
@@ -40,3 +42,4 @@ symengine.egg-info/
 genDocs/
 docs/_build/
 docs/source/
+symengine/lib/version_script_symengine_wrapper.txt

@@ -6,7 +6,7 @@ echo "TEST_CLANG_FORMAT=${TEST_CLANG_FORMAT}"
 if [[ "${TEST_CLANG_FORMAT}" == "yes" ]]; then
 
     RETURN=0
-    CLANG_FORMAT="clang-format-3.8"
+    CLANG_FORMAT="clang-format-11"
 
     if [ ! -f ".clang-format" ]; then
         echo ".clang-format file not found!"

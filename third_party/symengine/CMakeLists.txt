@@ -1,12 +1,20 @@
 cmake_minimum_required(VERSION 2.8.12)
 
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
+if (POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW) # needed for llvm >= 16
+endif ()
+
 set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UserOverride.cmake)
 
-project(symengine)
+project(symengine LANGUAGES C CXX)
 
 set(SYMENGINE_MAJOR_VERSION 0)
-set(SYMENGINE_MINOR_VERSION 7)
-set(SYMENGINE_PATCH_VERSION 0)
+set(SYMENGINE_MINOR_VERSION 10)
+set(SYMENGINE_PATCH_VERSION 1)
 set(SYMENGINE_VERSION ${SYMENGINE_MAJOR_VERSION}.${SYMENGINE_MINOR_VERSION}.${SYMENGINE_PATCH_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -25,12 +33,6 @@ endif ()
 
 set(BUILD_FOR_DISTRIBUTION no
     CACHE BOOL "Building SymEngine for a distribution")
-
-#Boost.multiprecision build segfaults if -O3 optimization is on
-#which it is by default for cmake Release mode. Remove -O3 from flags.
-if (("${INTEGER_CLASS}" MATCHES "boostmp") AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    string(REPLACE "-O3" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
-endif()
 
 # Enable C++11 support in all compilers. SymEngine will not compile unless
 # the C++11 support is enabled.
@@ -146,12 +148,7 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES Clang) AND (CMAKE_BUILD_TYPE STREQUAL "Releas
 endif()
 
 # Cotire
-if ((CMAKE_VERSION VERSION_GREATER 2.8.11) AND
-    (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU|MSVC"))
-    set(WITH_COTIRE yes CACHE BOOL "Use cotire to speed up build")
-else()
-    set(WITH_COTIRE no CACHE BOOL "Use cotire to speed up build")
-endif()
+set(WITH_COTIRE no CACHE BOOL "Use cotire to speed up build")
 
 set(INTEGER_CLASS "gmp"
     CACHE STRING "Integer class for symengine. Either gmp, gmpxx, flint or piranha")
@@ -192,29 +189,6 @@ elseif ("${INTEGER_CLASS}" MATCHES "gmpxx")
 else()
     set(SYMENGINE_INTEGER_CLASS "GMP")
 endif()
-
-# GMP
-if (HAVE_SYMENGINE_GMP)
-    find_package(GMP REQUIRED)
-    include_directories(SYSTEM ${GMP_INCLUDE_DIRS})
-    set(LIBS ${LIBS} ${GMP_TARGETS})
-    set(PKGS ${PKGS} "GMP")
-
-    # Check gmpxx
-    if (NOT(MSVC) AND WITH_GMPXX)
-        try_compile(GMPXX "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkgmpxx.cpp"
-            CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${CMAKE_CXX_FLAGS}"
-            CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${GMP_INCLUDE_DIRS}"
-            CMAKE_FLAGS "-DLINK_LIBRARIES=${GMP_LIBRARIES}"
-            OUTPUT_VARIABLE GMPXX_ERROR_LOG)
-        if (NOT ${GMPXX})
-            message(FATAL_ERROR "GMP library being linked is not supported by CMAKE_CXX_COMPILER used. \n"
-                "Recompile GMP with C++ support using ${CMAKE_CXX_COMPILER}, remove CMakeCache.txt and try again.\n"
-                "Error Log : \n${GMPXX_ERROR_LOG}")
-        endif()
-    endif()
-endif()
-
 
 set(MSVC_USE_MT yes CACHE BOOL "Use MT flags when compiling in MSVC")
 set(MSVC_WARNING_LEVEL 1 CACHE STRING "MSVC warning level")
@@ -341,6 +315,15 @@ if (WITH_MPC)
     set(PKGS ${PKGS} "MPC")
 endif()
 
+set(WITH_SYSTEM_CEREAL no CACHE BOOL "Build with system cereal instead of vendored files")
+if (WITH_SYSTEM_CEREAL)
+    find_package(CEREAL REQUIRED)
+    set(PKGS ${PKGS} "CEREAL")
+else()
+    set(CEREAL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/symengine/utilities/cereal/include")
+endif()
+include_directories(SYSTEM ${CEREAL_INCLUDE_DIRS})
+
 # PTHREAD
 set(WITH_PTHREAD no
 CACHE BOOL "Build with PTHREAD")
@@ -360,9 +343,10 @@ if (WITH_PIRANHA)
 endif()
 
 if (WITH_PTHREAD)
-    find_package(PTHREAD REQUIRED)
-    include_directories(SYSTEM ${PTHREAD_INCLUDE_DIRS})
-    set(LIBS ${LIBS} ${PTHREAD_TARGETS})
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads)
+    set(PTHREAD_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+    set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
     set(HAVE_SYMENGINE_PTHREAD yes)
     set(PKGS ${PKGS} "PTHREAD")
 endif()
@@ -392,6 +376,30 @@ if (WITH_PIRANHA)
     set(BOOST_COMPONENTS ${BOOST_COMPONENTS} serialization iostreams)
     set(WITH_BOOST yes)
 endif()
+
+# GMP
+if (HAVE_SYMENGINE_GMP)
+    find_package(GMP REQUIRED)
+    include_directories(SYSTEM ${GMP_INCLUDE_DIRS})
+    set(LIBS ${LIBS} ${GMP_TARGETS})
+    set(PKGS ${PKGS} "GMP")
+
+    # Check gmpxx
+    if (NOT(MSVC) AND WITH_GMPXX)
+        try_compile(GMPXX "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkgmpxx.cpp"
+            CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${CMAKE_CXX_FLAGS}"
+            CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${GMP_INCLUDE_DIRS}"
+            CMAKE_FLAGS "-DLINK_LIBRARIES=${GMP_LIBRARIES}"
+            OUTPUT_VARIABLE GMPXX_ERROR_LOG)
+        if (NOT ${GMPXX})
+            message(FATAL_ERROR "GMP library being linked is not supported by CMAKE_CXX_COMPILER used. \n"
+                "Recompile GMP with C++ support using ${CMAKE_CXX_COMPILER}, remove CMakeCache.txt and try again.\n"
+                "Error Log : \n${GMPXX_ERROR_LOG}")
+        endif()
+    endif()
+endif()
+
+include(GNUInstallDirs)  # For llvm>=16
 
 # LLVM
 set(WITH_LLVM no
@@ -435,27 +443,14 @@ if (WITH_LLVM)
     include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
     set(HAVE_SYMENGINE_LLVM yes)
     set(PKGS ${PKGS} "LLVM")
-    message("LLVM VERSION: ${LLVM_VERSION}")
 endif()
 
 # BENCHMARKS
 set(BUILD_BENCHMARKS yes
     CACHE BOOL "Build SymEngine benchmarks")
 
-set(BUILD_BENCHMARKS_NONIUS no
-    CACHE BOOL "Build SymEngine Nonius benchmarks")
-
 set(BUILD_BENCHMARKS_GOOGLE no
     CACHE BOOL "Build SymEngine Google Benchmark benchmarks")
-
-if (BUILD_BENCHMARKS)
-    if (BUILD_BENCHMARKS_NONIUS)
-        if(NOT WIN32)
-            set(WITH_PTHREAD yes)
-        endif()
-        set(WITH_BOOST yes)
-    endif()
-endif()
 
 if (WITH_BOOST)
     find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS})
@@ -505,10 +500,8 @@ set(BUILD_DOXYGEN no
 if (BUILD_DOXYGEN)
     find_package(Doxygen REQUIRED)
     if(DOXYGEN_FOUND)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile
-            ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
         add_custom_target(doc ALL
-            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxygen/Doxyfile-prj.cfg
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
             COMMENT "Generating API documentation with Doxygen" VERBATIM)
         install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html/ DESTINATION doc)
@@ -626,6 +619,9 @@ if (TARGET teuchos)
     set(CONF_INCLUDE_DIRS ${CONF_INCLUDE_DIRS}
                            ${PROJECT_SOURCE_DIR}/symengine/utilities/teuchos ${PROJECT_BINARY_DIR}/symengine/utilities/teuchos)
 endif()
+if (NOT WITH_SYSTEM_CEREAL)
+    set(CONF_INCLUDE_DIRS ${CONF_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/symengine/utilities/cereal/include)
+endif()
 set(SYMENGINE_BUILD_TREE yes)
 configure_file(cmake/SymEngineConfig.cmake.in
     "${PROJECT_BINARY_DIR}/SymEngineConfig.cmake" @ONLY)
@@ -658,7 +654,6 @@ install(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SymEngineConfig.cma
               #cmake/FindMPFR.cmake
               #cmake/FindPIRANHA.cmake
               #cmake/FindPRIMESIEVE.cmake
-              #cmake/FindPTHREAD.cmake
               #cmake/FindTCMALLOC.cmake
               #cmake/LibFindMacros.cmake
         DESTINATION ${INSTALL_CMAKE_DIR})
@@ -710,7 +705,6 @@ message("HAVE_SYMENGINE_STD_TO_STRING: ${HAVE_SYMENGINE_STD_TO_STRING}")
 message("WITH_SYMENGINE_THREAD_SAFE: ${WITH_SYMENGINE_THREAD_SAFE}")
 message("BUILD_TESTS: ${BUILD_TESTS}")
 message("BUILD_BENCHMARKS: ${BUILD_BENCHMARKS}")
-message("BUILD_BENCHMARKS_NONIUS: ${BUILD_BENCHMARKS_NONIUS}")
 message("BUILD_BENCHMARKS_GOOGLE: ${BUILD_BENCHMARKS_GOOGLE}")
 
 message("WITH_GMP: ${HAVE_SYMENGINE_GMP}")
@@ -766,6 +760,7 @@ endif()
 
 message("WITH_LLVM: ${WITH_LLVM}")
 if (WITH_LLVM)
+    message("LLVM VERSION: ${LLVM_VERSION}")
     message("LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
 endif()
 
@@ -777,7 +772,6 @@ endif()
 
 message("WITH_PTHREAD: ${WITH_PTHREAD}")
 if (WITH_PTHREAD)
-    message("PTHREAD_INCLUDE_DIRS: ${PTHREAD_INCLUDE_DIRS}")
     message("PTHREAD_LIBRARIES: ${PTHREAD_LIBRARIES}")
 endif()
 
@@ -794,6 +788,7 @@ endif()
 
 message("WITH_OPENMP: ${WITH_OPENMP}")
 message("WITH_VIRTUAL_TYPEID: ${WITH_VIRTUAL_TYPEID}")
+message("LIBS: ${LIBS}")
 
 message("")
 message("--------------------------------------------------------------------------------")

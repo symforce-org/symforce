@@ -14,9 +14,7 @@ protected:
     mpc_ptr result_;
 
 public:
-    EvalMPCVisitor(mpfr_rnd_t rnd) : rnd_{rnd}
-    {
-    }
+    EvalMPCVisitor(mpfr_rnd_t rnd) : rnd_{rnd} {}
 
     void apply(mpc_ptr result, const Basic &b)
     {
@@ -359,6 +357,6 @@ void eval_mpc(mpc_ptr result, const Basic &b, mpfr_rnd_t rnd)
     v.apply(result, b);
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_MPFR

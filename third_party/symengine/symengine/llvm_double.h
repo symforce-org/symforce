@@ -22,7 +22,7 @@ namespace legacy
 {
 class FunctionPassManager;
 }
-}
+} // namespace llvm
 
 namespace SymEngine
 {
@@ -99,6 +99,7 @@ public:
     void bvisit(const Min &x);
     void bvisit(const Contains &x);
     void bvisit(const Infty &x);
+    void bvisit(const NaN &x);
     void bvisit(const Floor &x);
     void bvisit(const Ceiling &x);
     void bvisit(const Truncate &x);

@@ -6,8 +6,6 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp cimport bool as cppbool
 
-include "config.pxi"
-
 cdef class Basic(object):
     cdef rcp_const_basic thisptr
 

@@ -71,7 +71,7 @@ private:
     void get_left_indices_vector(const map<TLeft, set<TRight>> &m)
     {
         _left.reserve(m.size());
-        for (const pair<TLeft, set<TRight>> &p : m) {
+        for (const pair<const TLeft, set<TRight>> &p : m) {
             _left.push_back(p.first);
         }
     }

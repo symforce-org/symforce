@@ -1,4 +1,4 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 
 from symengine import (Symbol, Integer, sympify, SympifyError, true, false, pi, nan, oo,
                        zoo, E, I, GoldenRatio, Catalan, Rational, sqrt, Eq)
@@ -44,7 +44,7 @@ def test_S():
 
 
 def test_sympify_error1a():
-    class Test(object):
+    class Test:
         pass
     raises(SympifyError, lambda: sympify(Test()))
 

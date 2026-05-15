@@ -8,41 +8,41 @@
 #include <symengine/symengine_exception.h>
 #include <symengine/pow.h>
 
-using SymEngine::SymEngineException;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::RCP;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::Complex;
+using SymEngine::complex_double;
+using SymEngine::down_cast;
+using SymEngine::eq;
+using SymEngine::eval_double;
+using SymEngine::hash_t;
 using SymEngine::Integer;
 using SymEngine::integer;
-using SymEngine::Number;
-using SymEngine::Rational;
-using SymEngine::Complex;
-using SymEngine::real_double;
-using SymEngine::complex_double;
-using SymEngine::eq;
-using SymEngine::is_a;
-using SymEngine::NumberWrapper;
-using SymEngine::make_rcp;
-using SymEngine::Basic;
-using SymEngine::sqrt;
-using SymEngine::add;
-using SymEngine::eval_double;
 using SymEngine::integer_class;
-using SymEngine::rational_class;
-using SymEngine::hash_t;
-using SymEngine::down_cast;
+using SymEngine::is_a;
+using SymEngine::make_rcp;
 using SymEngine::minus_one;
+using SymEngine::Number;
+using SymEngine::NumberWrapper;
 using SymEngine::one;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::RCP;
+using SymEngine::real_double;
+using SymEngine::sqrt;
+using SymEngine::SymEngineException;
 #ifdef HAVE_SYMENGINE_MPFR
+using SymEngine::eval_mpfr;
 using SymEngine::mpfr_class;
 using SymEngine::real_mpfr;
-using SymEngine::eval_mpfr;
 using SymEngine::RealMPFR;
 #endif
 #ifdef HAVE_SYMENGINE_MPC
-using SymEngine::mpc_class;
 using SymEngine::complex_mpc;
 using SymEngine::ComplexMPC;
 using SymEngine::eval_mpc;
+using SymEngine::mpc_class;
 #endif
 
 TEST_CASE("RealMPFR: arithmetic", "[number]")
@@ -142,9 +142,9 @@ TEST_CASE("RealMPFR: arithmetic", "[number]")
     REQUIRE(is_a<ComplexMPC>(*pownum(mulnum(minus_one, r1), r5)));
 
 #else
-    CHECK_THROWS_AS(addnum(r1, c1), SymEngineException &);
-    CHECK_THROWS_AS(pownum(r5, half), SymEngineException &);
-    CHECK_THROWS_AS(pownum(integer(-2), r1), SymEngineException &);
+    CHECK_THROWS_AS(addnum(r1, c1), SymEngineException);
+    CHECK_THROWS_AS(pownum(r5, half), SymEngineException);
+    CHECK_THROWS_AS(pownum(integer(-2), r1), SymEngineException);
 #endif // HAVE_SYMENGINE_MPC
 #endif // HAVE_SYMENGINE_MPFR
 }
@@ -348,9 +348,7 @@ TEST_CASE("Test NumberWrapper", "[number]")
     {
     public:
         long i_;
-        Long(long i) : i_(i)
-        {
-        }
+        Long(long i) : i_(i) {}
 
         virtual std::string __str__() const
         {

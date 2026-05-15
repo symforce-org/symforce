@@ -189,7 +189,7 @@ __host__ __device__ void BackendTestFunctionFloat64(
   }
 
   if (res35 != nullptr) {
-    *res35 = x - 5.5 * floor(0.18181818181818199 * x);
+    *res35 = x - 5.5 * floor(0.18181818181818182 * x);
   }
 
   if (res36 != nullptr) {

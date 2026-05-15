@@ -1,9 +1,12 @@
 #include <valarray>
 #include <iterator>
 
+#include <symengine/prime_sieve.h>
 #include <symengine/ntheory.h>
 #include <symengine/rational.h>
+#include <symengine/add.h>
 #include <symengine/mul.h>
+#include <symengine/pow.h>
 #ifdef HAVE_SYMENGINE_ECM
 #include <ecm.h>
 #endif // HAVE_SYMENGINE_ECM
@@ -340,7 +343,7 @@ int _factor_pollard_rho_method(integer_class &rop, const integer_class &n,
     }
     return 0;
 }
-}
+} // namespace
 
 int factor_pollard_rho_method(const Ptr<RCP<const Integer>> &f,
                               const Integer &n, unsigned retries)
@@ -487,120 +490,6 @@ void prime_factor_multiplicities(map_integer_uint &primes_mul, const Integer &n)
     }
     if (not(_n == 1))
         insert(primes_mul, integer(std::move(_n)), 1);
-}
-
-std::vector<unsigned> Sieve::_primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
-bool Sieve::_clear = true;
-unsigned Sieve::_sieve_size = 32 * 1024 * 8; // 32K in bits
-
-void Sieve::set_clear(bool clear)
-{
-    _clear = clear;
-}
-
-void Sieve::clear()
-{
-    _primes.erase(_primes.begin() + 10, _primes.end());
-}
-
-void Sieve::set_sieve_size(unsigned size)
-{
-#ifdef HAVE_SYMENGINE_PRIMESIEVE
-    primesieve::set_sieve_size(size);
-#else
-    _sieve_size = size * 1024 * 8; // size in bits
-#endif
-}
-
-void Sieve::_extend(unsigned limit)
-{
-#ifdef HAVE_SYMENGINE_PRIMESIEVE
-    if (_primes.back() < limit)
-        primesieve::generate_primes(_primes.back() + 1, limit, &_primes);
-#else
-    const unsigned sqrt_limit
-        = static_cast<unsigned>(std::floor(std::sqrt(limit)));
-    unsigned start = _primes.back() + 1;
-    if (limit <= start)
-        return;
-    if (sqrt_limit >= start) {
-        _extend(sqrt_limit);
-        start = _primes.back() + 1;
-    }
-
-    unsigned segment = _sieve_size;
-    std::valarray<bool> is_prime(segment);
-    for (; start <= limit; start += 2 * segment) {
-        unsigned finish = std::min(start + segment * 2 + 1, limit);
-        is_prime[std::slice(0, segment, 1)] = true;
-        // considering only odd integers. An odd number n corresponds to
-        // n-start/2 in the array.
-        for (unsigned index = 1; index < _primes.size()
-                                 and _primes[index] * _primes[index] <= finish;
-             ++index) {
-            unsigned n = _primes[index];
-            unsigned multiple = (start / n + 1) * n;
-            if (multiple % 2 == 0)
-                multiple += n;
-            if (multiple > finish)
-                continue;
-            std::slice sl = std::slice((multiple - start) / 2,
-                                       1 + (finish - multiple) / (2 * n), n);
-            // starting from n*n, all the odd multiples of n are marked not
-            // prime.
-            is_prime[sl] = false;
-        }
-        for (unsigned n = start + 1; n <= finish; n += 2) {
-            if (is_prime[(n - start) / 2])
-                _primes.push_back(n);
-        }
-    }
-#endif
-}
-
-void Sieve::generate_primes(std::vector<unsigned> &primes, unsigned limit)
-{
-    _extend(limit);
-    auto it = std::upper_bound(_primes.begin(), _primes.end(), limit);
-    // find the first position greater than limit and reserve space for the
-    // primes
-    primes.reserve(it - _primes.begin());
-    std::copy(_primes.begin(), it, std::back_inserter(primes));
-    if (_clear)
-        clear();
-}
-
-Sieve::iterator::iterator(unsigned max)
-{
-    _limit = max;
-    _index = 0;
-}
-
-Sieve::iterator::iterator()
-{
-    _limit = 0;
-    _index = 0;
-}
-
-Sieve::iterator::~iterator()
-{
-    if (_clear)
-        Sieve::clear();
-}
-
-unsigned Sieve::iterator::next_prime()
-{
-    if (_index >= _primes.size()) {
-        unsigned extend_to = _primes[_index - 1] * 2;
-        if (_limit > 0 and _limit < extend_to) {
-            extend_to = _limit;
-        }
-        _extend(extend_to);
-        if (_index >= _primes.size()) { // the next prime is greater than _limit
-            return _limit + 1;
-        }
-    }
-    return SymEngine::Sieve::_primes[_index++];
 }
 
 RCP<const Number> bernoulli(unsigned long n)
@@ -1745,4 +1634,76 @@ long mertens(const unsigned long a)
     }
     return mertens;
 }
-} // SymEngine
+
+/**
+ * @brief Numeric calculation of the n:th s-gonal number
+ * @param s Number of sides of the polygon. Must be greater than 2.
+ * @param n Must be greater than 0
+ * @returns The n:th s-gonal number
+ *
+ * A fast pure numeric calculation of the n:th s-gonal number. No bounds
+ * checking of the input is performed.
+ * See https://en.wikipedia.org/wiki/Polygonal_number for source of formula.
+ */
+integer_class mp_polygonal_number(const integer_class &s,
+                                  const integer_class &n)
+{
+    auto res = ((s - 2) * n * n - (s - 4) * n) / 2;
+    return res;
+}
+
+/**
+ * @brief Numeric calculation of the principal s-gonal root of x
+ * @param s Number of sides of the polygon. Must be greater than 2.
+ * @param x An integer greater than 0
+ * @returns The root
+ *
+ * A fast pure numeric calculation of the principal (i.e. positive) s-gonal root
+ * of x. No bounds checking of the input is performed.
+ * See https://en.wikipedia.org/wiki/Polygonal_number for source of formula.
+ */
+integer_class mp_principal_polygonal_root(const integer_class &s,
+                                          const integer_class &x)
+{
+    integer_class tmp;
+    mp_pow_ui(tmp, s - 4, 2);
+    integer_class root = mp_sqrt(8 * x * (s - 2) + tmp);
+    integer_class n = (root + s - 4) / (2 * (s - 2));
+    return n;
+}
+
+std::pair<integer_class, integer_class>
+mp_perfect_power_decomposition(const integer_class &n, bool lowest_exponent)
+{
+    // From
+    // https://codegolf.stackexchange.com/questions/1935/fastest-algorithm-for-decomposing-a-perfect-power
+    unsigned long p = 2;
+    integer_class intone, i, j, m, res;
+    intone = 1;
+    std::pair<integer_class, integer_class> respair;
+    respair = std::make_pair(n, intone);
+
+    while ((intone << p) <= n) {
+        i = 2;
+        j = n;
+        while (j > i + 1) {
+            m = (i + j) / 2;
+            mp_pow_ui(res, m, p);
+            if (res > n)
+                j = m;
+            else
+                i = m;
+        }
+        mp_pow_ui(res, i, p);
+        if (res == n) {
+            respair = std::make_pair(i, p);
+            if (lowest_exponent) {
+                return respair;
+            }
+        }
+        p++;
+    }
+    return respair;
+}
+
+} // namespace SymEngine

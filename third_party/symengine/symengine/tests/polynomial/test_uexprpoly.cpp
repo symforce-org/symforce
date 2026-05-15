@@ -5,23 +5,23 @@
 #include <symengine/polys/uexprpoly.h>
 #include <symengine/symengine_exception.h>
 
+using SymEngine::add;
+using SymEngine::Basic;
 using SymEngine::Expression;
-using SymEngine::UExprPoly;
-using SymEngine::uexpr_poly;
-using SymEngine::UExprDict;
+using SymEngine::integer;
+using SymEngine::make_rcp;
+using SymEngine::map_int_Expr;
+using SymEngine::one;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_int_Expr;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::integer;
-using SymEngine::add;
 using SymEngine::SymEngineException;
+using SymEngine::uexpr_poly;
+using SymEngine::UExprDict;
+using SymEngine::UExprPoly;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 
@@ -79,7 +79,7 @@ TEST_CASE("Adding two UExprPoly", "[UExprPoly]")
     REQUIRE(add_upoly(*d, a)->__str__() == "a*x**2 + 2*x + 3");
 
     d = uexpr_poly(y, {{0, 2}, {1, 4}});
-    CHECK_THROWS_AS(add_upoly(a, *d), SymEngineException &);
+    CHECK_THROWS_AS(add_upoly(a, *d), SymEngineException);
 }
 
 TEST_CASE("Negative of a UExprPoly", "[UExprPoly]")
@@ -134,7 +134,7 @@ TEST_CASE("Subtracting two UExprPoly", "[UExprPoly]")
     REQUIRE(sub_upoly(*d, a)->__str__() == "-x**2 - 2*x + 1");
 
     d = uexpr_poly(y, {{0, 2}, {1, 4}});
-    CHECK_THROWS_AS(sub_upoly(a, *d), SymEngineException &);
+    CHECK_THROWS_AS(sub_upoly(a, *d), SymEngineException);
 }
 
 TEST_CASE("Multiplication of two UExprPoly", "[UExprPoly]")
@@ -153,15 +153,16 @@ TEST_CASE("Multiplication of two UExprPoly", "[UExprPoly]")
 
     REQUIRE(c->__str__()
             == "a**2*x**4 + 2*a*b*x**3 + (2*a + b**2)*x**2 + 2*b*x + 1");
-    REQUIRE(d->__str__() == "-a**2*x**4 + (-2*a - a*b)*x**3 + (-2*a - "
-                            "2*b)*x**2 + (-2 - b)*x - 1");
+    REQUIRE(d->__str__()
+            == "-a**2*x**4 + (-2*a - a*b)*x**3 + (-2*a - "
+               "2*b)*x**2 + (-2 - b)*x - 1");
 
     RCP<const UExprPoly> f = uexpr_poly(x, {{0, Expression(2)}});
     REQUIRE(mul_upoly(*a, *f)->__str__() == "2*a*x**2 + 2*b*x + 2");
     REQUIRE(mul_upoly(*f, *a)->__str__() == "2*a*x**2 + 2*b*x + 2");
 
     f = uexpr_poly(y, {{0, 2}, {1, 4}});
-    CHECK_THROWS_AS(mul_upoly(*a, *f), SymEngineException &);
+    CHECK_THROWS_AS(mul_upoly(*a, *f), SymEngineException);
 
     f = uexpr_poly(x, map_int_Expr{});
     REQUIRE(mul_upoly(*a, *f)->__str__() == "0");
@@ -169,8 +170,9 @@ TEST_CASE("Multiplication of two UExprPoly", "[UExprPoly]")
     a = uexpr_poly(x, {{-2, 5}, {-1, 3}, {0, 1}, {1, 2}});
 
     c = mul_upoly(*a, *b);
-    REQUIRE(c->__str__() == "-2*a*x**3 + (-4 - a)*x**2 + (-4 - 3*a)*x + (-7 - "
-                            "5*a) - 13*x**(-1) - 5*x**(-2)");
+    REQUIRE(c->__str__()
+            == "-2*a*x**3 + (-4 - a)*x**2 + (-4 - 3*a)*x + (-7 - "
+               "5*a) - 13*x**(-1) - 5*x**(-2)");
 }
 
 TEST_CASE("Comparing two UExprPoly", "[UExprPoly]")
@@ -340,7 +342,8 @@ TEST_CASE("UExprPoly expand", "[UExprPoly][expand]")
     RCP<const Basic> c = expand(b);
 
     REQUIRE(b->__str__() == "(a*x**3 + x**2 + x)**3");
-    REQUIRE(c->__str__() == "a**3*x**9 + 3*a**2*x**8 + (2*a + a*(1 + 2*a) + "
-                            "a**2)*x**7 + (1 + 6*a)*x**6 + (3 + 3*a)*x**5 + "
-                            "3*x**4 + x**3");
+    REQUIRE(c->__str__()
+            == "a**3*x**9 + 3*a**2*x**8 + (2*a + a*(1 + 2*a) + "
+               "a**2)*x**7 + (1 + 6*a)*x**6 + (3 + 3*a)*x**5 + "
+               "3*x**4 + x**3");
 }

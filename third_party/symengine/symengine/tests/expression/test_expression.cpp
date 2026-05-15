@@ -3,15 +3,15 @@
 
 #include <symengine/expression.h>
 
-using SymEngine::Expression;
-using SymEngine::symbol;
-using SymEngine::eq;
-using SymEngine::integer;
-using SymEngine::real_double;
 using SymEngine::complex_double;
-using SymEngine::sin;
 using SymEngine::cos;
+using SymEngine::eq;
+using SymEngine::Expression;
+using SymEngine::integer;
 using SymEngine::pi;
+using SymEngine::real_double;
+using SymEngine::sin;
+using SymEngine::symbol;
 
 TEST_CASE("Constructors of Expression", "[Expression]")
 {

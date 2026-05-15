@@ -26,24 +26,24 @@ public:
     //! Constant Constructor
     Constant(const std::string &name);
     //! \return Size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
     /*! Comparison operator
      * \param o - Object to be compared with
      * \return `0` if equal, `-1` , `1` according to string compare
      * */
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
     //! \return name of the Constant.
     inline std::string get_name() const
     {
         return name_;
     }
 
-    virtual vec_basic get_args() const
+    vec_basic get_args() const override
     {
         return {};
     }
@@ -59,6 +59,7 @@ inline RCP<const Constant> constant(const std::string &name)
 extern SYMENGINE_EXPORT RCP<const Integer> zero;
 extern SYMENGINE_EXPORT RCP<const Integer> one;
 extern SYMENGINE_EXPORT RCP<const Integer> minus_one;
+extern SYMENGINE_EXPORT RCP<const Integer> two;
 extern SYMENGINE_EXPORT RCP<const Number> I;
 
 // Symbolic Constants
@@ -75,6 +76,6 @@ extern SYMENGINE_EXPORT RCP<const Infty> ComplexInf;
 
 // Not a Number
 extern SYMENGINE_EXPORT RCP<const NaN> Nan;
-} // SymEngine
+} // namespace SymEngine
 
 #endif

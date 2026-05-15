@@ -4,6 +4,36 @@
 namespace SymEngine
 {
 
+void pow_number(const RCP<const Basic> &in_re, const RCP<const Basic> &in_im,
+                unsigned long n, Ptr<RCP<const Basic>> &out_re,
+                Ptr<RCP<const Basic>> &out_im)
+{
+    unsigned long mask = 1;
+    RCP<const Basic> tmp;
+    RCP<const Basic> p_re = in_re;
+    RCP<const Basic> p_im = in_im;
+    *out_re = one;
+    *out_im = zero;
+
+    while (true) {
+        if (n & mask) {
+            // Multiply r by p
+            tmp = sub(mul(*out_re, p_re), mul(*out_im, p_im));
+            *out_im = add(mul(*out_re, p_im), mul(*out_im, p_re));
+            *out_re = tmp;
+        }
+        mask = mask << 1;
+        if (mask > 0 and n >= mask) {
+            // Multiply p by p
+            tmp = sub(mul(p_re, p_re), mul(p_im, p_im));
+            p_im = mul(two, mul(p_re, p_im));
+            p_re = tmp;
+        } else {
+            break;
+        }
+    }
+}
+
 class RealImagVisitor : public BaseVisitor<RealImagVisitor>
 {
 private:
@@ -74,18 +104,25 @@ public:
             return;
         }
         if (is_a<Integer>(*exp_)) {
-            RCP<const Basic> expx;
-            if (eq(*Gt(exp_, zero), *boolTrue)) {
-                expx = expand(x.rcp_from_this());
-            } else {
+            if (static_cast<const Integer &>(*exp_).is_negative()) {
                 auto magn = add(mul(*real_, *real_), mul(*imag_, *imag_));
+                *imag_ = neg(*imag_);
+                RCP<const Integer> expx = rcp_static_cast<const Integer>(exp_);
+                expx = static_cast<const Integer &>(*exp_).neg();
+                unsigned long n = numeric_cast<unsigned long>(
+                    mp_get_ui(expx->as_integer_class()));
+                RCP<const Basic> real1 = *real_, imag1 = *imag_;
+                pow_number(real1, imag1, n, real_, imag_);
+                magn = pow(magn, expx);
                 *real_ = div(*real_, magn);
-                *imag_ = div(neg(*imag_), magn);
-                expx = expand(pow(add(*real_, mul(*imag_, I)), neg(exp_)));
+                *imag_ = div(*imag_, magn);
+            } else {
+                RCP<const Integer> expx = rcp_static_cast<const Integer>(exp_);
+                unsigned long n = numeric_cast<unsigned long>(
+                    mp_get_ui(expx->as_integer_class()));
+                RCP<const Basic> real1 = *real_, imag1 = *imag_;
+                pow_number(real1, imag1, n, real_, imag_);
             }
-            if (eq(*expx, x))
-                throw SymEngineException("Not Implemented");
-            apply(*expx);
         } else if (is_a<Rational>(*exp_)) {
             auto magn = sqrt(add(mul(*real_, *real_), mul(*imag_, *imag_)));
             auto ang = atan2(*imag_, *real_);
@@ -138,8 +175,7 @@ public:
             *imag_ = zero;
             return;
         }
-        auto i2 = integer(2);
-        auto twice_real_ = mul(i2, *real_), twice_imag_ = mul(i2, *imag_);
+        auto twice_real_ = mul(two, *real_), twice_imag_ = mul(two, *imag_);
         auto den = add(cos(twice_real_), cosh(twice_imag_));
         *real_ = div(sin(twice_real_), den);
         *imag_ = div(sinh(twice_imag_), den);
@@ -162,8 +198,7 @@ public:
             *real_ = x.rcp_from_this();
             return;
         }
-        auto i2 = integer(2);
-        auto twice_real_ = mul(i2, *real_), twice_imag_ = mul(i2, *imag_);
+        auto twice_real_ = mul(two, *real_), twice_imag_ = mul(two, *imag_);
         auto den = sub(cos(twice_real_), cosh(twice_imag_));
         *real_ = neg(div(sin(twice_real_), den));
         *imag_ = neg(div(sinh(twice_imag_), den));
@@ -190,9 +225,8 @@ public:
             *real_ = x.rcp_from_this();
             return;
         }
-        auto i2 = integer(2);
         auto sinh_re = sinh(*real_), cos_im = cos(*imag_);
-        auto den = add(pow(sinh_re, i2), pow(cos_im, i2));
+        auto den = add(pow(sinh_re, two), pow(cos_im, two));
         *real_ = div(mul(sinh_re, cosh(*real_)), den);
         *imag_ = div(mul(sin(*imag_), cos_im), den);
     }
@@ -214,9 +248,8 @@ public:
             *real_ = x.rcp_from_this();
             return;
         }
-        auto i2 = integer(2);
         auto sinh_re = sinh(*real_), sin_im = sin(*imag_);
-        auto den = add(pow(sinh_re, i2), pow(sin_im, i2));
+        auto den = add(pow(sinh_re, two), pow(sin_im, two));
         *real_ = div(mul(sinh_re, cosh(*real_)), den);
         *imag_ = neg(div(mul(sin_im, cos(*imag_)), den));
     }
@@ -253,4 +286,4 @@ void as_real_imag(const RCP<const Basic> &x, const Ptr<RCP<const Basic>> &real,
     v.apply(*x);
 }
 
-} // SymEngine
+} // namespace SymEngine

@@ -1,7 +1,7 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 
 from symengine import (Symbol, Integer, Add, Mul, Pow, Rational, sqrt,
-    symbols, S, I, count_ops)
+    symbols, S, I, count_ops, floor)
 
 
 def test_arit1():
@@ -133,27 +133,27 @@ def test_args():
     y = Symbol("y")
     assert (x**2).args == (x, 2)
     assert (x**2 + 5).args == (5, x**2)
-    assert set((x**2 + 2*x*y + 5).args) == set((x**2, 2*x*y, Integer(5)))
+    assert set((x**2 + 2*x*y + 5).args) == {x**2, 2*x*y, Integer(5)}
     assert (2*x**2).args == (2, x**2)
-    assert set((2*x**2*y).args) == set((Integer(2), x**2, y))
+    assert set((2*x**2*y).args) == {Integer(2), x**2, y}
 
 
 def test_atoms():
     x = Symbol("x")
     y = Symbol("y")
     z = Symbol("z")
-    assert (x**2).atoms() == set([x])
-    assert (x**2).atoms(Symbol) == set([x])
-    assert (x ** y + z).atoms() == set([x, y, z])
-    assert (x**y + z).atoms(Symbol) == set([x, y, z])
+    assert (x**2).atoms() == {x}
+    assert (x**2).atoms(Symbol) == {x}
+    assert (x ** y + z).atoms() == {x, y, z}
+    assert (x**y + z).atoms(Symbol) == {x, y, z}
 
 
 def test_free_symbols():
     x = Symbol("x")
     y = Symbol("y")
     z = Symbol("z")
-    assert (x**2).free_symbols == set([x])
-    assert (x**y + z).free_symbols == set([x, y, z])
+    assert (x**2).free_symbols == {x}
+    assert (x**y + z).free_symbols == {x, y, z}
 
 
 def test_as_numer_denom():
@@ -165,11 +165,22 @@ def test_as_numer_denom():
     assert x == Integer(-5)
     assert y == Integer(1)
 
+
+def test_floor():
+    exprs = [Symbol("x"), Symbol("y"), Integer(2), Rational(-3, 5), Integer(-3)]
+
+    for x in exprs:
+        for y in exprs:
+            assert x // y == floor(x / y)
+            assert x == y * (x // y) + x % y
+
+
 def test_as_real_imag():
     x, y = (5 + 6 * I).as_real_imag()
 
     assert x == 5
     assert y == 6
+
 
 def test_from_args():
     x = Symbol("x")

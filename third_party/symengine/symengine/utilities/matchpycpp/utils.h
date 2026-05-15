@@ -171,7 +171,7 @@ generator<SubstitutionMultiset> commutative_sequence_variable_partition_iter(
     for (const VariableWithCount &var : variables) {
         initial[var.name->__str__()] = multiset<int>();
     }
-    bool valid;
+    // bool valid;
     // vector<map<string, multiset<int>>> result;
     // TODO:
     /*

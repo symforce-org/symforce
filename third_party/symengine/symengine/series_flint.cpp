@@ -6,13 +6,11 @@ namespace SymEngine
 
 URatPSeriesFlint::URatPSeriesFlint(fqp_t p, const std::string varname,
                                    const unsigned degree)
-    : SeriesBase(std::move(p), varname, degree)
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
-RCP<const URatPSeriesFlint> URatPSeriesFlint::series(const RCP<const Basic> &t,
-                                                     const std::string &x,
-                                                     unsigned int prec)
+    : SeriesBase(std::move(p), varname, degree){SYMENGINE_ASSIGN_TYPEID()} RCP<
+        const URatPSeriesFlint> URatPSeriesFlint::series(const RCP<const Basic>
+                                                             &t,
+                                                         const std::string &x,
+                                                         unsigned int prec)
 {
     fqp_t p("2  0 1");
     SeriesVisitor<fqp_t, fmpq_wrapper, URatPSeriesFlint> visitor(p, x, prec);
@@ -50,7 +48,7 @@ RCP<const Basic> URatPSeriesFlint::as_basic() const
             zcoef = integer(0);
     }
     mpq_clear(gc);
-    return std::move(Add::from_dict(zcoef, std::move(dict_)));
+    return Add::from_dict(zcoef, std::move(dict_));
 }
 
 umap_int_basic URatPSeriesFlint::as_dict() const
@@ -170,5 +168,5 @@ fqp_t URatPSeriesFlint::subs(const fqp_t &s, const fqp_t &var, const fqp_t &r,
 {
     return s.subs(r, prec);
 }
-}
+} // namespace SymEngine
 #endif // HAVE_SYMENGINE_FLINT

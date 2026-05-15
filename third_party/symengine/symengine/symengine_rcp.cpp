@@ -18,4 +18,4 @@ void print_stack_on_segfault()
 
 #endif
 
-} // SymEngine
+} // namespace SymEngine

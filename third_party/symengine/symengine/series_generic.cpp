@@ -3,8 +3,8 @@
 #include <symengine/series_visitor.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::RCP;
 using SymEngine::make_rcp;
+using SymEngine::RCP;
 
 namespace SymEngine
 {
@@ -244,4 +244,4 @@ Expression UnivariateSeries::log(const Expression &c)
     return SymEngine::log(c.get_basic());
 }
 
-} // SymEngine
+} // namespace SymEngine

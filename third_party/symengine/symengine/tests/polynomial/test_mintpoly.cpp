@@ -3,30 +3,29 @@
 
 #include <symengine/printers/strprinter.h>
 
-using SymEngine::Expression;
-using SymEngine::UIntPoly;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_uint_mpz;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::integer;
 using SymEngine::add;
-using SymEngine::integer_class;
+using SymEngine::Basic;
+using SymEngine::Expression;
+using SymEngine::integer;
 using SymEngine::Integer;
+using SymEngine::integer_class;
+using SymEngine::make_rcp;
+using SymEngine::map_uint_mpz;
+using SymEngine::MIntPoly;
+using SymEngine::one;
+using SymEngine::Pow;
 using SymEngine::Precedence;
 using SymEngine::PrecedenceEnum;
-using SymEngine::vec_uint;
-using SymEngine::vec_int;
-using SymEngine::vec_basic;
-using SymEngine::vec_uint;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 using SymEngine::RCPBasicKeyLess;
-using SymEngine::MIntPoly;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::UIntPoly;
+using SymEngine::vec_basic;
+using SymEngine::vec_int;
+using SymEngine::vec_uint;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 

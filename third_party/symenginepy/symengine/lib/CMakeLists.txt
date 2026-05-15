@@ -1,13 +1,47 @@
 set(SRC
-    symengine_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.cpp
     pywrapper.cpp
     )
 
-configure_file(config.pxi.in config.pxi)
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories(BEFORE ${python_wrapper_BINARY_DIR}/symengine/lib)
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pxd
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/symengine_wrapper.in.pxd
+       ${PROJECT_SOURCE_DIR}/cmake/preprocess.py
+    COMMAND ${PYTHON_BIN} ${PROJECT_SOURCE_DIR}/cmake/preprocess.py
+       ${CMAKE_CURRENT_SOURCE_DIR}/symengine_wrapper.in.pxd
+       ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pxd
+       HAVE_SYMENGINE_MPFR=${HAVE_SYMENGINE_MPFR}
+       HAVE_SYMENGINE_MPC=${HAVE_SYMENGINE_MPC}
+       HAVE_SYMENGINE_PIRANHA=${HAVE_SYMENGINE_PIRANHA}
+       HAVE_SYMENGINE_FLINT=${HAVE_SYMENGINE_FLINT}
+       HAVE_SYMENGINE_LLVM=${HAVE_SYMENGINE_LLVM}
+       HAVE_SYMENGINE_LLVM_LONG_DOUBLE=${HAVE_SYMENGINE_LLVM_LONG_DOUBLE}
+    COMMENT "Preprocessing symengine_wrapper.in.pxd"
+)
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pyx
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/symengine_wrapper.in.pyx
+       ${CMAKE_CURRENT_SOURCE_DIR}/symengine_wrapper.in.pxd
+       ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pxd
+       ${PROJECT_SOURCE_DIR}/cmake/preprocess.py
+    COMMAND ${PYTHON_BIN} ${PROJECT_SOURCE_DIR}/cmake/preprocess.py
+       ${CMAKE_CURRENT_SOURCE_DIR}/symengine_wrapper.in.pyx
+       ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pyx
+       HAVE_SYMENGINE_MPFR=${HAVE_SYMENGINE_MPFR}
+       HAVE_SYMENGINE_MPC=${HAVE_SYMENGINE_MPC}
+       HAVE_SYMENGINE_PIRANHA=${HAVE_SYMENGINE_PIRANHA}
+       HAVE_SYMENGINE_FLINT=${HAVE_SYMENGINE_FLINT}
+       HAVE_SYMENGINE_LLVM=${HAVE_SYMENGINE_LLVM}
+       HAVE_SYMENGINE_LLVM_LONG_DOUBLE=${HAVE_SYMENGINE_LLVM_LONG_DOUBLE}
+    COMMENT "Preprocessing symengine_wrapper.in.pyx"
+)
 
-cython_add_module_pyx(symengine_wrapper symengine.pxd)
+cython_add_module_pyx(symengine_wrapper.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pyx
+    ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pxd
+    ${CMAKE_CURRENT_SOURCE_DIR}/symengine.pxd)
 add_python_library(symengine_wrapper ${SRC})
 target_link_libraries(symengine_wrapper ${SYMENGINE_LIBRARIES})
 if (CMAKE_CXX_COMPILER_ID MATCHES GNU|Clang)
@@ -18,23 +52,22 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU|Clang)
     )
 endif()
 
-add_custom_target(cython
-    COMMAND cython symengine_wrapper.pyx
-    )
-
 set(PY_PATH ${PYTHON_INSTALL_PATH}/symengine/lib)
 install(TARGETS symengine_wrapper
             RUNTIME DESTINATION ${PY_PATH}
             ARCHIVE DESTINATION ${PY_PATH}
             LIBRARY DESTINATION ${PY_PATH}
         )
-install(FILES __init__.py
-    ${CMAKE_CURRENT_BINARY_DIR}/config.pxi
+install(FILES
     symengine.pxd
-    symengine_wrapper.pxd
+    ${CMAKE_CURRENT_BINARY_DIR}/symengine_wrapper.pxd
     pywrapper.h
     DESTINATION ${PY_PATH}
     )
+
+if (SYMENGINE_INSTALL_PY_FILES)
+  install(FILES __init__.py DESTINATION ${PY_PATH})
+endif ()
 
 if (${SYMENGINE_COPY_EXTENSION})
   if ("${PYTHON_EXTENSION_SOABI}" MATCHES "ppc64le")

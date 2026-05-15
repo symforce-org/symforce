@@ -4,27 +4,26 @@
 #include <symengine/numer_denom.cpp>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
+using SymEngine::as_numer_denom;
+using SymEngine::Basic;
 using SymEngine::Complex;
-using SymEngine::Symbol;
-using SymEngine::symbol;
+using SymEngine::has_symbol;
 using SymEngine::Integer;
 using SymEngine::integer;
-using SymEngine::Rational;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::Number;
-using SymEngine::pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::has_symbol;
 using SymEngine::is_a;
-using SymEngine::as_numer_denom;
+using SymEngine::make_rcp;
+using SymEngine::Mul;
 using SymEngine::neg;
+using SymEngine::Number;
 using SymEngine::one;
+using SymEngine::pow;
+using SymEngine::Rational;
+using SymEngine::RCP;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::zero;
 
 TEST_CASE("NumerDenom: Basic", "[as_numer_denom]")
 {

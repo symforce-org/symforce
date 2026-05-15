@@ -25,10 +25,10 @@ optionally, you may choose to install an early [developer preview](https://githu
 
 Install prerequisites.
 
-    CMake       >= 2.8.7
-    Python2     >= 2.7      or Python3 >= 3.4
-    Cython      >= 0.19.1
-    SymEngine   >= 0.4.0
+    CMake       >= 2.8.12
+    Python3     >= 3.8
+    Cython      >= 0.29.24
+    SymEngine   >= 0.7.0
 
 For SymEngine, only a specific commit/tag (see symengine_version.txt) is supported.
 Latest git master branch may not work as there may be breaking changes in SymEngine.
@@ -72,7 +72,8 @@ symengine.py is MIT licensed and uses several LGPL, BSD-3 and MIT licensed libra
 Licenses for the dependencies of pip wheels are as follows,
 
 pip wheels on Unix use GMP (LGPL-3.0-or-later), MPFR (LGPL-3.0-or-later),
-MPC (LGPL-3.0-or-later), LLVM (Apache-2.0), zlib (Zlib) and symengine (MIT AND BSD-3-Clause).
+MPC (LGPL-3.0-or-later), LLVM (Apache-2.0), zlib (Zlib), libxml2 (MIT),
+zstd (BSD-3-Clause) and symengine (MIT AND BSD-3-Clause).
 pip wheels on Windows use MPIR (LGPL-3.0-or-later) instead of GMP above and
 pthreads-win32 (LGPL-3.0-or-later) additionally.
 NumPy (BSD-3-Clause) and SymPy (BSD-3-Clause) are optional dependencies.

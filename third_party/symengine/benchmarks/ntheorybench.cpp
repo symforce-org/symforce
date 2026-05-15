@@ -5,10 +5,10 @@
 using std::cout;
 using std::endl;
 
+using SymEngine::integer;
 using SymEngine::mertens;
 using SymEngine::mobius;
 using SymEngine::prime_factor_multiplicities;
-using SymEngine::integer;
 
 void _bench_mertens(const unsigned long a)
 {

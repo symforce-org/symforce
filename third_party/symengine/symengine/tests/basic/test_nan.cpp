@@ -8,21 +8,21 @@
 #include <symengine/pow.h>
 
 using SymEngine::Basic;
-using SymEngine::is_a;
+using SymEngine::gamma;
+using SymEngine::Inf;
 using SymEngine::Integer;
-using SymEngine::Number;
 using SymEngine::integer;
-using SymEngine::one;
-using SymEngine::zero;
+using SymEngine::is_a;
 using SymEngine::minus_one;
-using SymEngine::RCP;
-using SymEngine::rcp_dynamic_cast;
 using SymEngine::NaN;
 using SymEngine::Nan;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Inf;
-using SymEngine::gamma;
+using SymEngine::zero;
 
 TEST_CASE("Hash Size for NaN", "[NaN]")
 {

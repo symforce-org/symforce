@@ -11,23 +11,23 @@
 #ifdef HAVE_SYMENGINE_PIRANHA
 using SymEngine::URatPolyPiranha;
 #endif
-using SymEngine::SymEngineException;
-using SymEngine::URatPolyFlint;
-using SymEngine::URatPoly;
-using SymEngine::UIntPoly;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::integer;
+using SymEngine::make_rcp;
+using SymEngine::map_uint_mpq;
+using SymEngine::one;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::rational_class;
+using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_uint_mpq;
-using SymEngine::Basic;
-using SymEngine::one;
+using SymEngine::SymEngineException;
+using SymEngine::UIntPoly;
+using SymEngine::URatPoly;
+using SymEngine::URatPolyFlint;
 using SymEngine::zero;
-using SymEngine::integer;
-using SymEngine::rational_class;
-using SymEngine::add;
 
 using namespace SymEngine::literals;
 using rc = rational_class;
@@ -72,7 +72,7 @@ TEST_CASE("Adding two URatPolyFlint", "[URatPolyFlint]")
 
     RCP<const URatPolyFlint> g = URatPolyFlint::from_dict(
         y, {{0, 2_q}, {1, rc(-3_z, 2_z)}, {2, rc(1_z, 4_z)}});
-    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException &);
+    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException);
 }
 
 TEST_CASE("Negative of a URatPolyFlint", "[URatPolyFlint]")
@@ -104,7 +104,7 @@ TEST_CASE("Subtracting two URatPolyFlint", "[URatPolyFlint]")
     REQUIRE(d->__str__() == "-3/4*x**2 - 13/6*x + 3/2");
     d = sub_upoly(*a, *c);
     REQUIRE(d->__str__() == "3/4*x**2 + 13/6*x - 3/2");
-    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException &);
+    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException);
 }
 
 TEST_CASE("Multiplication of two URatPolyFlint", "[URatPolyFlint]")
@@ -138,7 +138,7 @@ TEST_CASE("Multiplication of two URatPolyFlint", "[URatPolyFlint]")
     REQUIRE(mul_upoly(*c, *a)->__str__() == "-x**2 - 2/3*x - 1/2");
 
     c = URatPolyFlint::from_dict(y, {{0, rc(-1_z)}});
-    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException &);
+    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException);
 }
 
 TEST_CASE("Comparing two URatPolyFlint", "[URatPolyFlint]")

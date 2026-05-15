@@ -108,14 +108,14 @@ sym::Rot2<Scalar> LieGroupOps<Rot2<Scalar>>::Interpolate(const sym::Rot2<Scalar>
   const Scalar _tmp0 = _a[0] * _b[0] + _a[1] * _b[1];
   const Scalar _tmp1 =
       alpha * std::atan2(_a[0] * _b[1] - _a[1] * _b[0], _tmp0 + std::copysign(epsilon, _tmp0));
-  const Scalar _tmp2 = std::cos(_tmp1);
-  const Scalar _tmp3 = std::sin(_tmp1);
+  const Scalar _tmp2 = std::sin(_tmp1);
+  const Scalar _tmp3 = std::cos(_tmp1);
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 2, 1> _res;
 
-  _res[0] = _a[0] * _tmp2 - _a[1] * _tmp3;
-  _res[1] = _a[0] * _tmp3 + _a[1] * _tmp2;
+  _res[0] = _a[0] * _tmp3 - _a[1] * _tmp2;
+  _res[1] = _a[0] * _tmp2 + _a[1] * _tmp3;
 
   return sym::Rot2<Scalar>(_res);
 }

@@ -9,7 +9,7 @@ import symengine as se
 import warnings
 
 src = os.path.join(os.path.dirname(__file__), '6_links_rhs.txt')
-serial = open(src, 'tr').read()
+serial = open(src).read()
 parsed = parse_expr(serial, transformations=standard_transformations)
 vec = sp.Matrix(1, 14, parsed)
 args = tuple(sorted(vec.free_symbols, key=lambda arg: arg.name))

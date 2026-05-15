@@ -5,24 +5,28 @@
 #include <symengine/add.h>
 #include <symengine/mul.h>
 #include <symengine/functions.h>
+#include <symengine/logic.h>
 
-using SymEngine::Basic;
-using SymEngine::symbol;
-using SymEngine::RCP;
-using SymEngine::pow;
 using SymEngine::add;
-using SymEngine::sub;
-using SymEngine::mul;
+using SymEngine::Basic;
+using SymEngine::boolTrue;
+using SymEngine::cse;
 using SymEngine::div;
+using SymEngine::Gt;
+using SymEngine::integer;
+using SymEngine::mul;
 using SymEngine::neg;
+using SymEngine::one;
+using SymEngine::piecewise;
+using SymEngine::pow;
+using SymEngine::RCP;
+using SymEngine::sin;
+using SymEngine::sqrt;
+using SymEngine::sub;
+using SymEngine::symbol;
+using SymEngine::unified_eq;
 using SymEngine::vec_basic;
 using SymEngine::vec_pair;
-using SymEngine::sqrt;
-using SymEngine::sin;
-using SymEngine::cse;
-using SymEngine::one;
-using SymEngine::unified_eq;
-using SymEngine::integer;
 
 TEST_CASE("CSE: simple", "[cse]")
 {
@@ -301,6 +305,30 @@ TEST_CASE("CSE: simple", "[cse]")
         cse(substs, reduced, {e1, e2, e3, e4});
         REQUIRE(unified_eq(substs, {{x0, add(x, y)}, {x1, add(x0, z)}}));
         REQUIRE(unified_eq(reduced, {x0, add(i2, x0), x1, add(i3, x1)}));
+    }
+    {
+        auto pw1 = piecewise(
+            {{pow(add(x, y), i2), Gt(x, y)}, {sqrt(add(x, y)), boolTrue}});
+
+        vec_pair substs;
+        vec_basic reduced;
+        cse(substs, reduced, {pw1});
+        REQUIRE(unified_eq(substs, {{x0, add(x, y)}}));
+        REQUIRE(unified_eq(reduced, {piecewise({{pow(x0, i2), Gt(x, y)},
+                                                {sqrt(x0), boolTrue}})}));
+    }
+    {
+        auto pw2 = piecewise({{pow(x, i2), Gt(add(x, y), i3)},
+                              {sqrt(y), Gt(add(x, y), i2)},
+                              {sqrt(x), boolTrue}});
+
+        vec_pair substs;
+        vec_basic reduced;
+        cse(substs, reduced, {pw2});
+        REQUIRE(unified_eq(substs, {{x0, add(x, y)}}));
+        REQUIRE(unified_eq(reduced, {piecewise({{pow(x, i2), Gt(x0, i3)},
+                                                {sqrt(y), Gt(x0, i2)},
+                                                {sqrt(x), boolTrue}})}));
     }
 }
 

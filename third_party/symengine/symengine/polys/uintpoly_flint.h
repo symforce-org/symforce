@@ -138,7 +138,7 @@ public:
     //! Constructor of UIntPolyFlint class
     UIntPolyFlint(const RCP<const Basic> &var, fzp_t &&dict);
     //! \return size of the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
 
 }; // UIntPolyFlint
 
@@ -149,7 +149,7 @@ public:
     //! Constructor of URatPolyFlint class
     URatPolyFlint(const RCP<const Basic> &var, fqp_t &&dict);
     //! \return size of the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
 }; // URatPolyFlint
 
 template <typename Container, template <typename X, typename Y> class BaseType,
@@ -219,7 +219,7 @@ bool divides_upoly(const UFlintPoly<Container, BaseType, Poly> &a,
         return false;
     }
 }
-}
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_FLINT
 

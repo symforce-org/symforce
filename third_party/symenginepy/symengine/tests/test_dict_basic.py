@@ -1,4 +1,4 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 
 from symengine import symbols, DictBasic, sin, Integer
 
@@ -18,11 +18,11 @@ def test_DictBasic():
     assert d[2*z] == x
     if 2*z not in d:
         assert False
-    assert set(d.items()) == set([(2*z, x), (x, Integer(2)), (y, z)])
+    assert set(d.items()) == {(2*z, x), (x, Integer(2)), (y, z)}
 
     del d[x]
-    assert set(d.keys()) == set([2*z, y])
-    assert set(d.values()) == set([x, z])
+    assert set(d.keys()) == {2*z, y}
+    assert set(d.values()) == {x, z}
 
     e = y + sin(2*z)
     assert e.subs(d) == z + sin(x)

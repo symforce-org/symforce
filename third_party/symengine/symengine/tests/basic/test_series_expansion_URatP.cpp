@@ -3,28 +3,28 @@
 #include <chrono>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
+using SymEngine::Add;
+using SymEngine::add;
 using SymEngine::Basic;
+using SymEngine::cos;
 using SymEngine::Integer;
 using SymEngine::integer;
+using SymEngine::make_rcp;
+using SymEngine::Number;
 using SymEngine::Rational;
 using SymEngine::rational;
 using SymEngine::rational_class;
-using SymEngine::Symbol;
-using SymEngine::Number;
-using SymEngine::symbol;
-using SymEngine::Add;
-using SymEngine::make_rcp;
 using SymEngine::RCP;
-using SymEngine::add;
 using SymEngine::sin;
-using SymEngine::cos;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
 using SymEngine::umap_short_basic;
 
 #ifdef HAVE_SYMENGINE_PIRANHA
 
-using SymEngine::URatPSeriesPiranha;
 using SymEngine::pp_t;
+using SymEngine::URatPSeriesPiranha;
 #define series_coeff(EX, SYM, PREC, COEFF)                                     \
     prat2synum(                                                                \
         SymEngine::URatPSeriesPiranha::series(EX, SYM->get_name(), PREC)       \
@@ -257,11 +257,11 @@ TEST_CASE("Expansion of sin ", "[Symbolic series expansion]")
     RCP<const Symbol> x = symbol("x");
     REQUIRE_THROWS_AS(
         URatPSeriesPiranha::series(sin(add(x, integer(1))), "x", 10),
-        SymEngineException &);
+        SymEngineException);
     REQUIRE_THROWS_AS(
         URatPSeriesPiranha::series(
             mul(sin(add(x, integer(1))), cos(add(x, integer(2)))), "x", 10),
-        SymEngineException &);
+        SymEngineException);
 }
 
 TEST_CASE("Expansion of log ", "[Symbolic series expansion]")
@@ -269,7 +269,7 @@ TEST_CASE("Expansion of log ", "[Symbolic series expansion]")
     RCP<const Symbol> x = symbol("x");
     REQUIRE_THROWS_AS(
         URatPSeriesPiranha::series(log(add(x, integer(2))), "x", 10),
-        SymEngineException &);
+        SymEngineException);
 }
 
 #else
@@ -279,6 +279,6 @@ TEST_CASE("Check error when expansion called without Piranha ",
     RCP<const Symbol> x = symbol("x");
     auto ex1 = lambertw(x);
     REQUIRE_THROWS_AS(URatPSeriesPiranha::series(ex1, "x", 10),
-                      SymEngineException &);
+                      SymEngineException);
 }
 #endif

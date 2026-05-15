@@ -5,38 +5,39 @@
 #include <symengine/real_double.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
+using SymEngine::add;
 using SymEngine::Basic;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::real_double;
-using SymEngine::Interval;
-using SymEngine::interval;
-using SymEngine::symbol;
-using SymEngine::piecewise;
+using SymEngine::boolean;
+using SymEngine::boolFalse;
+using SymEngine::boolTrue;
 using SymEngine::contains;
 using SymEngine::Contains;
-using SymEngine::add;
-using SymEngine::boolTrue;
-using SymEngine::boolFalse;
-using SymEngine::is_a;
-using SymEngine::vec_basic;
-using SymEngine::unified_eq;
-using SymEngine::zero;
-using SymEngine::one;
+using SymEngine::DomainError;
 using SymEngine::eq;
-using SymEngine::boolean;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::Interval;
+using SymEngine::interval;
+using SymEngine::is_a;
 using SymEngine::logical_and;
-using SymEngine::logical_or;
-using SymEngine::logical_not;
 using SymEngine::logical_nand;
 using SymEngine::logical_nor;
-using SymEngine::logical_xor;
+using SymEngine::logical_not;
+using SymEngine::logical_or;
 using SymEngine::logical_xnor;
+using SymEngine::logical_xor;
+using SymEngine::Not;
+using SymEngine::one;
+using SymEngine::piecewise;
+using SymEngine::real_double;
 using SymEngine::set_boolean;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::unified_eq;
+using SymEngine::vec_basic;
 using SymEngine::vec_boolean;
 using SymEngine::Xor;
-using SymEngine::Not;
+using SymEngine::zero;
 
 TEST_CASE("BooleanAtom : Basic", "[basic]")
 {
@@ -48,7 +49,7 @@ TEST_CASE("BooleanAtom : Basic", "[basic]")
     REQUIRE(unified_eq(v, u));
 
     auto x = symbol("x");
-    CHECK_THROWS_AS(boolTrue->diff(x), SymEngineException &);
+    CHECK_THROWS_AS(boolTrue->diff(x), SymEngineException);
 
     REQUIRE(not eq(*boolTrue, *boolFalse));
     REQUIRE(eq(*boolFalse, *boolean(false)));
@@ -88,7 +89,7 @@ TEST_CASE("Contains", "[logic]")
     vec_basic u = {x, int1};
     REQUIRE(unified_eq(v, u));
 
-    CHECK_THROWS_AS(p->diff(x), SymEngineException &);
+    CHECK_THROWS_AS(p->diff(x), SymEngineException);
 }
 
 TEST_CASE("Piecewise", "[logic]")
@@ -98,6 +99,7 @@ TEST_CASE("Piecewise", "[logic]")
     auto int1 = interval(integer(1), integer(2), true, false);
     auto int2 = interval(integer(2), integer(5), true, false);
     auto int3 = interval(integer(5), integer(10), true, false);
+    auto int4 = interval(integer(10), integer(12), true, false);
     auto p = piecewise({{x, contains(x, int1)},
                         {y, contains(x, int2)},
                         {add(x, y), contains(x, int3)}});
@@ -117,6 +119,47 @@ TEST_CASE("Piecewise", "[logic]")
 
     REQUIRE((p->diff(x))->__hash__() == q->__hash__());
     REQUIRE(eq(*p->diff(x), *q));
+
+    auto q2 = piecewise({
+        {one, contains(x, int1)},
+        {zero, contains(x, int2)},
+        {one, contains(x, int3)},
+        {one, contains(x, int2)},
+    });
+
+    REQUIRE(eq(*q2, *q));
+
+    q2 = piecewise({
+        {one, contains(x, int1)},
+        {zero, contains(x, int2)},
+        {one, boolFalse},
+        {one, contains(x, int3)},
+    });
+
+    REQUIRE(eq(*q2, *q));
+
+    p = piecewise({
+        {one, contains(x, int1)},
+        {zero, contains(x, int2)},
+        {one, contains(x, int3)},
+        {one, boolTrue},
+    });
+
+    q = piecewise({
+        {one, contains(x, int1)},
+        {zero, contains(x, int2)},
+        {one, contains(x, int3)},
+        {one, boolTrue},
+        {one, contains(x, int4)},
+    });
+
+    REQUIRE(eq(*q, *p));
+
+    q = piecewise({{one, boolTrue}});
+
+    REQUIRE(eq(*q, *one));
+
+    CHECK_THROWS_AS(piecewise({{one, boolFalse}}), DomainError);
 }
 
 TEST_CASE("And, Or : Basic", "[basic]")

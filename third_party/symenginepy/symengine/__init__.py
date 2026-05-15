@@ -1,7 +1,7 @@
 import os
 import sys
 
-if sys.version_info >= (3, 8, 0) and sys.platform == 'win32' \
+if sys.platform == 'win32' \
        and 'SYMENGINE_PY_ADD_PATH_TO_SEARCH_DIRS' in os.environ:
     for directory in os.environ['PATH'].split(';'):
         if os.path.isdir(directory):
@@ -26,25 +26,29 @@ from .lib.symengine_wrapper import (
     Gt, Lt, And, Or, Not, Nand, Nor, Xor, Xnor, perfect_power, integer_nthroot,
     isprime, sqrt_mod, Expr, cse, count_ops, ccode, Piecewise, Contains, Interval, FiniteSet,
     linsolve,
-    FunctionSymbol as AppliedUndef,
+    FunctionSymbol,
     golden_ratio as GoldenRatio,
     catalan as Catalan,
     eulergamma as EulerGamma,
+    unicode,
     DataBuffer,
+    DataBufferElement,
     Mod,
     solve,
     SignNoZero,
-    CopysignNoZero
+    CopysignNoZero,
 )
 from .utilities import var, symbols
 from .functions import *
 from .printing import init_printing
 
 
+AppliedUndef = FunctionSymbol  # an alias
 EmptySet = wrapper.S.EmptySet
 UniversalSet = wrapper.S.UniversalSet
 Reals = wrapper.S.Reals
 Integers = wrapper.S.Integers
+Rationals = wrapper.S.Rationals
 
 
 if have_mpfr:
@@ -58,9 +62,14 @@ if have_numpy:
 
     def lambdify(args, exprs, **kwargs):
         return Lambdify(args, *exprs, **kwargs)
+else:
+    def __getattr__(name):
+        if name == 'lambdify':
+            raise AttributeError("Cannot import numpy, which is required for `lambdify` to work")
+        raise AttributeError(f"module 'symengine' has no attribute '{name}'")
 
 
-__version__ = "0.7.2"
+__version__ = "0.11.0"
 
 
 try:

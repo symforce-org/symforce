@@ -34,6 +34,6 @@ enum class EvalfDomain {
 RCP<const Basic> evalf(const Basic &b, unsigned long bits,
                        EvalfDomain domain = EvalfDomain::Symbolic);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // SYMENGINE_EVAL_H

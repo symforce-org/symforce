@@ -1,15 +1,29 @@
-from symengine import symbols
+from symengine import symbols, init_printing
 from symengine.lib.symengine_wrapper import (DenseMatrix, Symbol, Integer,
     Rational, function_symbol, I, NonSquareMatrixError, ShapeError, zeros,
     ones, eye, ImmutableMatrix)
-from symengine.utilities import raises
+from symengine.test_utilities import raises
+import unittest
 
 
 try:
     import numpy as np
-    HAVE_NUMPY = True
+    have_numpy = True
 except ImportError:
-    HAVE_NUMPY = False
+    have_numpy = False
+    
+try:
+    import sympy
+    from sympy.core.cache import clear_cache
+    import atexit
+    atexit.register(clear_cache)
+    have_sympy = True
+except ImportError:
+    have_sympy = False
+
+
+def test_init():
+    raises(ValueError, lambda: DenseMatrix(2, 1, [0]*4))
 
 
 def test_get():
@@ -229,6 +243,8 @@ def test_mul_matrix():
 
     assert A.mul_matrix(B) == DenseMatrix(2, 2, [a + b, 0, c + d, 0])
     assert A * B == DenseMatrix(2, 2, [a + b, 0, c + d, 0])
+    assert A @ B == DenseMatrix(2, 2, [a + b, 0, c + d, 0])
+    assert (A @ DenseMatrix(2, 1, [0]*2)).shape == (2, 1)
 
     C = DenseMatrix(2, 3, [1, 2, 3, 2, 3, 4])
     D = DenseMatrix(3, 2, [3, 4, 4, 5, 5, 6])
@@ -385,6 +401,20 @@ def test_is_strongly_diagonally_dominant():
     assert C.is_strongly_diagonally_dominant is None
 
 
+def test_is_positive_definite():
+    A = DenseMatrix(2, 2, [2, 1, 1, 2])
+    assert A.is_positive_definite
+    C = DenseMatrix(3, 3, [Symbol('x'), 2, 0, 0, 4, 0, 0, 0, 4])
+    assert C.is_positive_definite is None
+
+
+def test_is_negative_definite():
+    A = DenseMatrix(2, 2, [-2, -1, -1, -2])
+    assert A.is_negative_definite
+    C = DenseMatrix(3, 3, [Symbol('x'), -2, 0, 0, -4, 0, 0, 0, -4])
+    assert C.is_negative_definite is None
+
+
 def test_LU():
     A = DenseMatrix(3, 3, [1, 3, 5, 2, 5, 6, 8, 3, 1])
     L, U = A.LU()
@@ -500,10 +530,8 @@ def test_reshape():
     assert C != A
 
 
-# @pytest.mark.skipif(not HAVE_NUMPY, reason='requires numpy')
+@unittest.skipIf(not have_numpy, 'requires numpy')
 def test_dump_real():
-    if not HAVE_NUMPY:  # nosetests work-around
-        return
     ref = [1, 2, 3, 4]
     A = DenseMatrix(2, 2, ref)
     out = np.empty(4)
@@ -511,10 +539,9 @@ def test_dump_real():
     assert np.allclose(out, ref)
 
 
-# @pytest.mark.skipif(not HAVE_NUMPY, reason='requires numpy')
+
+@unittest.skipIf(not have_numpy, 'requires numpy')
 def test_dump_complex():
-    if not HAVE_NUMPY:  # nosetests work-around
-        return
     ref = [1j, 2j, 3j, 4j]
     A = DenseMatrix(2, 2, ref)
     out = np.empty(4, dtype=np.complex128)
@@ -635,6 +662,14 @@ def test_cross():
         DenseMatrix(1, 2, [1, 1]).cross(DenseMatrix(1, 2, [1, 1])))
 
 
+def test_diff():
+    x = symbols("x")
+    M = DenseMatrix(1, 2, [x**2, x])
+    result = M.diff(x)
+    assert isinstance(result, DenseMatrix)
+    assert result == DenseMatrix(1, 2, [2*x, 1])
+
+
 def test_immutablematrix():
     A = ImmutableMatrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     assert A.shape == (3, 3)
@@ -680,8 +715,41 @@ def test_immutablematrix():
     assert isinstance(Z, ImmutableMatrix)
     assert Z == ImmutableMatrix([[1, 2], [3, 4], [5, 6]])
 
+    # Operations of one immutable and one mutable matrix should give immutable result
+    X = ImmutableMatrix([1])
+    Y = DenseMatrix([1])
+    assert type(X + Y) == ImmutableMatrix
+    assert type(Y + X) == ImmutableMatrix
+    assert type(X * Y) == ImmutableMatrix
+    assert type(Y * X) == ImmutableMatrix
+
+
 def test_atoms():
     a = Symbol("a")
     b = Symbol("b")
     X = DenseMatrix([[a, 2], [b, 4]])
-    assert X.atoms(Symbol) == set([a, b])
+    assert X.atoms(Symbol) == {a, b}
+
+
+def test_LUdecomp():
+    testmat = DenseMatrix([[0, 2, 5, 3],
+                      [3, 3, 7, 4],
+                      [8, 4, 0, 2],
+                      [-2, 6, 3, 4]])
+    L, U, p = testmat.LUdecomposition()
+    res = L*U
+    for orig, new in p:
+        res.row_swap(orig, new)
+    assert res - testmat == zeros(4)
+
+def test_repr_latex():
+    testmat = DenseMatrix([[0, 2]])
+    init_printing(True)
+    latex_string = testmat._repr_latex_()
+    assert isinstance(latex_string, str)
+    init_printing(False)
+
+@unittest.skipIf(not have_sympy, "SymPy not installed")
+def test_simplify():
+    A = ImmutableMatrix([1])
+    assert type(A.simplify()) == type(A)

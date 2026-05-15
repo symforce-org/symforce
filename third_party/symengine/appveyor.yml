@@ -18,37 +18,22 @@ environment:
       WITH_MPC: yes
       WITH_LLVM: yes
     - BUILD_TYPE: Release
-      COMPILER: MinGW-w64
-      PLATFORM: x64
-    - BUILD_TYPE: Release
       COMPILER: MSVC15
       PLATFORM: Win32
       CONDA_INSTALL_LOCN: C:\\Miniconda37
       LIB_TYPE: dll
       WITH_MPFR: yes
       WITH_MPC: yes
-    - BUILD_TYPE: Release
-      COMPILER: MinGW
-      PLATFORM: Win32
-      WITH_MPFR: yes
     - BUILD_TYPE: Debug
       COMPILER: MSVC15
       PLATFORM: Win32
       CONDA_INSTALL_LOCN: C:\\Miniconda37
       LIB_TYPE: lib
     - BUILD_TYPE: Debug
-      COMPILER: MinGW
-      PLATFORM: Win32
-      WITH_MPFR: yes
-      WITH_MPC: yes
-    - BUILD_TYPE: Debug
       COMPILER: MSVC15
       PLATFORM: x64
       LIB_TYPE: lib
       CONDA_INSTALL_LOCN: C:\\Miniconda37-x64
-    - BUILD_TYPE: Debug
-      COMPILER: MinGW-w64
-      PLATFORM: x64
 
 install:
 - if [%COMPILER%]==[MSVC15] call %CONDA_INSTALL_LOCN%\Scripts\activate.bat

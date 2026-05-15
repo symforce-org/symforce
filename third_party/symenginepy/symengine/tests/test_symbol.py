@@ -1,5 +1,5 @@
 from symengine import Symbol, symbols, symarray, has_symbol, Dummy
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 import unittest
 import platform
 
@@ -48,7 +48,7 @@ def test_symbols():
 
     assert symbols(('x', 'y', 'z')) == (x, y, z)
     assert symbols(['x', 'y', 'z']) == [x, y, z]
-    assert symbols(set(['x', 'y', 'z'])) == set([x, y, z])
+    assert symbols({'x', 'y', 'z'}) == {x, y, z}
 
     raises(ValueError, lambda: symbols(''))
     raises(ValueError, lambda: symbols(','))
@@ -104,13 +104,13 @@ def test_symbols():
     assert sym('a0:4') == '(a0, a1, a2, a3)'
     assert sym('a2:4,b1:3') == '(a2, a3, b1, b2)'
     assert sym('a1(2:4)') == '(a12, a13)'
-    assert sym(('a0:2.0:2')) == '(a0.0, a0.1, a1.0, a1.1)'
-    assert sym(('aa:cz')) == '(aaz, abz, acz)'
+    assert sym('a0:2.0:2') == '(a0.0, a0.1, a1.0, a1.1)'
+    assert sym('aa:cz') == '(aaz, abz, acz)'
     assert sym('aa:c0:2') == '(aa0, aa1, ab0, ab1, ac0, ac1)'
     assert sym('aa:ba:b') == '(aaa, aab, aba, abb)'
     assert sym('a:3b') == '(a0b, a1b, a2b)'
     assert sym('a-1:3b') == '(a-1b, a-2b)'
-    assert sym('a:2\,:2' + chr(0)) == '(a0,0%s, a0,1%s, a1,0%s, a1,1%s)' % (
+    assert sym(r'a:2\,:2' + chr(0)) == '(a0,0%s, a0,1%s, a1,0%s, a1,1%s)' % (
         (chr(0),)*4)
     assert sym('x(:a:3)') == '(x(a0), x(a1), x(a2))'
     assert sym('x(:c):1') == '(xa0, xb0, xc0)'
@@ -159,6 +159,7 @@ def test_dummy():
 
     assert x1 == x2
     assert x1 != xdummy1
+    assert xdummy1 == (xdummy1 + 1) - 1
     assert xdummy1 != xdummy2
     assert Dummy() != Dummy()
     assert Dummy('x') != Dummy('x')

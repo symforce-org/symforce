@@ -5,36 +5,36 @@
 #include <symengine/series_generic.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::UExprDict;
-using SymEngine::UnivariateSeries;
-using SymEngine::univariate_series;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_int_Expr;
 using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
+using SymEngine::DomainError;
+using SymEngine::emptyset;
+using SymEngine::EulerGamma;
+using SymEngine::Expression;
+using SymEngine::gamma;
+using SymEngine::I;
 using SymEngine::Integer;
 using SymEngine::integer;
 using SymEngine::integer_class;
-using SymEngine::rational;
-using SymEngine::emptyset;
-using SymEngine::vec_basic_eq_perm;
-using SymEngine::Expression;
-using SymEngine::umap_short_basic;
-using SymEngine::EulerGamma;
-using SymEngine::Number;
-using SymEngine::umap_int_basic;
-using SymEngine::pi;
-using SymEngine::I;
-using SymEngine::DomainError;
+using SymEngine::make_rcp;
+using SymEngine::map_int_Expr;
 using SymEngine::NotImplementedError;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::rational;
+using SymEngine::RCP;
+using SymEngine::Symbol;
+using SymEngine::symbol;
 using SymEngine::SymEngineException;
-using SymEngine::gamma;
+using SymEngine::UExprDict;
+using SymEngine::umap_int_basic;
+using SymEngine::umap_short_basic;
+using SymEngine::univariate_series;
+using SymEngine::UnivariateSeries;
+using SymEngine::vec_basic_eq_perm;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 
@@ -164,7 +164,7 @@ TEST_CASE("Exponentiation of UExprDict with precision", "[UnivariateSeries]")
     REQUIRE(e == c);
     REQUIRE(f == d);
     REQUIRE(g == one);
-    REQUIRE_THROWS_AS(UnivariateSeries::pow(zero, 0, 1), DomainError &);
+    REQUIRE_THROWS_AS(UnivariateSeries::pow(zero, 0, 1), DomainError);
 }
 
 TEST_CASE("Differentiation of UnivariateSeries", "[UnivariateSeries]")
@@ -183,7 +183,7 @@ TEST_CASE("Integration of UnivariateSeries", "[UnivariateSeries]")
     UExprDict c({{1, 1}, {2, 1}, {3, 1}});
     REQUIRE_THROWS_AS(
         UnivariateSeries::integrate(a, UnivariateSeries::var("x")),
-        NotImplementedError &);
+        NotImplementedError);
     REQUIRE(UnivariateSeries::integrate(b, UnivariateSeries::var("x")) == c);
 }
 

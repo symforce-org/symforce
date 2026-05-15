@@ -3,13 +3,13 @@
 #include <symengine/visitor.h>
 
 using SymEngine::Basic;
-using SymEngine::RCP;
-using SymEngine::symbol;
+using SymEngine::count_ops;
+using SymEngine::I;
 using SymEngine::integer;
 using SymEngine::one;
-using SymEngine::I;
 using SymEngine::pi;
-using SymEngine::count_ops;
+using SymEngine::RCP;
+using SymEngine::symbol;
 
 TEST_CASE("CountOps", "[count_ops]")
 {

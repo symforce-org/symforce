@@ -27,13 +27,9 @@ public:
         vec_size = s;
     }
 
-    UDictWrapper() SYMENGINE_NOEXCEPT
-    {
-    }
+    UDictWrapper() SYMENGINE_NOEXCEPT {}
 
-    ~UDictWrapper() SYMENGINE_NOEXCEPT
-    {
-    }
+    ~UDictWrapper() SYMENGINE_NOEXCEPT {}
 
     UDictWrapper(Dict &&p, unsigned int sz)
     {
@@ -264,17 +260,11 @@ public:
 class MIntDict : public UDictWrapper<vec_uint, integer_class, MIntDict>
 {
 public:
-    MIntDict(unsigned int s) SYMENGINE_NOEXCEPT : UDictWrapper(s)
-    {
-    }
+    MIntDict(unsigned int s) SYMENGINE_NOEXCEPT : UDictWrapper(s) {}
 
-    MIntDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    MIntDict() SYMENGINE_NOEXCEPT {}
 
-    ~MIntDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    ~MIntDict() SYMENGINE_NOEXCEPT {}
 
     MIntDict(MIntDict &&other) SYMENGINE_NOEXCEPT
         : UDictWrapper(std::move(other))
@@ -286,9 +276,7 @@ public:
     {
     }
 
-    MIntDict(const umap_uvec_mpz &p, unsigned int sz) : UDictWrapper(p, sz)
-    {
-    }
+    MIntDict(const umap_uvec_mpz &p, unsigned int sz) : UDictWrapper(p, sz) {}
 
     MIntDict(const MIntDict &) = default;
 
@@ -298,17 +286,11 @@ public:
 class MExprDict : public UDictWrapper<vec_int, Expression, MExprDict>
 {
 public:
-    MExprDict(unsigned int s) SYMENGINE_NOEXCEPT : UDictWrapper(s)
-    {
-    }
+    MExprDict(unsigned int s) SYMENGINE_NOEXCEPT : UDictWrapper(s) {}
 
-    MExprDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    MExprDict() SYMENGINE_NOEXCEPT {}
 
-    ~MExprDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    ~MExprDict() SYMENGINE_NOEXCEPT {}
 
     MExprDict(MExprDict &&other) SYMENGINE_NOEXCEPT
         : UDictWrapper(std::move(other))
@@ -320,9 +302,7 @@ public:
     {
     }
 
-    MExprDict(const umap_vec_expr &p, unsigned int sz) : UDictWrapper(p, sz)
-    {
-    }
+    MExprDict(const umap_vec_expr &p, unsigned int sz) : UDictWrapper(p, sz) {}
 
     MExprDict(const MExprDict &) = default;
 
@@ -350,7 +330,7 @@ public:
         return make_rcp<const Poly>(vars, std::move(d));
     }
 
-    int compare(const Basic &o) const
+    int compare(const Basic &o) const override
     {
         SYMENGINE_ASSERT(is_a<Poly>(o))
 
@@ -412,7 +392,7 @@ public:
         return Container(std::move(d), numeric_cast<unsigned>(s.size()));
     }
 
-    inline vec_basic get_args() const
+    inline vec_basic get_args() const override
     {
         return {};
     }
@@ -427,7 +407,7 @@ public:
         return vars_;
     }
 
-    bool __eq__(const Basic &o) const
+    bool __eq__(const Basic &o) const override
     {
         // TODO : fix for when vars are different, but there is an intersection
         if (not is_a<Poly>(o))
@@ -460,14 +440,11 @@ class MIntPoly : public MSymEnginePoly<MIntDict, MIntPoly>
 {
 public:
     MIntPoly(const set_basic &vars, MIntDict &&dict)
-        : MSymEnginePoly(vars, std::move(dict))
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
+        : MSymEnginePoly(vars, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-    IMPLEMENT_TYPEID(SYMENGINE_MINTPOLY)
+          IMPLEMENT_TYPEID(SYMENGINE_MINTPOLY)
 
-    hash_t __hash__() const;
+              hash_t __hash__() const override;
     RCP<const Basic> as_symbolic() const;
 
     integer_class eval(
@@ -478,14 +455,11 @@ class MExprPoly : public MSymEnginePoly<MExprDict, MExprPoly>
 {
 public:
     MExprPoly(const set_basic &vars, MExprDict &&dict)
-        : MSymEnginePoly(vars, std::move(dict))
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
+        : MSymEnginePoly(vars, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-    IMPLEMENT_TYPEID(SYMENGINE_MEXPRPOLY)
+          IMPLEMENT_TYPEID(SYMENGINE_MEXPRPOLY)
 
-    hash_t __hash__() const;
+              hash_t __hash__() const override;
     RCP<const Basic> as_symbolic() const;
     Expression
     eval(std::map<RCP<const Basic>, Expression, RCPBasicKeyLess> &vals) const;
@@ -554,6 +528,6 @@ RCP<const Poly> pow_mpoly(const Poly &a, unsigned int n)
     auto x = a.get_poly();
     return Poly::from_container(a.get_vars(), Poly::container_type::pow(x, n));
 }
-} // SymEngine
+} // namespace SymEngine
 
 #endif

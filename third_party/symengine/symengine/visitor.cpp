@@ -207,6 +207,24 @@ void TransformVisitor::bvisit(const MultiArgFunction &x)
     result_ = nbarg;
 }
 
+void TransformVisitor::bvisit(const Piecewise &x)
+{
+    auto branch_cond_pairs = x.get_vec();
+    PiecewiseVec new_pairs;
+    for (const auto &branch_cond : branch_cond_pairs) {
+        auto branch = branch_cond.first;
+        auto cond = branch_cond.second;
+        auto new_branch = apply(branch);
+        auto new_cond = apply(cond);
+        if (!is_a_Boolean(*new_cond)) {
+            new_cond = Eq(new_cond, boolTrue);
+        }
+        new_pairs.push_back(
+            {new_branch, rcp_static_cast<const Boolean>(new_cond)});
+    }
+    result_ = piecewise(new_pairs);
+}
+
 void preorder_traversal_local_stop(const Basic &b, LocalStopVisitor &v)
 {
     b.accept(v);
@@ -292,9 +310,7 @@ void CountOpsVisitor::bvisit(const Pow &x)
     apply(*x.get_base());
 }
 
-void CountOpsVisitor::bvisit(const Number &x)
-{
-}
+void CountOpsVisitor::bvisit(const Number &x) {}
 
 void CountOpsVisitor::bvisit(const ComplexBase &x)
 {
@@ -307,13 +323,9 @@ void CountOpsVisitor::bvisit(const ComplexBase &x)
     }
 }
 
-void CountOpsVisitor::bvisit(const Symbol &x)
-{
-}
+void CountOpsVisitor::bvisit(const Symbol &x) {}
 
-void CountOpsVisitor::bvisit(const Constant &x)
-{
-}
+void CountOpsVisitor::bvisit(const Constant &x) {}
 
 void CountOpsVisitor::bvisit(const Basic &x)
 {
@@ -332,4 +344,4 @@ unsigned count_ops(const vec_basic &a)
     return v.count;
 }
 
-} // SymEngine
+} // namespace SymEngine

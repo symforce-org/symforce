@@ -23,7 +23,10 @@
 #include <symengine/infinity.h>
 #include <symengine/nan.h>
 #include <symengine/matrix.h>
+#include <symengine/ntheory_funcs.h>
 #include <symengine/symengine_casts.h>
+#include <symengine/tuple.h>
+#include <symengine/matrix_expressions.h>
 #include <symengine/data_buffer_element.h>
 
 namespace SymEngine
@@ -32,7 +35,7 @@ namespace SymEngine
 class Visitor
 {
 public:
-    virtual ~Visitor(){};
+    virtual ~Visitor() {};
 #define SYMENGINE_ENUM(TypeID, Class) virtual void visit(const Class &) = 0;
 #include "symengine/type_codes.inc"
 #undef SYMENGINE_ENUM
@@ -54,13 +57,11 @@ public:
     template <typename... Args,
               typename
               = enable_if_t<std::is_constructible<Base, Args...>::value>>
-    BaseVisitor(Args &&... args) : Base(std::forward<Args>(args)...)
+    BaseVisitor(Args &&...args) : Base(std::forward<Args>(args)...)
     {
     }
 
-    BaseVisitor() : Base()
-    {
-    }
+    BaseVisitor() : Base() {}
 #else
     using Base::Base;
 #endif
@@ -97,9 +98,7 @@ protected:
     bool has_;
 
 public:
-    HasSymbolVisitor(Ptr<const Basic> x) : x_(x)
-    {
-    }
+    HasSymbolVisitor(Ptr<const Basic> x) : x_(x) {}
 
     void bvisit(const Symbol &x)
     {
@@ -117,7 +116,7 @@ public:
         }
     }
 
-    void bvisit(const Basic &x){};
+    void bvisit(const Basic &x) {};
 
     bool apply(const Basic &b)
     {
@@ -138,9 +137,7 @@ protected:
     RCP<const Basic> coeff_;
 
 public:
-    CoeffVisitor(Ptr<const Basic> x, Ptr<const Basic> n) : x_(x), n_(n)
-    {
-    }
+    CoeffVisitor(Ptr<const Basic> x, Ptr<const Basic> n) : x_(x), n_(n) {}
 
     void bvisit(const Add &x)
     {
@@ -243,9 +240,7 @@ protected:
     RCP<const Basic> result_;
 
 public:
-    TransformVisitor()
-    {
-    }
+    TransformVisitor() {}
 
     virtual RCP<const Basic> apply(const RCP<const Basic> &x);
 
@@ -269,6 +264,7 @@ public:
     }
 
     void bvisit(const MultiArgFunction &x);
+    void bvisit(const Piecewise &x);
 };
 
 template <typename Derived, typename First, typename... Rest>
@@ -343,6 +339,6 @@ public:
 
 unsigned count_ops(const vec_basic &a);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

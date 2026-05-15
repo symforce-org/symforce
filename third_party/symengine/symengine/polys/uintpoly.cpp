@@ -4,13 +4,11 @@ namespace SymEngine
 {
 
 UIntPoly::UIntPoly(const RCP<const Basic> &var, UIntDict &&dict)
-    : USymEnginePoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-    SYMENGINE_ASSERT(is_canonical(get_poly()))
-}
+    : USymEnginePoly(
+        var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()
+                                  SYMENGINE_ASSERT(is_canonical(get_poly()))}
 
-hash_t UIntPoly::__hash__() const
+      hash_t UIntPoly::__hash__() const
 {
     hash_t seed = SYMENGINE_UINTPOLY;
 
@@ -61,4 +59,4 @@ bool divides_upoly(const UIntPoly &a, const UIntPoly &b,
     }
 }
 
-} // SymEngine
+} // namespace SymEngine

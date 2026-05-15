@@ -28,9 +28,7 @@ private:
     bool deep;
 
 public:
-    ExpandVisitor(bool deep_ = true) : deep(deep_)
-    {
-    }
+    ExpandVisitor(bool deep_ = true) : deep(deep_) {}
     RCP<const Basic> apply(const Basic &b)
     {
         b.accept(*this);
@@ -374,4 +372,4 @@ RCP<const Basic> expand(const RCP<const Basic> &self, bool deep)
     return v.apply(*self);
 }
 
-} // SymEngine
+} // namespace SymEngine

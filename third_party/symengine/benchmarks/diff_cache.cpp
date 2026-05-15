@@ -10,17 +10,17 @@
 #include <symengine/pow.h>
 #include <symengine/functions.h>
 
-using SymEngine::Basic;
-using SymEngine::RCP;
 using SymEngine::add;
-using SymEngine::symbol;
+using SymEngine::Basic;
 using SymEngine::integer;
 using SymEngine::log;
-using SymEngine::sin;
 using SymEngine::pow;
-using SymEngine::sqrt;
-using SymEngine::Symbol;
+using SymEngine::RCP;
 using SymEngine::rcp_static_cast;
+using SymEngine::sin;
+using SymEngine::sqrt;
+using SymEngine::symbol;
+using SymEngine::Symbol;
 
 double CommonSubexprDiff(bool cache)
 {

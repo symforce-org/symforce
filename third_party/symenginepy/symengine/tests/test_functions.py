@@ -5,6 +5,7 @@ from symengine import (
     loggamma, beta, polygamma, digamma, trigamma, sign, floor, ceiling, conjugate,
     nan, Float, UnevaluatedExpr
 )
+from symengine.test_utilities import raises
 
 import unittest
 
@@ -62,6 +63,11 @@ def test_derivative():
     assert f.diff(y) == 0
     assert f.diff(x).args == (f, x)
     assert f.diff(x).diff(x).args == (f, x, x)
+    assert f.diff(x, 0) == f
+    assert f.diff(x, 0) == Derivative(function_symbol("f", x), x, 0)
+    raises(ValueError, lambda: f.diff(0))
+    raises(ValueError, lambda: f.diff(x, 0, 0))
+    raises(ValueError, lambda: f.diff(x, y, 0, 0, x))
 
     g = function_symbol("f", y)
     assert g.diff(x) == 0
@@ -79,10 +85,22 @@ def test_derivative():
     assert s.variables == (x,)
 
     fxy = Function("f")(x, y)
+    assert (1+fxy).has(fxy)
     g = Derivative(Function("f")(x, y), x, 2, y, 1)
     assert g == fxy.diff(x, x, y)
     assert g == fxy.diff(y, 1, x, 2)
     assert g == fxy.diff(y, x, 2)
+
+    h = Derivative(Function("f")(x, y), x, 0, y, 1)
+    assert h == fxy.diff(x, 0, y)
+    assert h == fxy.diff(y, x, 0)
+
+    i = Derivative(Function("f")(x, y), x, 0, y, 1, x, 1)
+    assert i == fxy.diff(x, 0, y, x, 1)
+    assert i == fxy.diff(x, 0, y, x)
+    assert i == fxy.diff(y, x)
+    assert i == fxy.diff(y, 1, x, 1)
+    assert i == fxy.diff(y, 1, x)
 
 
 def test_abs():

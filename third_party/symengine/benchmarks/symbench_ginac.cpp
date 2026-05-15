@@ -12,12 +12,12 @@
 using GiNaC::basic;
 using GiNaC::ex;
 using GiNaC::ex_is_less;
-using GiNaC::sqrt;
+using GiNaC::expand;
+using GiNaC::I;
 using GiNaC::numeric;
 using GiNaC::pow;
-using GiNaC::I;
-using GiNaC::expand;
 using GiNaC::real_part;
+using GiNaC::sqrt;
 using GiNaC::symbol;
 
 double R1();

@@ -120,14 +120,14 @@ template <typename Scalar>
 sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::Interpolate(const sym::Rot3<Scalar>& a,
                                                          const sym::Rot3<Scalar>& b,
                                                          const Scalar alpha, const Scalar epsilon) {
-  // Total ops: 94
+  // Total ops: 95
 
   // Input arrays
   const Eigen::Matrix<Scalar, 4, 1>& _a = a.Data();
   const Eigen::Matrix<Scalar, 4, 1>& _b = b.Data();
 
-  // Intermediate terms (16)
-  const Scalar _tmp0 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
+  // Intermediate terms (17)
+  const Scalar _tmp0 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
   const Scalar _tmp1 = -_a[0] * _b[1] + _a[1] * _b[0] - _a[2] * _b[3] + _a[3] * _b[2];
   const Scalar _tmp2 = _a[0] * _b[0] + _a[1] * _b[1] + _a[2] * _b[2] + _a[3] * _b[3];
   const Scalar _tmp3 = std::min<Scalar>(std::fabs(_tmp2), 1 - epsilon);
@@ -136,24 +136,25 @@ sym::Rot3<Scalar> LieGroupOps<Rot3<Scalar>>::Interpolate(const sym::Rot3<Scalar>
   const Scalar _tmp6 = std::copysign(Scalar(1.0), _tmp2);
   const Scalar _tmp7 = 4 * std::pow(_tmp5, Scalar(2)) * std::pow(_tmp6, Scalar(2)) *
                        std::pow(alpha, Scalar(2)) / _tmp4;
-  const Scalar _tmp8 = -_a[0] * _b[3] - _a[1] * _b[2] + _a[2] * _b[1] + _a[3] * _b[0];
+  const Scalar _tmp8 = _a[0] * _b[2] - _a[1] * _b[3] - _a[2] * _b[0] + _a[3] * _b[1];
   const Scalar _tmp9 =
       std::sqrt(Scalar(std::pow(_tmp0, Scalar(2)) * _tmp7 + std::pow(_tmp1, Scalar(2)) * _tmp7 +
                        _tmp7 * std::pow(_tmp8, Scalar(2)) + std::pow(epsilon, Scalar(2))));
   const Scalar _tmp10 = (Scalar(1) / Scalar(2)) * _tmp9;
   const Scalar _tmp11 = 2 * _tmp5 * _tmp6 * alpha * std::sin(_tmp10) / (std::sqrt(_tmp4) * _tmp9);
-  const Scalar _tmp12 = _tmp0 * _tmp11;
-  const Scalar _tmp13 = _tmp1 * _tmp11;
-  const Scalar _tmp14 = std::cos(_tmp10);
-  const Scalar _tmp15 = _tmp11 * _tmp8;
+  const Scalar _tmp12 = _a[3] * _tmp11;
+  const Scalar _tmp13 = std::cos(_tmp10);
+  const Scalar _tmp14 = _a[1] * _tmp11;
+  const Scalar _tmp15 = _a[2] * _tmp11;
+  const Scalar _tmp16 = _a[0] * _tmp11;
 
   // Output terms (1)
   Eigen::Matrix<Scalar, 4, 1> _res;
 
-  _res[0] = _a[0] * _tmp14 + _a[1] * _tmp13 - _a[2] * _tmp12 + _a[3] * _tmp15;
-  _res[1] = -_a[0] * _tmp13 + _a[1] * _tmp14 + _a[2] * _tmp15 + _a[3] * _tmp12;
-  _res[2] = _a[0] * _tmp12 - _a[1] * _tmp15 + _a[2] * _tmp14 + _a[3] * _tmp13;
-  _res[3] = -_a[0] * _tmp15 - _a[1] * _tmp12 - _a[2] * _tmp13 + _a[3] * _tmp14;
+  _res[0] = _a[0] * _tmp13 + _tmp0 * _tmp12 + _tmp1 * _tmp14 - _tmp15 * _tmp8;
+  _res[1] = _a[1] * _tmp13 + _tmp0 * _tmp15 - _tmp1 * _tmp16 + _tmp12 * _tmp8;
+  _res[2] = _a[2] * _tmp13 - _tmp0 * _tmp14 + _tmp1 * _tmp12 + _tmp16 * _tmp8;
+  _res[3] = _a[3] * _tmp13 - _tmp0 * _tmp16 - _tmp1 * _tmp15 - _tmp14 * _tmp8;
 
   return sym::Rot3<Scalar>(_res);
 }

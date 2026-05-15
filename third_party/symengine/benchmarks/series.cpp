@@ -4,18 +4,18 @@
 #include <symengine/series_generic.h>
 
 using SymEngine::Basic;
-using SymEngine::Symbol;
-using SymEngine::UnivariateSeries;
-using SymEngine::symbol;
+using SymEngine::Expression;
 using SymEngine::integer;
 using SymEngine::integer_class;
-using SymEngine::RCP;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::Expression;
-using SymEngine::UExprPoly;
-using SymEngine::UExprDict;
 using SymEngine::map_int_Expr;
 using SymEngine::pow;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::UExprDict;
+using SymEngine::UExprPoly;
+using SymEngine::UnivariateSeries;
 
 int main(int argc, char *argv[])
 {

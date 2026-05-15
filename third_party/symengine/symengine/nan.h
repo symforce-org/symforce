@@ -24,59 +24,59 @@ public:
     NaN();
 
     //! \return size of the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
 
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    bool __eq__(const Basic &o) const;
-    int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
 
     //! \return `true` if `0`
-    inline bool is_zero() const
+    inline bool is_zero() const override
     {
         return false;
     }
     //! \return `true` if `1`
-    inline bool is_one() const
+    inline bool is_one() const override
     {
         return false;
     }
     //! \return `true` if `-1`
-    inline bool is_minus_one() const
+    inline bool is_minus_one() const override
     {
         return false;
     }
 
-    inline bool is_positive() const
+    inline bool is_positive() const override
     {
         return false;
     }
 
-    inline bool is_negative() const
+    inline bool is_negative() const override
     {
         return false;
     }
 
-    inline bool is_complex() const
+    inline bool is_complex() const override
     {
         return false;
     }
     //! \return the conjugate if the class is complex
-    virtual RCP<const Basic> conjugate() const;
-    inline bool is_exact() const
+    RCP<const Basic> conjugate() const override;
+    inline bool is_exact() const override
     {
         return false;
     }
-    virtual Evaluate &get_eval() const;
+    Evaluate &get_eval() const override;
 
-    RCP<const Number> add(const Number &other) const;
-    RCP<const Number> mul(const Number &other) const;
-    RCP<const Number> div(const Number &other) const;
-    RCP<const Number> pow(const Number &other) const;
-    RCP<const Number> rpow(const Number &other) const;
+    RCP<const Number> add(const Number &other) const override;
+    RCP<const Number> mul(const Number &other) const override;
+    RCP<const Number> div(const Number &other) const override;
+    RCP<const Number> pow(const Number &other) const override;
+    RCP<const Number> rpow(const Number &other) const override;
 };
 
-} // SymEngine
+} // namespace SymEngine
 #endif

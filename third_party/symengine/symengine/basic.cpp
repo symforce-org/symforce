@@ -1,8 +1,32 @@
 #include <symengine/printers.h>
 #include <symengine/subs.h>
+#include <symengine/serialize-cereal.h>
+#include <array>
 
 namespace SymEngine
 {
+
+std::string type_code_name(TypeID id)
+{
+#define STRINGIFY0(x) #x
+#define STRINGIFY(x) STRINGIFY0(x)
+    const static std::array<std::string,
+                            static_cast<int>(TypeID::TypeID_Count) + 1>
+        type_names{{
+#define SYMENGINE_INCLUDE_ALL
+#define SYMENGINE_ENUM(type, Class) STRINGIFY(Class),
+#include "symengine/type_codes.inc"
+#undef SYMENGINE_ENUM
+            "TypeID_Count"}};
+#undef SYMENGINE_INCLUDE_ALL
+#undef STRINGIFY0
+#undef STRINGIFY
+
+    if ((id < 0) || (id > TypeID::TypeID_Count)) {
+        throw std::runtime_error("type_id out of range");
+    }
+    return type_names[id];
+}
 
 int Basic::__cmp__(const Basic &o) const
 {
@@ -22,6 +46,35 @@ int Basic::__cmp__(const Basic &o) const
 std::string Basic::__str__() const
 {
     return str(*this);
+}
+
+std::string Basic::dumps() const
+{
+    std::ostringstream oss;
+    unsigned short major = SYMENGINE_MAJOR_VERSION;
+    unsigned short minor = SYMENGINE_MINOR_VERSION;
+    cereal::PortableBinaryOutputArchive{oss}(major, minor,
+                                             this->rcp_from_this());
+    return oss.str();
+}
+
+RCP<const Basic> Basic::loads(const std::string &serialized)
+{
+    unsigned short major, minor;
+    RCP<const Basic> obj;
+    std::istringstream iss(serialized);
+    cereal::PortableBinaryInputArchive iarchive{iss};
+    iarchive(major, minor);
+    if (major != SYMENGINE_MAJOR_VERSION or minor != SYMENGINE_MINOR_VERSION) {
+        throw SerializationError(StreamFmt()
+                                 << "SymEngine-" << SYMENGINE_MAJOR_VERSION
+                                 << "." << SYMENGINE_MINOR_VERSION
+                                 << " was asked to deserialize an object "
+                                 << "created using SymEngine-" << major << "."
+                                 << minor << ".");
+    }
+    iarchive(obj);
+    return obj;
 }
 
 RCP<const Basic> Basic::subs(const map_basic_basic &subs_dict) const

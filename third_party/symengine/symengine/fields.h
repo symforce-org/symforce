@@ -37,12 +37,8 @@ public:
                 return a.first.degree() < b.first.degree();
         }
     };
-    GaloisFieldDict() SYMENGINE_NOEXCEPT
-    {
-    }
-    ~GaloisFieldDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    GaloisFieldDict() SYMENGINE_NOEXCEPT {}
+    ~GaloisFieldDict() SYMENGINE_NOEXCEPT {}
     GaloisFieldDict(GaloisFieldDict &&other) SYMENGINE_NOEXCEPT
         : dict_(std::move(other.dict_)),
           modulo_(std::move(other.modulo_))
@@ -559,8 +555,8 @@ public:
     //! \return true if canonical
     bool is_canonical(const GaloisFieldDict &dict) const;
     //! \return size of the hash
-    hash_t __hash__() const;
-    int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    int compare(const Basic &o) const override;
 
     // creates a GaloisField in cannonical form based on the
     // dictionary.
@@ -572,7 +568,7 @@ public:
     static RCP<const GaloisField> from_uintpoly(const UIntPoly &a,
                                                 const integer_class &modulo);
 
-    integer_class eval(const integer_class &x) const
+    integer_class eval(const integer_class &x) const override
     {
         return get_poly().gf_eval(x);
     }
@@ -601,18 +597,18 @@ public:
         return get_poly().dict_.rend();
     }
 
-    inline integer_class get_coeff(unsigned int x) const
+    inline integer_class get_coeff(unsigned int x) const override
     {
         return get_poly().get_coeff(x);
     }
 
-    virtual vec_basic get_args() const;
+    vec_basic get_args() const override;
     inline const std::vector<integer_class> &get_dict() const
     {
         return get_poly().dict_;
     }
 
-    inline int size() const
+    inline int size() const override
     {
         if (get_poly().empty())
             return 0;
@@ -638,6 +634,6 @@ inline RCP<const GaloisField> pow_upoly(const GaloisField &a, unsigned int p)
     auto dict = GaloisField::container_type::pow(a.get_poly(), p);
     return GaloisField::from_container(a.get_var(), std::move(dict));
 }
-}
+} // namespace SymEngine
 
 #endif

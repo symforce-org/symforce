@@ -30,4 +30,4 @@ void monomial_mul3(const vec_int &A, const vec_int &B, vec_int &C)
 }
 */
 
-} // SymEngine
+} // namespace SymEngine

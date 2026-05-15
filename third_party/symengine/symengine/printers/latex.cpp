@@ -1,4 +1,6 @@
 #include <symengine/printers/latex.h>
+#include <symengine/printers.h>
+#include <symengine/basic.h>
 
 namespace SymEngine
 {
@@ -230,6 +232,56 @@ void LatexPrinter::bvisit(const StrictLessThan &x)
     str_ = s.str();
 }
 
+std::string latex(const DenseMatrix &m, const unsigned max_rows,
+                  const unsigned max_cols)
+{
+    const unsigned int nrows = m.nrows();
+    const unsigned int ncols = m.ncols();
+    unsigned int nrows_display = nrows;
+    if (nrows > max_rows)
+        nrows_display = max_rows - 1;
+    unsigned int ncols_display = ncols;
+    if (ncols > max_cols)
+        ncols_display = max_cols - 1;
+
+    std::ostringstream s;
+    s << "\\left[\\begin{matrix}" << std::endl;
+
+    std::string end_of_line = " \\\\\n";
+    if (ncols_display < ncols) {
+        end_of_line = " & \\cdots" + end_of_line;
+    }
+    for (unsigned int row_index = 0; row_index < nrows_display; row_index++) {
+        for (unsigned int column_index = 0; column_index < ncols_display;
+             column_index++) {
+            RCP<const Basic> v = m.get(row_index, column_index);
+
+            if (v.is_null()) {
+                // element has not been initalized
+                throw SymEngineException(
+                    "cannot display uninitialized element");
+            } else {
+                s << latex(*v);
+            }
+            if (column_index < ncols_display - 1)
+                s << " & ";
+        }
+        s << end_of_line;
+    }
+    if (nrows_display < nrows) {
+        for (unsigned int column_index = 0; column_index < ncols_display;
+             column_index++) {
+            s << "\\vdots";
+            if (column_index < ncols_display - 1)
+                s << " & ";
+        }
+        s << end_of_line;
+    }
+    s << "\\end{matrix}\\right]\n";
+
+    return s.str();
+}
+
 void LatexPrinter::bvisit(const Interval &x)
 {
     std::ostringstream s;
@@ -340,6 +392,13 @@ void LatexPrinter::bvisit(const Union &x)
     str_ = s.str();
 }
 
+void LatexPrinter::bvisit(const Intersection &x)
+{
+    std::ostringstream s;
+    print_with_args(x, "\\cap", s);
+    str_ = s.str();
+}
+
 void LatexPrinter::bvisit(const Complement &x)
 {
     std::ostringstream s;
@@ -369,19 +428,34 @@ void LatexPrinter::bvisit(const EmptySet &x)
     str_ = "\\emptyset";
 }
 
+void LatexPrinter::bvisit(const Complexes &x)
+{
+    str_ = "\\mathbb{C}";
+}
+
 void LatexPrinter::bvisit(const Reals &x)
 {
-    str_ = "\\mathbf{R}";
+    str_ = "\\mathbb{R}";
 }
 
 void LatexPrinter::bvisit(const Rationals &x)
 {
-    str_ = "\\mathbf{Q}";
+    str_ = "\\mathbb{Q}";
 }
 
 void LatexPrinter::bvisit(const Integers &x)
 {
-    str_ = "\\mathbf{Z}";
+    str_ = "\\mathbb{Z}";
+}
+
+void LatexPrinter::bvisit(const Naturals &x)
+{
+    str_ = "\\mathbb{N}";
+}
+
+void LatexPrinter::bvisit(const Naturals0 &x)
+{
+    str_ = "\\mathbb{N}_0";
 }
 
 void LatexPrinter::bvisit(const FiniteSet &x)
@@ -442,14 +516,13 @@ std::vector<std::string> init_latex_printer_names()
     names[SYMENGINE_LOG] = "\\log";
     names[SYMENGINE_GAMMA] = "\\Gamma";
     names[SYMENGINE_TRUNCATE] = "\\operatorname{truncate}";
+    names[SYMENGINE_PRIMEPI] = "\\pi";
     return names;
 }
 
-const std::vector<std::string> LatexPrinter::names_
-    = init_latex_printer_names();
-
 void LatexPrinter::bvisit(const Function &x)
 {
+    static const std::vector<std::string> names_ = init_latex_printer_names();
     std::ostringstream o;
     o << names_[x.get_type_code()] << "{";
     vec_basic vec = x.get_args();
@@ -538,4 +611,13 @@ void LatexPrinter::bvisit(const Piecewise &x)
     }
     str_ = s.str();
 }
+
+void LatexPrinter::bvisit(const Tuple &x)
+{
+    std::ostringstream o;
+    vec_basic vec = x.get_args();
+    o << parenthesize(apply(vec));
+    str_ = o.str();
 }
+
+} // namespace SymEngine

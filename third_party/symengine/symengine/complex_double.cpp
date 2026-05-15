@@ -64,4 +64,4 @@ RCP<const ComplexDouble> complex_double(std::complex<double> x)
     return make_rcp<const ComplexDouble>(x);
 }
 
-} // SymEngine
+} // namespace SymEngine

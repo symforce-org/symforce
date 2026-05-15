@@ -12,18 +12,18 @@
 #include <symengine/pow.h>
 #include <symengine/symbol.h>
 
+using SymEngine::add;
+using SymEngine::Basic;
 using SymEngine::div;
 using SymEngine::factorial;
-using SymEngine::RCP;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::add;
-using SymEngine::Integer;
-using SymEngine::Number;
-using SymEngine::integer;
 using SymEngine::gcd;
-using SymEngine::rcp_static_cast;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::Number;
+using SymEngine::one;
 using SymEngine::pow;
+using SymEngine::RCP;
+using SymEngine::rcp_static_cast;
 using SymEngine::symbol;
 
 double A()

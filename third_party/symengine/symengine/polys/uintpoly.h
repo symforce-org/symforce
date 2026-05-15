@@ -25,25 +25,15 @@ class UIntDict : public ODictWrapper<unsigned int, integer_class, UIntDict>
 {
 
 public:
-    UIntDict() SYMENGINE_NOEXCEPT
-    {
-    }
-    ~UIntDict() SYMENGINE_NOEXCEPT
-    {
-    }
+    UIntDict() SYMENGINE_NOEXCEPT {}
+    ~UIntDict() SYMENGINE_NOEXCEPT {}
     UIntDict(UIntDict &&other) SYMENGINE_NOEXCEPT
         : ODictWrapper(std::move(other))
     {
     }
-    UIntDict(const int &i) : ODictWrapper(i)
-    {
-    }
-    UIntDict(const map_uint_mpz &p) : ODictWrapper(p)
-    {
-    }
-    UIntDict(const integer_class &i) : ODictWrapper(i)
-    {
-    }
+    UIntDict(const int &i) : ODictWrapper(i) {}
+    UIntDict(const map_uint_mpz &p) : ODictWrapper(p) {}
+    UIntDict(const integer_class &i) : ODictWrapper(i) {}
 
     UIntDict(const UIntDict &) = default;
     UIntDict &operator=(const UIntDict &) = default;
@@ -130,13 +120,13 @@ public:
     UIntPoly(const RCP<const Basic> &var, UIntDict &&dict);
 
     //! \return size of the hash
-    hash_t __hash__() const;
+    hash_t __hash__() const override;
 }; // UIntPoly
 
 // true & sets `out` to b/a if a exactly divides b, otherwise false & undefined
 bool divides_upoly(const UIntPoly &a, const UIntPoly &b,
                    const Ptr<RCP<const UIntPoly>> &res);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

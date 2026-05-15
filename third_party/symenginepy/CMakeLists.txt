@@ -1,8 +1,19 @@
 cmake_minimum_required(VERSION 2.8.12)
+
+if (POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW) # needed for llvm >= 16
+endif ()
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)  # allow user to set *_ROOT variables
+endif()
+
 project(python_wrapper)
 
 set(CMAKE_PREFIX_PATH ${SymEngine_DIR} ${CMAKE_PREFIX_PATH})
-find_package(SymEngine 0.7.0 REQUIRED CONFIG
+
+include(GNUInstallDirs)
+
+find_package(SymEngine 0.8.1 REQUIRED CONFIG
              PATH_SUFFIXES lib/cmake/symengine cmake/symengine CMake/)
 message("SymEngine_DIR : " ${SymEngine_DIR})
 message("SymEngine Version : " ${SymEngine_VERSION})
@@ -44,6 +55,7 @@ foreach (PKG MPC MPFR PIRANHA FLINT LLVM)
         set(HAVE_SYMENGINE_${PKG} False)
     endif()
 endforeach()
+option(SYMENGINE_INSTALL_PY_FILES "Install python files" ON)
 
 message("CMAKE_SYSTEM_PROCESSOR              : ${CMAKE_SYSTEM_PROCESSOR}")
 message("CMAKE_BUILD_TYPE                    : ${CMAKE_BUILD_TYPE}")

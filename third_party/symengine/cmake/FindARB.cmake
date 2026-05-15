@@ -1,7 +1,7 @@
 include(LibFindMacros)
 
 libfind_include(arb.h arb)
-libfind_library(arb arb)
+libfind_library(arb arb flint-arb)
 
 set(ARB_LIBRARIES ${ARB_LIBRARY})
 set(ARB_INCLUDE_DIRS ${ARB_INCLUDE_DIR})

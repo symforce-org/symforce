@@ -109,10 +109,9 @@ macro(ADD_PYTHON_LIBRARY name)
         # on Mac, we need to use the "-bundle" gcc flag, which is what MODULE
         # does:
         add_library(${name} MODULE ${ARGN})
-        # and "-flat_namespace -undefined suppress" link flags, that we need
-        # to add by hand:
+        # and "-undefined dynamic_lookup" link flags, that we need to add by hand:
         set_property(TARGET ${name} APPEND_STRING PROPERTY
-            LINK_FLAGS " -flat_namespace -undefined suppress -Wl,-exported_symbol,_PyInit_${name}")
+            LINK_FLAGS " -undefined dynamic_lookup -Wl,-exported_symbol,_PyInit_${name}")
     ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         # on Linux, we need to use the "-shared" gcc flag, which is what SHARED
         # does:

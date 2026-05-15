@@ -52,6 +52,8 @@ enum TypeID {
     TypeID_Count
 };
 
+std::string type_code_name(TypeID id);
+
 #include "basic-methods.inc"
 
 class Visitor;
@@ -115,14 +117,10 @@ public:
     };
 #endif
     //! Constructor
-    Basic() : hash_{0}
-    {
-    }
+    Basic() : hash_{0} {}
     // Destructor must be explicitly defined as virtual here to avoid problems
     // with undefined behavior while deallocating derived classes.
-    virtual ~Basic()
-    {
-    }
+    virtual ~Basic() {}
 
     //! Delete the copy constructor and assignment
     Basic(const Basic &) = delete;
@@ -183,6 +181,12 @@ public:
      */
     std::string __str__() const;
 
+    //! Returns a string of the instance serialized.
+    std::string dumps() const;
+
+    //! Creates an instance of a serialized string.
+    static RCP<const Basic> loads(const std::string &);
+
     //! Substitutes 'subs_dict' into 'self'.
     RCP<const Basic> subs(const map_basic_basic &subs_dict) const;
 
@@ -197,7 +201,7 @@ public:
     //! Returns the list of arguments
     virtual vec_basic get_args() const = 0;
 
-    SYMENGINE_INCLUDE_METHODS(= 0;)
+    SYMENGINE_INCLUDE_METHODS_BASE()
 
     RCP<const Basic> diff(const RCP<const Symbol> &x, bool cache = true) const;
 };
@@ -233,15 +237,6 @@ struct RCPBasicKeyLess {
         return x->__cmp__(*y) == -1;
     }
 };
-
-enum tribool { indeterminate = -1, trifalse = 0, tritrue = 1 };
-
-inline bool is_true(tribool x);
-inline bool is_false(tribool x);
-inline bool is_indeterminate(tribool x);
-inline tribool and_tribool(tribool a, tribool b);
-inline tribool not_tribool(tribool a);
-inline tribool andwk_tribool(tribool a, tribool b);
 
 // Convenience functions
 //! Checks equality for `a` and `b`
@@ -281,6 +276,8 @@ void as_real_imag(const RCP<const Basic> &x, const Ptr<RCP<const Basic>> &real,
                   const Ptr<RCP<const Basic>> &imag);
 
 RCP<const Basic> rewrite_as_exp(const RCP<const Basic> &x);
+RCP<const Basic> rewrite_as_sin(const RCP<const Basic> &x);
+RCP<const Basic> rewrite_as_cos(const RCP<const Basic> &x);
 
 // Common subexpression elimination of symbolic expressions
 // Return a vector of replacement pairs and a vector of reduced exprs
@@ -329,6 +326,7 @@ struct hash<SymEngine::Basic>;
 
 //! Inline members and functions
 #include "basic-inl.h"
+#include <symengine/tribool.h>
 
 // Macro to define the type_code_id variable and its getter method
 #ifdef WITH_SYMENGINE_VIRTUAL_TYPEID
@@ -340,12 +338,12 @@ struct hash<SymEngine::Basic>;
     {                                                                          \
         return type_code_id;                                                   \
     };                                                                         \
-    SYMENGINE_INCLUDE_METHODS(;)
+    SYMENGINE_INCLUDE_METHODS_DERIVED()
 #else
 #define IMPLEMENT_TYPEID(SYMENGINE_ID)                                         \
     /*! Type_code_id shared by all instances */                                \
     const static TypeID type_code_id = SYMENGINE_ID;                           \
-    SYMENGINE_INCLUDE_METHODS(;)
+    SYMENGINE_INCLUDE_METHODS_DERIVED()
 #endif
 
 #ifdef WITH_SYMENGINE_VIRTUAL_TYPEID

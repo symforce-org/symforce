@@ -3,12 +3,10 @@ import os
 import subprocess
 import sys
 import platform
-from distutils.command.build_ext import build_ext as _build_ext
-from distutils.command.build import build as _build
 
 # Make sure the system has the right Python version.
-if sys.version_info[:2] < (3, 6):
-    print("SymEngine requires Python 3.6 or newer. "
+if sys.version_info[:2] < (3, 8):
+    print("SymEngine requires Python 3.8 or newer. "
           "Python %d.%d detected" % sys.version_info[:2])
     sys.exit(-1)
 
@@ -28,12 +26,20 @@ if use_setuptools:
     try:
         from setuptools import setup
         from setuptools.command.install import install as _install
+        from setuptools.command.build_ext import build_ext as _build_ext
     except ImportError:
         use_setuptools = False
+    else:
+        try:
+            from setuptools.command.build import build as _build
+        except ImportError:
+            from distutils.command.build import build as _build
 
 if not use_setuptools:
     from distutils.core import setup
     from distutils.command.install import install as _install
+    from distutils.command.build_ext import build_ext as _build_ext
+    from distutils.command.build import build as _build
 
 cmake_opts = [("PYTHON_BIN", sys.executable),
               ("CMAKE_INSTALL_RPATH_USE_LINK_PATH", "yes")]
@@ -62,21 +68,11 @@ global_user_options = [
 ]
 
 def _process_define(arg, install=False):
-    """
-    Parse CMake define arguments
-
-    Arguments
-    =========
-
-    arg ...... The Command instance that should have the `define` attribute
-    install .. True if we're running the install command (which has a different argument format)
-    """
     if install:
         defs = getattr(arg, 'define', None) or ''
     else:
         (defs, one), = getattr(arg, 'define', None) or [('', '1')]
         assert one == '1'
-
     defs = [df for df in defs.split(';') if df != '']
     return [(s.strip(), None) if '=' not in s else
             tuple(ss.strip() for ss in s.split('='))
@@ -84,7 +80,7 @@ def _process_define(arg, install=False):
 
 
 class BuildWithCmake(_build):
-    sub_commands = [('build_ext', None)]
+    sub_commands = [('build_py', _build.has_pure_modules), ('build_ext', None)]
 
 
 class BuildExtWithCmake(_build_ext):
@@ -123,17 +119,19 @@ class BuildExtWithCmake(_build_ext):
             os.remove("CMakeCache.txt")
 
         cmake_cmd = ["cmake", source_dir,
-                     "-DCMAKE_BUILD_TYPE=" + cmake_build_type[0]]
+            "-DCMAKE_BUILD_TYPE=" + cmake_build_type[0],
+            "-DSYMENGINE_INSTALL_PY_FILES=OFF",
+        ]
         cmake_cmd.extend(process_opts(cmake_opts))
         if not path.exists(path.join(build_dir, "CMakeCache.txt")):
             cmake_cmd.extend(self.get_generator())
         if subprocess.call(cmake_cmd, cwd=build_dir) != 0:
-            raise EnvironmentError("error calling cmake")
+            raise OSError("error calling cmake")
 
         if subprocess.call(["cmake", "--build", ".",
                             "--config", cmake_build_type[0]],
                            cwd=build_dir) != 0:
-            raise EnvironmentError("error building project")
+            raise OSError("error building project")
 
     def get_generator(self):
         if cmake_generator[0]:
@@ -179,19 +177,21 @@ class InstallWithCmake(_install):
     def cmake_install(self):
         source_dir = path.dirname(path.realpath(__file__))
         build_dir = get_build_dir(self.distribution)
-        cmake_cmd = ["cmake", source_dir]
+        cmake_cmd = ["cmake", source_dir,
+            "-DSYMENGINE_INSTALL_PY_FILES=ON",
+        ]
         cmake_cmd.extend(process_opts(cmake_opts))
 
         # CMake has to be called here to update PYTHON_INSTALL_PATH
         # if build and install were called separately by the user
         if subprocess.call(cmake_cmd, cwd=build_dir) != 0:
-            raise EnvironmentError("error calling cmake")
+            raise OSError("error calling cmake")
 
         if subprocess.call(["cmake", "--build", ".",
                             "--config", cmake_build_type[0],
                             "--target", "install"],
                            cwd=build_dir) != 0:
-            raise EnvironmentError("error installing")
+            raise OSError("error installing")
 
         import compileall
         compileall.compile_dir(path.join(self.install_platlib, "symengine"))
@@ -226,16 +226,20 @@ and dependencies of wheels
 
 '''
 
+source_dir = path.dirname(path.realpath(__file__))
+
 setup(name="symengine",
-      version="0.7.2",
+      version="0.11.0",
       description="Python library providing wrappers to SymEngine",
-      setup_requires=['cython>=0.19.1'],
+      setup_requires=['cython>=0.29.24'],
       long_description=long_description,
       author="SymEngine development team",
       author_email="symengine@googlegroups.com",
       license="MIT",
       url="https://github.com/symengine/symengine.py",
-      python_requires='>=3.6,<4',
+      python_requires='>=3.8,<4',
+      packages=['symengine', 'symengine.lib', 'symengine.tests'],
+      package_dir={'': source_dir},
       zip_safe=False,
       cmdclass = cmdclass,
       classifiers=[
@@ -245,9 +249,10 @@ setup(name="symengine",
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         ]
       )

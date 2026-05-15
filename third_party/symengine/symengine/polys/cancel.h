@@ -35,5 +35,5 @@ inline void cancel(const RCP<const Basic> &numer, const RCP<const Basic> &denom,
     divides_upoly(*gcd_poly, *denom_poly, outArg(*result_denom));
     *common = gcd_poly;
 }
-}
+} // namespace SymEngine
 #endif // SYMENGINE_CANCEL_H

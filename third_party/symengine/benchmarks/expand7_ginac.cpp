@@ -9,14 +9,14 @@
 #include <chrono>
 
 #include <ginac/ginac.h>
-using GiNaC::ex;
-using GiNaC::pow;
 using GiNaC::add;
-using GiNaC::expand;
+using GiNaC::ex;
 using GiNaC::exmap;
-using GiNaC::symbol;
-using GiNaC::sqrt;
+using GiNaC::expand;
 using GiNaC::numeric;
+using GiNaC::pow;
+using GiNaC::sqrt;
+using GiNaC::symbol;
 
 int main(int argc, char *argv[])
 {

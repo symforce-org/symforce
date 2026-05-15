@@ -32,9 +32,7 @@ private:
 
 public:
     //! Plain constructor of Expression
-    Expression() : m_basic(integer(0))
-    {
-    }
+    Expression() : m_basic(integer(0)) {}
     //! Construct Expression from integral types
     template <class T>
     Expression(
@@ -60,21 +58,13 @@ public:
     {
     }
 
-    Expression(const integer_class &n) : m_basic(integer(n))
-    {
-    }
+    Expression(const integer_class &n) : m_basic(integer(n)) {}
 
-    Expression(const rational_class &n) : m_basic(Rational::from_mpq(n))
-    {
-    }
+    Expression(const rational_class &n) : m_basic(Rational::from_mpq(n)) {}
 
-    Expression(RCP<const Basic> &&o) : m_basic(o)
-    {
-    }
+    Expression(RCP<const Basic> &&o) : m_basic(o) {}
 
-    Expression(const RCP<const Basic> &o) : m_basic(o)
-    {
-    }
+    Expression(const RCP<const Basic> &o) : m_basic(o) {}
 
     Expression(const std::string &s);
 
@@ -96,9 +86,7 @@ public:
         return *this;
     }
     //! Destructor of Expression
-    virtual ~Expression() SYMENGINE_NOEXCEPT
-    {
-    }
+    virtual ~Expression() SYMENGINE_NOEXCEPT {}
     //! Overload stream operator
     friend std::ostream &operator<<(std::ostream &os, const Expression &expr)
     {
@@ -300,7 +288,7 @@ namespace detail
 {
 // This function must have external linkage
 std::string poly_print(const Expression &x);
-}
+} // namespace detail
 
 } // namespace SymEngine
 
@@ -315,9 +303,8 @@ namespace math
 {
 
 template <typename T>
-struct partial_impl<T, typename std::
-                           enable_if<std::is_same<T, SymEngine::Expression>::
-                                         value>::type> {
+struct partial_impl<T, typename std::enable_if<std::is_same<
+                           T, SymEngine::Expression>::value>::type> {
     /// Call operator.
     /**
      * @return an instance of Expression constructed from zero.
@@ -330,10 +317,10 @@ struct partial_impl<T, typename std::
 };
 
 template <typename T, typename U>
-struct pow_impl<T, U,
-                typename std::
-                    enable_if<std::is_same<T, SymEngine::Expression>::value
-                              && std::is_integral<U>::value>::type> {
+struct pow_impl<
+    T, U,
+    typename std::enable_if<std::is_same<T, SymEngine::Expression>::value
+                            && std::is_integral<U>::value>::type> {
     SymEngine::Expression operator()(const SymEngine::Expression &x,
                                      const U &y) const
     {
@@ -341,13 +328,11 @@ struct pow_impl<T, U,
                               SymEngine::integer(y));
     }
 };
-} // namespace piranha::math
+} // namespace math
 
 template <typename U>
-struct print_coefficient_impl<U, typename std::
-                                     enable_if<std::is_same<U, SymEngine::
-                                                                   Expression>::
-                                                   value>::type> {
+struct print_coefficient_impl<U, typename std::enable_if<std::is_same<
+                                     U, SymEngine::Expression>::value>::type> {
     auto operator()(std::ostream &os, const U &cf) const -> decltype(os << cf)
     {
         return os << SymEngine::detail::poly_print(cf);

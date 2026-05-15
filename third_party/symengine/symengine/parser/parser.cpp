@@ -2,14 +2,18 @@
 #include <symengine/parser/parser.tab.hh>
 #include <symengine/real_double.h>
 #include <symengine/real_mpfr.h>
+#include <symengine/ntheory_funcs.h>
+#include <symengine/parser/tokenizer.h>
 
 namespace SymEngine
 {
 
-RCP<const Basic> parse(const std::string &s, bool convert_xor)
+RCP<const Basic>
+parse(const std::string &s, bool convert_xor,
+      const std::map<const std::string, const RCP<const Basic>> &constants)
 {
     // This is expensive:
-    Parser p;
+    Parser p(constants);
     // If you need to parse multiple strings, initialize Parser first, then
     // call Parser::parse() repeatedly.
     return p.parse(s, convert_xor);
@@ -21,8 +25,9 @@ RCP<const Basic> Parser::parse(const std::string &input, bool convert_xor)
     if (convert_xor) {
         std::replace(inp.begin(), inp.end(), '^', '@');
     }
-    m_tokenizer.set_string(inp);
-    if (yyparse(*this) == 0)
+    m_tokenizer->set_string(inp);
+    yy::parser p(*this);
+    if (p() == 0)
         return this->res;
     throw ParseError("Parsing Unsuccessful");
 }
@@ -36,23 +41,14 @@ typedef RCP<const Boolean> (*single_arg_boolean_func)(const RCP<const Basic> &);
 typedef RCP<const Boolean> (*double_arg_boolean_func)(const RCP<const Basic> &,
                                                       const RCP<const Basic> &);
 
-// cast overloaded functions below to single_arg, double_arg before they can
-// be used in the map
-single_arg_func single_casted_log = log;
-single_arg_func single_casted_zeta = zeta;
-
-double_arg_func double_casted_log = log;
-double_arg_func double_casted_zeta = zeta;
-
-single_arg_boolean_func single_casted_Eq = Eq;
-double_arg_boolean_func double_casted_Eq = Eq;
-
-RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
+static const std::map<const std::string, const std::function<RCP<const Basic>(
+                                             const RCP<const Basic> &)>> &
+init_parser_single_arg_functions()
 {
-    const static std::map<const std::string,
-                          const std::function<RCP<const Basic>(
-                              const RCP<const Basic> &)>>
-        single_arg_functions = {
+    static const std::map<
+        const std::string,
+        const std::function<RCP<const Basic>(const RCP<const Basic> &)>>
+        functions = {
             {"sin", sin},
             {"cos", cos},
             {"tan", tan},
@@ -61,11 +57,17 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
             {"sec", sec},
 
             {"asin", asin},
+            {"arcsin", asin},
             {"acos", acos},
+            {"arccos", acos},
             {"atan", atan},
+            {"arctan", atan},
             {"asec", asec},
+            {"arcsec", asec},
             {"acsc", acsc},
+            {"arccsc", acsc},
             {"acot", acot},
+            {"arccot", acot},
 
             {"sinh", sinh},
             {"cosh", cosh},
@@ -75,11 +77,17 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
             {"csch", csch},
 
             {"asinh", asinh},
+            {"arcsinh", asinh},
             {"acosh", acosh},
+            {"arccosh", acosh},
             {"atanh", atanh},
+            {"arctanh", atanh},
             {"asech", asech},
+            {"arcsech", asech},
             {"acoth", acoth},
+            {"arccoth", acoth},
             {"acsch", acsch},
+            {"arccsch", acsch},
 
             {"gamma", gamma},
             {"sqrt", sqrt},
@@ -90,19 +98,28 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
             {"loggamma", loggamma},
             {"lambertw", lambertw},
             {"dirichlet_eta", dirichlet_eta},
-            {"ln", single_casted_log},
-            {"log", single_casted_log},
-            {"zeta", single_casted_zeta},
+            {"floor", floor},
+            {"ceiling", ceiling},
+            {"ln", (single_arg_func)log},
+            {"log", (single_arg_func)log},
+            {"zeta", (single_arg_func)zeta},
+            {"primepi", primepi},
+            {"primorial", primorial},
         };
-    const static std::map<const std::string,
-                          const std::function<RCP<const Basic>(
-                              const RCP<const Basic> &,
-                              const RCP<const Basic> &)>>
+    return functions;
+}
+
+RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
+{
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Basic>(const RCP<const Basic> &,
+                                             const RCP<const Basic> &)>>
         double_arg_functions = {
             {"pow", (double_arg_func)pow},
             {"beta", beta},
-            {"log", double_casted_log},
-            {"zeta", double_casted_zeta},
+            {"log", (double_arg_func)log},
+            {"zeta", (double_arg_func)zeta},
             {"lowergamma", lowergamma},
             {"uppergamma", uppergamma},
             {"polygamma", polygamma},
@@ -113,45 +130,55 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
     const static std::map<const std::string,
                           const std::function<RCP<const Basic>(vec_basic &)>>
         multi_arg_functions = {
-            {"max", max}, {"min", min}, {"levi_civita", levi_civita},
+            {"max", max},
+            {"min", min},
+            {"levi_civita", levi_civita},
         };
 
-    const static std::map<const std::string,
-                          const std::function<RCP<const Boolean>(
-                              const RCP<const Basic> &)>>
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Boolean>(const RCP<const Basic> &)>>
         single_arg_boolean_functions = {
-            {"Eq", single_casted_Eq},
+            {"Eq", (single_arg_boolean_func)Eq},
+            {"Equality", (single_arg_boolean_func)Eq},
         };
-    const static std::map<const std::string,
-                          const std::function<RCP<const Boolean>(
-                              const RCP<const Boolean> &)>>
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Boolean>(const RCP<const Boolean> &)>>
         single_arg_boolean_boolean_functions = {
             {"Not", logical_not},
         };
 
-    const static std::map<const std::string,
-                          const std::function<RCP<const Boolean>(
-                              const RCP<const Basic> &,
-                              const RCP<const Basic> &)>>
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Boolean>(const RCP<const Basic> &,
+                                               const RCP<const Basic> &)>>
         double_arg_boolean_functions = {
-            {"Eq", double_casted_Eq},
+            {"Eq", (double_arg_boolean_func)Eq},
+            {"Equality", (double_arg_boolean_func)Eq},
             {"Ne", Ne},
+            {"Unequality", Ne},
             {"Ge", Ge},
+            {"GreaterThan", Ge},
             {"Gt", Gt},
+            {"StrictGreaterThan", Gt},
             {"Le", Le},
+            {"LessThan", Le},
             {"Lt", Lt},
+            {"StrictLessThan", Lt},
         };
 
-    const static std::map<const std::string,
-                          const std::function<RCP<const Boolean>(
-                              vec_boolean &)>>
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Boolean>(vec_boolean &)>>
         multi_arg_vec_boolean_functions = {
-            {"Xor", logical_xor}, {"Xnor", logical_xnor},
+            {"Xor", logical_xor},
+            {"Xnor", logical_xnor},
         };
 
-    const static std::map<const std::string,
-                          const std::function<RCP<const Boolean>(
-                              set_boolean &)>>
+    const static std::map<
+        const std::string,
+        const std::function<RCP<const Boolean>(set_boolean &)>>
         multi_arg_set_boolean_functions = {
             {"And", logical_and},
             {"Or", logical_or},
@@ -160,8 +187,9 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
         };
 
     if (params.size() == 1) {
-        auto it1 = single_arg_functions.find(name);
-        if (it1 != single_arg_functions.end()) {
+        const auto &single_arg_functions_ = init_parser_single_arg_functions();
+        auto it1 = single_arg_functions_.find(name);
+        if (it1 != single_arg_functions_.end()) {
             return it1->second(params[0]);
         }
         auto it2 = single_arg_boolean_functions.find(name);
@@ -170,6 +198,10 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
         }
         auto it3 = single_arg_boolean_boolean_functions.find(name);
         if (it3 != single_arg_boolean_boolean_functions.end()) {
+            if (!is_a_Boolean(*params[0])) {
+                throw ParseError(
+                    "Boolean function received non-boolean arguments");
+            }
             return it3->second(rcp_static_cast<const Boolean>(params[0]));
         }
     }
@@ -194,6 +226,10 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
     if (it2 != multi_arg_vec_boolean_functions.end()) {
         vec_boolean p;
         for (auto &v : params) {
+            if (!is_a_Boolean(*v)) {
+                throw ParseError(
+                    "Boolean function received non-boolean arguments");
+            }
             p.push_back(rcp_static_cast<const Boolean>(v));
         }
         return it2->second(p);
@@ -203,6 +239,10 @@ RCP<const Basic> Parser::functionify(const std::string &name, vec_basic &params)
     if (it3 != multi_arg_set_boolean_functions.end()) {
         set_boolean s;
         for (auto &v : params) {
+            if (!is_a_Boolean(*v)) {
+                throw ParseError(
+                    "Boolean function received non-boolean arguments");
+            }
             s.insert(rcp_static_cast<const Boolean>(v));
         }
         return it3->second(s);
@@ -224,8 +264,14 @@ RCP<const Basic> Parser::parse_identifier(const std::string &expr)
                             {"oo", Inf},
                             {"inf", Inf},
                             {"zoo", ComplexInf},
-                            {"nan", Nan}};
+                            {"nan", Nan},
+                            {"True", boolTrue},
+                            {"False", boolFalse}};
 
+    auto l = local_parser_constants.find(expr);
+    if (l != local_parser_constants.end()) {
+        return l->second;
+    }
     auto c = parser_constants.find(expr);
     if (c != parser_constants.end()) {
         return c->second;
@@ -304,5 +350,13 @@ Parser::parse_implicit_mul(const std::string &expr)
     }
     return std::make_tuple(num, sym);
 }
+
+Parser::Parser(
+    const std::map<const std::string, const RCP<const Basic>> &parser_constants)
+    : local_parser_constants(parser_constants), m_tokenizer{new Tokenizer()}
+{
+}
+
+Parser::~Parser() = default;
 
 } // namespace SymEngine

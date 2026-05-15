@@ -14,6 +14,6 @@ namespace SymEngine
 //! Monomial multiplication
 void monomial_mul(const vec_int &A, const vec_int &B, vec_int &C);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

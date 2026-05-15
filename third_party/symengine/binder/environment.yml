@@ -12,4 +12,3 @@ dependencies:
   - libflint
   - jupytext
   - papermill
-  - symengine

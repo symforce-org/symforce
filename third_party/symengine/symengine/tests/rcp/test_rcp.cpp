@@ -2,11 +2,11 @@
 
 #include <symengine/symengine_rcp.h>
 
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::Ptr;
-using SymEngine::null;
 using SymEngine::EnableRCPFromThis;
+using SymEngine::make_rcp;
+using SymEngine::null;
+using SymEngine::Ptr;
+using SymEngine::RCP;
 
 // This is the canonical use of EnableRCPFromThis:
 

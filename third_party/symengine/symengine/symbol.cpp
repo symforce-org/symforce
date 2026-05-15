@@ -4,12 +4,10 @@
 namespace SymEngine
 {
 
-Symbol::Symbol(const std::string &name) : name_{name}
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+Symbol::Symbol(const std::string &name)
+    : name_{name} {SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t Symbol::__hash__() const
+      hash_t Symbol::__hash__() const
 {
     hash_t seed = 0;
     hash_combine(seed, name_);
@@ -81,4 +79,4 @@ int Dummy::compare(const Basic &o) const
     return get_name() < s.get_name() ? -1 : 1;
 }
 
-} // SymEngine
+} // namespace SymEngine

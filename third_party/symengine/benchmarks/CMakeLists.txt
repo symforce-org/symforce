@@ -72,18 +72,23 @@ if (WITH_PIRANHA)
     target_link_libraries(series_expansion_sinp symengine)
 endif()
 
-if (BUILD_BENCHMARKS_NONIUS)
-    add_executable(bench bench.cpp)
-    target_link_libraries(bench symengine)
-
-    add_executable(bench_eval_double bench_eval_double.cpp)
-    target_link_libraries(bench_eval_double symengine)
-endif()
-
 if (BUILD_BENCHMARKS_GOOGLE)
     find_package(benchmark REQUIRED)
+
+    add_executable(bench bench.cpp)
+    target_link_libraries(bench symengine benchmark::benchmark)
+
+    add_executable(bench_eval_double bench_eval_double.cpp)
+    target_link_libraries(bench_eval_double symengine benchmark::benchmark)
+
     add_executable(visitor_call visitor_call.cpp)
     target_link_libraries(visitor_call symengine benchmark::benchmark)
+
+    add_executable(visitor_init visitor_init.cpp)
+    target_link_libraries(visitor_init symengine benchmark::benchmark)
+
+    add_executable(parsing_google parsing_google.cpp)
+    target_link_libraries(parsing_google symengine benchmark::benchmark)
 endif()
 
 add_executable(parsing parsing.cpp)

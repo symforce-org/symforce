@@ -8,65 +8,65 @@
 #include <symengine/symengine_exception.h>
 #include <symengine/pow.h>
 
-using SymEngine::SymEngineException;
-using SymEngine::RCP;
+using SymEngine::abs;
+using SymEngine::acos;
+using SymEngine::acosh;
+using SymEngine::acot;
+using SymEngine::acoth;
+using SymEngine::acsc;
+using SymEngine::acsch;
+using SymEngine::asec;
+using SymEngine::asech;
+using SymEngine::asin;
+using SymEngine::asinh;
+using SymEngine::atan;
+using SymEngine::atanh;
 using SymEngine::Basic;
-using SymEngine::integer;
-using SymEngine::pi;
+using SymEngine::beta;
+using SymEngine::Catalan;
+using SymEngine::constant;
+using SymEngine::cos;
+using SymEngine::cosh;
+using SymEngine::cot;
+using SymEngine::coth;
+using SymEngine::csc;
+using SymEngine::csch;
 using SymEngine::E;
-using SymEngine::EulerGamma;
-using SymEngine::mul;
+using SymEngine::Eq;
 using SymEngine::erf;
 using SymEngine::erfc;
-using SymEngine::sub;
+using SymEngine::EulerGamma;
 using SymEngine::eval_mpfr;
+using SymEngine::gamma;
+using SymEngine::GoldenRatio;
+using SymEngine::integer;
 using SymEngine::integer_class;
-using SymEngine::print_stack_on_segfault;
+using SymEngine::lambertw;
+using SymEngine::Le;
+using SymEngine::loggamma;
+using SymEngine::lowergamma;
+using SymEngine::Lt;
 using SymEngine::max;
 using SymEngine::min;
-using SymEngine::loggamma;
-using SymEngine::one;
 using SymEngine::minus_one;
-using SymEngine::sin;
-using SymEngine::cos;
-using SymEngine::tan;
-using SymEngine::csc;
-using SymEngine::sec;
-using SymEngine::cot;
-using SymEngine::asin;
-using SymEngine::acos;
-using SymEngine::atan;
-using SymEngine::acsc;
-using SymEngine::asec;
-using SymEngine::acot;
-using SymEngine::sinh;
-using SymEngine::cosh;
-using SymEngine::tanh;
-using SymEngine::csch;
-using SymEngine::sech;
-using SymEngine::coth;
-using SymEngine::asinh;
-using SymEngine::acosh;
-using SymEngine::atanh;
-using SymEngine::acsch;
-using SymEngine::asech;
-using SymEngine::acoth;
-using SymEngine::zero;
-using SymEngine::Catalan;
-using SymEngine::GoldenRatio;
-using SymEngine::pow;
-using SymEngine::gamma;
-using SymEngine::uppergamma;
-using SymEngine::lowergamma;
-using SymEngine::beta;
-using SymEngine::constant;
-using SymEngine::NotImplementedError;
-using SymEngine::abs;
-using SymEngine::lambertw;
-using SymEngine::Eq;
+using SymEngine::mul;
 using SymEngine::Ne;
-using SymEngine::Lt;
-using SymEngine::Le;
+using SymEngine::NotImplementedError;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
+using SymEngine::sec;
+using SymEngine::sech;
+using SymEngine::sin;
+using SymEngine::sinh;
+using SymEngine::sub;
+using SymEngine::SymEngineException;
+using SymEngine::tan;
+using SymEngine::tanh;
+using SymEngine::uppergamma;
+using SymEngine::zero;
 
 TEST_CASE("precision: eval_mpfr", "[eval_mpfr]")
 {
@@ -226,10 +226,10 @@ TEST_CASE("precision: eval_mpfr", "[eval_mpfr]")
     }
 
     CHECK_THROWS_AS(eval_mpfr(a, *constant("dummy_constant"), MPFR_RNDN),
-                    NotImplementedError &);
+                    NotImplementedError);
 
     CHECK_THROWS_AS(eval_mpfr(a, *lambertw(arg1), MPFR_RNDN),
-                    NotImplementedError &);
+                    NotImplementedError);
 
     mpfr_clear(a);
 }

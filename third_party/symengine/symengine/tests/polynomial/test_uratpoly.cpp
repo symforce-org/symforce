@@ -15,23 +15,23 @@ using SymEngine::URatPolyPiranha;
 #ifdef HAVE_SYMENGINE_FLINT
 using SymEngine::URatPolyFlint;
 #endif
-using SymEngine::SymEngineException;
-using SymEngine::URatPoly;
-using SymEngine::UIntPoly;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::integer;
+using SymEngine::make_rcp;
+using SymEngine::map_uint_mpq;
+using SymEngine::one;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::rational_class;
+using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_uint_mpq;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::integer;
-using SymEngine::rational_class;
+using SymEngine::SymEngineException;
+using SymEngine::UIntPoly;
 using SymEngine::URatDict;
-using SymEngine::add;
+using SymEngine::URatPoly;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 using rc = rational_class;
@@ -89,7 +89,7 @@ TEST_CASE("Adding two URatPoly", "[URatPoly]")
         // is an integer_class.
         // So we must use the string constructor of integer_class directly
         y, {{0, 2_q}, {1, rc(ic(-3), 2_z)}, {2, rc(1_z, 4_z)}});
-    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException &);
+    CHECK_THROWS_AS(add_upoly(*a, *g), SymEngineException);
 }
 
 TEST_CASE("Negative of a URatPoly", "[URatPoly]")
@@ -121,7 +121,7 @@ TEST_CASE("Subtracting two URatPoly", "[URatPoly]")
     REQUIRE(d->__str__() == "-3/4*x**2 - 13/6*x + 3/2");
     d = sub_upoly(*a, *c);
     REQUIRE(d->__str__() == "3/4*x**2 + 13/6*x - 3/2");
-    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException &);
+    CHECK_THROWS_AS(sub_upoly(*a, *f), SymEngineException);
 }
 
 TEST_CASE("Multiplication of two URatPoly", "[URatPoly]")
@@ -155,7 +155,7 @@ TEST_CASE("Multiplication of two URatPoly", "[URatPoly]")
     REQUIRE(mul_upoly(*c, *a)->__str__() == "-x**2 - 2/3*x - 1/2");
 
     c = URatPoly::from_dict(y, {{0, rc(-1_z)}});
-    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException &);
+    CHECK_THROWS_AS(mul_upoly(*a, *c), SymEngineException);
 }
 
 TEST_CASE("Comparing two URatPoly", "[URatPoly]")

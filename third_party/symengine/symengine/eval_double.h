@@ -23,6 +23,6 @@ double eval_double_visitor_pattern(const Basic &b);
 
 std::complex<double> eval_complex_double(const Basic &b);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

@@ -37,12 +37,12 @@ public:
         : p_(std::move(p)), var_(var), degree_(degree)
     {
     }
-    inline virtual unsigned get_degree() const
+    inline unsigned get_degree() const override
     {
         return degree_;
     }
 
-    inline virtual const std::string &get_var() const
+    inline const std::string &get_var() const override
     {
         return var_;
     }
@@ -52,44 +52,44 @@ public:
         return p_;
     }
 
-    inline virtual bool is_zero() const
+    inline bool is_zero() const override
     {
         return false;
     }
 
-    inline virtual bool is_one() const
+    inline bool is_one() const override
     {
         return false;
     }
 
-    inline virtual bool is_minus_one() const
+    inline bool is_minus_one() const override
     {
         return false;
     }
 
-    inline virtual bool is_negative() const
+    inline bool is_negative() const override
     {
         return false;
     }
 
-    inline virtual bool is_positive() const
+    inline bool is_positive() const override
     {
         return false;
     }
 
-    inline virtual bool is_complex() const
+    inline bool is_complex() const override
     {
         return false;
     }
 
-    inline virtual bool __eq__(const Basic &o) const
+    inline bool __eq__(const Basic &o) const override
     {
         return (is_a<Series>(o) and var_ == down_cast<const Series &>(o).var_
                 and p_ == down_cast<const Series &>(o).p_
                 and degree_ == down_cast<const Series &>(o).degree_);
     }
 
-    virtual RCP<const Number> add(const Number &other) const
+    RCP<const Number> add(const Number &other) const override
     {
         if (is_a<Series>(other)) {
             const Series &o = down_cast<const Series &>(other);
@@ -107,7 +107,7 @@ public:
         }
     }
 
-    virtual RCP<const Number> mul(const Number &other) const
+    RCP<const Number> mul(const Number &other) const override
     {
         if (is_a<Series>(other)) {
             const Series &o = down_cast<const Series &>(other);
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    virtual RCP<const Number> pow(const Number &other) const
+    RCP<const Number> pow(const Number &other) const override
     {
         auto deg = degree_;
         Poly p;
@@ -140,8 +140,9 @@ public:
         } else if (is_a<Integer>(other)) {
             if (other.is_negative()) {
                 p = Series::pow(
-                    p_, (numeric_cast<int>(
-                            down_cast<const Integer &>(other).neg()->as_int())),
+                    p_,
+                    (numeric_cast<int>(
+                        down_cast<const Integer &>(other).neg()->as_int())),
                     deg);
                 p = Series::series_invert(p, Series::var(var_), deg);
                 return make_rcp<Series>(p, var_, deg);
@@ -162,7 +163,7 @@ public:
         return make_rcp<Series>(p, var_, deg);
     }
 
-    virtual RCP<const Number> rpow(const Number &other) const
+    RCP<const Number> rpow(const Number &other) const override
     {
         if (other.get_type_code() < Series::type_code_id) {
             Poly p = Series::series(other.rcp_from_this(), var_, degree_)->p_;
@@ -720,5 +721,5 @@ RCP<const SeriesCoeffInterface> series_invfunc(const RCP<const Basic> &ex,
                                                const RCP<const Symbol> &var,
                                                unsigned int prec);
 
-} // SymEngine
+} // namespace SymEngine
 #endif

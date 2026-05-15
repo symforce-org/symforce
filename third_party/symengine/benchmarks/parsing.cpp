@@ -4,10 +4,10 @@
 #include <symengine/parser/parser.h>
 
 using SymEngine::Basic;
-using SymEngine::RCP;
-using SymEngine::print_stack_on_segfault;
 using SymEngine::parse;
 using SymEngine::parse_old;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 
 int main(int argc, char *argv[])
 {

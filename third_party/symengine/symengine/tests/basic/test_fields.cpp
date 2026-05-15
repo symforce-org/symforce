@@ -8,16 +8,20 @@
 #include <symengine/symbol.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
+using SymEngine::DivisionByZeroError;
+using SymEngine::GaloisField;
+using SymEngine::GaloisFieldDict;
+using SymEngine::gf_poly;
+using SymEngine::integer;
+using SymEngine::integer_class;
+using SymEngine::map_uint_mpz;
+using SymEngine::pow;
 using SymEngine::RCP;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::gf_poly;
-using SymEngine::integer_class;
-using SymEngine::map_uint_mpz;
-using SymEngine::GaloisField;
-using SymEngine::GaloisFieldDict;
+using SymEngine::SymEngineException;
 using SymEngine::UIntPoly;
+using SymEngine::vec_basic;
 
 using namespace SymEngine::literals;
 
@@ -52,12 +56,24 @@ TEST_CASE("Constructor of GaloisField : Basic", "[basic]")
     UP = UIntPoly::from_dict(x, {{0, 10_z}, {1, 7_z}, {2, 9_z}});
     U = GaloisField::from_uintpoly(*UP, 7_z);
     REQUIRE(U->__str__() == "2*x**2 + 3");
+
+    R = GaloisField::from_vec(x, {5_z, 2_z, 7_z, 5_z, 0_z, 0_z, 4_z}, 3_z);
+    vec_basic args = R->get_args();
+    REQUIRE(args[0]->__str__() == "2");
+    REQUIRE(args[1]->__str__() == "2*x");
+    REQUIRE(args[2]->__str__() == "x**2");
+
+    R = GaloisField::from_vec(x, {}, 3_z);
+    args = R->get_args();
+    REQUIRE(args[0]->__str__() == "0");
 }
 
-TEST_CASE("GaloisField Addition, Subtraction, Multiplication : Basic",
-          "[basic]")
+TEST_CASE(
+    "GaloisField Addition, Subtraction, Multiplication, Comparison : Basic",
+    "[basic]")
 {
     RCP<const Symbol> x = symbol("x");
+    RCP<const Symbol> y = symbol("y");
     std::vector<integer_class> mp, a = {2_z, 3_z, 4_z};
     std::vector<integer_class> b = {3_z, 3_z, 6_z, 6_z};
     RCP<const GaloisField> r1 = GaloisField::from_vec(x, a, 5_z);
@@ -169,16 +185,43 @@ TEST_CASE("GaloisField Addition, Subtraction, Multiplication : Basic",
     REQUIRE(mp[5] == 3);
     REQUIRE(mp[6] == 1);
     REQUIRE(mp[7] == 2);
+
+    a = {3_z, 0_z, 0_z, 6_z, 1_z, 2_z};
+    b = {4_z, 0_z, 1_z, 0_z};
+    r1 = GaloisField::from_vec(x, a, 11_z);
+    r2 = GaloisField::from_vec(x, b, 11_z);
+    REQUIRE(r1->compare(*r2) == 1);
+    a = {3_z, 6_z, 1_z};
+    r1 = GaloisField::from_vec(x, a, 11_z);
+    REQUIRE(r1->compare(*r2) == -1);
+    r1 = GaloisField::from_vec(y, a, 11_z);
+    REQUIRE(r1->compare(*r2) == 1);
+    r1 = GaloisField::from_vec(x, a, 8_z);
+    REQUIRE(r1->compare(*r2) == -1);
 }
-TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
+TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts, Negation : Basic",
+          "[basic]")
 {
     RCP<const Symbol> x = symbol("x");
-    std::vector<integer_class> a, b, mp;
-    GaloisFieldDict d1, d2, d3, d4;
+    std::vector<integer_class> a, b, c, mp;
+    GaloisFieldDict d1, d2, d3, d4, d5;
     a = {0_z, 1_z, 2_z, 3_z, 4_z, 5_z};
     b = {0_z, 3_z, 2_z, 1_z};
+    c = {};
     d1 = GaloisFieldDict::from_vec(a, 7_z);
     d2 = GaloisFieldDict::from_vec(b, 7_z);
+    d5 = GaloisFieldDict::from_vec(b, 5_z);
+    CHECK_THROWS_AS(d1.gf_div(d5, outArg(d3), outArg(d4)), SymEngineException);
+    CHECK_THROWS_AS(d1.mul(d5, d1), std::runtime_error);
+    d5 = GaloisFieldDict::from_vec(c, 7_z);
+    REQUIRE(d5 == d1.mul(d5, d1));
+    REQUIRE(d5 == d1.mul(d1, d5));
+    REQUIRE(d3.modulo_ == 0);
+    REQUIRE(d4.modulo_ == 0);
+    d5.gf_div(d1, outArg(d3), outArg(d4));
+    REQUIRE(d3.modulo_ == 7);
+    REQUIRE(d4.modulo_ == 7);
+    CHECK_THROWS_AS(d1.gf_div(d5, outArg(d3), outArg(d4)), DivisionByZeroError);
     d1.gf_div(d2, outArg(d3), outArg(d4));
     mp = d3.get_dict();
     REQUIRE(mp[0] == 0);
@@ -201,6 +244,9 @@ TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
     REQUIRE(d1 == d2);
     a = {};
     d1 = GaloisFieldDict::from_vec(a, 7_z);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+    // suppress this clang warning, since self-assignment here is intentional
     d2 -= d2;
     REQUIRE(d2.dict_.empty());
     d1 = GaloisFieldDict::from_vec({1_z}, 7_z);
@@ -209,6 +255,7 @@ TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
     REQUIRE(d1 == d2);
     d2 = GaloisFieldDict::from_vec(b, 7_z);
     d2 %= d2;
+#pragma clang diagnostic pop
     REQUIRE(d2.dict_.empty());
     a = {0_z, 1_z, 2_z, 3_z, 4_z, 5_z};
     b = {3_z, 2_z, 1_z};
@@ -373,6 +420,8 @@ TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
 
     a = {};
     d1 = GaloisFieldDict::from_vec(a, 11_z);
+    d2 = GaloisFieldDict::from_vec(a, 8_z);
+    CHECK_THROWS_AS(d1.gf_gcd(d2), SymEngineException);
     d2 = GaloisFieldDict::from_vec(a, 11_z);
     REQUIRE(d1.gf_gcd(d2).get_dict().empty());
     a = {2_z};
@@ -406,6 +455,9 @@ TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
 
     a = {};
     d1 = GaloisFieldDict::from_vec(a, 11_z);
+    d2 = GaloisFieldDict::from_vec(a, 8_z);
+    CHECK_THROWS_AS(d1.gf_gcd(d2), SymEngineException);
+    CHECK_THROWS_AS(d1.gf_lcm(d2), SymEngineException);
     d2 = GaloisFieldDict::from_vec(a, 11_z);
     REQUIRE(d1.gf_lcm(d2).get_dict().empty());
     a = {2_z};
@@ -439,6 +491,13 @@ TEST_CASE("GaloisFieldDict Division, GCD, LCM, Shifts : Basic", "[basic]")
     REQUIRE(mp[2] == 8);
     REQUIRE(mp[3] == 8);
     REQUIRE(mp[4] == 1);
+
+    a = {0_z, 1_z, 2_z, 3_z, 4_z, 5_z};
+    b = {0_z, 6_z, 5_z, 4_z, 3_z, 2_z};
+    d1 = GaloisFieldDict::from_vec(a, 7_z);
+    d2 = GaloisFieldDict::from_vec(b, 7_z);
+    REQUIRE(d1.negate().dict_ == b);
+    REQUIRE(d2.negate().dict_ == a);
 }
 
 TEST_CASE("GaloisFieldDict Differentiation, Square Free Algorithms : Basic",
@@ -560,15 +619,17 @@ TEST_CASE("GaloisFieldDict pow_mod : Basic", "[basic]")
     REQUIRE(out[1] == GaloisFieldDict::from_vec({2_z, 4_z, 4_z}, 5_z));
     REQUIRE(out[2] == GaloisFieldDict::from_vec({2_z, 1_z}, 5_z));
 
-    d1 = GaloisFieldDict::from_vec(
-        {2_z, 2_z, 2_z, 0_z, 2_z, 2_z, 0_z, 1_z, 0_z, 2_z}, 3_z);
     d2 = GaloisFieldDict::from_vec(
         {1_z, 0_z, 2_z, 0_z, 1_z, 0_z, 2_z, 0_z, 1_z, 1_z}, 3_z);
+    CHECK_THROWS_AS(d1.gf_frobenius_map(d2, {}), SymEngineException);
+    d1 = GaloisFieldDict::from_vec(
+        {2_z, 2_z, 2_z, 0_z, 2_z, 2_z, 0_z, 1_z, 0_z, 2_z}, 3_z);
     auto b = d2.gf_frobenius_monomial_base();
     GaloisFieldDict h = d1.gf_frobenius_map(d2, b);
     GaloisFieldDict h1 = d2.gf_pow_mod(d1, 3);
-    REQUIRE(h1 == GaloisFieldDict::from_vec(
-                      {1_z, 1_z, 1_z, 2_z, 0_z, 0_z, 2_z, 2_z}, 3_z));
+    REQUIRE(h1
+            == GaloisFieldDict::from_vec(
+                {1_z, 1_z, 1_z, 2_z, 0_z, 0_z, 2_z, 2_z}, 3_z));
     REQUIRE(h == h1);
     REQUIRE(h == (d1.gf_pow(3) % d2));
 }
@@ -580,13 +641,13 @@ TEST_CASE("GaloisFieldDict distinct degree factorization : Basic", "[basic]")
     d1 = GaloisFieldDict({{15, 1_z}, {0, -1_z}}, 11_z);
     auto b = d1.gf_ddf_zassenhaus();
     REQUIRE(b.size() == 2);
-    REQUIRE(b[0].first == GaloisFieldDict::from_vec(
-                              {10_z, 0_z, 0_z, 0_z, 0_z, 1_z}, 11_z));
-    REQUIRE(b[0].second == 1_z);
     REQUIRE(
-        b[1].first
-        == GaloisFieldDict::from_vec(
-               {1_z, 0_z, 0_z, 0_z, 0_z, 1_z, 0_z, 0_z, 0_z, 0_z, 1_z}, 11_z));
+        b[0].first
+        == GaloisFieldDict::from_vec({10_z, 0_z, 0_z, 0_z, 0_z, 1_z}, 11_z));
+    REQUIRE(b[0].second == 1_z);
+    REQUIRE(b[1].first
+            == GaloisFieldDict::from_vec(
+                {1_z, 0_z, 0_z, 0_z, 0_z, 1_z, 0_z, 0_z, 0_z, 0_z, 1_z}, 11_z));
     REQUIRE(b[1].second == 2_z);
     auto c = d1.gf_ddf_shoup();
     REQUIRE(b == c);
@@ -598,17 +659,18 @@ TEST_CASE("GaloisFieldDict distinct degree factorization : Basic", "[basic]")
     REQUIRE(b[0].second == 1_z);
     REQUIRE(b[1].first == GaloisFieldDict::from_vec({1_z, 1_z, 1_z}, 2_z));
     REQUIRE(b[1].second == 2_z);
-    REQUIRE(b[2].first == GaloisFieldDict::from_vec(
-                              {1_z, 1_z, 1_z, 1_z, 1_z, 1_z, 1_z}, 2_z));
+    REQUIRE(
+        b[2].first
+        == GaloisFieldDict::from_vec({1_z, 1_z, 1_z, 1_z, 1_z, 1_z, 1_z}, 2_z));
     REQUIRE(b[2].second == 3_z);
     REQUIRE(b[3].first
             == GaloisFieldDict::from_vec(
-                   {1_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z,
-                    1_z, 1_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 1_z,
-                    1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z,
-                    1_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 1_z, 1_z,
-                    0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 1_z},
-                   2_z));
+                {1_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z,
+                 1_z, 1_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 1_z,
+                 1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z,
+                 1_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 0_z, 1_z, 1_z,
+                 0_z, 1_z, 1_z, 0_z, 1_z, 0_z, 1_z, 1_z, 0_z, 1_z, 1_z},
+                2_z));
     REQUIRE(b[3].second == 6_z);
     c = d1.gf_ddf_shoup();
     REQUIRE(b == c);
@@ -646,14 +708,15 @@ TEST_CASE("GaloisFieldDict distinct degree factorization : Basic", "[basic]")
     REQUIRE(b[0].first
             == GaloisFieldDict::from_vec({68144_z, 22730_z, 1_z}, 102953_z));
     REQUIRE(b[0].second == 2_z);
-    REQUIRE(b[1].first == GaloisFieldDict::from_vec({84356_z, 88001_z, 52650_z,
-                                                     68608_z, 12561_z, 10787_z,
-                                                     83977_z, 64876_z, 1_z},
-                                                    102953_z));
+    REQUIRE(
+        b[1].first
+        == GaloisFieldDict::from_vec({84356_z, 88001_z, 52650_z, 68608_z,
+                                      12561_z, 10787_z, 83977_z, 64876_z, 1_z},
+                                     102953_z));
     REQUIRE(b[1].second == 4_z);
-    REQUIRE(b[2].first == GaloisFieldDict::from_vec({92335_z, 94508_z, 84569_z,
-                                                     95022_z, 15347_z, 1_z},
-                                                    102953_z));
+    REQUIRE(b[2].first
+            == GaloisFieldDict::from_vec(
+                {92335_z, 94508_z, 84569_z, 95022_z, 15347_z, 1_z}, 102953_z));
     REQUIRE(b[2].second == 5_z);
     c = d1.gf_ddf_shoup();
     REQUIRE(b == c);
@@ -921,9 +984,13 @@ TEST_CASE("GaloisFieldDict gf_compose_mod, gf_trace_map : Basic", "[basic]")
 {
     GaloisFieldDict d1, d2, d3;
 
-    d1 = GaloisFieldDict::from_vec({1_z, 9_z, 4_z, 1_z, 1_z}, 11_z);
+    d1 = GaloisFieldDict::from_vec({1_z, 9_z, 4_z, 1_z, 1_z}, 8_z);
     d2 = GaloisFieldDict::from_vec({1_z, 1_z, 1_z}, 11_z);
+    d3 = GaloisFieldDict::from_vec({2_z, 0_z, 0_z, 1_z}, 8_z);
+    CHECK_THROWS_AS(d1.gf_compose_mod(d2, d3), SymEngineException);
     d3 = GaloisFieldDict::from_vec({2_z, 0_z, 0_z, 1_z}, 11_z);
+    CHECK_THROWS_AS(d1.gf_compose_mod(d2, d3), SymEngineException);
+    d1 = GaloisFieldDict::from_vec({1_z, 9_z, 4_z, 1_z, 1_z}, 11_z);
     REQUIRE(d1.gf_compose_mod(d2, d3)
             == GaloisFieldDict::from_vec({10_z, 6_z, 9_z, 3_z}, 11_z));
 
@@ -931,7 +998,9 @@ TEST_CASE("GaloisFieldDict gf_compose_mod, gf_trace_map : Basic", "[basic]")
     REQUIRE(d1.gf_compose_mod(d2, d3) == GaloisFieldDict::from_vec({}, 11_z));
 
     d2 = GaloisFieldDict::from_vec({1_z, 1_z, 1_z}, 11_z);
-    auto d4 = GaloisFieldDict::from_vec({0_z, 1_z}, 11_z);
+    auto d4 = GaloisFieldDict::from_vec({0_z, 1_z}, 9_z);
+    CHECK_THROWS_AS(d1.gf_pow_mod(d4, 11), SymEngineException);
+    d4 = GaloisFieldDict::from_vec({0_z, 1_z}, 11_z);
     d3 = d1.gf_pow_mod(d4, 11);
     REQUIRE(d1.gf_trace_map(d2, d3, d4, 0).first
             == GaloisFieldDict::from_vec({1_z, 1_z, 1_z}, 11_z));
@@ -961,6 +1030,9 @@ TEST_CASE("GaloisFieldDict gf_compose_mod, gf_trace_map : Basic", "[basic]")
             == GaloisFieldDict::from_vec({0_z, 6_z, 10_z, 1_z}, 11_z));
     REQUIRE(d1.gf_trace_map(d2, d3, d4, 11).second
             == GaloisFieldDict::from_vec({10_z}, 11_z));
+    auto base = d3.gf_frobenius_monomial_base();
+    REQUIRE(d1._gf_trace_map(d3, 5, base)
+            == GaloisFieldDict::from_vec({8_z, 5_z, 1_z, 6_z}, 11_z));
 }
 
 TEST_CASE("GaloisFieldDict eval : Basic", "[basic]")

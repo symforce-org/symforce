@@ -1,6 +1,6 @@
-%require "3.0"
-%define api.pure full
-%define api.value.type {struct SymEngine::YYSTYPE}
+%require "3.2"
+%language "c++"
+%define api.value.type variant
 %param {SymEngine::Parser &p}
 
 /*
@@ -23,6 +23,7 @@
 #include "symengine/pow.h"
 #include "symengine/logic.h"
 #include "symengine/parser/parser.h"
+#include "symengine/utilities/stream_fmt.h"
 
 using SymEngine::RCP;
 using SymEngine::Basic;
@@ -36,44 +37,36 @@ using SymEngine::Lt;
 using SymEngine::Gt;
 using SymEngine::Le;
 using SymEngine::Ge;
+using SymEngine::Ne;
 using SymEngine::Eq;
 using SymEngine::set_boolean;
 using SymEngine::Boolean;
 using SymEngine::one;
 using SymEngine::vec_boolean;
 
-
 #include "symengine/parser/tokenizer.h"
 
-
-int yylex(SymEngine::YYSTYPE *yylval, SymEngine::Parser &p)
+namespace yy
 {
-    return p.m_tokenizer.lex(*yylval);
-} // ylex
 
-void yyerror(SymEngine::Parser &p, const std::string &msg)
+int yylex(yy::parser::semantic_type* yylval, SymEngine::Parser &p)
+{
+    return p.m_tokenizer->lex(yylval);
+}
+
+void parser::error(const std::string &msg)
 {
     throw SymEngine::ParseError(msg);
 }
 
-// Force YYCOPY to not use memcopy, but rather copy the structs one by one,
-// which will cause C++ to call the proper copy constructors.
-# define YYCOPY(Dst, Src, Count)              \
-    do                                        \
-      {                                       \
-        YYSIZE_T yyi;                         \
-        for (yyi = 0; yyi < (Count); yyi++)   \
-          (Dst)[yyi] = (Src)[yyi];            \
-      }                                       \
-    while (0)
+}
 
-} // code
+}
 
-
-
-%token <string> IDENTIFIER
-%token <string> NUMERIC
-%token <string> IMPLICIT_MUL
+%token <std::string> PIECEWISE
+%token <std::string> IDENTIFIER
+%token <std::string> NUMERIC
+%token <std::string> IMPLICIT_MUL
 %token END_OF_FILE 0
 
 %left '|'
@@ -82,20 +75,25 @@ void yyerror(SymEngine::Parser &p, const std::string &msg)
 %left EQ
 %left '>'
 %left '<'
+%left NE
 %left LE
 %left GE
 %left '-' '+'
 %left '*' '/'
 %right UMINUS
+%right UPLUS
 %right POW
 %right NOT
 %nonassoc '('
 
-%type <basic> st_expr
-%type <basic> expr
-%type <basic_vec> expr_list
-%type <basic> leaf
-%type <basic> func
+%type <SymEngine::RCP<const SymEngine::Basic>> st_expr
+%type <SymEngine::RCP<const SymEngine::Basic>> expr
+%type <SymEngine::vec_basic> expr_list
+%type <SymEngine::PiecewiseVec> piecewise_list
+%type <std::pair<SymEngine::RCP<const SymEngine::Basic>, SymEngine::RCP<const SymEngine::Boolean>>> epair
+%type <SymEngine::RCP<const SymEngine::Basic>> pwise
+%type <SymEngine::RCP<const SymEngine::Basic>> leaf
+%type <SymEngine::RCP<const SymEngine::Basic>> func
 
 %start st_expr
 
@@ -142,6 +140,9 @@ expr:
         expr '>' expr
         { $$ = rcp_static_cast<const Basic>(Gt($1, $3)); }
 |
+        expr NE expr
+        { $$ = rcp_static_cast<const Basic>(Ne($1, $3)); }
+|
         expr LE expr
         { $$ = rcp_static_cast<const Basic>(Le($1, $3)); }
 |
@@ -181,6 +182,9 @@ expr:
         '-' expr %prec UMINUS
         { $$ = neg($2); }
 |
+        '+' expr %prec UPLUS
+        { $$ = $2; }
+|
         '~' expr %prec NOT
         { $$ = rcp_static_cast<const Basic>(logical_not(rcp_static_cast<const Boolean>($2))); }
 |
@@ -209,12 +213,51 @@ leaf:
     {
         $$ = $1;
     }
+|
+    pwise
+    {
+        $$ = $1;
+    }
 ;
 
 func:
     IDENTIFIER '(' expr_list ')'
     {
         $$ = p.functionify($1, $3);
+    }
+;
+
+
+epair:
+    '(' expr ',' expr ')'
+    {
+        auto logical_expr = $4;
+        if (!SymEngine::is_a_sub<Boolean>(*logical_expr)) {
+            throw SymEngine::ParseError(SymEngine::StreamFmt() << "Not of Boolean type in Piecewise arguments: "
+                                        << logical_expr->__str__());
+        }
+        $$ = std::make_pair($2, rcp_static_cast<const Boolean>(logical_expr));
+    }
+;
+
+piecewise_list:
+    piecewise_list ',' epair
+    {
+       $$ = $1;
+       $$ .push_back($3);
+    }
+|
+    epair
+    {
+       $$ = SymEngine::PiecewiseVec(1, $1);
+    }
+;
+
+pwise:
+    PIECEWISE '(' piecewise_list ')'
+    {
+        assert($1 == "Piecewise");
+        $$ = piecewise(std::move($3));
     }
 ;
 

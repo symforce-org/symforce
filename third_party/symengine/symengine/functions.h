@@ -26,7 +26,7 @@ public:
     //! Constructor
     OneArgFunction(const RCP<const Basic> &arg) : arg_{arg} {};
     //! \return the hash
-    inline hash_t __hash__() const
+    inline hash_t __hash__() const override
     {
         hash_t seed = this->get_type_code();
         hash_combine<Basic>(seed, *arg_);
@@ -37,7 +37,7 @@ public:
     {
         return arg_;
     }
-    virtual inline vec_basic get_args() const
+    inline vec_basic get_args() const override
     {
         return {arg_};
     }
@@ -54,14 +54,14 @@ public:
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual inline bool __eq__(const Basic &o) const
+    inline bool __eq__(const Basic &o) const override
     {
         return is_same_type(*this, o)
                and eq(*get_arg(),
                       *down_cast<const OneArgFunction &>(o).get_arg());
     }
     //! Structural equality comparator
-    virtual inline int compare(const Basic &o) const
+    inline int compare(const Basic &o) const override
     {
         SYMENGINE_ASSERT(is_same_type(*this, o))
         return get_arg()->__cmp__(
@@ -80,7 +80,7 @@ public:
     TwoArgBasic(const RCP<const Basic> &a, const RCP<const Basic> &b)
         : a_{a}, b_{b} {};
     //! \return the hash
-    inline hash_t __hash__() const
+    inline hash_t __hash__() const override
     {
         hash_t seed = this->get_type_code();
         hash_combine<Basic>(seed, *a_);
@@ -97,13 +97,14 @@ public:
     {
         return b_;
     }
-    virtual inline vec_basic get_args() const
+    inline vec_basic get_args() const override
     {
         return {a_, b_};
     }
     //! Method to construct classes with canonicalization
     virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const = 0;
+                                    const RCP<const Basic> &b) const
+        = 0;
 
     inline RCP<const Basic> create(const vec_basic &b) const
     {
@@ -115,7 +116,7 @@ public:
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual inline bool __eq__(const Basic &o) const
+    inline bool __eq__(const Basic &o) const override
     {
         return is_same_type(*this, o)
                and eq(*get_arg1(),
@@ -124,7 +125,7 @@ public:
                       *down_cast<const TwoArgBasic &>(o).get_arg2());
     }
     //! Structural equality comparator
-    virtual inline int compare(const Basic &o) const
+    inline int compare(const Basic &o) const override
     {
         SYMENGINE_ASSERT(is_same_type(*this, o))
         const TwoArgBasic &t = down_cast<const TwoArgBasic &>(o);
@@ -149,14 +150,14 @@ public:
     //! Constructor
     MultiArgFunction(const vec_basic &arg) : arg_{arg} {};
     //! \return the hash
-    inline hash_t __hash__() const
+    inline hash_t __hash__() const override
     {
         hash_t seed = this->get_type_code();
         for (const auto &a : arg_)
             hash_combine<Basic>(seed, *a);
         return seed;
     }
-    virtual inline vec_basic get_args() const
+    inline vec_basic get_args() const override
     {
         return arg_;
     }
@@ -170,14 +171,14 @@ public:
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual inline bool __eq__(const Basic &o) const
+    inline bool __eq__(const Basic &o) const override
     {
         return is_same_type(*this, o)
                and unified_eq(get_vec(),
                               down_cast<const MultiArgFunction &>(o).get_vec());
     }
     //! Structural equality comparator
-    virtual inline int compare(const Basic &o) const
+    inline int compare(const Basic &o) const override
     {
         SYMENGINE_ASSERT(is_same_type(*this, o))
         return unified_compare(
@@ -194,7 +195,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized sign
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Sign
@@ -209,7 +210,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized floor
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Floor:
@@ -224,7 +225,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized ceiling
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Ceiling:
@@ -239,7 +240,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized truncate
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Truncate:
@@ -254,7 +255,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized conjugate
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Conjugate
@@ -264,21 +265,21 @@ class TrigBase : public OneArgFunction
 {
 public:
     //! Constructor
-    TrigBase(RCP<const Basic> arg) : OneArgFunction(arg){};
+    TrigBase(RCP<const Basic> arg) : OneArgFunction(arg) {};
 };
 
 class TrigFunction : public TrigBase
 {
 public:
     //! Constructor
-    TrigFunction(RCP<const Basic> arg) : TrigBase(arg){};
+    TrigFunction(RCP<const Basic> arg) : TrigBase(arg) {};
 };
 
 class InverseTrigFunction : public TrigBase
 {
 public:
     //! Constructor
-    InverseTrigFunction(RCP<const Basic> arg) : TrigBase(arg){};
+    InverseTrigFunction(RCP<const Basic> arg) : TrigBase(arg) {};
 };
 
 /*! \return `true` if `arg` is of form `m + n*pi` where `n` is a rational
@@ -293,9 +294,9 @@ bool handle_minus(const RCP<const Basic> &arg,
                   const Ptr<RCP<const Basic>> &rarg);
 
 /*! returns `true` if the given argument `t` is found in the
-*   lookup table `d`. It also returns the value in `index`
-**/
-bool inverse_lookup(umap_basic_basic &d, const RCP<const Basic> &t,
+ *   lookup table `d`. It also returns the value in `index`
+ **/
+bool inverse_lookup(const umap_basic_basic &d, const RCP<const Basic> &t,
                     const Ptr<RCP<const Basic>> &index);
 
 // \return true of conjugate has to be returned finally else false
@@ -320,7 +321,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized sin
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Sin:
@@ -336,7 +337,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized cos
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Cos:
@@ -352,7 +353,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized tan
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 //! Canonicalize Tan:
 RCP<const Basic> tan(const RCP<const Basic> &arg);
@@ -367,7 +368,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized cot
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 //! Canonicalize Cot:
 RCP<const Basic> cot(const RCP<const Basic> &arg);
@@ -382,7 +383,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized csc
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 //! Canonicalize Csc:
 RCP<const Basic> csc(const RCP<const Basic> &arg);
@@ -397,7 +398,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized sec
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 //! Canonicalize Sec:
 RCP<const Basic> sec(const RCP<const Basic> &arg);
@@ -412,7 +413,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized asin
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ASin:
@@ -428,7 +429,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acos
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACos:
@@ -444,7 +445,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized asec
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ASec:
@@ -460,7 +461,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acsc
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACsc:
@@ -476,7 +477,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized atan
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ATan:
@@ -492,7 +493,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acot
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACot:
@@ -518,8 +519,8 @@ public:
         return get_arg2();
     }
     //! \return canonicalized `atan2`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize ATan2:
@@ -538,7 +539,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return canonicalized `log`
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Returns the Natural Logarithm from argument `arg`
@@ -560,7 +561,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return canonicalized lambertw
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Create a new LambertW instance:
@@ -600,8 +601,8 @@ public:
     bool is_canonical(const RCP<const Basic> &s,
                       const RCP<const Basic> &a) const;
     //! \return canonicalized `zeta`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Create a new Zeta instance:
@@ -625,7 +626,7 @@ public:
     //! Rewrites in the form of zeta
     RCP<const Basic> rewrite_as_zeta() const;
     //! \return Canonicalized zeta
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
     using OneArgFunction::create;
 };
 
@@ -643,13 +644,13 @@ public:
     FunctionSymbol(std::string name, const vec_basic &arg);
     FunctionSymbol(std::string name, const RCP<const Basic> &arg);
     //! \return Size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o  Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     //! \return `name_`
     inline const std::string &get_name() const
     {
@@ -657,7 +658,7 @@ public:
     }
     //! \return `true` if canonical
     bool is_canonical(const vec_basic &arg) const;
-    virtual RCP<const Basic> create(const vec_basic &x) const;
+    RCP<const Basic> create(const vec_basic &x) const override;
 };
 
 //! Create a new FunctionSymbol instance:
@@ -666,7 +667,7 @@ RCP<const Basic> function_symbol(std::string name, const vec_basic &arg);
 
 /*! Use this class to define custom functions by overriding
  *  the defaut behaviour for create, eval, diff, __eq__, compare etc.
-* */
+ * */
 
 class FunctionWrapper : public FunctionSymbol
 {
@@ -674,7 +675,7 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_FUNCTIONWRAPPER)
     FunctionWrapper(std::string name, const vec_basic &arg);
     FunctionWrapper(std::string name, const RCP<const Basic> &arg);
-    virtual RCP<const Basic> create(const vec_basic &v) const = 0;
+    RCP<const Basic> create(const vec_basic &v) const override = 0;
     virtual RCP<const Number> eval(long bits) const = 0;
     virtual RCP<const Basic> diff_impl(const RCP<const Symbol> &s) const = 0;
 };
@@ -710,9 +711,9 @@ public:
         return make_rcp<const Derivative>(arg, x);
     }
 
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     inline RCP<const Basic> get_arg() const
     {
         return arg_;
@@ -721,7 +722,7 @@ public:
     {
         return x_;
     }
-    virtual vec_basic get_args() const
+    vec_basic get_args() const override
     {
         vec_basic args = {arg_};
         args.insert(args.end(), x_.begin(), x_.end());
@@ -751,9 +752,9 @@ public:
         return make_rcp<const Subs>(arg, x);
     }
 
-    virtual hash_t __hash__() const;
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     inline const RCP<const Basic> &get_arg() const
     {
         return arg_;
@@ -764,7 +765,7 @@ public:
     };
     virtual vec_basic get_variables() const;
     virtual vec_basic get_point() const;
-    virtual vec_basic get_args() const;
+    vec_basic get_args() const override;
 
     bool is_canonical(const RCP<const Basic> &arg,
                       const map_basic_basic &x) const;
@@ -801,7 +802,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized sinh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Sinh:
@@ -817,7 +818,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized csch
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Csch:
@@ -833,7 +834,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized cosh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Cosh:
@@ -849,7 +850,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized sech
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Sech:
@@ -865,7 +866,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized tanh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Tanh:
@@ -881,7 +882,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized coth
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Coth:
@@ -897,7 +898,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized asinh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ASinh:
@@ -913,7 +914,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acsch
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACsch:
@@ -929,7 +930,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acosh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACosh:
@@ -945,7 +946,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized atanh
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ATanh:
@@ -961,7 +962,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized acoth
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ACoth:
@@ -977,7 +978,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized asech
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize ASech:
@@ -1000,8 +1001,8 @@ public:
     bool is_canonical(const RCP<const Basic> &i,
                       const RCP<const Basic> &j) const;
     //! \return canonicalized `KroneckerDelta`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize KroneckerDelta:
@@ -1024,7 +1025,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const vec_basic &arg) const;
     //! \return canonicalized Max
-    virtual RCP<const Basic> create(const vec_basic &arg) const;
+    RCP<const Basic> create(const vec_basic &arg) const override;
 };
 
 //! Canonicalize LeviCivita:
@@ -1049,7 +1050,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized erf
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Erf:
@@ -1074,7 +1075,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized erfc
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Erfc:
@@ -1099,7 +1100,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized gamma
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Gamma:
@@ -1117,8 +1118,8 @@ public:
     bool is_canonical(const RCP<const Basic> &s,
                       const RCP<const Basic> &x) const;
     //! \return canonicalized `LowerGamma`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize LowerGamma:
@@ -1137,8 +1138,8 @@ public:
     bool is_canonical(const RCP<const Basic> &s,
                       const RCP<const Basic> &x) const;
     //! \return canonicalized `UpperGamma`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize UpperGamma:
@@ -1163,7 +1164,7 @@ public:
     bool is_canonical(const RCP<const Basic> &arg) const;
     RCP<const Basic> rewrite_as_gamma() const;
     //! \return canonicalized loggamma
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize LogGamma:
@@ -1194,8 +1195,8 @@ public:
     bool is_canonical(const RCP<const Basic> &s, const RCP<const Basic> &x);
     RCP<const Basic> rewrite_as_gamma() const;
     //! \return canonicalized `Beta`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize Beta:
@@ -1226,8 +1227,8 @@ public:
     bool is_canonical(const RCP<const Basic> &n, const RCP<const Basic> &x);
     RCP<const Basic> rewrite_as_zeta() const;
     //! \return canonicalized `PolyGamma`
-    virtual RCP<const Basic> create(const RCP<const Basic> &a,
-                                    const RCP<const Basic> &b) const;
+    RCP<const Basic> create(const RCP<const Basic> &a,
+                            const RCP<const Basic> &b) const override;
 };
 
 //! Canonicalize PolyGamma
@@ -1249,7 +1250,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return canonicalized abs
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 //! Canonicalize Abs:
@@ -1264,7 +1265,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const vec_basic &arg) const;
     //! \return canonicalized Max
-    virtual RCP<const Basic> create(const vec_basic &arg) const;
+    RCP<const Basic> create(const vec_basic &arg) const override;
 };
 
 //! Canonicalize Max:
@@ -1279,7 +1280,7 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const vec_basic &arg) const;
     //! \return canonicalized Max
-    virtual RCP<const Basic> create(const vec_basic &arg) const;
+    RCP<const Basic> create(const vec_basic &arg) const override;
 };
 
 //! Canonicalize Min:
@@ -1297,11 +1298,10 @@ public:
     //! \return `true` if canonical
     bool is_canonical(const RCP<const Basic> &arg) const;
     //! \return Canonicalized UnevaluatedExpr
-    virtual RCP<const Basic> create(const RCP<const Basic> &arg) const;
+    RCP<const Basic> create(const RCP<const Basic> &arg) const override;
 };
 
 RCP<const Basic> unevaluated_expr(const RCP<const Basic> &arg);
-
 
 class SignNoZero : public OneArgFunction
 {
@@ -1324,13 +1324,16 @@ public:
     //! CopysignNoZero Constructor
     CopysignNoZero(const RCP<const Basic> &x, const RCP<const Basic> &y);
     //! \return `true` if canonical
-    bool is_canonical(const RCP<const Basic> &x, const RCP<const Basic> &y) const;
+    bool is_canonical(const RCP<const Basic> &x,
+                      const RCP<const Basic> &y) const;
     //! \return canonicalized CopysignNoZero
-    virtual RCP<const Basic> create(const RCP<const Basic> &x, const RCP<const Basic> &y) const;
+    virtual RCP<const Basic> create(const RCP<const Basic> &x,
+                                    const RCP<const Basic> &y) const;
 };
 
-RCP<const Basic> copysign_no_zero(const RCP<const Basic> &x, const RCP<const Basic> &y);
+RCP<const Basic> copysign_no_zero(const RCP<const Basic> &x,
+                                  const RCP<const Basic> &y);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

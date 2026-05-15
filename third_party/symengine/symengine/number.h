@@ -8,6 +8,7 @@
 #define SYMENGINE_NUMBER_H
 
 #include <symengine/basic.h>
+#include <symengine/assumptions.h>
 
 namespace SymEngine
 {
@@ -62,7 +63,7 @@ public:
     virtual RCP<const Number> pow(const Number &other) const = 0;
     virtual RCP<const Number> rpow(const Number &other) const = 0;
 
-    virtual vec_basic get_args() const
+    vec_basic get_args() const override
     {
         return {};
     }
@@ -140,24 +141,51 @@ inline bool is_number_and_zero(const Basic &b)
     return is_a_Number(b) and down_cast<const Number &>(b).is_zero();
 }
 
-tribool is_zero(const Basic &b);
-tribool is_positive(const Basic &b);
-tribool is_nonpositive(const Basic &b);
-tribool is_negative(const Basic &b);
-tribool is_nonnegative(const Basic &b);
-tribool is_real(const Basic &b);
+/**
+ * @brief Check if a number is zero
+ * @param b Basic
+ * @param assumptions Assumptions
+ * @returns tribool
+ *
+ * Check if b is zero. If b is not numeric an exception will be thrown.
+ */
+tribool is_zero(const Basic &b, const Assumptions *assumptions = nullptr);
+/**
+ * @brief Check if a number is non-zero
+ * @param b Basic
+ * @param assumptions Assumptions
+ * @returns tribool
+ *
+ * Check if b is non-zero. If b is not numeric an exception will be thrown.
+ */
+tribool is_nonzero(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_positive(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_nonpositive(const Basic &b,
+                       const Assumptions *assumptions = nullptr);
+tribool is_negative(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_nonnegative(const Basic &b,
+                       const Assumptions *assumptions = nullptr);
+tribool is_integer(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_real(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_complex(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_rational(const Basic &b);
+tribool is_irrational(const Basic &b);
+tribool is_finite(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_infinite(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_even(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_odd(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_algebraic(const Basic &b, const Assumptions *assumptions = nullptr);
+tribool is_transcendental(const Basic &b,
+                          const Assumptions *assumptions = nullptr);
 
 class NumberWrapper : public Number
 {
 public:
-    NumberWrapper()
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
+    NumberWrapper(){SYMENGINE_ASSIGN_TYPEID()}
 
     IMPLEMENT_TYPEID(SYMENGINE_NUMBER_WRAPPER)
 
-    virtual std::string __str__() const
+        virtual std::string __str__() const
     {
         throw NotImplementedError("Not Implemented.");
     };
@@ -206,6 +234,6 @@ public:
     virtual RCP<const Basic> erfc(const Basic &) const = 0;
 };
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

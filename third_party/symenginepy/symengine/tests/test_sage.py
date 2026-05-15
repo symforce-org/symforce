@@ -66,9 +66,9 @@ def test_sage_conversions():
     assert cos(x1)._sage_() == sage.cos(x)
     assert cos(x1) == sympify(sage.cos(x))
 
-    assert function_symbol('f', x1, y1)._sage_() == sage.function('f', x, y)
+    assert function_symbol('f', x1, y1)._sage_() == sage.function('f')(x, y)
     assert (function_symbol('f', 2 * x1, x1 + y1).diff(x1)._sage_() ==
-            sage.function('f', 2 * x, x + y).diff(x))
+            sage.function('f')(2 * x, x + y).diff(x))
 
     assert LambertW(x1) == LambertW(x)
     assert LambertW(x1)._sage_() == sage.lambert_w(x)
@@ -142,11 +142,7 @@ def test_sage_conversions():
     b = b + 8
     assert isinstance(b, PyNumber)
     assert b._sage_() == a
-
-    a = a + x
-    b = b + x
-    assert isinstance(b, Add)
-    assert b._sage_() == a
+    assert str(a) == str(b)
 
     # Sage Function
     e = x1 + wrap_sage_function(sage.log_gamma(x))

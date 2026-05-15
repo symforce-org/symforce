@@ -41,9 +41,7 @@ public:
     {
         SYMENGINE_ASSERT(ptr_ != nullptr)
     }
-    inline Ptr(const Ptr<T> &ptr) : ptr_(ptr.ptr_)
-    {
-    }
+    inline Ptr(const Ptr<T> &ptr) : ptr_(ptr.ptr_) {}
     template <class T2>
     inline Ptr(const Ptr<T2> &ptr) : ptr_(ptr.get())
     {
@@ -108,9 +106,7 @@ template <class T>
 class RCP
 {
 public:
-    RCP(ENull null_arg = null) : ptr_(nullptr)
-    {
-    }
+    RCP(ENull null_arg = null) : ptr_(nullptr) {}
     explicit RCP(T *p) : ptr_(p)
     {
         SYMENGINE_ASSERT(ptr_ != nullptr)
@@ -169,12 +165,12 @@ public:
         return ptr_ == nullptr;
     }
     template <class T2>
-    bool operator==(const RCP<T2> &p2)
+    bool operator==(const RCP<T2> &p2) const
     {
         return ptr_ == p2.ptr_;
     }
     template <class T2>
-    bool operator!=(const RCP<T2> &p2)
+    bool operator!=(const RCP<T2> &p2) const
     {
         return ptr_ != p2.ptr_;
     }
@@ -263,17 +259,17 @@ void print_stack_on_segfault();
 
 #else
 
-using Teuchos::RCP;
-using Teuchos::Ptr;
+using Teuchos::null;
 using Teuchos::outArg;
+using Teuchos::print_stack_on_segfault;
+using Teuchos::Ptr;
 using Teuchos::ptrFromRef;
+using Teuchos::RCP;
 using Teuchos::rcp;
+using Teuchos::rcp_const_cast;
 using Teuchos::rcp_dynamic_cast;
 using Teuchos::rcp_static_cast;
-using Teuchos::rcp_const_cast;
 using Teuchos::typeName;
-using Teuchos::null;
-using Teuchos::print_stack_on_segfault;
 
 #endif
 
@@ -341,9 +337,7 @@ private:
     mutable unsigned int refcount_; // reference counter
 #endif // WITH_SYMENGINE_THREAD_SAFE
 public:
-    EnableRCPFromThis() : refcount_(0)
-    {
-    }
+    EnableRCPFromThis() : refcount_(0) {}
 
 private:
 #else
@@ -366,11 +360,11 @@ private:
 #endif
 
     template <typename T_, typename... Args>
-    friend inline RCP<T_> make_rcp(Args &&... args);
+    friend inline RCP<T_> make_rcp(Args &&...args);
 };
 
 template <typename T, typename... Args>
-inline RCP<T> make_rcp(Args &&... args)
+inline RCP<T> make_rcp(Args &&...args)
 {
 #if defined(WITH_SYMENGINE_RCP)
     return rcp(new T(std::forward<Args>(args)...));
@@ -381,6 +375,6 @@ inline RCP<T> make_rcp(Args &&... args)
 #endif
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

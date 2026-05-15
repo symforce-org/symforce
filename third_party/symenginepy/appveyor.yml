@@ -1,8 +1,6 @@
 version: '{build}'
 
-# Uncomment this to enable the fast build environment if your account does not
-# support it automatically:
-#os: Visual Studio 2015 RC
+image: "Visual Studio 2019"
 
 environment:
   global:
@@ -12,38 +10,49 @@ environment:
     - BUILD_TYPE: "Release"
       COMPILER: MSVC15
       PLATFORM: "x64"
-      PYTHON_VERSION: 39-x64
+      PYTHON_VERSION: 310-x64
       CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
       WITH_MPFR: yes
       WITH_MPC: yes
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - BUILD_TYPE: "Release"
       COMPILER: MSVC15
       PLATFORM: "x64"
       PYTHON_VERSION: 38-x64
       CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
-    - BUILD_TYPE: "Debug"
-      COMPILER: MinGW-w64
-      PYTHON_VERSION: 37-x64
-      WITH_NUMPY: no
     - BUILD_TYPE: "Release"
-      COMPILER: MinGW-w64
-      PYTHON_VERSION: 37-x64
-    - BUILD_TYPE: "Debug"
-      COMPILER: MinGW-w64
-      PYTHON_VERSION: 36-x64
+      COMPILER: MSVC15
+      PLATFORM: "x64"
+      PYTHON_VERSION: 39-x64
       WITH_SYMPY: no
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+    - BUILD_TYPE: "Release"
+      COMPILER: MSVC15
+      PLATFORM: "x64"
+      PYTHON_VERSION: 311-x64
+      WITH_NUMPY: no
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+    #- BUILD_TYPE: "Debug"
+    #  COMPILER: MinGW-w64
+    #  PYTHON_VERSION: 39-x64
+    #  WITH_NUMPY: no
+    #- BUILD_TYPE: "Release"
+    #  COMPILER: MinGW-w64
+    #  PYTHON_VERSION: 39-x64
+    #- BUILD_TYPE: "Debug"
+    #  COMPILER: MinGW-w64
+    #  PYTHON_VERSION: 39-x64
+    #  WITH_SYMPY: no
     - BUILD_TYPE: "Release"
       COMPILER: MSVC15
       PLATFORM: "Win32"
-      PYTHON_VERSION: 37
+      PYTHON_VERSION: 39
       CONDA_INSTALL_LOCN: C:\\Miniconda36
       WITH_MPFR: yes
       WITH_MPC: yes
     - BUILD_TYPE: "Release"
       COMPILER: MSVC15
       PLATFORM: "x64"
-      PYTHON_VERSION: 36-x64
+      PYTHON_VERSION: 310-x64
       CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
       WITH_MPFR: yes
       WITH_MPC: yes
@@ -54,7 +63,7 @@ install:
 - git clone https://github.com/sympy/symengine symengine-cpp
 
 - if [%COMPILER%]==[MSVC15] call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
-- if [%COMPILER%]==[MSVC15] conda update --yes --quiet conda
+- if [%COMPILER%]==[MSVC15] conda install --yes --quiet conda python=3.6
 - if [%COMPILER%]==[MSVC15] conda config --add channels conda-forge
 - if [%COMPILER%]==[MSVC15] if [%BUILD_TYPE%]==[Debug] conda config --add channels symengine/label/debug
 - if [%COMPILER%]==[MSVC15] conda install --yes mpir=3.0.0 vc=14
@@ -64,7 +73,7 @@ install:
 - if [%COMPILER%]==[MSVC15] echo %PATH%
 - if [%COMPILER%]==[MSVC15] if [%WITH_MPFR%]==[yes] conda install --yes mpfr=3.1.5
 - if [%COMPILER%]==[MSVC15] if [%WITH_MPC%]==[yes] conda install --yes mpc=1.0.3
-- if [%COMPILER%]==[MSVC15] if [%WITH_LLVM%]==[yes] conda install --yes llvmdev=3.9
+- if [%COMPILER%]==[MSVC15] if [%WITH_LLVM%]==[yes] conda install --yes llvmdev=4.0
 
 - if [%COMPILER%]==[MinGW] set "PATH=C:\MinGW\bin;%PATH%"
 - if [%COMPILER%]==[MinGW] mingw-get update
@@ -86,8 +95,7 @@ install:
 
 - set "PATH=C:\Python%PYTHON_VERSION%;C:\Python%PYTHON_VERSION%\Scripts;%PATH%"
 - echo %PATH%
-- pip install nose pytest
-- pip install --install-option="--no-cython-compile" cython
+- pip install nose pytest cython
 - if NOT [%WITH_NUMPY%]==[no] pip install numpy
 - if NOT [%WITH_SYMPY%]==[no] pip install sympy
 
@@ -102,15 +110,16 @@ install:
 - if [%COMPILER%]==[MinGW]  set "CMAKE_GENERATOR=MinGW Makefiles"
 - if [%COMPILER%]==[MinGW-w64] set "CMAKE_GENERATOR=MinGW Makefiles"
 
-- if [%COMPILER%]==[MSVC15] cmake -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%\Library ..
-- if [%COMPILER%]==[MinGW] cmake -DCMAKE_PREFIX_PATH=C:\MinGW -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
-- if [%COMPILER%]==[MinGW-w64] cmake -DCMAKE_PREFIX_PATH=C:\mingw64 -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+- if [%COMPILER%]==[MSVC15] set "CMAKE_ARGS=-DCMAKE_PREFIX_PATH=%CONDA_PREFIX%\\Library"
+- if [%COMPILER%]==[MinGW] set "CMAKE_ARGS=-DCMAKE_PREFIX_PATH=C:\MinGW -DCMAKE_BUILD_TYPE=%BUILD_TYPE%"
+- if [%COMPILER%]==[MinGW-w64] set "CMAKE_ARGS=-DCMAKE_PREFIX_PATH=C:\mingw64 -DCMAKE_BUILD_TYPE=%BUILD_TYPE%"
 
-- if [%WITH_MPFR%]==[yes] cmake -DWITH_MPFR=yes ..
-- if [%WITH_MPC%]==[yes] cmake -DWITH_MPC=yes ..
-- if [%WITH_LLVM%]==[yes] cmake -DWITH_LLVM=yes -DMSVC_USE_MT=no ..
+- if [%WITH_MPFR%]==[yes] set "CMAKE_ARGS=%CMAKE_ARGS% -DWITH_MPFR=yes"
+- if [%WITH_MPC%]==[yes] set "CMAKE_ARGS=%CMAKE_ARGS% -DWITH_MPC=yes"
+- if [%WITH_LLVM%]==[yes] set "CMAKE_ARGS=%CMAKE_ARGS% -DWITH_LLVM=yes -DMSVC_USE_MT=no"
 
-- cmake -DBUILD_SHARED_LIBS=yes -DBUILD_TESTS=no -DBUILD_BENCHMARKS=no -DCMAKE_INSTALL_PREFIX=C:\symengine ..
+- echo "CMAKE_ARGS=%CMAKE_ARGS%"
+- cmake %CMAKE_ARGS% -DBUILD_SHARED_LIBS=yes -DBUILD_TESTS=no -DBUILD_BENCHMARKS=no -DCMAKE_INSTALL_PREFIX=C:\symengine ..
 
 - cmake --build . --config %BUILD_TYPE% --target install
 - cd ../../

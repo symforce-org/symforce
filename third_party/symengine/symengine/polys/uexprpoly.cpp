@@ -4,13 +4,11 @@ namespace SymEngine
 {
 
 UExprPoly::UExprPoly(const RCP<const Basic> &var, UExprDict &&dict)
-    : USymEnginePoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-    SYMENGINE_ASSERT(is_canonical(get_poly()))
-}
+    : USymEnginePoly(
+        var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()
+                                  SYMENGINE_ASSERT(is_canonical(get_poly()))}
 
-hash_t UExprPoly::__hash__() const
+      hash_t UExprPoly::__hash__() const
 {
     hash_t seed = SYMENGINE_UEXPRPOLY;
 
@@ -89,4 +87,4 @@ bool UExprPoly::is_pow() const
            and get_poly().get_dict().begin()->first != 0;
 }
 
-} // SymEngine
+} // namespace SymEngine

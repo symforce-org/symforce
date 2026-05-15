@@ -3,10 +3,10 @@
 #include <symengine/diophantine.h>
 #include <symengine/integer.h>
 
-using SymEngine::print_stack_on_segfault;
 using SymEngine::DenseMatrix;
-using SymEngine::integer;
 using SymEngine::homogeneous_lde;
+using SymEngine::integer;
+using SymEngine::print_stack_on_segfault;
 
 bool vec_dense_matrix_eq_perm(const std::vector<DenseMatrix> &a,
                               const std::vector<DenseMatrix> &b)
@@ -42,9 +42,10 @@ TEST_CASE("test_homogeneous_lde()", "[diophantine]")
     // for Solving Systems of Linear Diophantine Equations. Information and
     // computation, 113(1):143-172, August 1994.
 
-    DenseMatrix A = DenseMatrix(2, 4, {integer(-1), integer(1), integer(2),
-                                       integer(-3), integer(-1), integer(3),
-                                       integer(-2), integer(-1)});
+    DenseMatrix A
+        = DenseMatrix(2, 4,
+                      {integer(-1), integer(1), integer(2), integer(-3),
+                       integer(-1), integer(3), integer(-2), integer(-1)});
     homogeneous_lde(basis, A);
     true_basis = std::vector<DenseMatrix>{
         DenseMatrix(1, 4, {integer(0), integer(1), integer(1), integer(1)}),

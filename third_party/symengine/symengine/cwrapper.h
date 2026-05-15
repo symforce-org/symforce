@@ -88,6 +88,8 @@ typedef struct CRCPBasic basic_struct;
 typedef struct CRCPBasic_C basic_struct;
 #endif
 
+typedef struct CSetBasic CSetBasic;
+
 //! Basic is a struct to store the symbolic expressions
 //! It is declared as an array of size 1 to force reference semantics
 typedef basic_struct basic[1];
@@ -343,6 +345,10 @@ CWRAPPER_OUTPUT_TYPE basic_cbrt(basic s, const basic a);
 CWRAPPER_OUTPUT_TYPE basic_exp(basic s, const basic a);
 //! Assigns s = log(a).
 CWRAPPER_OUTPUT_TYPE basic_log(basic s, const basic a);
+//! Assigns s = floor(a).
+CWRAPPER_OUTPUT_TYPE basic_floor(basic s, const basic a);
+//! Assigns s = ceiling(a).
+CWRAPPER_OUTPUT_TYPE basic_ceiling(basic s, const basic a);
 
 //! Assigns s = atan2(a, b).
 CWRAPPER_OUTPUT_TYPE basic_atan2(basic s, const basic a, const basic b);
@@ -357,6 +363,11 @@ CWRAPPER_OUTPUT_TYPE basic_uppergamma(basic s, const basic a, const basic b);
 CWRAPPER_OUTPUT_TYPE basic_beta(basic s, const basic a, const basic b);
 //! Assigns s = polygamma(a, b).
 CWRAPPER_OUTPUT_TYPE basic_polygamma(basic s, const basic a, const basic b);
+
+//! Serialize an expression
+char *basic_dumps(const basic s, unsigned long *size);
+//! Deserialize an expression
+CWRAPPER_OUTPUT_TYPE basic_loads(basic s, const char *c, unsigned long size);
 
 //! Returns a new char pointer to the string representation of s.
 char *basic_str(const basic s);
@@ -373,6 +384,58 @@ char *basic_str_ccode(const basic s);
 char *basic_str_jscode(const basic s);
 //! Frees the string s
 void basic_str_free(char *s);
+
+//! Assign boolean true to s
+void bool_set_true(basic s);
+//! Assign boolean false to s
+void bool_set_false(basic s);
+
+//! Assign the empty set to s
+void basic_set_emptyset(basic s);
+//! Assign the universal set to s
+void basic_set_universalset(basic s);
+//! Assign the complexes to s
+void basic_set_complexes(basic s);
+//! Assign the reals to s
+void basic_set_reals(basic s);
+//! Assign the rationals to s
+void basic_set_rationals(basic s);
+//! Assign the integers to s
+void basic_set_integers(basic s);
+//! Assign an interval to s
+CWRAPPER_OUTPUT_TYPE basic_set_interval(basic s, const basic start,
+                                        const basic end, int left_open,
+                                        int right_open);
+//! Assign a finite set to s
+CWRAPPER_OUTPUT_TYPE basic_set_finiteset(basic s, const CSetBasic *container);
+//! Assign the union of a and b to s
+CWRAPPER_OUTPUT_TYPE basic_set_union(basic s, const basic a, const basic b);
+//! Assign the intersection of a and b to s
+CWRAPPER_OUTPUT_TYPE basic_set_intersection(basic s, const basic a,
+                                            const basic b);
+//! Assign the complement of a with respect to b to s
+CWRAPPER_OUTPUT_TYPE basic_set_complement(basic s, const basic a,
+                                          const basic b);
+//! Assign the whether a contains of b to s
+CWRAPPER_OUTPUT_TYPE basic_set_contains(basic s, const basic a, const basic b);
+//! Is a a subset of b
+int basic_set_is_subset(const basic a, const basic b);
+//! Is a a proper subset of b
+int basic_set_is_proper_subset(const basic a, const basic b);
+//! Is a a superset of b
+int basic_set_is_superset(const basic a, const basic b);
+//! Is a a proper superset of b
+int basic_set_is_proper_superset(const basic a, const basic b);
+//! Assign the infimum of a to s
+CWRAPPER_OUTPUT_TYPE basic_set_inf(basic s, const basic a);
+//! Assign the supremum of a to s
+CWRAPPER_OUTPUT_TYPE basic_set_sup(basic s, const basic a);
+//! Assign the boundary of a to s
+CWRAPPER_OUTPUT_TYPE basic_set_boundary(basic s, const basic a);
+//! Assign the interior of a to s
+CWRAPPER_OUTPUT_TYPE basic_set_interior(basic s, const basic a);
+//! Assign the closure of a to s
+CWRAPPER_OUTPUT_TYPE basic_set_closure(basic s, const basic a);
 
 //! Returns 1 if a specific component is installed and 0 if not.
 //! Component can be "mpfr", "flint", "arb", "mpc", "ecm", "primesieve",
@@ -403,6 +466,8 @@ int is_a_ComplexDouble(const basic c);
 int is_a_RealMPFR(const basic c);
 //! Return 1 if c is a ComplexMPC, 0 if not.
 int is_a_ComplexMPC(const basic c);
+//! Return 1 if c is a Set, 0 if not.
+int is_a_Set(const basic c);
 
 //! Wrapper for std::vector<int>
 
@@ -438,9 +503,14 @@ CWRAPPER_OUTPUT_TYPE vecbasic_erase(CVecBasic *self, size_t n);
 size_t vecbasic_size(CVecBasic *self);
 
 //! Assigns to s the max of the provided args.
-CWRAPPER_OUTPUT_TYPE basic_max(basic s, CVecBasic *d);
+CWRAPPER_OUTPUT_TYPE basic_max(basic s, const CVecBasic *d);
 //! Assigns to s the min of the provided args.
-CWRAPPER_OUTPUT_TYPE basic_min(basic s, CVecBasic *d);
+CWRAPPER_OUTPUT_TYPE basic_min(basic s, const CVecBasic *d);
+//! Adds together all the values in a vector
+CWRAPPER_OUTPUT_TYPE basic_add_vec(basic s, const CVecBasic *d);
+
+//! Multiples all the values in a vector
+CWRAPPER_OUTPUT_TYPE basic_mul_vec(basic s, const CVecBasic *d);
 
 //! Wrappers for Matrices
 
@@ -586,8 +656,6 @@ int dense_matrix_eq(CDenseMatrix *lhs, CDenseMatrix *rhs);
 int sparse_matrix_eq(CSparseMatrix *lhs, CSparseMatrix *rhs);
 
 //! Wrapper for set_basic
-
-typedef struct CSetBasic CSetBasic;
 
 CSetBasic *setbasic_new();
 void setbasic_free(CSetBasic *self);

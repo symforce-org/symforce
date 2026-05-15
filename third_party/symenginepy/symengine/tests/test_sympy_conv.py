@@ -2,14 +2,14 @@ from symengine import (Symbol, Integer, sympify, SympifyError, log,
         function_symbol, I, E, pi, oo, zoo, nan, true, false,
         exp, gamma, have_mpfr, have_mpc, DenseMatrix, sin, cos, tan, cot,
         csc, sec, asin, acos, atan, acot, acsc, asec, sinh, cosh, tanh, coth,
-        asinh, acosh, atanh, acoth, Add, Mul, Pow, diff, GoldenRatio,
-        Catalan, EulerGamma, UnevaluatedExpr)
+        asinh, acosh, atanh, acoth, atan2, Add, Mul, Pow, diff, GoldenRatio,
+        Catalan, EulerGamma, UnevaluatedExpr, RealDouble)
 from symengine.lib.symengine_wrapper import (Subs, Derivative, RealMPFR,
         ComplexMPC, PyNumber, Function, LambertW, zeta, dirichlet_eta,
         KroneckerDelta, LeviCivita, erf, erfc, lowergamma, uppergamma,
         loggamma, beta, polygamma, sign, floor, ceiling, conjugate, And,
         Or, Not, Xor, Piecewise, Interval, EmptySet, FiniteSet, Contains,
-        Union, Complement, UniversalSet, Reals, Integers)
+        Union, Complement, UniversalSet, Reals, Rationals, Integers)
 import unittest
 
 # Note: We test _sympy_() for SymEngine -> SymPy conversion, as those are
@@ -171,6 +171,7 @@ def test_conv7():
     assert acot(x/3) == acot(sympy.Symbol("x") / 3)
     assert acsc(x/3) == acsc(sympy.Symbol("x") / 3)
     assert asec(x/3) == asec(sympy.Symbol("x") / 3)
+    assert atan2(x/3, y) == atan2(sympy.Symbol("x") / 3, sympy.Symbol("y"))
 
     assert sin(x/3)._sympy_() == sympy.sin(sympy.Symbol("x") / 3)
     assert sin(x/3)._sympy_() != sympy.cos(sympy.Symbol("x") / 3)
@@ -185,6 +186,22 @@ def test_conv7():
     assert acot(x/3)._sympy_() == sympy.acot(sympy.Symbol("x") / 3)
     assert acsc(x/3)._sympy_() == sympy.acsc(sympy.Symbol("x") / 3)
     assert asec(x/3)._sympy_() == sympy.asec(sympy.Symbol("x") / 3)
+    assert atan2(x/3, y)._sympy_() == sympy.atan2(sympy.Symbol("x") / 3, sympy.Symbol("y"))
+
+    assert sympy.sympify(sin(x/3)) == sympy.sin(sympy.Symbol("x") / 3)
+    assert sympy.sympify(sin(x/3)) != sympy.cos(sympy.Symbol("x") / 3)
+    assert sympy.sympify(cos(x/3)) == sympy.cos(sympy.Symbol("x") / 3)
+    assert sympy.sympify(tan(x/3)) == sympy.tan(sympy.Symbol("x") / 3)
+    assert sympy.sympify(cot(x/3)) == sympy.cot(sympy.Symbol("x") / 3)
+    assert sympy.sympify(csc(x/3)) == sympy.csc(sympy.Symbol("x") / 3)
+    assert sympy.sympify(sec(x/3)) == sympy.sec(sympy.Symbol("x") / 3)
+    assert sympy.sympify(asin(x/3)) == sympy.asin(sympy.Symbol("x") / 3)
+    assert sympy.sympify(acos(x/3)) == sympy.acos(sympy.Symbol("x") / 3)
+    assert sympy.sympify(atan(x/3)) == sympy.atan(sympy.Symbol("x") / 3)
+    assert sympy.sympify(acot(x/3)) == sympy.acot(sympy.Symbol("x") / 3)
+    assert sympy.sympify(acsc(x/3)) == sympy.acsc(sympy.Symbol("x") / 3)
+    assert sympy.sympify(asec(x/3)) == sympy.asec(sympy.Symbol("x") / 3)
+    assert sympy.sympify(atan2(x/3, y)) == sympy.atan2(sympy.Symbol("x") / 3, sympy.Symbol("y"))
 
 
 @unittest.skipIf(not have_sympy, "SymPy not installed")
@@ -204,6 +221,7 @@ def test_conv7b():
     assert sympify(sympy.acot(x/3)) == acot(Symbol("x") / 3)
     assert sympify(sympy.acsc(x/3)) == acsc(Symbol("x") / 3)
     assert sympify(sympy.asec(x/3)) == asec(Symbol("x") / 3)
+    assert sympify(sympy.atan2(x/3, y)) == atan2(Symbol("x") / 3, Symbol("y"))
 
 
 @unittest.skipIf(not have_sympy, "SymPy not installed")
@@ -515,7 +533,7 @@ def test_zeta():
     e1 = sympy.zeta(sympy.Symbol("x"), sympy.Symbol("y"))
     e2 = zeta(x, y)
     assert sympify(e1) == e2
-    assert e2._sympy_() == e1   
+    assert e2._sympy_() == e1
 
 
 @unittest.skipIf(not have_sympy, "SymPy not installed")
@@ -721,6 +739,9 @@ def test_sets():
     assert sympify(sympy.S.Reals) == Reals()
     assert sympy.S.Reals == Reals()._sympy_()
 
+    assert sympify(sympy.S.Rationals) == Rationals()
+    assert sympy.S.Rationals == Rationals()._sympy_()
+
     assert sympify(sympy.S.Integers) == Integers()
     assert sympy.S.Integers == Integers()._sympy_()
 
@@ -757,6 +778,7 @@ def test_pynumber():
     assert isinstance(b, PyNumber)
     assert b == a                  # Check equality via SymEngine
     assert a == b                  # Check equality via SymPy
+    assert str(a) == str(b)
 
     a = 1 - a
     b = 1 - b
@@ -783,3 +805,31 @@ def test_pynumber():
 
     b = b / x
     assert isinstance(b, PyNumber)
+
+
+@unittest.skipIf(not have_sympy, "SymPy not installed")
+def test_construct_dense_matrix():
+    # Test for issue #347
+    A = sympy.Matrix([[1, 2], [3, 5]])
+    B = DenseMatrix(A)
+    assert B.shape == (2, 2)
+    assert list(B) == [1, 2, 3, 5]
+
+
+@unittest.skipIf(not have_sympy, "SymPy not installed")
+def test_conv_doubles():
+    f = 4.347249999999999
+    a = sympify(f)
+    assert isinstance(a, RealDouble)
+    assert sympify(a._sympy_()) == a
+    assert float(a) == f
+    assert float(a._sympy_()) == f
+
+def test_conv_large_integers():
+    a = Integer(10)**10000
+    # check that convert to python int does not throw
+    b = int(a)
+    # check that convert to sympy int does not throw
+    if have_sympy:
+        c = a._sympy_()
+        d = sympify(c)

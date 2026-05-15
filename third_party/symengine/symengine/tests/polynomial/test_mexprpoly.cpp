@@ -4,31 +4,30 @@
 #include <symengine/printers/strprinter.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::Expression;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::map_int_Expr;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::integer;
-using SymEngine::integer_class;
 using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::Expression;
+using SymEngine::integer;
 using SymEngine::Integer;
+using SymEngine::integer_class;
+using SymEngine::make_rcp;
+using SymEngine::map_int_Expr;
+using SymEngine::MExprPoly;
+using SymEngine::one;
+using SymEngine::Pow;
 using SymEngine::Precedence;
 using SymEngine::PrecedenceEnum;
-using SymEngine::vec_uint;
-using SymEngine::vec_int;
-using SymEngine::vec_basic;
-using SymEngine::vec_uint;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
 using SymEngine::RCPBasicKeyLess;
-using SymEngine::MExprPoly;
-using SymEngine::UExprPoly;
+using SymEngine::Symbol;
+using SymEngine::symbol;
 using SymEngine::SymEngineException;
+using SymEngine::UExprPoly;
+using SymEngine::vec_basic;
+using SymEngine::vec_int;
+using SymEngine::vec_uint;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 
@@ -176,7 +175,7 @@ TEST_CASE("Testing MExprPoly::eval", "[MExprPoly]")
         = {{x, Expression(0)}, {y, Expression(0)}, {z, Expression(0)}};
     std::map<RCP<const Basic>, Expression, RCPBasicKeyLess> m2
         = {{x, ex}, {y, why}, {z, zee}};
-    // CHECK_THROWS_AS(p->eval(m1), SymEngineException&);
+    // CHECK_THROWS_AS(p->eval(m1), SymEngineException);
     REQUIRE(p->eval(m2)
             == expr1 * pow(ex, 2) + expr2 * pow(why, 2) + expr3 * pow(zee, 2)
                    + expr4 * ex * why * zee + expr1 * ex * why

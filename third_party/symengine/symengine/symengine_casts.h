@@ -91,13 +91,12 @@ inline To down_cast(From &f)
 }
 
 template <typename To, typename From>
-inline To
-numeric_cast(From f,
-             typename std::enable_if<(std::is_signed<From>::value
-                                      && std::is_signed<To>::value)
-                                     || (std::is_unsigned<From>::value
-                                         && std::is_unsigned<To>::value)>::type
-                 * = nullptr)
+inline To numeric_cast(
+    From f,
+    typename std::enable_if<
+        (std::is_signed<From>::value && std::is_signed<To>::value)
+        || (std::is_unsigned<From>::value && std::is_unsigned<To>::value)>::type
+        * = nullptr)
 {
     SYMENGINE_ASSERT(f <= std::numeric_limits<To>::max());
     SYMENGINE_ASSERT(f >= std::numeric_limits<To>::min());
@@ -135,6 +134,6 @@ inline To numeric_cast(
     return static_cast<To>(f);
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // SYMENGINE_CASTS_H

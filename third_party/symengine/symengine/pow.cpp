@@ -54,8 +54,9 @@ bool Pow::is_canonical(const Basic &base, const Basic &exp) const
         and is_a<Integer>(exp))
         return false;
     // e.g. 0.5^2.0 should be represented as 0.25
-    if (is_a_Number(base) and not down_cast<const Number &>(base).is_exact()
-        and is_a_Number(exp) and not down_cast<const Number &>(exp).is_exact())
+    if (is_a_Number(base) and is_a_Number(exp)
+        and (not down_cast<const Number &>(base).is_exact()
+             or not down_cast<const Number &>(exp).is_exact()))
         return false;
     return true;
 }
@@ -272,4 +273,4 @@ RCP<const Basic> exp(const RCP<const Basic> &x)
     return pow(E, x);
 }
 
-} // SymEngine
+} // namespace SymEngine

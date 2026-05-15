@@ -6,12 +6,9 @@ namespace SymEngine
 {
 
 UIntPolyPiranha::UIntPolyPiranha(const RCP<const Basic> &var, pintpoly &&dict)
-    : UPiranhaPoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : UPiranhaPoly(var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t UIntPolyPiranha::__hash__() const
+      hash_t UIntPolyPiranha::__hash__() const
 {
     hash_t seed = SYMENGINE_UINTPOLYPIRANHA;
     seed += get_poly().hash();
@@ -20,16 +17,13 @@ hash_t UIntPolyPiranha::__hash__() const
 }
 
 URatPolyPiranha::URatPolyPiranha(const RCP<const Basic> &var, pratpoly &&dict)
-    : UPiranhaPoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : UPiranhaPoly(var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t URatPolyPiranha::__hash__() const
+      hash_t URatPolyPiranha::__hash__() const
 {
     hash_t seed = SYMENGINE_URATPOLYPIRANHA;
     seed += get_poly().hash();
     seed += get_var()->hash();
     return seed;
 }
-}
+} // namespace SymEngine

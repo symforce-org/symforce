@@ -175,4 +175,4 @@ umap_basic_num _find_gens_poly_pow(const RCP<const Basic> &x,
     return v.apply(*x, base);
 }
 
-} // SymEngine
+} // namespace SymEngine

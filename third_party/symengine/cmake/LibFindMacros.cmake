@@ -28,7 +28,7 @@ function (libfind_library libname pkg)
 
     find_library(${LIBNAME}_LIBRARY
         NAMES
-            ${libname}
+            ${libname} ${ARGN}
     )
 
     if (NOT TARGET ${libname})
@@ -42,6 +42,6 @@ function (libfind_include HEADER pkg)
 
     find_path(${PKG}_INCLUDE_DIR
         NAMES
-            ${HEADER}
+            ${HEADER} ${ARGN}
     )
 endfunction()

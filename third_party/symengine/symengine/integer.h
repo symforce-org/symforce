@@ -25,22 +25,17 @@ public:
     IMPLEMENT_TYPEID(SYMENGINE_INTEGER)
     //! Constructor of Integer using `integer_class`
     // explicit Integer(integer_class i);
-    Integer(const integer_class &_i) : i(_i)
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
-    Integer(integer_class &&_i) : i(std::move(_i))
-    {
-        SYMENGINE_ASSIGN_TYPEID()
-    }
-    //! \return size of the hash
-    virtual hash_t __hash__() const;
+    Integer(const integer_class &_i)
+        : i(_i){SYMENGINE_ASSIGN_TYPEID()} Integer(integer_class && _i)
+        : i(std::move(_i)){SYMENGINE_ASSIGN_TYPEID()}
+          //! \return size of the hash
+          hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
 
     //! Convert to `int`, raise an exception if it does not fit
     signed long int as_int() const;
@@ -52,33 +47,33 @@ public:
         return this->i;
     }
     //! \return `true` if `0`
-    inline virtual bool is_zero() const
+    inline bool is_zero() const override
     {
         return this->i == 0u;
     }
     //! \return `true` if `1`
-    inline virtual bool is_one() const
+    inline bool is_one() const override
     {
         return this->i == 1u;
     }
     //! \return `true` if `-1`
-    inline virtual bool is_minus_one() const
+    inline bool is_minus_one() const override
     {
         return this->i == -1;
     }
     //! \return `true` if positive
-    inline virtual bool is_positive() const
+    inline bool is_positive() const override
     {
         return this->i > 0u;
     }
     //! \return `true` if negative
-    inline virtual bool is_negative() const
+    inline bool is_negative() const override
     {
         return this->i < 0u;
     }
     //! \returns `false`
     // False is returned because a pure integer cannot have an imaginary part
-    inline virtual bool is_complex() const
+    inline bool is_complex() const override
     {
         return false;
     }
@@ -126,7 +121,7 @@ public:
     /* These are general methods, overriden from the Number class, that need to
      * check types to decide what operation to do, and so are a bit slower. */
     //! Slower Addition
-    virtual RCP<const Number> add(const Number &other) const
+    RCP<const Number> add(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return addint(down_cast<const Integer &>(other));
@@ -135,7 +130,7 @@ public:
         }
     };
     //! Slower Subtraction
-    virtual RCP<const Number> sub(const Number &other) const
+    RCP<const Number> sub(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return subint(down_cast<const Integer &>(other));
@@ -144,13 +139,13 @@ public:
         }
     };
 
-    virtual RCP<const Number> rsub(const Number &other) const
+    RCP<const Number> rsub(const Number &other) const override
     {
         throw NotImplementedError("Not Implemented");
     };
 
     //! Slower Multiplication
-    virtual RCP<const Number> mul(const Number &other) const
+    RCP<const Number> mul(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return mulint(down_cast<const Integer &>(other));
@@ -159,7 +154,7 @@ public:
         }
     };
     //! Slower Division
-    virtual RCP<const Number> div(const Number &other) const
+    RCP<const Number> div(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return divint(down_cast<const Integer &>(other));
@@ -168,10 +163,10 @@ public:
         }
     };
 
-    virtual RCP<const Number> rdiv(const Number &other) const;
+    RCP<const Number> rdiv(const Number &other) const override;
 
     //! Slower power evaluation
-    virtual RCP<const Number> pow(const Number &other) const
+    RCP<const Number> pow(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return powint(down_cast<const Integer &>(other));
@@ -180,7 +175,7 @@ public:
         }
     };
 
-    virtual RCP<const Number> rpow(const Number &other) const
+    RCP<const Number> rpow(const Number &other) const override
     {
         throw NotImplementedError("Not Implemented");
     };
@@ -222,6 +217,6 @@ bool perfect_power(const Integer &n);
 //! Integer Absolute value
 RCP<const Integer> iabs(const Integer &n);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

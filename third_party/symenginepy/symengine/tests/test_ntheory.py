@@ -1,4 +1,4 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 
 from symengine.lib.symengine_wrapper import (isprime, nextprime, gcd,
     lcm, gcd_ext, mod, quotient, quotient_mod, mod_inverse, crt, fibonacci,

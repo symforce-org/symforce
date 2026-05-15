@@ -8,6 +8,9 @@
 
 namespace SymEngine {
 
+std::string pickle_dumps(const PyObject *);
+PyObject* pickle_loads(const std::string &);
+
 /*
  * PySymbol is a subclass of Symbol that keeps a reference to a Python object.
  * When subclassing a Symbol from Python, the information stored in subclassed
@@ -27,16 +30,30 @@ namespace SymEngine {
 class PySymbol : public Symbol {
 private:
     PyObject* obj;
+    std::string bytes;
 public:
-    PySymbol(const std::string& name, PyObject* obj) : Symbol(name), obj(obj) {
-        Py_INCREF(obj);
+    const bool store_pickle;
+    PySymbol(const std::string& name, PyObject* obj, bool store_pickle) :
+            Symbol(name), obj(obj), store_pickle(store_pickle) {
+        if (store_pickle) {
+            bytes = pickle_dumps(obj);
+        } else {
+            Py_INCREF(obj);
+        }
     }
     PyObject* get_py_object() const {
-        return obj;
+        if (store_pickle) {
+            return pickle_loads(bytes);
+        } else {
+            Py_INCREF(obj);
+            return obj;
+        }
     }
     virtual ~PySymbol() {
-        // TODO: This is never called because of the cyclic reference.
-        Py_DECREF(obj);
+        if (not store_pickle) {
+            // TODO: This is never called because of the cyclic reference.
+            Py_DECREF(obj);
+        }
     }
 };
 
@@ -194,6 +211,9 @@ public:
     virtual bool __eq__(const Basic &o) const;
     virtual hash_t __hash__() const;
 };
+
+std::string wrapper_dumps(const Basic &x);
+RCP<const Basic> wrapper_loads(const std::string &s);
 
 }
 

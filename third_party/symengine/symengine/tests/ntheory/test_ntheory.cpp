@@ -2,50 +2,52 @@
 #include <chrono>
 
 #include <symengine/ntheory.h>
+#include <symengine/prime_sieve.h>
 #include <symengine/rational.h>
 #include <symengine/add.h>
 #include <symengine/mul.h>
 #include <symengine/real_double.h>
 
 using SymEngine::Basic;
-using SymEngine::Integer;
-using SymEngine::Rational;
-using SymEngine::rational;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::RCP;
-using SymEngine::fibonacci;
-using SymEngine::lucas;
+using SymEngine::bernoulli;
+using SymEngine::carmichael;
+using SymEngine::crt;
 using SymEngine::factorial;
+using SymEngine::fibonacci;
+using SymEngine::harmonic;
+using SymEngine::Integer;
 using SymEngine::integer;
+using SymEngine::integer_class;
 using SymEngine::is_a;
+using SymEngine::lucas;
 using SymEngine::map_integer_uint;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::rcp_static_cast;
-using SymEngine::mod_inverse;
+using SymEngine::mertens;
+using SymEngine::minus_one;
 using SymEngine::mod;
 using SymEngine::mod_f;
+using SymEngine::mod_inverse;
+using SymEngine::mp_perfect_power_decomposition;
+using SymEngine::multiplicative_order;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::primitive_root;
+using SymEngine::primitive_root_list;
+using SymEngine::print_stack_on_segfault;
 using SymEngine::quotient;
 using SymEngine::quotient_f;
 using SymEngine::quotient_mod;
 using SymEngine::quotient_mod_f;
-using SymEngine::Number;
-using SymEngine::bernoulli;
-using SymEngine::crt;
-using SymEngine::primitive_root;
-using SymEngine::primitive_root_list;
-using SymEngine::multiplicative_order;
+using SymEngine::Rational;
+using SymEngine::rational;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::rcp_static_cast;
+using SymEngine::real_double;
+using SymEngine::RealDouble;
+using SymEngine::SymEngineException;
 using SymEngine::totient;
-using SymEngine::carmichael;
-using SymEngine::mertens;
-using SymEngine::integer_class;
-using SymEngine::harmonic;
 using SymEngine::vec_integer_class;
 using SymEngine::zero;
-using SymEngine::one;
-using SymEngine::minus_one;
-using SymEngine::RealDouble;
-using SymEngine::real_double;
-using SymEngine::SymEngineException;
 
 TEST_CASE("test_gcd_lcm(): ntheory", "[ntheory]")
 {
@@ -229,6 +231,11 @@ TEST_CASE("test_factor(): ntheory", "[ntheory]")
     REQUIRE(not divides(*i1001, *i6));
     REQUIRE(factor(outArg(f), *i900) > 0);
     REQUIRE(divides(*i900, *f));
+
+    REQUIRE(divides(*one, *one));
+    REQUIRE(divides(*zero, *one));
+    REQUIRE(!divides(*one, *zero));
+    REQUIRE(divides(*zero, *zero));
 }
 
 TEST_CASE("test_factor_lehman_method(): ntheory", "[ntheory]")
@@ -261,7 +268,7 @@ TEST_CASE("test_factor_lehman_method(): ntheory", "[ntheory]")
     REQUIRE(factor_lehman_method(outArg(f), *i1001) > 0);
     REQUIRE((divides(*i1001, *f) and not eq(*f, *i1) and not eq(*f, *i1001)));
 
-    CHECK_THROWS_AS(factor_lehman_method(outArg(f), *i1), SymEngineException &);
+    CHECK_THROWS_AS(factor_lehman_method(outArg(f), *i1), SymEngineException);
 }
 
 TEST_CASE("test_factor_pollard_pm1_method(): ntheory", "[ntheory]")
@@ -294,7 +301,7 @@ TEST_CASE("test_factor_pollard_pm1_method(): ntheory", "[ntheory]")
 
 #if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
     CHECK_THROWS_AS(factor_pollard_pm1_method(outArg(f), *i2),
-                    SymEngineException &);
+                    SymEngineException);
 #endif
 }
 
@@ -328,7 +335,7 @@ TEST_CASE("test_factor_pollard_rho_method(): ntheory", "[ntheory]")
 
 #if SYMENGINE_INTEGER_CLASS != SYMENGINE_BOOSTMP
     CHECK_THROWS_AS(factor_pollard_rho_method(outArg(f), *i2),
-                    SymEngineException &);
+                    SymEngineException);
 #endif
 }
 
@@ -472,10 +479,10 @@ TEST_CASE("test_crt(): ntheory", "[ntheory]")
 
     r = {integer(21), integer(31), integer(6), integer(17)};
     m = {integer(30), integer(35), integer(45), integer(77), integer(88)};
-    CHECK_THROWS_AS(crt(outArg(g), r, m), SymEngineException &);
+    CHECK_THROWS_AS(crt(outArg(g), r, m), SymEngineException);
 
     m = {};
-    CHECK_THROWS_AS(crt(outArg(g), r, m), SymEngineException &);
+    CHECK_THROWS_AS(crt(outArg(g), r, m), SymEngineException);
 }
 
 TEST_CASE("test_primitive_root(): ntheory", "[ntheory]")
@@ -624,6 +631,10 @@ TEST_CASE("test_nthroot_mod(): ntheory", "[ntheory]")
     RCP<const Integer> i93 = integer(93);
     RCP<const Integer> i100 = integer(100);
     RCP<const Integer> i105 = integer(105);
+    RCP<const Integer> i5001 = integer(5001);
+    RCP<const Integer> i5008 = integer(5008);
+    RCP<const Integer> i7519 = integer(7519);
+    RCP<const Integer> i10009 = integer(10009);
     RCP<const Integer> nthroot, rem;
     std::vector<RCP<const Integer>> roots, v;
 
@@ -639,6 +650,11 @@ TEST_CASE("test_nthroot_mod(): ntheory", "[ntheory]")
 
     REQUIRE(nthroot_mod(outArg(nthroot), i5, i1, i100) == true);
     REQUIRE(eq(*nthroot, *i5));
+
+    REQUIRE(nthroot_mod(outArg(nthroot), i7519, i2, i10009) == true);
+    // The square root is +/- 5001 mod 10009.
+    bool sqrt_ok = eq(*nthroot, *i5001) || eq(*nthroot, *i5008);
+    REQUIRE(sqrt_ok);
 
     REQUIRE(nthroot_mod(outArg(nthroot), im1, i2, i41) == true);
     rem = integer(nthroot->as_integer_class() * nthroot->as_integer_class()
@@ -759,7 +775,7 @@ TEST_CASE("test_quadratic_residues(): ntheory", "[ntheory]")
     REQUIRE(quadratic_residues(*a7) == i7);
     REQUIRE(quadratic_residues(*a100) == i100);
 
-    CHECK_THROWS_AS(quadratic_residues(*zero), SymEngineException &);
+    CHECK_THROWS_AS(quadratic_residues(*zero), SymEngineException);
 }
 
 TEST_CASE("test_is_quad_residue(): ntheory", "[ntheory]")
@@ -801,7 +817,7 @@ TEST_CASE("test_is_quad_residue(): ntheory", "[ntheory]")
     REQUIRE(is_quad_residue(*t89, *a100) == true);
     REQUIRE(is_quad_residue(*t3, *a100) == false);
 
-    CHECK_THROWS_AS(is_quad_residue(*t3, *t0), SymEngineException &);
+    CHECK_THROWS_AS(is_quad_residue(*t3, *t0), SymEngineException);
 }
 
 TEST_CASE("test_is_nth_residue(): ntheory", "[ntheory]")
@@ -867,7 +883,7 @@ TEST_CASE("test_mobius(): ntheory", "[ntheory]")
     REQUIRE(mobius(*i9) == 0);
     REQUIRE(mobius(*i10) == 1);
 
-    CHECK_THROWS_AS(mobius(*minus_one), SymEngineException &);
+    CHECK_THROWS_AS(mobius(*minus_one), SymEngineException);
 }
 
 TEST_CASE("test_mertens(): ntheory", "[ntheory]")
@@ -902,4 +918,30 @@ TEST_CASE("test_factor_trial_division(): ntheory", "[ntheory]")
     RCP<const Integer> f;
 
     REQUIRE(factor_trial_division(outArg(f), *i47) == 0);
+}
+
+TEST_CASE("test_perfect_power_decomposition(): ntheory", "[ntheory]")
+{
+    integer_class a;
+    std::pair<integer_class, integer_class> res;
+
+    a = 1745041;
+    res = mp_perfect_power_decomposition(a);
+    REQUIRE(res.first == 1321);
+    REQUIRE(res.second == 2);
+
+    a = 15;
+    res = mp_perfect_power_decomposition(a);
+    REQUIRE(res.first == 15);
+    REQUIRE(res.second == 1);
+
+    a = 1771561;
+    res = mp_perfect_power_decomposition(a);
+    REQUIRE(res.first == 11);
+    REQUIRE(res.second == 6);
+
+    a = 1771561;
+    res = mp_perfect_power_decomposition(a, true);
+    REQUIRE(res.first == 1331);
+    REQUIRE(res.second == 2);
 }

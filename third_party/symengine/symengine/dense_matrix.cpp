@@ -13,9 +13,7 @@ namespace SymEngine
 {
 
 // Constructors
-DenseMatrix::DenseMatrix()
-{
-}
+DenseMatrix::DenseMatrix() {}
 
 DenseMatrix::DenseMatrix(unsigned row, unsigned col) : row_(row), col_(col)
 {
@@ -23,12 +21,9 @@ DenseMatrix::DenseMatrix(unsigned row, unsigned col) : row_(row), col_(col)
 }
 
 DenseMatrix::DenseMatrix(unsigned row, unsigned col, const vec_basic &l)
-    : m_{l}, row_(row), col_(col)
-{
-    SYMENGINE_ASSERT(m_.size() == row * col)
-}
+    : m_{l}, row_(row), col_(col){SYMENGINE_ASSERT(m_.size() == row * col)}
 
-DenseMatrix::DenseMatrix(const vec_basic &column_elements)
+      DenseMatrix::DenseMatrix(const vec_basic &column_elements)
     : m_(column_elements), row_(static_cast<unsigned>(column_elements.size())),
       col_(1)
 {
@@ -145,12 +140,12 @@ tribool DenseMatrix::is_diagonal() const
     return cur;
 }
 
-tribool DenseMatrix::is_real() const
+tribool DenseMatrix::is_real(const Assumptions *assumptions) const
 {
-    auto A = *this;
+    RealVisitor visitor(assumptions);
     tribool cur = tribool::tritrue;
     for (auto &e : m_) {
-        cur = and_tribool(cur, SymEngine::is_real(*e));
+        cur = and_tribool(cur, visitor.apply(*e));
         if (is_false(cur)) {
             return cur;
         }
@@ -1243,13 +1238,14 @@ void fraction_free_gaussian_elimination_solve(const DenseMatrix &A,
 }
 
 void fraction_free_gauss_jordan_solve(const DenseMatrix &A,
-                                      const DenseMatrix &b, DenseMatrix &x)
+                                      const DenseMatrix &b, DenseMatrix &x,
+                                      bool pivot)
 {
     SYMENGINE_ASSERT(A.row_ == A.col_);
     SYMENGINE_ASSERT(b.row_ == A.row_ and x.row_ == A.row_);
     SYMENGINE_ASSERT(x.col_ == b.col_);
 
-    unsigned i, j, k, col = A.col_, bcol = b.col_;
+    unsigned i, j, k, p, col = A.col_, bcol = b.col_;
     RCP<const Basic> d;
     DenseMatrix A_ = DenseMatrix(A.row_, A.col_, A.m_);
     DenseMatrix b_ = DenseMatrix(b.row_, b.col_, b.m_);
@@ -1257,6 +1253,22 @@ void fraction_free_gauss_jordan_solve(const DenseMatrix &A,
     for (i = 0; i < col; i++) {
         if (i > 0)
             d = A_.m_[i * col - col + i - 1];
+        if (pivot) {
+            p = i;
+            while (p < col and eq(*A_.m_[p * col + i], *zero)) {
+                p++;
+            }
+            SYMENGINE_ASSERT(p != col);
+            if (p != i) {
+                // pivot A
+                for (k = i; k < col; k++) {
+                    std::swap(A_.m_[p * col + k], A_.m_[i * col + k]);
+                }
+                for (k = 0; k < bcol; k++) {
+                    std::swap(b_.m_[p * bcol + k], b_.m_[i * bcol + k]);
+                }
+            }
+        }
         for (j = 0; j < col; j++)
             if (j != i) {
                 for (k = 0; k < bcol; k++) {
@@ -2044,4 +2056,4 @@ void zeros(DenseMatrix &A)
     }
 }
 
-} // SymEngine
+} // namespace SymEngine

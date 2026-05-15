@@ -33,4 +33,4 @@ RCP<const Number> Number::rdiv(const Number &other) const
     return other.mul(*pow(*integer(-1)));
 }
 
-} // SymEngine
+} // namespace SymEngine

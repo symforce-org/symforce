@@ -26,24 +26,24 @@ public:
         SYMENGINE_ASSIGN_TYPEID()
     }
     /*! \param `i` must already be in rational_class canonical form
-    *   \return Integer or Rational depending on denumerator.
-    * */
+     *   \return Integer or Rational depending on denumerator.
+     * */
     static RCP<const Number> from_mpq(const rational_class &i);
     static RCP<const Number> from_mpq(rational_class &&i);
     //! \return size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     //! \return true if canonical
     bool is_canonical(const rational_class &i) const;
 
     /*! Constructs Rational as n/d, where n, d can be any Integers. If n/d is an
-    *   Integer, it will return an Integer instead.
-    * */
+     *   Integer, it will return an Integer instead.
+     * */
     static RCP<const Number> from_two_ints(const Integer &n, const Integer &d);
     static RCP<const Number> from_two_ints(const long n, const long d);
     //! Convert to `rational_class`.
@@ -52,17 +52,17 @@ public:
         return this->i;
     }
     //! \return `true` if `0`
-    virtual bool is_zero() const
+    bool is_zero() const override
     {
         return this->i == 0;
     }
     //! \return `true` if `1`
-    virtual bool is_one() const
+    bool is_one() const override
     {
         return this->i == 1;
     }
     //! \return `true` if `-1`
-    virtual bool is_minus_one() const
+    bool is_minus_one() const override
     {
         return this->i == -1;
     }
@@ -72,18 +72,18 @@ public:
         return this->i == 1;
     }
     //! \return `true` if positive
-    inline virtual bool is_positive() const
+    inline bool is_positive() const override
     {
         return i > 0;
     }
     //! \return `true` if negative
-    inline virtual bool is_negative() const
+    inline bool is_negative() const override
     {
         return i < 0;
     }
     //! \returns `false`
     // False is returned because a rational cannot have an imaginary part
-    inline virtual bool is_complex() const
+    inline bool is_complex() const override
     {
         return false;
     }
@@ -94,10 +94,10 @@ public:
         return make_rcp<const Rational>(-i);
     }
 
-    virtual bool is_perfect_power(bool is_expected = false) const;
+    bool is_perfect_power(bool is_expected = false) const override;
     // \return true if there is a exact nth root of self.
-    virtual bool nth_root(const Ptr<RCP<const Number>> &,
-                          unsigned long n) const;
+    bool nth_root(const Ptr<RCP<const Number>> &,
+                  unsigned long n) const override;
 
     /*! Add Rationals
      * \param other of type Rational
@@ -233,7 +233,7 @@ public:
     RCP<const Basic> rpowrat(const Integer &other) const;
 
     //! Converts the param `other` appropriately and then calls `addrat`
-    virtual RCP<const Number> add(const Number &other) const
+    RCP<const Number> add(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return addrat(down_cast<const Rational &>(other));
@@ -244,7 +244,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `subrat`
-    virtual RCP<const Number> sub(const Number &other) const
+    RCP<const Number> sub(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return subrat(down_cast<const Rational &>(other));
@@ -255,7 +255,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `rsubrat`
-    virtual RCP<const Number> rsub(const Number &other) const
+    RCP<const Number> rsub(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return rsubrat(down_cast<const Integer &>(other));
@@ -264,7 +264,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `mulrat`
-    virtual RCP<const Number> mul(const Number &other) const
+    RCP<const Number> mul(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return mulrat(down_cast<const Rational &>(other));
@@ -275,7 +275,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `divrat`
-    virtual RCP<const Number> div(const Number &other) const
+    RCP<const Number> div(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return divrat(down_cast<const Rational &>(other));
@@ -286,7 +286,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `rdivrat`
-    virtual RCP<const Number> rdiv(const Number &other) const
+    RCP<const Number> rdiv(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return rdivrat(down_cast<const Integer &>(other));
@@ -295,7 +295,7 @@ public:
         }
     };
     //! Converts the param `other` appropriately and then calls `powrat`
-    virtual RCP<const Number> pow(const Number &other) const
+    RCP<const Number> pow(const Number &other) const override
     {
         if (is_a<Integer>(other)) {
             return powrat(down_cast<const Integer &>(other));
@@ -304,7 +304,7 @@ public:
         }
     };
 
-    virtual RCP<const Number> rpow(const Number &other) const
+    RCP<const Number> rpow(const Number &other) const override
     {
         throw NotImplementedError("Not Implemented");
     };
@@ -329,6 +329,6 @@ inline RCP<const Number> rational(long n, long d)
 {
     return Rational::from_two_ints(n, d);
 }
-} // SymEngine
+} // namespace SymEngine
 
 #endif

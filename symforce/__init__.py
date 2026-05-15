@@ -116,10 +116,6 @@ def _find_symengine() -> ModuleType:
 
         return symengine
     except ImportError as ex:
-        import importlib
-        import importlib.abc
-        import importlib.util
-
         from . import path_util
 
         try:
@@ -140,22 +136,13 @@ def _find_symengine() -> ModuleType:
             ) from ex
         symengine_path = symengine_path_candidates[0]
 
-        # Import symengine from the directory where we installed it.  See
-        # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
-        spec = importlib.util.spec_from_file_location("symengine", symengine_path)
-        assert spec is not None
-        symengine = importlib.util.module_from_spec(spec)
-        sys.modules["symengine"] = symengine
+        # Add the site-packages directory to sys.path so that symengine can be
+        # imported normally (and importlib.reload works correctly).
+        site_packages_dir = str(symengine_path.parent.parent)
+        if site_packages_dir not in sys.path:
+            sys.path.insert(0, site_packages_dir)
 
-        # For mypy: https://github.com/python/typeshed/issues/2793
-        assert isinstance(spec.loader, importlib.abc.Loader)
-
-        try:
-            spec.loader.exec_module(symengine)
-        except:
-            # If executing the module fails for any reason, it shouldn't be in `sys.modules`
-            del sys.modules["symengine"]
-            raise
+        import symengine
 
         return symengine
 

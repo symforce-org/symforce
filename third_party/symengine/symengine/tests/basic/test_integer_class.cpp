@@ -15,10 +15,10 @@ using std::cout;
 using std::endl;
 
 using SymEngine::integer_class;
-using SymEngine::rational_class;
+using SymEngine::mp_abs;
 using SymEngine::mp_get_ui;
 using SymEngine::mp_sign;
-using SymEngine::mp_abs;
+using SymEngine::rational_class;
 
 using namespace SymEngine;
 

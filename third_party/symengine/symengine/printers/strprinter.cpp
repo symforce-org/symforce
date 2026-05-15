@@ -158,9 +158,7 @@ void StrPrinter::bvisit(const Infty &x)
 
 void StrPrinter::bvisit(const NaN &x)
 {
-    std::ostringstream s;
-    s << "nan";
-    str_ = s.str();
+    str_ = "nan";
 }
 
 void StrPrinter::bvisit(const Integer &x)
@@ -373,6 +371,11 @@ void StrPrinter::bvisit(const Piecewise &x)
     str_ = s.str();
 }
 
+void StrPrinter::bvisit(const Complexes &x)
+{
+    str_ = "Complexes";
+}
+
 void StrPrinter::bvisit(const Reals &x)
 {
     str_ = "Reals";
@@ -388,6 +391,16 @@ void StrPrinter::bvisit(const Integers &x)
     str_ = "Integers";
 }
 
+void StrPrinter::bvisit(const Naturals &x)
+{
+    str_ = "Naturals";
+}
+
+void StrPrinter::bvisit(const Naturals0 &x)
+{
+    str_ = "Naturals0";
+}
+
 void StrPrinter::bvisit(const EmptySet &x)
 {
     str_ = "EmptySet";
@@ -401,6 +414,15 @@ void StrPrinter::bvisit(const Union &x)
          ++it) {
         s << " U " << apply(*it);
     }
+    str_ = s.str();
+}
+
+void StrPrinter::bvisit(const Intersection &x)
+{
+    std::ostringstream s;
+    vec_basic vec = x.get_args();
+    s << "Intersection";
+    s << parenthesize(apply(vec));
     str_ = s.str();
 }
 
@@ -858,6 +880,7 @@ std::string StrPrinter::apply(const vec_basic &d)
 
 void StrPrinter::bvisit(const Function &x)
 {
+    static const std::vector<std::string> names_ = init_str_printer_names();
     std::ostringstream o;
     o << names_[x.get_type_code()];
     vec_basic vec = x.get_args();
@@ -1004,6 +1027,24 @@ void StrPrinter::bvisit(const MExprPoly &x)
     str_ = s.str();
 }
 
+void StrPrinter::bvisit(const Tuple &x)
+{
+    std::ostringstream o;
+    vec_basic vec = x.get_args();
+    o << parenthesize(apply(vec));
+    str_ = o.str();
+}
+
+void StrPrinter::bvisit(const IdentityMatrix &x)
+{
+    str_ = "I";
+}
+
+void StrPrinter::bvisit(const ZeroMatrix &x)
+{
+    str_ = "0";
+}
+
 std::string StrPrinter::parenthesizeLT(const RCP<const Basic> &x,
                                        PrecedenceEnum precedenceEnum)
 {
@@ -1095,13 +1136,13 @@ std::vector<std::string> init_str_printer_names()
     names[SYMENGINE_MIN] = "min";
     names[SYMENGINE_SIGN] = "sign";
     names[SYMENGINE_CONJUGATE] = "conjugate";
+    names[SYMENGINE_PRIMEPI] = "primepi";
+    names[SYMENGINE_PRIMORIAL] = "primorial";
     names[SYMENGINE_UNEVALUATED_EXPR] = "";
     names[SYMENGINE_SIGN_NO_ZERO] = "sign_no_zero";
     names[SYMENGINE_COPYSIGN_NO_ZERO] = "copysign_no_zero";
     return names;
 }
-
-const std::vector<std::string> StrPrinter::names_ = init_str_printer_names();
 
 std::string StrPrinter::print_mul()
 {
@@ -1135,9 +1176,7 @@ void JuliaStrPrinter::bvisit(const Constant &x)
 
 void JuliaStrPrinter::bvisit(const NaN &x)
 {
-    std::ostringstream s;
-    s << "NaN";
-    str_ = s.str();
+    str_ = "NaN";
 }
 
 void JuliaStrPrinter::bvisit(const Infty &x)
@@ -1168,9 +1207,14 @@ std::string str(const Basic &x)
     return strPrinter.apply(x);
 }
 
+std::string str(const DenseMatrix &x)
+{
+    return x.__str__();
+}
+
 std::string julia_str(const Basic &x)
 {
     JuliaStrPrinter strPrinter;
     return strPrinter.apply(x);
 }
-}
+} // namespace SymEngine

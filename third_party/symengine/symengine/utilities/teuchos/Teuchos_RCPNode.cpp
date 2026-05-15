@@ -637,7 +637,7 @@ ActiveRCPNodesSetup::~ActiveRCPNodesSetup()
     std::cerr << "\nPrint active nodes!\n";
 #endif // TEUCHOS_SHOW_ACTIVE_REFCOUNTPTR_NODE_TRACE
     std::cout << std::flush;
-    TEUCHOS_TEST_FOR_EXCEPT(0==rcp_node_list());
+    TEUCHOS_TEST_FOR_TERMINATION(nullptr==rcp_node_list(), "rcp_node_list() is null in ~ActiveRCPNodesSetup");
     RCPNodeTracer::RCPNodeStatistics rcpNodeStatistics =
       RCPNodeTracer::getRCPNodeStatistics();
     if (rcpNodeStatistics.maxNumRCPNodes

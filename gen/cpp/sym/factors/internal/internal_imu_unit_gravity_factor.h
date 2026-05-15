@@ -70,7 +70,7 @@ void InternalImuUnitGravityFactor(
     Eigen::Matrix<Scalar, 9, 26>* const jacobian = nullptr,
     Eigen::Matrix<Scalar, 26, 26>* const hessian = nullptr,
     Eigen::Matrix<Scalar, 26, 1>* const rhs = nullptr) {
-  // Total ops: 6628
+  // Total ops: 6664
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _pose_i = pose_i.Data();
@@ -78,7 +78,7 @@ void InternalImuUnitGravityFactor(
   const Eigen::Matrix<Scalar, 4, 1>& _DR = DR.Data();
   const Eigen::Matrix<Scalar, 3, 1>& _gravity_direction = gravity_direction.Data();
 
-  // Intermediate terms (816)
+  // Intermediate terms (853)
   const Scalar _tmp0 = -gyro_bias_hat(0, 0) + gyro_bias_i(0, 0);
   const Scalar _tmp1 = -gyro_bias_hat(2, 0) + gyro_bias_i(2, 0);
   const Scalar _tmp2 = -gyro_bias_hat(1, 0) + gyro_bias_i(1, 0);
@@ -98,1757 +98,1812 @@ void InternalImuUnitGravityFactor(
   const Scalar _tmp12 = _tmp11 / _tmp7;
   const Scalar _tmp13 = _DR[1] * _tmp12;
   const Scalar _tmp14 = _DR[0] * _tmp12;
-  const Scalar _tmp15 = _tmp12 * _tmp5;
-  const Scalar _tmp16 = -_DR[2] * _tmp15 + _tmp10 - _tmp13 * _tmp4 - _tmp14 * _tmp3;
+  const Scalar _tmp15 = _DR[2] * _tmp12;
+  const Scalar _tmp16 = _tmp10 - _tmp13 * _tmp4 - _tmp14 * _tmp3 - _tmp15 * _tmp5;
   const Scalar _tmp17 = _pose_i[3] * _tmp16;
   const Scalar _tmp18 = _DR[3] * _tmp12;
-  const Scalar _tmp19 = _tmp12 * _tmp3;
-  const Scalar _tmp20 = _DR[1] * _tmp9;
-  const Scalar _tmp21 = _DR[2] * _tmp19 - _tmp14 * _tmp5 + _tmp18 * _tmp4 + _tmp20;
-  const Scalar _tmp22 = _pose_i[1] * _tmp21;
-  const Scalar _tmp23 = _DR[2] * _tmp12;
-  const Scalar _tmp24 = _DR[0] * _tmp9;
-  const Scalar _tmp25 = _DR[3] * _tmp19 + _tmp13 * _tmp5 - _tmp23 * _tmp4 + _tmp24;
-  const Scalar _tmp26 = _pose_i[0] * _tmp25;
-  const Scalar _tmp27 = _DR[2] * _tmp9;
-  const Scalar _tmp28 = _DR[3] * _tmp15 - _tmp13 * _tmp3 + _tmp14 * _tmp4 + _tmp27;
-  const Scalar _tmp29 = _pose_i[2] * _tmp28;
-  const Scalar _tmp30 = _tmp17 - _tmp22 - _tmp26 - _tmp29;
-  const Scalar _tmp31 = _pose_j[0] * _tmp30;
-  const Scalar _tmp32 = _pose_i[3] * _tmp21;
-  const Scalar _tmp33 = _pose_i[2] * _tmp25;
-  const Scalar _tmp34 = _pose_i[0] * _tmp28;
-  const Scalar _tmp35 = _pose_i[1] * _tmp16;
-  const Scalar _tmp36 = -_tmp32 - _tmp33 + _tmp34 - _tmp35;
-  const Scalar _tmp37 = _pose_j[2] * _tmp36;
-  const Scalar _tmp38 = _pose_i[0] * _tmp21;
-  const Scalar _tmp39 = _pose_i[1] * _tmp25;
-  const Scalar _tmp40 = _pose_i[3] * _tmp28;
-  const Scalar _tmp41 = _pose_i[2] * _tmp16;
-  const Scalar _tmp42 = -_tmp38 + _tmp39 - _tmp40 - _tmp41;
-  const Scalar _tmp43 = _pose_j[1] * _tmp42;
-  const Scalar _tmp44 = _pose_i[2] * _tmp21;
-  const Scalar _tmp45 = _pose_i[3] * _tmp25;
-  const Scalar _tmp46 = _pose_i[1] * _tmp28;
-  const Scalar _tmp47 = _pose_i[0] * _tmp16;
-  const Scalar _tmp48 = _tmp44 - _tmp45 - _tmp46 - _tmp47;
-  const Scalar _tmp49 = _pose_j[3] * _tmp48;
-  const Scalar _tmp50 = _tmp31 + _tmp37 - _tmp43 + _tmp49;
-  const Scalar _tmp51 = _pose_j[1] * _tmp36;
-  const Scalar _tmp52 = _pose_j[2] * _tmp42;
-  const Scalar _tmp53 = _pose_j[0] * _tmp48;
-  const Scalar _tmp54 = _tmp51 + _tmp52 + _tmp53;
-  const Scalar _tmp55 = _pose_j[3] * _tmp30;
-  const Scalar _tmp56 = std::copysign(Scalar(1.0), -_tmp54 + _tmp55);
-  const Scalar _tmp57 = 2 * _tmp56;
-  const Scalar _tmp58 = -_tmp55;
-  const Scalar _tmp59 = 1 - epsilon;
-  const Scalar _tmp60 = std::min<Scalar>(_tmp59, std::fabs(_tmp54 + _tmp58));
-  const Scalar _tmp61 = std::acos(_tmp60) / std::sqrt(Scalar(1 - std::pow(_tmp60, Scalar(2))));
-  const Scalar _tmp62 = _tmp57 * _tmp61;
-  const Scalar _tmp63 = _tmp50 * _tmp62;
-  const Scalar _tmp64 = _tmp63 * sqrt_info(0, 0);
-  const Scalar _tmp65 = _pose_j[1] * _tmp30;
-  const Scalar _tmp66 = _pose_j[3] * _tmp36;
-  const Scalar _tmp67 = _pose_j[0] * _tmp42;
-  const Scalar _tmp68 = _pose_j[2] * _tmp48;
-  const Scalar _tmp69 = _tmp65 + _tmp66 + _tmp67 - _tmp68;
-  const Scalar _tmp70 = _tmp62 * _tmp69;
-  const Scalar _tmp71 = _tmp63 * sqrt_info(1, 0) + _tmp70 * sqrt_info(1, 1);
-  const Scalar _tmp72 = _tmp57 * sqrt_info(2, 2);
-  const Scalar _tmp73 = _pose_j[2] * _tmp30;
-  const Scalar _tmp74 = _pose_j[0] * _tmp36;
-  const Scalar _tmp75 = _pose_j[3] * _tmp42;
-  const Scalar _tmp76 = _pose_j[1] * _tmp48;
-  const Scalar _tmp77 = _tmp73 - _tmp74 + _tmp75 + _tmp76;
-  const Scalar _tmp78 = _tmp61 * _tmp77;
-  const Scalar _tmp79 = _tmp63 * sqrt_info(2, 0) + _tmp70 * sqrt_info(2, 1) + _tmp72 * _tmp78;
-  const Scalar _tmp80 = _tmp57 * _tmp78;
-  const Scalar _tmp81 = std::pow(_pose_i[1], Scalar(2));
-  const Scalar _tmp82 = -2 * _tmp81;
-  const Scalar _tmp83 = std::pow(_pose_i[2], Scalar(2));
-  const Scalar _tmp84 = -2 * _tmp83;
-  const Scalar _tmp85 = _tmp82 + _tmp84 + 1;
-  const Scalar _tmp86 = dt * gravity_norm;
-  const Scalar _tmp87 = -_gravity_direction[0] * _tmp86 - vel_i(0, 0) + vel_j(0, 0);
-  const Scalar _tmp88 = -accel_bias_hat(1, 0) + accel_bias_i(1, 0);
-  const Scalar _tmp89 = -accel_bias_hat(2, 0) + accel_bias_i(2, 0);
-  const Scalar _tmp90 = -accel_bias_hat(0, 0) + accel_bias_i(0, 0);
-  const Scalar _tmp91 = 2 * _pose_i[1];
-  const Scalar _tmp92 = _pose_i[3] * _tmp91;
-  const Scalar _tmp93 = -_tmp92;
-  const Scalar _tmp94 = 2 * _pose_i[2];
-  const Scalar _tmp95 = _pose_i[0] * _tmp94;
-  const Scalar _tmp96 = _tmp93 + _tmp95;
-  const Scalar _tmp97 = -_gravity_direction[2] * _tmp86 - vel_i(2, 0) + vel_j(2, 0);
-  const Scalar _tmp98 = _pose_i[3] * _tmp94;
-  const Scalar _tmp99 = _pose_i[0] * _tmp91;
-  const Scalar _tmp100 = _tmp98 + _tmp99;
-  const Scalar _tmp101 = _gravity_direction[1] * _tmp86;
-  const Scalar _tmp102 = -_tmp101 - vel_i(1, 0) + vel_j(1, 0);
-  const Scalar _tmp103 = _tmp100 * _tmp102 + _tmp96 * _tmp97;
-  const Scalar _tmp104 = -Dv(0, 0) - Dv_D_accel_bias(0, 0) * _tmp90 -
-                         Dv_D_accel_bias(0, 1) * _tmp88 - Dv_D_accel_bias(0, 2) * _tmp89 -
+  const Scalar _tmp19 = _DR[1] * _tmp9;
+  const Scalar _tmp20 = -_tmp14 * _tmp5 + _tmp15 * _tmp3 + _tmp18 * _tmp4 + _tmp19;
+  const Scalar _tmp21 = _pose_i[1] * _tmp20;
+  const Scalar _tmp22 = _DR[0] * _tmp9;
+  const Scalar _tmp23 = _tmp13 * _tmp5 - _tmp15 * _tmp4 + _tmp18 * _tmp3 + _tmp22;
+  const Scalar _tmp24 = _pose_i[0] * _tmp23;
+  const Scalar _tmp25 = _DR[2] * _tmp9;
+  const Scalar _tmp26 = -_tmp13 * _tmp3 + _tmp14 * _tmp4 + _tmp18 * _tmp5 + _tmp25;
+  const Scalar _tmp27 = _pose_i[2] * _tmp26;
+  const Scalar _tmp28 = _tmp17 - _tmp21 - _tmp24 - _tmp27;
+  const Scalar _tmp29 = _pose_j[0] * _tmp28;
+  const Scalar _tmp30 = _pose_i[3] * _tmp20;
+  const Scalar _tmp31 = _pose_i[2] * _tmp23;
+  const Scalar _tmp32 = _pose_i[0] * _tmp26;
+  const Scalar _tmp33 = _pose_i[1] * _tmp16;
+  const Scalar _tmp34 = -_tmp30 - _tmp31 + _tmp32 - _tmp33;
+  const Scalar _tmp35 = _pose_j[2] * _tmp34;
+  const Scalar _tmp36 = _pose_i[0] * _tmp20;
+  const Scalar _tmp37 = _pose_i[1] * _tmp23;
+  const Scalar _tmp38 = _pose_i[3] * _tmp26;
+  const Scalar _tmp39 = _pose_i[2] * _tmp16;
+  const Scalar _tmp40 = -_tmp36 + _tmp37 - _tmp38 - _tmp39;
+  const Scalar _tmp41 = _pose_j[1] * _tmp40;
+  const Scalar _tmp42 = _pose_i[2] * _tmp20;
+  const Scalar _tmp43 = _pose_i[3] * _tmp23;
+  const Scalar _tmp44 = _pose_i[1] * _tmp26;
+  const Scalar _tmp45 = _pose_i[0] * _tmp16;
+  const Scalar _tmp46 = _tmp42 - _tmp43 - _tmp44 - _tmp45;
+  const Scalar _tmp47 = _pose_j[3] * _tmp46;
+  const Scalar _tmp48 = _tmp29 + _tmp35 - _tmp41 + _tmp47;
+  const Scalar _tmp49 = _pose_j[1] * _tmp34;
+  const Scalar _tmp50 = _pose_j[2] * _tmp40;
+  const Scalar _tmp51 = _pose_j[0] * _tmp46;
+  const Scalar _tmp52 = _tmp49 + _tmp50 + _tmp51;
+  const Scalar _tmp53 = _pose_j[3] * _tmp28;
+  const Scalar _tmp54 = std::copysign(Scalar(1.0), -_tmp52 + _tmp53);
+  const Scalar _tmp55 = 2 * _tmp54;
+  const Scalar _tmp56 = -_tmp53;
+  const Scalar _tmp57 = 1 - epsilon;
+  const Scalar _tmp58 = std::min<Scalar>(_tmp57, std::fabs(_tmp52 + _tmp56));
+  const Scalar _tmp59 = std::acos(_tmp58) / std::sqrt(Scalar(1 - std::pow(_tmp58, Scalar(2))));
+  const Scalar _tmp60 = _tmp55 * _tmp59;
+  const Scalar _tmp61 = _tmp48 * _tmp60;
+  const Scalar _tmp62 = _tmp61 * sqrt_info(0, 0);
+  const Scalar _tmp63 = _pose_j[1] * _tmp28;
+  const Scalar _tmp64 = _pose_j[3] * _tmp34;
+  const Scalar _tmp65 = _pose_j[0] * _tmp40;
+  const Scalar _tmp66 = _pose_j[2] * _tmp46;
+  const Scalar _tmp67 = _tmp63 + _tmp64 + _tmp65 - _tmp66;
+  const Scalar _tmp68 = _tmp60 * _tmp67;
+  const Scalar _tmp69 = _tmp61 * sqrt_info(1, 0) + _tmp68 * sqrt_info(1, 1);
+  const Scalar _tmp70 = _pose_j[2] * _tmp28;
+  const Scalar _tmp71 = _pose_j[0] * _tmp34;
+  const Scalar _tmp72 = _pose_j[3] * _tmp40;
+  const Scalar _tmp73 = _pose_j[1] * _tmp46;
+  const Scalar _tmp74 = _tmp70 - _tmp71 + _tmp72 + _tmp73;
+  const Scalar _tmp75 = _tmp60 * _tmp74;
+  const Scalar _tmp76 =
+      _tmp61 * sqrt_info(2, 0) + _tmp68 * sqrt_info(2, 1) + _tmp75 * sqrt_info(2, 2);
+  const Scalar _tmp77 = std::pow(_pose_i[1], Scalar(2));
+  const Scalar _tmp78 = -2 * _tmp77;
+  const Scalar _tmp79 = std::pow(_pose_i[2], Scalar(2));
+  const Scalar _tmp80 = -2 * _tmp79;
+  const Scalar _tmp81 = _tmp78 + _tmp80 + 1;
+  const Scalar _tmp82 = dt * gravity_norm;
+  const Scalar _tmp83 = -_gravity_direction[0] * _tmp82 - vel_i(0, 0) + vel_j(0, 0);
+  const Scalar _tmp84 = -accel_bias_hat(1, 0) + accel_bias_i(1, 0);
+  const Scalar _tmp85 = -accel_bias_hat(2, 0) + accel_bias_i(2, 0);
+  const Scalar _tmp86 = -accel_bias_hat(0, 0) + accel_bias_i(0, 0);
+  const Scalar _tmp87 = 2 * _pose_i[1];
+  const Scalar _tmp88 = _pose_i[3] * _tmp87;
+  const Scalar _tmp89 = -_tmp88;
+  const Scalar _tmp90 = 2 * _pose_i[2];
+  const Scalar _tmp91 = _pose_i[0] * _tmp90;
+  const Scalar _tmp92 = _tmp89 + _tmp91;
+  const Scalar _tmp93 = -_gravity_direction[2] * _tmp82 - vel_i(2, 0) + vel_j(2, 0);
+  const Scalar _tmp94 = _pose_i[3] * _tmp90;
+  const Scalar _tmp95 = _pose_i[0] * _tmp87;
+  const Scalar _tmp96 = _tmp94 + _tmp95;
+  const Scalar _tmp97 = _gravity_direction[1] * _tmp82;
+  const Scalar _tmp98 = -_tmp97 - vel_i(1, 0) + vel_j(1, 0);
+  const Scalar _tmp99 = _tmp92 * _tmp93 + _tmp96 * _tmp98;
+  const Scalar _tmp100 = -Dv(0, 0) - Dv_D_accel_bias(0, 0) * _tmp86 -
+                         Dv_D_accel_bias(0, 1) * _tmp84 - Dv_D_accel_bias(0, 2) * _tmp85 -
                          Dv_D_gyro_bias(0, 0) * _tmp0 - Dv_D_gyro_bias(0, 1) * _tmp2 -
-                         Dv_D_gyro_bias(0, 2) * _tmp1 + _tmp103 + _tmp85 * _tmp87;
-  const Scalar _tmp105 = _tmp104 * sqrt_info(3, 3) + _tmp63 * sqrt_info(3, 0) +
-                         _tmp70 * sqrt_info(3, 1) + _tmp80 * sqrt_info(3, 2);
-  const Scalar _tmp106 = std::pow(_pose_i[0], Scalar(2));
-  const Scalar _tmp107 = 1 - 2 * _tmp106;
-  const Scalar _tmp108 = _tmp107 + _tmp84;
-  const Scalar _tmp109 = 2 * _pose_i[0] * _pose_i[3];
-  const Scalar _tmp110 = _pose_i[1] * _tmp94;
-  const Scalar _tmp111 = _tmp109 + _tmp110;
-  const Scalar _tmp112 = -_tmp98;
-  const Scalar _tmp113 = _tmp112 + _tmp99;
-  const Scalar _tmp114 = _tmp111 * _tmp97 + _tmp113 * _tmp87;
-  const Scalar _tmp115 = -Dv(1, 0) - Dv_D_accel_bias(1, 0) * _tmp90 -
-                         Dv_D_accel_bias(1, 1) * _tmp88 - Dv_D_accel_bias(1, 2) * _tmp89 -
+                         Dv_D_gyro_bias(0, 2) * _tmp1 + _tmp81 * _tmp83 + _tmp99;
+  const Scalar _tmp101 = _tmp100 * sqrt_info(3, 3) + _tmp61 * sqrt_info(3, 0) +
+                         _tmp68 * sqrt_info(3, 1) + _tmp75 * sqrt_info(3, 2);
+  const Scalar _tmp102 = std::pow(_pose_i[0], Scalar(2));
+  const Scalar _tmp103 = 1 - 2 * _tmp102;
+  const Scalar _tmp104 = _tmp103 + _tmp80;
+  const Scalar _tmp105 = 2 * _pose_i[0] * _pose_i[3];
+  const Scalar _tmp106 = _pose_i[2] * _tmp87;
+  const Scalar _tmp107 = _tmp105 + _tmp106;
+  const Scalar _tmp108 = -_tmp94;
+  const Scalar _tmp109 = _tmp108 + _tmp95;
+  const Scalar _tmp110 = _tmp107 * _tmp93 + _tmp109 * _tmp83;
+  const Scalar _tmp111 = -Dv(1, 0) - Dv_D_accel_bias(1, 0) * _tmp86 -
+                         Dv_D_accel_bias(1, 1) * _tmp84 - Dv_D_accel_bias(1, 2) * _tmp85 -
                          Dv_D_gyro_bias(1, 0) * _tmp0 - Dv_D_gyro_bias(1, 1) * _tmp2 -
-                         Dv_D_gyro_bias(1, 2) * _tmp1 + _tmp102 * _tmp108 + _tmp114;
-  const Scalar _tmp116 = _tmp104 * sqrt_info(4, 3) + _tmp115 * sqrt_info(4, 4) +
-                         _tmp63 * sqrt_info(4, 0) + _tmp70 * sqrt_info(4, 1) +
-                         _tmp80 * sqrt_info(4, 2);
-  const Scalar _tmp117 = _tmp107 + _tmp82;
-  const Scalar _tmp118 = -_tmp109;
-  const Scalar _tmp119 = _tmp110 + _tmp118;
-  const Scalar _tmp120 = _tmp92 + _tmp95;
-  const Scalar _tmp121 = _tmp102 * _tmp119 + _tmp120 * _tmp87;
-  const Scalar _tmp122 = -Dv(2, 0) - Dv_D_accel_bias(2, 0) * _tmp90 -
-                         Dv_D_accel_bias(2, 1) * _tmp88 - Dv_D_accel_bias(2, 2) * _tmp89 -
+                         Dv_D_gyro_bias(1, 2) * _tmp1 + _tmp104 * _tmp98 + _tmp110;
+  const Scalar _tmp112 = _tmp100 * sqrt_info(4, 3) + _tmp111 * sqrt_info(4, 4) +
+                         _tmp61 * sqrt_info(4, 0) + _tmp68 * sqrt_info(4, 1) +
+                         _tmp75 * sqrt_info(4, 2);
+  const Scalar _tmp113 = _tmp103 + _tmp78;
+  const Scalar _tmp114 = -_tmp105;
+  const Scalar _tmp115 = _tmp106 + _tmp114;
+  const Scalar _tmp116 = _tmp88 + _tmp91;
+  const Scalar _tmp117 = _tmp115 * _tmp98 + _tmp116 * _tmp83;
+  const Scalar _tmp118 = -Dv(2, 0) - Dv_D_accel_bias(2, 0) * _tmp86 -
+                         Dv_D_accel_bias(2, 1) * _tmp84 - Dv_D_accel_bias(2, 2) * _tmp85 -
                          Dv_D_gyro_bias(2, 0) * _tmp0 - Dv_D_gyro_bias(2, 1) * _tmp2 -
-                         Dv_D_gyro_bias(2, 2) * _tmp1 + _tmp117 * _tmp97 + _tmp121;
-  const Scalar _tmp123 = _tmp104 * sqrt_info(5, 3) + _tmp115 * sqrt_info(5, 4) +
-                         _tmp122 * sqrt_info(5, 5) + _tmp63 * sqrt_info(5, 0) +
-                         _tmp70 * sqrt_info(5, 1) + _tmp80 * sqrt_info(5, 2);
-  const Scalar _tmp124 = std::pow(dt, Scalar(2)) * gravity_norm;
-  const Scalar _tmp125 = (Scalar(1) / Scalar(2)) * _tmp124;
-  const Scalar _tmp126 =
-      -_gravity_direction[0] * _tmp125 - _pose_i[4] + _pose_j[4] - dt * vel_i(0, 0);
-  const Scalar _tmp127 =
-      -_gravity_direction[1] * _tmp125 - _pose_i[5] + _pose_j[5] - dt * vel_i(1, 0);
-  const Scalar _tmp128 =
-      -_gravity_direction[2] * _tmp125 - _pose_i[6] + _pose_j[6] - dt * vel_i(2, 0);
-  const Scalar _tmp129 = _tmp100 * _tmp127 + _tmp128 * _tmp96;
-  const Scalar _tmp130 = -Dp(0, 0) - Dp_D_accel_bias(0, 0) * _tmp90 -
-                         Dp_D_accel_bias(0, 1) * _tmp88 - Dp_D_accel_bias(0, 2) * _tmp89 -
+                         Dv_D_gyro_bias(2, 2) * _tmp1 + _tmp113 * _tmp93 + _tmp117;
+  const Scalar _tmp119 = _tmp100 * sqrt_info(5, 3) + _tmp111 * sqrt_info(5, 4) +
+                         _tmp118 * sqrt_info(5, 5) + _tmp61 * sqrt_info(5, 0) +
+                         _tmp68 * sqrt_info(5, 1) + _tmp75 * sqrt_info(5, 2);
+  const Scalar _tmp120 = std::pow(dt, Scalar(2)) * gravity_norm;
+  const Scalar _tmp121 = (Scalar(1) / Scalar(2)) * _tmp120;
+  const Scalar _tmp122 =
+      -_gravity_direction[0] * _tmp121 - _pose_i[4] + _pose_j[4] - dt * vel_i(0, 0);
+  const Scalar _tmp123 =
+      -_gravity_direction[1] * _tmp121 - _pose_i[5] + _pose_j[5] - dt * vel_i(1, 0);
+  const Scalar _tmp124 =
+      -_gravity_direction[2] * _tmp121 - _pose_i[6] + _pose_j[6] - dt * vel_i(2, 0);
+  const Scalar _tmp125 = _tmp123 * _tmp96 + _tmp124 * _tmp92;
+  const Scalar _tmp126 = -Dp(0, 0) - Dp_D_accel_bias(0, 0) * _tmp86 -
+                         Dp_D_accel_bias(0, 1) * _tmp84 - Dp_D_accel_bias(0, 2) * _tmp85 -
                          Dp_D_gyro_bias(0, 0) * _tmp0 - Dp_D_gyro_bias(0, 1) * _tmp2 -
-                         Dp_D_gyro_bias(0, 2) * _tmp1 + _tmp126 * _tmp85 + _tmp129;
-  const Scalar _tmp131 = _tmp104 * sqrt_info(6, 3) + _tmp115 * sqrt_info(6, 4) +
-                         _tmp122 * sqrt_info(6, 5) + _tmp130 * sqrt_info(6, 6) +
-                         _tmp63 * sqrt_info(6, 0) + _tmp70 * sqrt_info(6, 1) +
-                         _tmp80 * sqrt_info(6, 2);
-  const Scalar _tmp132 = _tmp69 * sqrt_info(7, 1);
-  const Scalar _tmp133 = _tmp111 * _tmp128 + _tmp113 * _tmp126;
-  const Scalar _tmp134 = -Dp(1, 0) - Dp_D_accel_bias(1, 0) * _tmp90 -
-                         Dp_D_accel_bias(1, 1) * _tmp88 - Dp_D_accel_bias(1, 2) * _tmp89 -
+                         Dp_D_gyro_bias(0, 2) * _tmp1 + _tmp122 * _tmp81 + _tmp125;
+  const Scalar _tmp127 = _tmp100 * sqrt_info(6, 3) + _tmp111 * sqrt_info(6, 4) +
+                         _tmp118 * sqrt_info(6, 5) + _tmp126 * sqrt_info(6, 6) +
+                         _tmp61 * sqrt_info(6, 0) + _tmp68 * sqrt_info(6, 1) +
+                         _tmp75 * sqrt_info(6, 2);
+  const Scalar _tmp128 = _tmp107 * _tmp124 + _tmp109 * _tmp122;
+  const Scalar _tmp129 = -Dp(1, 0) - Dp_D_accel_bias(1, 0) * _tmp86 -
+                         Dp_D_accel_bias(1, 1) * _tmp84 - Dp_D_accel_bias(1, 2) * _tmp85 -
                          Dp_D_gyro_bias(1, 0) * _tmp0 - Dp_D_gyro_bias(1, 1) * _tmp2 -
-                         Dp_D_gyro_bias(1, 2) * _tmp1 + _tmp108 * _tmp127 + _tmp133;
-  const Scalar _tmp135 = _tmp104 * sqrt_info(7, 3) + _tmp115 * sqrt_info(7, 4) +
-                         _tmp122 * sqrt_info(7, 5) + _tmp130 * sqrt_info(7, 6) + _tmp132 * _tmp62 +
-                         _tmp134 * sqrt_info(7, 7) + _tmp63 * sqrt_info(7, 0) +
-                         _tmp80 * sqrt_info(7, 2);
-  const Scalar _tmp136 = _tmp119 * _tmp127 + _tmp120 * _tmp126;
-  const Scalar _tmp137 =
-      _tmp104 * sqrt_info(8, 3) + _tmp115 * sqrt_info(8, 4) + _tmp122 * sqrt_info(8, 5) +
-      _tmp130 * sqrt_info(8, 6) + _tmp134 * sqrt_info(8, 7) + _tmp63 * sqrt_info(8, 0) +
-      _tmp70 * sqrt_info(8, 1) + _tmp80 * sqrt_info(8, 2) +
-      sqrt_info(8, 8) * (-Dp(2, 0) - Dp_D_accel_bias(2, 0) * _tmp90 -
-                         Dp_D_accel_bias(2, 1) * _tmp88 - Dp_D_accel_bias(2, 2) * _tmp89 -
+                         Dp_D_gyro_bias(1, 2) * _tmp1 + _tmp104 * _tmp123 + _tmp128;
+  const Scalar _tmp130 = _tmp100 * sqrt_info(7, 3) + _tmp111 * sqrt_info(7, 4) +
+                         _tmp118 * sqrt_info(7, 5) + _tmp126 * sqrt_info(7, 6) +
+                         _tmp129 * sqrt_info(7, 7) + _tmp61 * sqrt_info(7, 0) +
+                         _tmp68 * sqrt_info(7, 1) + _tmp75 * sqrt_info(7, 2);
+  const Scalar _tmp131 = _tmp55 * sqrt_info(8, 0);
+  const Scalar _tmp132 = _tmp115 * _tmp123 + _tmp116 * _tmp122;
+  const Scalar _tmp133 = _tmp74 * sqrt_info(8, 2);
+  const Scalar _tmp134 =
+      _tmp100 * sqrt_info(8, 3) + _tmp111 * sqrt_info(8, 4) + _tmp118 * sqrt_info(8, 5) +
+      _tmp126 * sqrt_info(8, 6) + _tmp129 * sqrt_info(8, 7) + _tmp131 * _tmp48 * _tmp59 +
+      _tmp133 * _tmp60 + _tmp68 * sqrt_info(8, 1) +
+      sqrt_info(8, 8) * (-Dp(2, 0) - Dp_D_accel_bias(2, 0) * _tmp86 -
+                         Dp_D_accel_bias(2, 1) * _tmp84 - Dp_D_accel_bias(2, 2) * _tmp85 -
                          Dp_D_gyro_bias(2, 0) * _tmp0 - Dp_D_gyro_bias(2, 1) * _tmp2 -
-                         Dp_D_gyro_bias(2, 2) * _tmp1 + _tmp117 * _tmp128 + _tmp136);
+                         Dp_D_gyro_bias(2, 2) * _tmp1 + _tmp113 * _tmp124 + _tmp132);
+  const Scalar _tmp135 = (Scalar(1) / Scalar(2)) * _tmp36;
+  const Scalar _tmp136 = (Scalar(1) / Scalar(2)) * _tmp37;
+  const Scalar _tmp137 = (Scalar(1) / Scalar(2)) * _tmp38;
   const Scalar _tmp138 = (Scalar(1) / Scalar(2)) * _tmp39;
-  const Scalar _tmp139 = (Scalar(1) / Scalar(2)) * _tmp40;
-  const Scalar _tmp140 = (Scalar(1) / Scalar(2)) * _tmp38;
-  const Scalar _tmp141 = (Scalar(1) / Scalar(2)) * _tmp41;
-  const Scalar _tmp142 = _tmp140 - _tmp141;
-  const Scalar _tmp143 = _tmp138 + _tmp139 + _tmp142;
-  const Scalar _tmp144 = (Scalar(1) / Scalar(2)) * _tmp26;
-  const Scalar _tmp145 = (Scalar(1) / Scalar(2)) * _tmp29;
-  const Scalar _tmp146 = -_tmp145;
-  const Scalar _tmp147 = (Scalar(1) / Scalar(2)) * _tmp22;
-  const Scalar _tmp148 = -Scalar(1) / Scalar(2) * _tmp17;
-  const Scalar _tmp149 = -_tmp147 + _tmp148;
-  const Scalar _tmp150 = _tmp144 + _tmp146 + _tmp149;
-  const Scalar _tmp151 = (Scalar(1) / Scalar(2)) * _tmp32;
-  const Scalar _tmp152 = -_tmp151;
-  const Scalar _tmp153 = (Scalar(1) / Scalar(2)) * _tmp35;
-  const Scalar _tmp154 = (Scalar(1) / Scalar(2)) * _tmp33;
-  const Scalar _tmp155 = (Scalar(1) / Scalar(2)) * _tmp34;
-  const Scalar _tmp156 = _tmp154 + _tmp155;
-  const Scalar _tmp157 = _tmp152 + _tmp153 + _tmp156;
-  const Scalar _tmp158 = (Scalar(1) / Scalar(2)) * _tmp44;
-  const Scalar _tmp159 = (Scalar(1) / Scalar(2)) * _tmp45;
-  const Scalar _tmp160 = -_tmp159;
-  const Scalar _tmp161 = (Scalar(1) / Scalar(2)) * _tmp46;
-  const Scalar _tmp162 = (Scalar(1) / Scalar(2)) * _tmp47;
-  const Scalar _tmp163 = _tmp161 - _tmp162;
-  const Scalar _tmp164 = -_tmp158 + _tmp160 + _tmp163;
-  const Scalar _tmp165 = -_tmp51 - _tmp52 - _tmp53 + _tmp55;
-  const Scalar _tmp166 = std::fabs(_tmp165);
-  const Scalar _tmp167 = std::min<Scalar>(_tmp166, _tmp59);
-  const Scalar _tmp168 = std::acos(_tmp167);
-  const Scalar _tmp169 = 1 - std::pow(_tmp167, Scalar(2));
-  const Scalar _tmp170 = _tmp168 / std::sqrt(_tmp169);
-  const Scalar _tmp171 = _tmp170 * _tmp57;
-  const Scalar _tmp172 = _tmp171 * (_pose_j[0] * _tmp164 - _pose_j[1] * _tmp157 +
-                                    _pose_j[2] * _tmp143 + _pose_j[3] * _tmp150);
-  const Scalar _tmp173 =
-      -_pose_j[0] * _tmp150 - _pose_j[1] * _tmp143 - _pose_j[2] * _tmp157 + _pose_j[3] * _tmp164;
-  const Scalar _tmp174 = (((_tmp165) > 0) - ((_tmp165) < 0));
-  const Scalar _tmp175 = _tmp56 * ((((-_tmp166 + _tmp59) > 0) - ((-_tmp166 + _tmp59) < 0)) + 1);
-  const Scalar _tmp176 = _tmp167 * _tmp168 * _tmp175 / (_tmp169 * std::sqrt(_tmp169));
-  const Scalar _tmp177 = _tmp174 * _tmp176;
-  const Scalar _tmp178 = _tmp173 * _tmp177;
-  const Scalar _tmp179 = _tmp178 * _tmp50;
-  const Scalar _tmp180 = _tmp175 / _tmp169;
-  const Scalar _tmp181 = _tmp174 * _tmp180;
-  const Scalar _tmp182 = _tmp173 * _tmp181;
-  const Scalar _tmp183 = _tmp182 * _tmp50;
-  const Scalar _tmp184 =
-      _tmp172 * sqrt_info(0, 0) + _tmp179 * sqrt_info(0, 0) - _tmp183 * sqrt_info(0, 0);
-  const Scalar _tmp185 = _tmp69 * sqrt_info(1, 1);
-  const Scalar _tmp186 = _tmp50 * sqrt_info(1, 0);
-  const Scalar _tmp187 =
-      _pose_j[0] * _tmp157 + _pose_j[1] * _tmp164 - _pose_j[2] * _tmp150 + _pose_j[3] * _tmp143;
-  const Scalar _tmp188 = _tmp171 * _tmp187;
-  const Scalar _tmp189 = _tmp172 * sqrt_info(1, 0) + _tmp178 * _tmp185 + _tmp178 * _tmp186 -
-                         _tmp182 * _tmp185 - _tmp183 * sqrt_info(1, 0) + _tmp188 * sqrt_info(1, 1);
-  const Scalar _tmp190 = _tmp69 * sqrt_info(2, 1);
-  const Scalar _tmp191 = _tmp50 * sqrt_info(2, 0);
-  const Scalar _tmp192 = _tmp77 * sqrt_info(2, 2);
-  const Scalar _tmp193 =
-      -_pose_j[0] * _tmp143 + _pose_j[1] * _tmp150 + _pose_j[2] * _tmp164 + _pose_j[3] * _tmp157;
-  const Scalar _tmp194 = _tmp170 * _tmp72;
-  const Scalar _tmp195 = _tmp172 * sqrt_info(2, 0) + _tmp178 * _tmp190 + _tmp178 * _tmp191 +
-                         _tmp178 * _tmp192 - _tmp182 * _tmp190 - _tmp182 * _tmp192 -
-                         _tmp183 * sqrt_info(2, 0) + _tmp188 * sqrt_info(2, 1) + _tmp193 * _tmp194;
-  const Scalar _tmp196 = _tmp69 * sqrt_info(3, 1);
-  const Scalar _tmp197 = _tmp77 * sqrt_info(3, 2);
-  const Scalar _tmp198 = _tmp171 * _tmp193;
-  const Scalar _tmp199 = _tmp171 * sqrt_info(3, 1);
-  const Scalar _tmp200 = _tmp172 * sqrt_info(3, 0) + _tmp178 * _tmp196 + _tmp178 * _tmp197 +
-                         _tmp179 * sqrt_info(3, 0) - _tmp182 * _tmp196 - _tmp182 * _tmp197 -
-                         _tmp183 * sqrt_info(3, 0) + _tmp187 * _tmp199 + _tmp198 * sqrt_info(3, 2);
-  const Scalar _tmp201 = _tmp69 * sqrt_info(4, 1);
-  const Scalar _tmp202 = _tmp50 * sqrt_info(4, 0);
-  const Scalar _tmp203 = _tmp77 * sqrt_info(4, 2);
-  const Scalar _tmp204 = -_tmp81;
-  const Scalar _tmp205 = _tmp204 + _tmp83;
-  const Scalar _tmp206 = -_tmp106;
-  const Scalar _tmp207 = std::pow(_pose_i[3], Scalar(2));
-  const Scalar _tmp208 = _tmp206 + _tmp207;
-  const Scalar _tmp209 = _tmp205 + _tmp208;
-  const Scalar _tmp210 = _tmp121 + _tmp209 * _tmp97;
-  const Scalar _tmp211 = _tmp172 * sqrt_info(4, 0) + _tmp178 * _tmp201 + _tmp178 * _tmp202 +
-                         _tmp178 * _tmp203 - _tmp182 * _tmp201 - _tmp182 * _tmp203 -
-                         _tmp183 * sqrt_info(4, 0) + _tmp188 * sqrt_info(4, 1) +
-                         _tmp198 * sqrt_info(4, 2) + _tmp210 * sqrt_info(4, 4);
-  const Scalar _tmp212 = _tmp77 * sqrt_info(5, 2);
-  const Scalar _tmp213 = -_tmp110;
-  const Scalar _tmp214 = _tmp118 + _tmp213;
-  const Scalar _tmp215 = -_tmp99;
-  const Scalar _tmp216 = _tmp215 + _tmp98;
-  const Scalar _tmp217 = -_tmp207;
-  const Scalar _tmp218 = _tmp106 + _tmp217;
-  const Scalar _tmp219 = _tmp205 + _tmp218;
-  const Scalar _tmp220 = _tmp102 * _tmp219 + _tmp214 * _tmp97 + _tmp216 * _tmp87;
-  const Scalar _tmp221 = _tmp69 * sqrt_info(5, 1);
-  const Scalar _tmp222 = _tmp50 * sqrt_info(5, 0);
-  const Scalar _tmp223 = _tmp172 * sqrt_info(5, 0) + _tmp178 * _tmp212 + _tmp178 * _tmp221 +
-                         _tmp178 * _tmp222 - _tmp182 * _tmp212 - _tmp182 * _tmp221 -
-                         _tmp182 * _tmp222 + _tmp188 * sqrt_info(5, 1) + _tmp198 * sqrt_info(5, 2) +
-                         _tmp210 * sqrt_info(5, 4) + _tmp220 * sqrt_info(5, 5);
-  const Scalar _tmp224 = _tmp69 * sqrt_info(6, 1);
-  const Scalar _tmp225 = _tmp77 * sqrt_info(6, 2);
-  const Scalar _tmp226 = _tmp171 * sqrt_info(6, 2);
-  const Scalar _tmp227 = _tmp172 * sqrt_info(6, 0) + _tmp178 * _tmp224 + _tmp178 * _tmp225 +
-                         _tmp179 * sqrt_info(6, 0) - _tmp182 * _tmp224 - _tmp182 * _tmp225 -
-                         _tmp183 * sqrt_info(6, 0) + _tmp188 * sqrt_info(6, 1) + _tmp193 * _tmp226 +
-                         _tmp210 * sqrt_info(6, 4) + _tmp220 * sqrt_info(6, 5);
-  const Scalar _tmp228 = _tmp128 * _tmp209 + _tmp136;
-  const Scalar _tmp229 = _tmp77 * sqrt_info(7, 2);
-  const Scalar _tmp230 = _tmp132 * _tmp178 - _tmp132 * _tmp182 + _tmp172 * sqrt_info(7, 0) +
-                         _tmp178 * _tmp229 + _tmp179 * sqrt_info(7, 0) - _tmp182 * _tmp229 -
-                         _tmp183 * sqrt_info(7, 0) + _tmp188 * sqrt_info(7, 1) +
-                         _tmp198 * sqrt_info(7, 2) + _tmp210 * sqrt_info(7, 4) +
-                         _tmp220 * sqrt_info(7, 5) + _tmp228 * sqrt_info(7, 7);
-  const Scalar _tmp231 = _tmp50 * sqrt_info(8, 0);
-  const Scalar _tmp232 = _tmp69 * sqrt_info(8, 1);
-  const Scalar _tmp233 = _tmp77 * sqrt_info(8, 2);
-  const Scalar _tmp234 =
-      _tmp172 * sqrt_info(8, 0) + _tmp178 * _tmp231 + _tmp178 * _tmp232 + _tmp178 * _tmp233 -
-      _tmp182 * _tmp232 - _tmp182 * _tmp233 - _tmp183 * sqrt_info(8, 0) +
-      _tmp188 * sqrt_info(8, 1) + _tmp198 * sqrt_info(8, 2) + _tmp210 * sqrt_info(8, 4) +
-      _tmp220 * sqrt_info(8, 5) + _tmp228 * sqrt_info(8, 7) +
-      sqrt_info(8, 8) * (_tmp126 * _tmp216 + _tmp127 * _tmp219 + _tmp128 * _tmp214);
-  const Scalar _tmp235 = -_tmp139;
-  const Scalar _tmp236 = _tmp138 + _tmp140 + _tmp141 + _tmp235;
-  const Scalar _tmp237 = -_tmp144;
-  const Scalar _tmp238 = _tmp146 + _tmp147 + _tmp148 + _tmp237;
-  const Scalar _tmp239 = -_tmp153;
-  const Scalar _tmp240 = _tmp152 + _tmp154 - _tmp155 + _tmp239;
-  const Scalar _tmp241 = _tmp158 + _tmp159 + _tmp163;
+  const Scalar _tmp139 = -_tmp138;
+  const Scalar _tmp140 = _tmp135 + _tmp136 + _tmp137 + _tmp139;
+  const Scalar _tmp141 = (Scalar(1) / Scalar(2)) * _tmp21;
+  const Scalar _tmp142 = -_tmp141;
+  const Scalar _tmp143 = (Scalar(1) / Scalar(2)) * _tmp24;
+  const Scalar _tmp144 = (Scalar(1) / Scalar(2)) * _tmp27;
+  const Scalar _tmp145 = -Scalar(1) / Scalar(2) * _tmp17;
+  const Scalar _tmp146 = -_tmp144 + _tmp145;
+  const Scalar _tmp147 = _tmp142 + _tmp143 + _tmp146;
+  const Scalar _tmp148 = (Scalar(1) / Scalar(2)) * _tmp32;
+  const Scalar _tmp149 = (Scalar(1) / Scalar(2)) * _tmp33;
+  const Scalar _tmp150 = (Scalar(1) / Scalar(2)) * _tmp30;
+  const Scalar _tmp151 = (Scalar(1) / Scalar(2)) * _tmp31;
+  const Scalar _tmp152 = -_tmp150 + _tmp151;
+  const Scalar _tmp153 = _tmp148 + _tmp149 + _tmp152;
+  const Scalar _tmp154 = (Scalar(1) / Scalar(2)) * _tmp42;
+  const Scalar _tmp155 = (Scalar(1) / Scalar(2)) * _tmp43;
+  const Scalar _tmp156 = -_tmp155;
+  const Scalar _tmp157 = (Scalar(1) / Scalar(2)) * _tmp44;
+  const Scalar _tmp158 = (Scalar(1) / Scalar(2)) * _tmp45;
+  const Scalar _tmp159 = -_tmp158;
+  const Scalar _tmp160 = -_tmp154 + _tmp156 + _tmp157 + _tmp159;
+  const Scalar _tmp161 =
+      _pose_j[0] * _tmp160 - _pose_j[1] * _tmp153 + _pose_j[2] * _tmp140 + _pose_j[3] * _tmp147;
+  const Scalar _tmp162 = -_tmp49 - _tmp50 - _tmp51 + _tmp53;
+  const Scalar _tmp163 = std::fabs(_tmp162);
+  const Scalar _tmp164 = std::min<Scalar>(_tmp163, _tmp57);
+  const Scalar _tmp165 = std::acos(_tmp164);
+  const Scalar _tmp166 = 1 - std::pow(_tmp164, Scalar(2));
+  const Scalar _tmp167 = _tmp165 / std::sqrt(_tmp166);
+  const Scalar _tmp168 = _tmp167 * _tmp55;
+  const Scalar _tmp169 = _tmp161 * _tmp168;
+  const Scalar _tmp170 =
+      -_pose_j[0] * _tmp147 - _pose_j[1] * _tmp140 - _pose_j[2] * _tmp153 + _pose_j[3] * _tmp160;
+  const Scalar _tmp171 = (((_tmp162) > 0) - ((_tmp162) < 0));
+  const Scalar _tmp172 = _tmp54 * ((((-_tmp163 + _tmp57) > 0) - ((-_tmp163 + _tmp57) < 0)) + 1);
+  const Scalar _tmp173 = _tmp164 * _tmp165 * _tmp172 / (_tmp166 * std::sqrt(_tmp166));
+  const Scalar _tmp174 = _tmp171 * _tmp173;
+  const Scalar _tmp175 = _tmp170 * _tmp174;
+  const Scalar _tmp176 = _tmp175 * _tmp48;
+  const Scalar _tmp177 = _tmp172 / _tmp166;
+  const Scalar _tmp178 = _tmp171 * _tmp177;
+  const Scalar _tmp179 = _tmp170 * _tmp178;
+  const Scalar _tmp180 = _tmp179 * _tmp48;
+  const Scalar _tmp181 =
+      _tmp169 * sqrt_info(0, 0) + _tmp176 * sqrt_info(0, 0) - _tmp180 * sqrt_info(0, 0);
+  const Scalar _tmp182 = _tmp179 * _tmp67;
+  const Scalar _tmp183 = _tmp67 * sqrt_info(1, 1);
+  const Scalar _tmp184 = _tmp48 * sqrt_info(1, 0);
+  const Scalar _tmp185 =
+      _pose_j[0] * _tmp153 + _pose_j[1] * _tmp160 - _pose_j[2] * _tmp147 + _pose_j[3] * _tmp140;
+  const Scalar _tmp186 = _tmp168 * _tmp185;
+  const Scalar _tmp187 = _tmp169 * sqrt_info(1, 0) + _tmp175 * _tmp183 + _tmp175 * _tmp184 -
+                         _tmp179 * _tmp184 - _tmp182 * sqrt_info(1, 1) + _tmp186 * sqrt_info(1, 1);
+  const Scalar _tmp188 = _tmp67 * sqrt_info(2, 1);
+  const Scalar _tmp189 = _tmp74 * sqrt_info(2, 2);
+  const Scalar _tmp190 = _tmp179 * _tmp74;
+  const Scalar _tmp191 =
+      -_pose_j[0] * _tmp140 + _pose_j[1] * _tmp147 + _pose_j[2] * _tmp160 + _pose_j[3] * _tmp153;
+  const Scalar _tmp192 = _tmp168 * _tmp191;
+  const Scalar _tmp193 = _tmp169 * sqrt_info(2, 0) + _tmp175 * _tmp188 + _tmp175 * _tmp189 +
+                         _tmp176 * sqrt_info(2, 0) - _tmp180 * sqrt_info(2, 0) -
+                         _tmp182 * sqrt_info(2, 1) + _tmp186 * sqrt_info(2, 1) -
+                         _tmp190 * sqrt_info(2, 2) + _tmp192 * sqrt_info(2, 2);
+  const Scalar _tmp194 = _tmp67 * sqrt_info(3, 1);
+  const Scalar _tmp195 = _tmp74 * sqrt_info(3, 2);
+  const Scalar _tmp196 = _tmp169 * sqrt_info(3, 0) + _tmp175 * _tmp194 + _tmp175 * _tmp195 +
+                         _tmp176 * sqrt_info(3, 0) - _tmp180 * sqrt_info(3, 0) -
+                         _tmp182 * sqrt_info(3, 1) + _tmp186 * sqrt_info(3, 1) -
+                         _tmp190 * sqrt_info(3, 2) + _tmp192 * sqrt_info(3, 2);
+  const Scalar _tmp197 = _tmp67 * sqrt_info(4, 1);
+  const Scalar _tmp198 = _tmp74 * sqrt_info(4, 2);
+  const Scalar _tmp199 = -_tmp77;
+  const Scalar _tmp200 = _tmp199 + _tmp79;
+  const Scalar _tmp201 = -_tmp102;
+  const Scalar _tmp202 = std::pow(_pose_i[3], Scalar(2));
+  const Scalar _tmp203 = _tmp201 + _tmp202;
+  const Scalar _tmp204 = _tmp200 + _tmp203;
+  const Scalar _tmp205 = _tmp117 + _tmp204 * _tmp93;
+  const Scalar _tmp206 = _tmp169 * sqrt_info(4, 0) + _tmp175 * _tmp197 + _tmp175 * _tmp198 +
+                         _tmp176 * sqrt_info(4, 0) - _tmp179 * _tmp198 - _tmp180 * sqrt_info(4, 0) -
+                         _tmp182 * sqrt_info(4, 1) + _tmp186 * sqrt_info(4, 1) +
+                         _tmp192 * sqrt_info(4, 2) + _tmp205 * sqrt_info(4, 4);
+  const Scalar _tmp207 = _tmp74 * sqrt_info(5, 2);
+  const Scalar _tmp208 = -_tmp106;
+  const Scalar _tmp209 = _tmp114 + _tmp208;
+  const Scalar _tmp210 = -_tmp95;
+  const Scalar _tmp211 = _tmp210 + _tmp94;
+  const Scalar _tmp212 = -_tmp202;
+  const Scalar _tmp213 = _tmp102 + _tmp212;
+  const Scalar _tmp214 = _tmp200 + _tmp213;
+  const Scalar _tmp215 = _tmp209 * _tmp93 + _tmp211 * _tmp83 + _tmp214 * _tmp98;
+  const Scalar _tmp216 = _tmp67 * sqrt_info(5, 1);
+  const Scalar _tmp217 = _tmp169 * sqrt_info(5, 0) + _tmp175 * _tmp207 + _tmp175 * _tmp216 +
+                         _tmp176 * sqrt_info(5, 0) - _tmp179 * _tmp216 - _tmp180 * sqrt_info(5, 0) +
+                         _tmp186 * sqrt_info(5, 1) - _tmp190 * sqrt_info(5, 2) +
+                         _tmp192 * sqrt_info(5, 2) + _tmp205 * sqrt_info(5, 4) +
+                         _tmp215 * sqrt_info(5, 5);
+  const Scalar _tmp218 = _tmp67 * sqrt_info(6, 1);
+  const Scalar _tmp219 = _tmp74 * sqrt_info(6, 2);
+  const Scalar _tmp220 = _tmp169 * sqrt_info(6, 0) + _tmp175 * _tmp218 + _tmp175 * _tmp219 +
+                         _tmp176 * sqrt_info(6, 0) - _tmp179 * _tmp219 - _tmp180 * sqrt_info(6, 0) -
+                         _tmp182 * sqrt_info(6, 1) + _tmp186 * sqrt_info(6, 1) +
+                         _tmp192 * sqrt_info(6, 2) + _tmp205 * sqrt_info(6, 4) +
+                         _tmp215 * sqrt_info(6, 5);
+  const Scalar _tmp221 = _tmp67 * sqrt_info(7, 1);
+  const Scalar _tmp222 = _tmp124 * _tmp204 + _tmp132;
+  const Scalar _tmp223 = _tmp74 * sqrt_info(7, 2);
+  const Scalar _tmp224 = _tmp168 * sqrt_info(7, 1);
+  const Scalar _tmp225 = _tmp169 * sqrt_info(7, 0) + _tmp175 * _tmp221 + _tmp175 * _tmp223 +
+                         _tmp176 * sqrt_info(7, 0) - _tmp179 * _tmp221 - _tmp180 * sqrt_info(7, 0) +
+                         _tmp185 * _tmp224 - _tmp190 * sqrt_info(7, 2) + _tmp192 * sqrt_info(7, 2) +
+                         _tmp205 * sqrt_info(7, 4) + _tmp215 * sqrt_info(7, 5) +
+                         _tmp222 * sqrt_info(7, 7);
+  const Scalar _tmp226 = _tmp67 * sqrt_info(8, 1);
+  const Scalar _tmp227 = _tmp131 * _tmp167;
+  const Scalar _tmp228 = _tmp168 * sqrt_info(8, 2);
+  const Scalar _tmp229 = _tmp168 * sqrt_info(8, 1);
+  const Scalar _tmp230 =
+      _tmp133 * _tmp175 - _tmp133 * _tmp179 + _tmp161 * _tmp227 + _tmp175 * _tmp226 +
+      _tmp176 * sqrt_info(8, 0) - _tmp180 * sqrt_info(8, 0) - _tmp182 * sqrt_info(8, 1) +
+      _tmp185 * _tmp229 + _tmp191 * _tmp228 + _tmp205 * sqrt_info(8, 4) +
+      _tmp215 * sqrt_info(8, 5) + _tmp222 * sqrt_info(8, 7) +
+      sqrt_info(8, 8) * (_tmp122 * _tmp211 + _tmp123 * _tmp214 + _tmp124 * _tmp209);
+  const Scalar _tmp231 = _tmp135 - _tmp137;
+  const Scalar _tmp232 = _tmp136 + _tmp138 + _tmp231;
+  const Scalar _tmp233 = -_tmp143;
+  const Scalar _tmp234 = _tmp141 + _tmp146 + _tmp233;
+  const Scalar _tmp235 = -_tmp149;
+  const Scalar _tmp236 = -_tmp148 + _tmp152 + _tmp235;
+  const Scalar _tmp237 = _tmp154 + _tmp157;
+  const Scalar _tmp238 = _tmp155 + _tmp159 + _tmp237;
+  const Scalar _tmp239 =
+      -_pose_j[0] * _tmp232 - _pose_j[1] * _tmp234 - _pose_j[2] * _tmp238 + _pose_j[3] * _tmp236;
+  const Scalar _tmp240 = _tmp174 * _tmp48;
+  const Scalar _tmp241 = _tmp239 * _tmp240;
   const Scalar _tmp242 =
-      -_pose_j[0] * _tmp236 - _pose_j[1] * _tmp238 - _pose_j[2] * _tmp241 + _pose_j[3] * _tmp240;
-  const Scalar _tmp243 = _tmp177 * _tmp242;
-  const Scalar _tmp244 = _tmp50 * sqrt_info(0, 0);
-  const Scalar _tmp245 = _tmp171 * (_pose_j[0] * _tmp240 - _pose_j[1] * _tmp241 +
-                                    _pose_j[2] * _tmp238 + _pose_j[3] * _tmp236);
-  const Scalar _tmp246 = _tmp181 * _tmp242;
-  const Scalar _tmp247 = _tmp246 * _tmp50;
-  const Scalar _tmp248 = _tmp243 * _tmp244 + _tmp245 * sqrt_info(0, 0) - _tmp247 * sqrt_info(0, 0);
+      _pose_j[0] * _tmp236 - _pose_j[1] * _tmp238 + _pose_j[2] * _tmp234 + _pose_j[3] * _tmp232;
+  const Scalar _tmp243 = _tmp168 * _tmp242;
+  const Scalar _tmp244 = _tmp178 * _tmp239;
+  const Scalar _tmp245 = _tmp244 * _tmp48;
+  const Scalar _tmp246 =
+      _tmp241 * sqrt_info(0, 0) + _tmp243 * sqrt_info(0, 0) - _tmp245 * sqrt_info(0, 0);
+  const Scalar _tmp247 = _tmp174 * _tmp239;
+  const Scalar _tmp248 = _tmp244 * _tmp67;
   const Scalar _tmp249 =
-      _pose_j[0] * _tmp241 + _pose_j[1] * _tmp240 - _pose_j[2] * _tmp236 + _pose_j[3] * _tmp238;
-  const Scalar _tmp250 = _tmp171 * _tmp249;
-  const Scalar _tmp251 = _tmp185 * _tmp243 - _tmp185 * _tmp246 + _tmp186 * _tmp243 +
-                         _tmp245 * sqrt_info(1, 0) - _tmp247 * sqrt_info(1, 0) +
+      _pose_j[0] * _tmp238 + _pose_j[1] * _tmp236 - _pose_j[2] * _tmp232 + _pose_j[3] * _tmp234;
+  const Scalar _tmp250 = _tmp168 * _tmp249;
+  const Scalar _tmp251 = _tmp183 * _tmp247 - _tmp184 * _tmp244 + _tmp184 * _tmp247 +
+                         _tmp243 * sqrt_info(1, 0) - _tmp248 * sqrt_info(1, 1) +
                          _tmp250 * sqrt_info(1, 1);
   const Scalar _tmp252 =
-      -_pose_j[0] * _tmp238 + _pose_j[1] * _tmp236 + _pose_j[2] * _tmp240 + _pose_j[3] * _tmp241;
-  const Scalar _tmp253 = _tmp190 * _tmp243 - _tmp190 * _tmp246 + _tmp191 * _tmp243 +
-                         _tmp192 * _tmp243 - _tmp192 * _tmp246 + _tmp194 * _tmp252 +
-                         _tmp245 * sqrt_info(2, 0) - _tmp247 * sqrt_info(2, 0) +
-                         _tmp250 * sqrt_info(2, 1);
-  const Scalar _tmp254 = _tmp50 * sqrt_info(3, 0);
-  const Scalar _tmp255 = _tmp171 * _tmp252;
-  const Scalar _tmp256 = _tmp109 + _tmp213;
-  const Scalar _tmp257 = -_tmp95;
-  const Scalar _tmp258 = _tmp257 + _tmp93;
-  const Scalar _tmp259 = -_tmp83;
-  const Scalar _tmp260 = _tmp259 + _tmp81;
-  const Scalar _tmp261 = _tmp218 + _tmp260;
-  const Scalar _tmp262 = _tmp102 * _tmp256 + _tmp258 * _tmp87 + _tmp261 * _tmp97;
-  const Scalar _tmp263 = _tmp196 * _tmp243 - _tmp196 * _tmp246 + _tmp197 * _tmp243 -
-                         _tmp197 * _tmp246 + _tmp199 * _tmp249 + _tmp243 * _tmp254 +
-                         _tmp245 * sqrt_info(3, 0) - _tmp247 * sqrt_info(3, 0) +
-                         _tmp255 * sqrt_info(3, 2) + _tmp262 * sqrt_info(3, 3);
-  const Scalar _tmp264 = _tmp201 * _tmp243 - _tmp201 * _tmp246 + _tmp202 * _tmp243 +
-                         _tmp203 * _tmp243 - _tmp203 * _tmp246 + _tmp245 * sqrt_info(4, 0) -
-                         _tmp247 * sqrt_info(4, 0) + _tmp250 * sqrt_info(4, 1) +
-                         _tmp255 * sqrt_info(4, 2) + _tmp262 * sqrt_info(4, 3);
-  const Scalar _tmp265 = _tmp106 + _tmp204 + _tmp207 + _tmp259;
-  const Scalar _tmp266 = _tmp103 + _tmp265 * _tmp87;
-  const Scalar _tmp267 = _tmp212 * _tmp243 - _tmp212 * _tmp246 + _tmp221 * _tmp243 -
-                         _tmp221 * _tmp246 + _tmp222 * _tmp243 - _tmp222 * _tmp246 +
+      -_pose_j[0] * _tmp234 + _pose_j[1] * _tmp232 + _pose_j[2] * _tmp236 + _pose_j[3] * _tmp238;
+  const Scalar _tmp253 = _tmp168 * _tmp252;
+  const Scalar _tmp254 = _tmp188 * _tmp247 - _tmp189 * _tmp244 + _tmp189 * _tmp247 +
+                         _tmp241 * sqrt_info(2, 0) + _tmp243 * sqrt_info(2, 0) -
+                         _tmp245 * sqrt_info(2, 0) - _tmp248 * sqrt_info(2, 1) +
+                         _tmp250 * sqrt_info(2, 1) + _tmp253 * sqrt_info(2, 2);
+  const Scalar _tmp255 = _tmp105 + _tmp208;
+  const Scalar _tmp256 = -_tmp91;
+  const Scalar _tmp257 = _tmp256 + _tmp89;
+  const Scalar _tmp258 = -_tmp79;
+  const Scalar _tmp259 = _tmp258 + _tmp77;
+  const Scalar _tmp260 = _tmp213 + _tmp259;
+  const Scalar _tmp261 = _tmp255 * _tmp98 + _tmp257 * _tmp83 + _tmp260 * _tmp93;
+  const Scalar _tmp262 = _tmp244 * _tmp74;
+  const Scalar _tmp263 = _tmp194 * _tmp247 + _tmp195 * _tmp247 + _tmp241 * sqrt_info(3, 0) +
+                         _tmp243 * sqrt_info(3, 0) - _tmp245 * sqrt_info(3, 0) -
+                         _tmp248 * sqrt_info(3, 1) + _tmp250 * sqrt_info(3, 1) +
+                         _tmp253 * sqrt_info(3, 2) + _tmp261 * sqrt_info(3, 3) -
+                         _tmp262 * sqrt_info(3, 2);
+  const Scalar _tmp264 = _tmp168 * sqrt_info(4, 2);
+  const Scalar _tmp265 = _tmp197 * _tmp247 - _tmp198 * _tmp244 + _tmp198 * _tmp247 +
+                         _tmp241 * sqrt_info(4, 0) + _tmp243 * sqrt_info(4, 0) -
+                         _tmp245 * sqrt_info(4, 0) - _tmp248 * sqrt_info(4, 1) +
+                         _tmp250 * sqrt_info(4, 1) + _tmp252 * _tmp264 + _tmp261 * sqrt_info(4, 3);
+  const Scalar _tmp266 = _tmp102 + _tmp199 + _tmp202 + _tmp258;
+  const Scalar _tmp267 = _tmp266 * _tmp83 + _tmp99;
+  const Scalar _tmp268 = _tmp207 * _tmp247 - _tmp216 * _tmp244 + _tmp216 * _tmp247 +
+                         _tmp241 * sqrt_info(5, 0) + _tmp243 * sqrt_info(5, 0) -
                          _tmp245 * sqrt_info(5, 0) + _tmp250 * sqrt_info(5, 1) +
-                         _tmp255 * sqrt_info(5, 2) + _tmp262 * sqrt_info(5, 3) +
-                         _tmp266 * sqrt_info(5, 5);
-  const Scalar _tmp268 = _tmp126 * _tmp258 + _tmp127 * _tmp256 + _tmp128 * _tmp261;
-  const Scalar _tmp269 = _tmp50 * sqrt_info(6, 0);
-  const Scalar _tmp270 = _tmp224 * _tmp243 - _tmp224 * _tmp246 + _tmp225 * _tmp243 -
-                         _tmp225 * _tmp246 + _tmp226 * _tmp252 + _tmp243 * _tmp269 +
-                         _tmp245 * sqrt_info(6, 0) - _tmp247 * sqrt_info(6, 0) +
-                         _tmp250 * sqrt_info(6, 1) + _tmp262 * sqrt_info(6, 3) +
-                         _tmp266 * sqrt_info(6, 5) + _tmp268 * sqrt_info(6, 6);
-  const Scalar _tmp271 = _tmp50 * sqrt_info(7, 0);
-  const Scalar _tmp272 = _tmp132 * _tmp243 - _tmp132 * _tmp246 + _tmp229 * _tmp243 -
-                         _tmp229 * _tmp246 + _tmp243 * _tmp271 + _tmp245 * sqrt_info(7, 0) -
-                         _tmp247 * sqrt_info(7, 0) + _tmp250 * sqrt_info(7, 1) +
-                         _tmp255 * sqrt_info(7, 2) + _tmp262 * sqrt_info(7, 3) +
-                         _tmp266 * sqrt_info(7, 5) + _tmp268 * sqrt_info(7, 6);
-  const Scalar _tmp273 = _tmp231 * _tmp243 + _tmp232 * _tmp243 - _tmp232 * _tmp246 +
-                         _tmp233 * _tmp243 - _tmp233 * _tmp246 + _tmp245 * sqrt_info(8, 0) -
-                         _tmp247 * sqrt_info(8, 0) + _tmp250 * sqrt_info(8, 1) +
-                         _tmp255 * sqrt_info(8, 2) + _tmp262 * sqrt_info(8, 3) +
-                         _tmp266 * sqrt_info(8, 5) + _tmp268 * sqrt_info(8, 6) +
-                         sqrt_info(8, 8) * (_tmp126 * _tmp265 + _tmp129);
-  const Scalar _tmp274 = -_tmp138 + _tmp142 + _tmp235;
-  const Scalar _tmp275 = _tmp145 + _tmp149 + _tmp237;
-  const Scalar _tmp276 = _tmp151 + _tmp156 + _tmp239;
-  const Scalar _tmp277 = _tmp158 + _tmp160 + _tmp161 + _tmp162;
-  const Scalar _tmp278 = _tmp171 * (_pose_j[0] * _tmp274 - _pose_j[1] * _tmp275 +
-                                    _pose_j[2] * _tmp277 + _pose_j[3] * _tmp276);
+                         _tmp253 * sqrt_info(5, 2) + _tmp261 * sqrt_info(5, 3) -
+                         _tmp262 * sqrt_info(5, 2) + _tmp267 * sqrt_info(5, 5);
+  const Scalar _tmp269 = _tmp122 * _tmp257 + _tmp123 * _tmp255 + _tmp124 * _tmp260;
+  const Scalar _tmp270 =
+      _tmp218 * _tmp247 - _tmp219 * _tmp244 + _tmp219 * _tmp247 + _tmp241 * sqrt_info(6, 0) +
+      _tmp243 * sqrt_info(6, 0) - _tmp245 * sqrt_info(6, 0) - _tmp248 * sqrt_info(6, 1) +
+      _tmp250 * sqrt_info(6, 1) + _tmp253 * sqrt_info(6, 2) + _tmp261 * sqrt_info(6, 3) +
+      _tmp267 * sqrt_info(6, 5) + _tmp269 * sqrt_info(6, 6);
+  const Scalar _tmp271 = -_tmp221 * _tmp244 + _tmp221 * _tmp247 + _tmp223 * _tmp247 +
+                         _tmp224 * _tmp249 + _tmp241 * sqrt_info(7, 0) + _tmp243 * sqrt_info(7, 0) -
+                         _tmp245 * sqrt_info(7, 0) + _tmp253 * sqrt_info(7, 2) +
+                         _tmp261 * sqrt_info(7, 3) - _tmp262 * sqrt_info(7, 2) +
+                         _tmp267 * sqrt_info(7, 5) + _tmp269 * sqrt_info(7, 6);
+  const Scalar _tmp272 = -_tmp133 * _tmp244 + _tmp133 * _tmp247 + _tmp226 * _tmp247 +
+                         _tmp227 * _tmp242 + _tmp228 * _tmp252 + _tmp229 * _tmp249 +
+                         _tmp241 * sqrt_info(8, 0) - _tmp245 * sqrt_info(8, 0) -
+                         _tmp248 * sqrt_info(8, 1) + _tmp261 * sqrt_info(8, 3) +
+                         _tmp267 * sqrt_info(8, 5) + _tmp269 * sqrt_info(8, 6) +
+                         sqrt_info(8, 8) * (_tmp122 * _tmp266 + _tmp125);
+  const Scalar _tmp273 = -_tmp136 + _tmp139 + _tmp231;
+  const Scalar _tmp274 = _tmp142 + _tmp144 + _tmp145 + _tmp233;
+  const Scalar _tmp275 = _tmp148 + _tmp150 + _tmp151 + _tmp235;
+  const Scalar _tmp276 = _tmp156 + _tmp158 + _tmp237;
+  const Scalar _tmp277 =
+      _pose_j[0] * _tmp273 - _pose_j[1] * _tmp274 + _pose_j[2] * _tmp276 + _pose_j[3] * _tmp275;
+  const Scalar _tmp278 = _tmp168 * _tmp277;
   const Scalar _tmp279 =
-      -_pose_j[0] * _tmp276 - _pose_j[1] * _tmp277 - _pose_j[2] * _tmp275 + _pose_j[3] * _tmp274;
-  const Scalar _tmp280 = _tmp177 * _tmp279;
-  const Scalar _tmp281 = _tmp181 * _tmp279;
-  const Scalar _tmp282 = _tmp281 * _tmp50;
-  const Scalar _tmp283 = _tmp244 * _tmp280 + _tmp278 * sqrt_info(0, 0) - _tmp282 * sqrt_info(0, 0);
-  const Scalar _tmp284 =
-      _pose_j[0] * _tmp275 + _pose_j[1] * _tmp274 - _pose_j[2] * _tmp276 + _pose_j[3] * _tmp277;
-  const Scalar _tmp285 = _tmp171 * _tmp284;
-  const Scalar _tmp286 = _tmp185 * _tmp280 - _tmp185 * _tmp281 + _tmp186 * _tmp280 +
-                         _tmp278 * sqrt_info(1, 0) - _tmp282 * sqrt_info(1, 0) +
-                         _tmp285 * sqrt_info(1, 1);
-  const Scalar _tmp287 =
-      -_pose_j[0] * _tmp277 + _pose_j[1] * _tmp276 + _pose_j[2] * _tmp274 + _pose_j[3] * _tmp275;
-  const Scalar _tmp288 = _tmp190 * _tmp280 - _tmp190 * _tmp281 + _tmp191 * _tmp280 +
-                         _tmp192 * _tmp280 - _tmp192 * _tmp281 + _tmp194 * _tmp287 +
-                         _tmp278 * sqrt_info(2, 0) - _tmp282 * sqrt_info(2, 0) +
-                         _tmp285 * sqrt_info(2, 1);
-  const Scalar _tmp289 = _tmp171 * _tmp287;
-  const Scalar _tmp290 = _tmp208 + _tmp260;
-  const Scalar _tmp291 = _tmp102 * _tmp290 + _tmp114;
-  const Scalar _tmp292 = _tmp196 * _tmp280 - _tmp196 * _tmp281 + _tmp197 * _tmp280 -
-                         _tmp197 * _tmp281 + _tmp199 * _tmp284 + _tmp254 * _tmp280 +
-                         _tmp278 * sqrt_info(3, 0) - _tmp282 * sqrt_info(3, 0) +
-                         _tmp289 * sqrt_info(3, 2) + _tmp291 * sqrt_info(3, 3);
-  const Scalar _tmp293 = _tmp257 + _tmp92;
-  const Scalar _tmp294 = _tmp112 + _tmp215;
-  const Scalar _tmp295 = _tmp206 + _tmp217 + _tmp81 + _tmp83;
-  const Scalar _tmp296 = _tmp102 * _tmp294 + _tmp293 * _tmp97 + _tmp295 * _tmp87;
-  const Scalar _tmp297 = _tmp201 * _tmp280 - _tmp201 * _tmp281 + _tmp202 * _tmp280 +
-                         _tmp203 * _tmp280 - _tmp203 * _tmp281 + _tmp278 * sqrt_info(4, 0) -
-                         _tmp282 * sqrt_info(4, 0) + _tmp285 * sqrt_info(4, 1) +
-                         _tmp289 * sqrt_info(4, 2) + _tmp291 * sqrt_info(4, 3) +
-                         _tmp296 * sqrt_info(4, 4);
-  const Scalar _tmp298 = _tmp212 * _tmp280 - _tmp212 * _tmp281 + _tmp221 * _tmp280 -
-                         _tmp221 * _tmp281 + _tmp222 * _tmp280 - _tmp222 * _tmp281 +
-                         _tmp278 * sqrt_info(5, 0) + _tmp285 * sqrt_info(5, 1) +
-                         _tmp289 * sqrt_info(5, 2) + _tmp291 * sqrt_info(5, 3) +
-                         _tmp296 * sqrt_info(5, 4);
-  const Scalar _tmp299 = _tmp127 * _tmp290 + _tmp133;
-  const Scalar _tmp300 = _tmp224 * _tmp280 - _tmp224 * _tmp281 + _tmp225 * _tmp280 -
-                         _tmp225 * _tmp281 + _tmp226 * _tmp287 + _tmp269 * _tmp280 +
-                         _tmp278 * sqrt_info(6, 0) - _tmp282 * sqrt_info(6, 0) +
-                         _tmp285 * sqrt_info(6, 1) + _tmp291 * sqrt_info(6, 3) +
-                         _tmp296 * sqrt_info(6, 4) + _tmp299 * sqrt_info(6, 6);
-  const Scalar _tmp301 = _tmp126 * _tmp295 + _tmp127 * _tmp294 + _tmp128 * _tmp293;
+      -_pose_j[0] * _tmp275 - _pose_j[1] * _tmp276 - _pose_j[2] * _tmp274 + _pose_j[3] * _tmp273;
+  const Scalar _tmp280 = _tmp240 * _tmp279;
+  const Scalar _tmp281 = _tmp178 * _tmp279;
+  const Scalar _tmp282 = _tmp281 * _tmp48;
+  const Scalar _tmp283 =
+      _tmp278 * sqrt_info(0, 0) + _tmp280 * sqrt_info(0, 0) - _tmp282 * sqrt_info(0, 0);
+  const Scalar _tmp284 = _tmp281 * _tmp67;
+  const Scalar _tmp285 = _tmp174 * _tmp279;
+  const Scalar _tmp286 = _tmp168 * (_pose_j[0] * _tmp274 + _pose_j[1] * _tmp273 -
+                                    _pose_j[2] * _tmp275 + _pose_j[3] * _tmp276);
+  const Scalar _tmp287 = _tmp183 * _tmp285 + _tmp184 * _tmp285 + _tmp278 * sqrt_info(1, 0) -
+                         _tmp282 * sqrt_info(1, 0) - _tmp284 * sqrt_info(1, 1) +
+                         _tmp286 * sqrt_info(1, 1);
+  const Scalar _tmp288 =
+      -_pose_j[0] * _tmp276 + _pose_j[1] * _tmp275 + _pose_j[2] * _tmp273 + _pose_j[3] * _tmp274;
+  const Scalar _tmp289 = _tmp168 * _tmp288;
+  const Scalar _tmp290 = _tmp188 * _tmp285 - _tmp189 * _tmp281 + _tmp189 * _tmp285 +
+                         _tmp278 * sqrt_info(2, 0) + _tmp280 * sqrt_info(2, 0) -
+                         _tmp282 * sqrt_info(2, 0) - _tmp284 * sqrt_info(2, 1) +
+                         _tmp286 * sqrt_info(2, 1) + _tmp289 * sqrt_info(2, 2);
+  const Scalar _tmp291 = _tmp203 + _tmp259;
+  const Scalar _tmp292 = _tmp110 + _tmp291 * _tmp98;
+  const Scalar _tmp293 = _tmp281 * _tmp74;
+  const Scalar _tmp294 = _tmp194 * _tmp285 + _tmp195 * _tmp285 + _tmp278 * sqrt_info(3, 0) +
+                         _tmp280 * sqrt_info(3, 0) - _tmp282 * sqrt_info(3, 0) -
+                         _tmp284 * sqrt_info(3, 1) + _tmp286 * sqrt_info(3, 1) +
+                         _tmp289 * sqrt_info(3, 2) + _tmp292 * sqrt_info(3, 3) -
+                         _tmp293 * sqrt_info(3, 2);
+  const Scalar _tmp295 = _tmp256 + _tmp88;
+  const Scalar _tmp296 = _tmp108 + _tmp210;
+  const Scalar _tmp297 = _tmp201 + _tmp212 + _tmp77 + _tmp79;
+  const Scalar _tmp298 = _tmp295 * _tmp93 + _tmp296 * _tmp98 + _tmp297 * _tmp83;
+  const Scalar _tmp299 = _tmp197 * _tmp285 - _tmp198 * _tmp281 + _tmp198 * _tmp285 +
+                         _tmp278 * sqrt_info(4, 0) + _tmp280 * sqrt_info(4, 0) -
+                         _tmp282 * sqrt_info(4, 0) - _tmp284 * sqrt_info(4, 1) +
+                         _tmp286 * sqrt_info(4, 1) + _tmp289 * sqrt_info(4, 2) +
+                         _tmp292 * sqrt_info(4, 3) + _tmp298 * sqrt_info(4, 4);
+  const Scalar _tmp300 = _tmp207 * _tmp285 - _tmp216 * _tmp281 + _tmp216 * _tmp285 +
+                         _tmp278 * sqrt_info(5, 0) + _tmp280 * sqrt_info(5, 0) -
+                         _tmp282 * sqrt_info(5, 0) + _tmp286 * sqrt_info(5, 1) +
+                         _tmp289 * sqrt_info(5, 2) + _tmp292 * sqrt_info(5, 3) -
+                         _tmp293 * sqrt_info(5, 2) + _tmp298 * sqrt_info(5, 4);
+  const Scalar _tmp301 = _tmp123 * _tmp291 + _tmp128;
   const Scalar _tmp302 =
-      _tmp132 * _tmp280 - _tmp132 * _tmp281 + _tmp229 * _tmp280 - _tmp229 * _tmp281 +
-      _tmp271 * _tmp280 + _tmp278 * sqrt_info(7, 0) - _tmp282 * sqrt_info(7, 0) +
-      _tmp285 * sqrt_info(7, 1) + _tmp289 * sqrt_info(7, 2) + _tmp291 * sqrt_info(7, 3) +
-      _tmp296 * sqrt_info(7, 4) + _tmp299 * sqrt_info(7, 6) + _tmp301 * sqrt_info(7, 7);
-  const Scalar _tmp303 =
-      _tmp231 * _tmp280 + _tmp232 * _tmp280 - _tmp232 * _tmp281 + _tmp233 * _tmp280 -
-      _tmp233 * _tmp281 + _tmp278 * sqrt_info(8, 0) - _tmp282 * sqrt_info(8, 0) +
-      _tmp285 * sqrt_info(8, 1) + _tmp289 * sqrt_info(8, 2) + _tmp291 * sqrt_info(8, 3) +
-      _tmp296 * sqrt_info(8, 4) + _tmp299 * sqrt_info(8, 6) + _tmp301 * sqrt_info(8, 7);
-  const Scalar _tmp304 = _tmp85 * sqrt_info(6, 6);
-  const Scalar _tmp305 = _tmp113 * sqrt_info(7, 7);
-  const Scalar _tmp306 = _tmp85 * sqrt_info(7, 6);
-  const Scalar _tmp307 = -_tmp305 - _tmp306;
-  const Scalar _tmp308 = _tmp113 * sqrt_info(8, 7);
-  const Scalar _tmp309 = _tmp120 * sqrt_info(8, 8);
-  const Scalar _tmp310 = _tmp85 * sqrt_info(8, 6);
-  const Scalar _tmp311 = -_tmp308 - _tmp309 - _tmp310;
-  const Scalar _tmp312 = _tmp100 * sqrt_info(6, 6);
-  const Scalar _tmp313 = _tmp100 * sqrt_info(7, 6);
-  const Scalar _tmp314 = _tmp108 * sqrt_info(7, 7);
-  const Scalar _tmp315 = -_tmp313 - _tmp314;
-  const Scalar _tmp316 = _tmp100 * sqrt_info(8, 6);
-  const Scalar _tmp317 = _tmp108 * sqrt_info(8, 7);
-  const Scalar _tmp318 = _tmp119 * sqrt_info(8, 8);
-  const Scalar _tmp319 = -_tmp316 - _tmp317 - _tmp318;
-  const Scalar _tmp320 = _tmp96 * sqrt_info(6, 6);
-  const Scalar _tmp321 = _tmp96 * sqrt_info(7, 6);
-  const Scalar _tmp322 = _tmp111 * sqrt_info(7, 7);
-  const Scalar _tmp323 = -_tmp321 - _tmp322;
-  const Scalar _tmp324 = _tmp96 * sqrt_info(8, 6);
-  const Scalar _tmp325 = _tmp117 * sqrt_info(8, 8);
-  const Scalar _tmp326 = _tmp111 * sqrt_info(8, 7);
-  const Scalar _tmp327 = -_tmp324 - _tmp325 - _tmp326;
-  const Scalar _tmp328 = _tmp85 * sqrt_info(3, 3);
-  const Scalar _tmp329 = _tmp113 * sqrt_info(4, 4);
-  const Scalar _tmp330 = _tmp85 * sqrt_info(4, 3);
-  const Scalar _tmp331 = -_tmp329 - _tmp330;
-  const Scalar _tmp332 = _tmp113 * sqrt_info(5, 4);
-  const Scalar _tmp333 = _tmp120 * sqrt_info(5, 5);
-  const Scalar _tmp334 = _tmp85 * sqrt_info(5, 3);
-  const Scalar _tmp335 = -_tmp332 - _tmp333 - _tmp334;
-  const Scalar _tmp336 = _tmp113 * sqrt_info(6, 4);
-  const Scalar _tmp337 = _tmp120 * sqrt_info(6, 5);
-  const Scalar _tmp338 = _tmp85 * sqrt_info(6, 3);
-  const Scalar _tmp339 = -_tmp304 * dt - _tmp336 - _tmp337 - _tmp338;
-  const Scalar _tmp340 = _tmp113 * sqrt_info(7, 4);
-  const Scalar _tmp341 = _tmp120 * sqrt_info(7, 5);
-  const Scalar _tmp342 = _tmp85 * sqrt_info(7, 3);
-  const Scalar _tmp343 = -_tmp305 * dt - _tmp306 * dt - _tmp340 - _tmp341 - _tmp342;
-  const Scalar _tmp344 = _tmp113 * sqrt_info(8, 4);
-  const Scalar _tmp345 = _tmp120 * sqrt_info(8, 5);
-  const Scalar _tmp346 = _tmp85 * sqrt_info(8, 3);
-  const Scalar _tmp347 = -_tmp308 * dt - _tmp309 * dt - _tmp310 * dt - _tmp344 - _tmp345 - _tmp346;
-  const Scalar _tmp348 = _tmp100 * sqrt_info(3, 3);
-  const Scalar _tmp349 = _tmp100 * sqrt_info(4, 3);
-  const Scalar _tmp350 = _tmp108 * sqrt_info(4, 4);
-  const Scalar _tmp351 = -_tmp349 - _tmp350;
-  const Scalar _tmp352 = _tmp100 * sqrt_info(5, 3);
-  const Scalar _tmp353 = _tmp108 * sqrt_info(5, 4);
-  const Scalar _tmp354 = _tmp119 * sqrt_info(5, 5);
-  const Scalar _tmp355 = -_tmp352 - _tmp353 - _tmp354;
-  const Scalar _tmp356 = _tmp100 * sqrt_info(6, 3);
-  const Scalar _tmp357 = _tmp108 * sqrt_info(6, 4);
-  const Scalar _tmp358 = _tmp119 * sqrt_info(6, 5);
-  const Scalar _tmp359 = -_tmp312 * dt - _tmp356 - _tmp357 - _tmp358;
-  const Scalar _tmp360 = _tmp100 * sqrt_info(7, 3);
-  const Scalar _tmp361 = _tmp108 * sqrt_info(7, 4);
-  const Scalar _tmp362 = _tmp119 * sqrt_info(7, 5);
-  const Scalar _tmp363 = -_tmp313 * dt - _tmp314 * dt - _tmp360 - _tmp361 - _tmp362;
-  const Scalar _tmp364 = _tmp100 * sqrt_info(8, 3);
-  const Scalar _tmp365 = _tmp108 * sqrt_info(8, 4);
-  const Scalar _tmp366 = _tmp119 * sqrt_info(8, 5);
-  const Scalar _tmp367 = -_tmp316 * dt - _tmp317 * dt - _tmp318 * dt - _tmp364 - _tmp365 - _tmp366;
-  const Scalar _tmp368 = _tmp96 * sqrt_info(3, 3);
-  const Scalar _tmp369 = _tmp96 * sqrt_info(4, 3);
-  const Scalar _tmp370 = _tmp111 * sqrt_info(4, 4);
-  const Scalar _tmp371 = -_tmp369 - _tmp370;
-  const Scalar _tmp372 = _tmp96 * sqrt_info(5, 3);
-  const Scalar _tmp373 = _tmp117 * sqrt_info(5, 5);
-  const Scalar _tmp374 = _tmp111 * sqrt_info(5, 4);
-  const Scalar _tmp375 = -_tmp372 - _tmp373 - _tmp374;
-  const Scalar _tmp376 = _tmp96 * sqrt_info(6, 3);
-  const Scalar _tmp377 = _tmp117 * sqrt_info(6, 5);
-  const Scalar _tmp378 = _tmp111 * sqrt_info(6, 4);
-  const Scalar _tmp379 = -_tmp320 * dt - _tmp376 - _tmp377 - _tmp378;
-  const Scalar _tmp380 = _tmp96 * sqrt_info(7, 3);
-  const Scalar _tmp381 = _tmp117 * sqrt_info(7, 5);
-  const Scalar _tmp382 = _tmp111 * sqrt_info(7, 4);
-  const Scalar _tmp383 = -_tmp321 * dt - _tmp322 * dt - _tmp380 - _tmp381 - _tmp382;
-  const Scalar _tmp384 = _tmp96 * sqrt_info(8, 3);
-  const Scalar _tmp385 = _tmp117 * sqrt_info(8, 5);
-  const Scalar _tmp386 = _tmp111 * sqrt_info(8, 4);
-  const Scalar _tmp387 = -_tmp324 * dt - _tmp325 * dt - _tmp326 * dt - _tmp384 - _tmp385 - _tmp386;
-  const Scalar _tmp388 = (Scalar(1) / Scalar(2)) * _tmp31;
-  const Scalar _tmp389 = (Scalar(1) / Scalar(2)) * _tmp37;
-  const Scalar _tmp390 = (Scalar(1) / Scalar(2)) * _tmp43;
-  const Scalar _tmp391 = (Scalar(1) / Scalar(2)) * _tmp49;
-  const Scalar _tmp392 = _tmp388 + _tmp389 - _tmp390 + _tmp391;
-  const Scalar _tmp393 = (((_tmp54 + _tmp58) > 0) - ((_tmp54 + _tmp58) < 0));
-  const Scalar _tmp394 = _tmp180 * _tmp393;
-  const Scalar _tmp395 = _tmp392 * _tmp394;
-  const Scalar _tmp396 = _tmp395 * _tmp50;
-  const Scalar _tmp397 = -Scalar(1) / Scalar(2) * _tmp51 - Scalar(1) / Scalar(2) * _tmp52 -
-                         Scalar(1) / Scalar(2) * _tmp53 + (Scalar(1) / Scalar(2)) * _tmp55;
-  const Scalar _tmp398 = _tmp171 * _tmp397;
-  const Scalar _tmp399 = _tmp176 * _tmp393;
-  const Scalar _tmp400 = _tmp392 * _tmp399;
-  const Scalar _tmp401 = _tmp244 * _tmp400 - _tmp396 * sqrt_info(0, 0) + _tmp398 * sqrt_info(0, 0);
-  const Scalar _tmp402 = (Scalar(1) / Scalar(2)) * _tmp73;
-  const Scalar _tmp403 = (Scalar(1) / Scalar(2)) * _tmp74;
-  const Scalar _tmp404 = (Scalar(1) / Scalar(2)) * _tmp75;
-  const Scalar _tmp405 = (Scalar(1) / Scalar(2)) * _tmp76;
-  const Scalar _tmp406 = _tmp402 - _tmp403 + _tmp404 + _tmp405;
-  const Scalar _tmp407 = _tmp171 * _tmp406;
-  const Scalar _tmp408 = -_tmp185 * _tmp395 + _tmp185 * _tmp400 + _tmp186 * _tmp400 -
-                         _tmp396 * sqrt_info(1, 0) + _tmp398 * sqrt_info(1, 0) +
-                         _tmp407 * sqrt_info(1, 1);
-  const Scalar _tmp409 = (Scalar(1) / Scalar(2)) * _tmp65;
-  const Scalar _tmp410 = (Scalar(1) / Scalar(2)) * _tmp66;
-  const Scalar _tmp411 = (Scalar(1) / Scalar(2)) * _tmp67;
-  const Scalar _tmp412 = (Scalar(1) / Scalar(2)) * _tmp68;
-  const Scalar _tmp413 = -_tmp409 - _tmp410 - _tmp411 + _tmp412;
-  const Scalar _tmp414 = _tmp395 * _tmp77;
-  const Scalar _tmp415 = -_tmp190 * _tmp395 + _tmp190 * _tmp400 + _tmp191 * _tmp400 +
-                         _tmp192 * _tmp400 + _tmp194 * _tmp413 - _tmp396 * sqrt_info(2, 0) +
-                         _tmp398 * sqrt_info(2, 0) + _tmp407 * sqrt_info(2, 1) -
-                         _tmp414 * sqrt_info(2, 2);
-  const Scalar _tmp416 = _tmp171 * _tmp413;
-  const Scalar _tmp417 = -_tmp196 * _tmp395 + _tmp196 * _tmp400 - _tmp197 * _tmp395 +
-                         _tmp197 * _tmp400 + _tmp199 * _tmp406 + _tmp254 * _tmp400 -
-                         _tmp396 * sqrt_info(3, 0) + _tmp398 * sqrt_info(3, 0) +
-                         _tmp416 * sqrt_info(3, 2);
-  const Scalar _tmp418 = -_tmp201 * _tmp395 + _tmp201 * _tmp400 + _tmp202 * _tmp400 +
-                         _tmp203 * _tmp400 - _tmp396 * sqrt_info(4, 0) + _tmp398 * sqrt_info(4, 0) +
-                         _tmp407 * sqrt_info(4, 1) - _tmp414 * sqrt_info(4, 2) +
-                         _tmp416 * sqrt_info(4, 2);
-  const Scalar _tmp419 = _tmp212 * _tmp400 - _tmp221 * _tmp395 + _tmp221 * _tmp400 -
-                         _tmp222 * _tmp395 + _tmp222 * _tmp400 + _tmp398 * sqrt_info(5, 0) +
-                         _tmp407 * sqrt_info(5, 1) - _tmp414 * sqrt_info(5, 2) +
-                         _tmp416 * sqrt_info(5, 2);
-  const Scalar _tmp420 = _tmp224 * _tmp399;
-  const Scalar _tmp421 = -_tmp224 * _tmp395 + _tmp225 * _tmp400 + _tmp226 * _tmp413 +
-                         _tmp269 * _tmp400 + _tmp392 * _tmp420 - _tmp396 * sqrt_info(6, 0) +
-                         _tmp398 * sqrt_info(6, 0) + _tmp407 * sqrt_info(6, 1) -
-                         _tmp414 * sqrt_info(6, 2);
-  const Scalar _tmp422 = -_tmp132 * _tmp395 + _tmp132 * _tmp400 - _tmp229 * _tmp395 +
-                         _tmp229 * _tmp400 + _tmp271 * _tmp400 - _tmp396 * sqrt_info(7, 0) +
-                         _tmp398 * sqrt_info(7, 0) + _tmp407 * sqrt_info(7, 1) +
-                         _tmp416 * sqrt_info(7, 2);
-  const Scalar _tmp423 = _tmp231 * _tmp400 - _tmp232 * _tmp395 + _tmp232 * _tmp400 +
-                         _tmp233 * _tmp400 - _tmp396 * sqrt_info(8, 0) + _tmp398 * sqrt_info(8, 0) +
-                         _tmp407 * sqrt_info(8, 1) - _tmp414 * sqrt_info(8, 2) +
-                         _tmp416 * sqrt_info(8, 2);
-  const Scalar _tmp424 = _tmp409 + _tmp410 + _tmp411 - _tmp412;
-  const Scalar _tmp425 = _tmp394 * _tmp50;
-  const Scalar _tmp426 = _tmp424 * _tmp425;
-  const Scalar _tmp427 = _tmp399 * _tmp424;
-  const Scalar _tmp428 = _tmp171 * (-_tmp402 + _tmp403 - _tmp404 - _tmp405);
-  const Scalar _tmp429 = _tmp244 * _tmp427 - _tmp426 * sqrt_info(0, 0) + _tmp428 * sqrt_info(0, 0);
-  const Scalar _tmp430 = _tmp394 * _tmp424;
-  const Scalar _tmp431 = _tmp185 * _tmp427 - _tmp185 * _tmp430 + _tmp186 * _tmp427 +
-                         _tmp398 * sqrt_info(1, 1) - _tmp426 * sqrt_info(1, 0) +
-                         _tmp428 * sqrt_info(1, 0);
-  const Scalar _tmp432 = _tmp190 * _tmp427 - _tmp190 * _tmp430 + _tmp191 * _tmp427 +
-                         _tmp192 * _tmp427 - _tmp192 * _tmp430 + _tmp194 * _tmp392 +
-                         _tmp398 * sqrt_info(2, 1) - _tmp426 * sqrt_info(2, 0) +
-                         _tmp428 * sqrt_info(2, 0);
-  const Scalar _tmp433 = _tmp171 * _tmp392;
-  const Scalar _tmp434 = _tmp196 * _tmp427 - _tmp196 * _tmp430 + _tmp197 * _tmp427 -
-                         _tmp197 * _tmp430 + _tmp199 * _tmp397 + _tmp254 * _tmp427 -
-                         _tmp426 * sqrt_info(3, 0) + _tmp428 * sqrt_info(3, 0) +
-                         _tmp433 * sqrt_info(3, 2);
-  const Scalar _tmp435 = _tmp201 * _tmp427 - _tmp201 * _tmp430 + _tmp202 * _tmp427 +
-                         _tmp203 * _tmp427 - _tmp203 * _tmp430 + _tmp398 * sqrt_info(4, 1) -
-                         _tmp426 * sqrt_info(4, 0) + _tmp428 * sqrt_info(4, 0) +
-                         _tmp433 * sqrt_info(4, 2);
-  const Scalar _tmp436 = _tmp212 * _tmp427 - _tmp212 * _tmp430 + _tmp221 * _tmp427 -
-                         _tmp221 * _tmp430 + _tmp222 * _tmp427 - _tmp222 * _tmp430 +
-                         _tmp398 * sqrt_info(5, 1) + _tmp428 * sqrt_info(5, 0) +
-                         _tmp433 * sqrt_info(5, 2);
-  const Scalar _tmp437 = -_tmp224 * _tmp430 + _tmp225 * _tmp427 - _tmp225 * _tmp430 +
-                         _tmp226 * _tmp392 + _tmp269 * _tmp427 + _tmp398 * sqrt_info(6, 1) +
-                         _tmp420 * _tmp424 - _tmp426 * sqrt_info(6, 0) + _tmp428 * sqrt_info(6, 0);
-  const Scalar _tmp438 = _tmp132 * _tmp427 - _tmp132 * _tmp430 + _tmp229 * _tmp427 -
-                         _tmp229 * _tmp430 + _tmp271 * _tmp427 + _tmp398 * sqrt_info(7, 1) -
-                         _tmp426 * sqrt_info(7, 0) + _tmp428 * sqrt_info(7, 0) +
-                         _tmp433 * sqrt_info(7, 2);
-  const Scalar _tmp439 = _tmp231 * _tmp427 + _tmp232 * _tmp427 - _tmp232 * _tmp430 +
-                         _tmp233 * _tmp427 - _tmp233 * _tmp430 + _tmp398 * sqrt_info(8, 1) -
-                         _tmp426 * sqrt_info(8, 0) + _tmp428 * sqrt_info(8, 0) +
-                         _tmp433 * sqrt_info(8, 2);
-  const Scalar _tmp440 = _tmp171 * _tmp424;
-  const Scalar _tmp441 = _tmp394 * _tmp406;
-  const Scalar _tmp442 = _tmp441 * _tmp50;
-  const Scalar _tmp443 = _tmp399 * _tmp406;
-  const Scalar _tmp444 = _tmp244 * _tmp443 + _tmp440 * sqrt_info(0, 0) - _tmp442 * sqrt_info(0, 0);
-  const Scalar _tmp445 = -_tmp388 - _tmp389 + _tmp390 - _tmp391;
-  const Scalar _tmp446 = _tmp171 * _tmp445;
-  const Scalar _tmp447 = -_tmp185 * _tmp441 + _tmp185 * _tmp443 + _tmp186 * _tmp443 +
-                         _tmp440 * sqrt_info(1, 0) - _tmp442 * sqrt_info(1, 0) +
+      _tmp218 * _tmp285 - _tmp219 * _tmp281 + _tmp219 * _tmp285 + _tmp278 * sqrt_info(6, 0) +
+      _tmp280 * sqrt_info(6, 0) - _tmp282 * sqrt_info(6, 0) - _tmp284 * sqrt_info(6, 1) +
+      _tmp286 * sqrt_info(6, 1) + _tmp289 * sqrt_info(6, 2) + _tmp292 * sqrt_info(6, 3) +
+      _tmp298 * sqrt_info(6, 4) + _tmp301 * sqrt_info(6, 6);
+  const Scalar _tmp303 = _tmp122 * _tmp297 + _tmp123 * _tmp296 + _tmp124 * _tmp295;
+  const Scalar _tmp304 =
+      -_tmp221 * _tmp281 + _tmp221 * _tmp285 + _tmp223 * _tmp285 + _tmp278 * sqrt_info(7, 0) +
+      _tmp280 * sqrt_info(7, 0) - _tmp282 * sqrt_info(7, 0) + _tmp286 * sqrt_info(7, 1) +
+      _tmp289 * sqrt_info(7, 2) + _tmp292 * sqrt_info(7, 3) - _tmp293 * sqrt_info(7, 2) +
+      _tmp298 * sqrt_info(7, 4) + _tmp301 * sqrt_info(7, 6) + _tmp303 * sqrt_info(7, 7);
+  const Scalar _tmp305 =
+      -_tmp133 * _tmp281 + _tmp133 * _tmp285 + _tmp226 * _tmp285 + _tmp227 * _tmp277 +
+      _tmp228 * _tmp288 + _tmp280 * sqrt_info(8, 0) - _tmp282 * sqrt_info(8, 0) -
+      _tmp284 * sqrt_info(8, 1) + _tmp286 * sqrt_info(8, 1) + _tmp292 * sqrt_info(8, 3) +
+      _tmp298 * sqrt_info(8, 4) + _tmp301 * sqrt_info(8, 6) + _tmp303 * sqrt_info(8, 7);
+  const Scalar _tmp306 = _tmp81 * sqrt_info(6, 6);
+  const Scalar _tmp307 = _tmp109 * sqrt_info(7, 7);
+  const Scalar _tmp308 = _tmp81 * sqrt_info(7, 6);
+  const Scalar _tmp309 = -_tmp307 - _tmp308;
+  const Scalar _tmp310 = _tmp109 * sqrt_info(8, 7);
+  const Scalar _tmp311 = _tmp116 * sqrt_info(8, 8);
+  const Scalar _tmp312 = _tmp81 * sqrt_info(8, 6);
+  const Scalar _tmp313 = -_tmp310 - _tmp311 - _tmp312;
+  const Scalar _tmp314 = _tmp96 * sqrt_info(6, 6);
+  const Scalar _tmp315 = _tmp96 * sqrt_info(7, 6);
+  const Scalar _tmp316 = _tmp104 * sqrt_info(7, 7);
+  const Scalar _tmp317 = -_tmp315 - _tmp316;
+  const Scalar _tmp318 = _tmp96 * sqrt_info(8, 6);
+  const Scalar _tmp319 = _tmp104 * sqrt_info(8, 7);
+  const Scalar _tmp320 = _tmp115 * sqrt_info(8, 8);
+  const Scalar _tmp321 = -_tmp318 - _tmp319 - _tmp320;
+  const Scalar _tmp322 = _tmp92 * sqrt_info(6, 6);
+  const Scalar _tmp323 = _tmp92 * sqrt_info(7, 6);
+  const Scalar _tmp324 = _tmp107 * sqrt_info(7, 7);
+  const Scalar _tmp325 = -_tmp323 - _tmp324;
+  const Scalar _tmp326 = _tmp92 * sqrt_info(8, 6);
+  const Scalar _tmp327 = _tmp113 * sqrt_info(8, 8);
+  const Scalar _tmp328 = _tmp107 * sqrt_info(8, 7);
+  const Scalar _tmp329 = -_tmp326 - _tmp327 - _tmp328;
+  const Scalar _tmp330 = _tmp81 * sqrt_info(3, 3);
+  const Scalar _tmp331 = _tmp109 * sqrt_info(4, 4);
+  const Scalar _tmp332 = _tmp81 * sqrt_info(4, 3);
+  const Scalar _tmp333 = -_tmp331 - _tmp332;
+  const Scalar _tmp334 = _tmp109 * sqrt_info(5, 4);
+  const Scalar _tmp335 = _tmp116 * sqrt_info(5, 5);
+  const Scalar _tmp336 = _tmp81 * sqrt_info(5, 3);
+  const Scalar _tmp337 = -_tmp334 - _tmp335 - _tmp336;
+  const Scalar _tmp338 = _tmp109 * sqrt_info(6, 4);
+  const Scalar _tmp339 = _tmp116 * sqrt_info(6, 5);
+  const Scalar _tmp340 = _tmp81 * sqrt_info(6, 3);
+  const Scalar _tmp341 = -_tmp306 * dt - _tmp338 - _tmp339 - _tmp340;
+  const Scalar _tmp342 = _tmp109 * sqrt_info(7, 4);
+  const Scalar _tmp343 = _tmp116 * sqrt_info(7, 5);
+  const Scalar _tmp344 = _tmp81 * sqrt_info(7, 3);
+  const Scalar _tmp345 = -_tmp307 * dt - _tmp308 * dt - _tmp342 - _tmp343 - _tmp344;
+  const Scalar _tmp346 = _tmp109 * sqrt_info(8, 4);
+  const Scalar _tmp347 = _tmp116 * sqrt_info(8, 5);
+  const Scalar _tmp348 = _tmp81 * sqrt_info(8, 3);
+  const Scalar _tmp349 = -_tmp310 * dt - _tmp311 * dt - _tmp312 * dt - _tmp346 - _tmp347 - _tmp348;
+  const Scalar _tmp350 = _tmp96 * sqrt_info(3, 3);
+  const Scalar _tmp351 = _tmp96 * sqrt_info(4, 3);
+  const Scalar _tmp352 = _tmp104 * sqrt_info(4, 4);
+  const Scalar _tmp353 = -_tmp351 - _tmp352;
+  const Scalar _tmp354 = _tmp96 * sqrt_info(5, 3);
+  const Scalar _tmp355 = _tmp104 * sqrt_info(5, 4);
+  const Scalar _tmp356 = _tmp115 * sqrt_info(5, 5);
+  const Scalar _tmp357 = -_tmp354 - _tmp355 - _tmp356;
+  const Scalar _tmp358 = _tmp96 * sqrt_info(6, 3);
+  const Scalar _tmp359 = _tmp104 * sqrt_info(6, 4);
+  const Scalar _tmp360 = _tmp115 * sqrt_info(6, 5);
+  const Scalar _tmp361 = -_tmp314 * dt - _tmp358 - _tmp359 - _tmp360;
+  const Scalar _tmp362 = _tmp96 * sqrt_info(7, 3);
+  const Scalar _tmp363 = _tmp104 * sqrt_info(7, 4);
+  const Scalar _tmp364 = _tmp115 * sqrt_info(7, 5);
+  const Scalar _tmp365 = -_tmp315 * dt - _tmp316 * dt - _tmp362 - _tmp363 - _tmp364;
+  const Scalar _tmp366 = _tmp96 * sqrt_info(8, 3);
+  const Scalar _tmp367 = _tmp104 * sqrt_info(8, 4);
+  const Scalar _tmp368 = _tmp115 * sqrt_info(8, 5);
+  const Scalar _tmp369 = -_tmp318 * dt - _tmp319 * dt - _tmp320 * dt - _tmp366 - _tmp367 - _tmp368;
+  const Scalar _tmp370 = _tmp92 * sqrt_info(3, 3);
+  const Scalar _tmp371 = _tmp92 * sqrt_info(4, 3);
+  const Scalar _tmp372 = _tmp107 * sqrt_info(4, 4);
+  const Scalar _tmp373 = -_tmp371 - _tmp372;
+  const Scalar _tmp374 = _tmp92 * sqrt_info(5, 3);
+  const Scalar _tmp375 = _tmp113 * sqrt_info(5, 5);
+  const Scalar _tmp376 = _tmp107 * sqrt_info(5, 4);
+  const Scalar _tmp377 = -_tmp374 - _tmp375 - _tmp376;
+  const Scalar _tmp378 = _tmp92 * sqrt_info(6, 3);
+  const Scalar _tmp379 = _tmp113 * sqrt_info(6, 5);
+  const Scalar _tmp380 = _tmp107 * sqrt_info(6, 4);
+  const Scalar _tmp381 = -_tmp322 * dt - _tmp378 - _tmp379 - _tmp380;
+  const Scalar _tmp382 = _tmp92 * sqrt_info(7, 3);
+  const Scalar _tmp383 = _tmp113 * sqrt_info(7, 5);
+  const Scalar _tmp384 = _tmp107 * sqrt_info(7, 4);
+  const Scalar _tmp385 = -_tmp323 * dt - _tmp324 * dt - _tmp382 - _tmp383 - _tmp384;
+  const Scalar _tmp386 = _tmp92 * sqrt_info(8, 3);
+  const Scalar _tmp387 = _tmp113 * sqrt_info(8, 5);
+  const Scalar _tmp388 = _tmp107 * sqrt_info(8, 4);
+  const Scalar _tmp389 = -_tmp326 * dt - _tmp327 * dt - _tmp328 * dt - _tmp386 - _tmp387 - _tmp388;
+  const Scalar _tmp390 = -Scalar(1) / Scalar(2) * _tmp49 - Scalar(1) / Scalar(2) * _tmp50 -
+                         Scalar(1) / Scalar(2) * _tmp51 + (Scalar(1) / Scalar(2)) * _tmp53;
+  const Scalar _tmp391 = _tmp168 * _tmp390;
+  const Scalar _tmp392 = (Scalar(1) / Scalar(2)) * _tmp29;
+  const Scalar _tmp393 = (Scalar(1) / Scalar(2)) * _tmp35;
+  const Scalar _tmp394 = (Scalar(1) / Scalar(2)) * _tmp41;
+  const Scalar _tmp395 = (Scalar(1) / Scalar(2)) * _tmp47;
+  const Scalar _tmp396 = _tmp392 + _tmp393 - _tmp394 + _tmp395;
+  const Scalar _tmp397 = (((_tmp52 + _tmp56) > 0) - ((_tmp52 + _tmp56) < 0));
+  const Scalar _tmp398 = _tmp177 * _tmp397;
+  const Scalar _tmp399 = _tmp398 * _tmp48;
+  const Scalar _tmp400 = _tmp399 * sqrt_info(0, 0);
+  const Scalar _tmp401 = _tmp173 * _tmp397;
+  const Scalar _tmp402 = _tmp401 * _tmp48;
+  const Scalar _tmp403 = _tmp396 * _tmp402;
+  const Scalar _tmp404 = _tmp391 * sqrt_info(0, 0) - _tmp396 * _tmp400 + _tmp403 * sqrt_info(0, 0);
+  const Scalar _tmp405 = _tmp396 * _tmp401;
+  const Scalar _tmp406 = _tmp398 * _tmp67;
+  const Scalar _tmp407 = _tmp396 * _tmp406;
+  const Scalar _tmp408 = _tmp396 * _tmp399;
+  const Scalar _tmp409 = (Scalar(1) / Scalar(2)) * _tmp70;
+  const Scalar _tmp410 = (Scalar(1) / Scalar(2)) * _tmp71;
+  const Scalar _tmp411 = (Scalar(1) / Scalar(2)) * _tmp72;
+  const Scalar _tmp412 = (Scalar(1) / Scalar(2)) * _tmp73;
+  const Scalar _tmp413 = _tmp409 - _tmp410 + _tmp411 + _tmp412;
+  const Scalar _tmp414 = _tmp168 * _tmp413;
+  const Scalar _tmp415 = _tmp183 * _tmp405 + _tmp184 * _tmp405 + _tmp391 * sqrt_info(1, 0) -
+                         _tmp407 * sqrt_info(1, 1) - _tmp408 * sqrt_info(1, 0) +
+                         _tmp414 * sqrt_info(1, 1);
+  const Scalar _tmp416 = _tmp399 * sqrt_info(2, 0);
+  const Scalar _tmp417 = (Scalar(1) / Scalar(2)) * _tmp63;
+  const Scalar _tmp418 = (Scalar(1) / Scalar(2)) * _tmp64;
+  const Scalar _tmp419 = (Scalar(1) / Scalar(2)) * _tmp65;
+  const Scalar _tmp420 = (Scalar(1) / Scalar(2)) * _tmp66;
+  const Scalar _tmp421 = -_tmp417 - _tmp418 - _tmp419 + _tmp420;
+  const Scalar _tmp422 = _tmp168 * _tmp421;
+  const Scalar _tmp423 = _tmp398 * _tmp74;
+  const Scalar _tmp424 = _tmp396 * _tmp423;
+  const Scalar _tmp425 = _tmp188 * _tmp405 + _tmp189 * _tmp405 + _tmp391 * sqrt_info(2, 0) -
+                         _tmp396 * _tmp416 + _tmp403 * sqrt_info(2, 0) - _tmp407 * sqrt_info(2, 1) +
+                         _tmp414 * sqrt_info(2, 1) + _tmp422 * sqrt_info(2, 2) -
+                         _tmp424 * sqrt_info(2, 2);
+  const Scalar _tmp426 = _tmp401 * _tmp74;
+  const Scalar _tmp427 = _tmp426 * sqrt_info(3, 2);
+  const Scalar _tmp428 = _tmp194 * _tmp401;
+  const Scalar _tmp429 = _tmp391 * sqrt_info(3, 0) + _tmp396 * _tmp427 + _tmp396 * _tmp428 +
+                         _tmp403 * sqrt_info(3, 0) - _tmp407 * sqrt_info(3, 1) -
+                         _tmp408 * sqrt_info(3, 0) + _tmp414 * sqrt_info(3, 1) +
+                         _tmp422 * sqrt_info(3, 2) - _tmp424 * sqrt_info(3, 2);
+  const Scalar _tmp430 = _tmp197 * _tmp405 + _tmp198 * _tmp405 + _tmp264 * _tmp421 +
+                         _tmp391 * sqrt_info(4, 0) + _tmp403 * sqrt_info(4, 0) -
+                         _tmp407 * sqrt_info(4, 1) - _tmp408 * sqrt_info(4, 0) +
+                         _tmp414 * sqrt_info(4, 1) - _tmp424 * sqrt_info(4, 2);
+  const Scalar _tmp431 = _tmp216 * _tmp398;
+  const Scalar _tmp432 = _tmp426 * sqrt_info(5, 2);
+  const Scalar _tmp433 = _tmp216 * _tmp405 + _tmp391 * sqrt_info(5, 0) - _tmp396 * _tmp431 +
+                         _tmp396 * _tmp432 + _tmp403 * sqrt_info(5, 0) - _tmp408 * sqrt_info(5, 0) +
+                         _tmp414 * sqrt_info(5, 1) + _tmp422 * sqrt_info(5, 2) -
+                         _tmp424 * sqrt_info(5, 2);
+  const Scalar _tmp434 = _tmp218 * _tmp405 + _tmp219 * _tmp405 + _tmp391 * sqrt_info(6, 0) +
+                         _tmp403 * sqrt_info(6, 0) - _tmp407 * sqrt_info(6, 1) -
+                         _tmp408 * sqrt_info(6, 0) + _tmp414 * sqrt_info(6, 1) +
+                         _tmp422 * sqrt_info(6, 2) - _tmp424 * sqrt_info(6, 2);
+  const Scalar _tmp435 = _tmp426 * sqrt_info(7, 2);
+  const Scalar _tmp436 = _tmp221 * _tmp405 + _tmp224 * _tmp413 + _tmp391 * sqrt_info(7, 0) +
+                         _tmp396 * _tmp435 + _tmp403 * sqrt_info(7, 0) - _tmp407 * sqrt_info(7, 1) -
+                         _tmp408 * sqrt_info(7, 0) + _tmp422 * sqrt_info(7, 2) -
+                         _tmp424 * sqrt_info(7, 2);
+  const Scalar _tmp437 = _tmp133 * _tmp398;
+  const Scalar _tmp438 = _tmp133 * _tmp405 + _tmp226 * _tmp405 + _tmp227 * _tmp390 +
+                         _tmp228 * _tmp421 + _tmp229 * _tmp413 - _tmp396 * _tmp437 +
+                         _tmp403 * sqrt_info(8, 0) - _tmp407 * sqrt_info(8, 1) -
+                         _tmp408 * sqrt_info(8, 0);
+  const Scalar _tmp439 = _tmp417 + _tmp418 + _tmp419 - _tmp420;
+  const Scalar _tmp440 = _tmp398 * _tmp439;
+  const Scalar _tmp441 = _tmp440 * _tmp48;
+  const Scalar _tmp442 = _tmp402 * _tmp439;
+  const Scalar _tmp443 = -_tmp409 + _tmp410 - _tmp411 - _tmp412;
+  const Scalar _tmp444 = _tmp168 * _tmp443;
+  const Scalar _tmp445 =
+      -_tmp441 * sqrt_info(0, 0) + _tmp442 * sqrt_info(0, 0) + _tmp444 * sqrt_info(0, 0);
+  const Scalar _tmp446 = _tmp440 * _tmp67;
+  const Scalar _tmp447 = _tmp401 * _tmp439;
+  const Scalar _tmp448 = _tmp183 * _tmp447 + _tmp184 * _tmp447 + _tmp391 * sqrt_info(1, 1) -
+                         _tmp441 * sqrt_info(1, 0) + _tmp444 * sqrt_info(1, 0) -
                          _tmp446 * sqrt_info(1, 1);
-  const Scalar _tmp448 = -_tmp190 * _tmp441 + _tmp190 * _tmp443 + _tmp191 * _tmp443 -
-                         _tmp192 * _tmp441 + _tmp192 * _tmp443 + _tmp194 * _tmp397 +
-                         _tmp440 * sqrt_info(2, 0) - _tmp442 * sqrt_info(2, 0) +
-                         _tmp446 * sqrt_info(2, 1);
-  const Scalar _tmp449 = -_tmp196 * _tmp441 + _tmp196 * _tmp443 - _tmp197 * _tmp441 +
-                         _tmp197 * _tmp443 + _tmp199 * _tmp445 + _tmp254 * _tmp443 +
-                         _tmp398 * sqrt_info(3, 2) + _tmp440 * sqrt_info(3, 0) -
-                         _tmp442 * sqrt_info(3, 0);
-  const Scalar _tmp450 = -_tmp201 * _tmp441 + _tmp201 * _tmp443 + _tmp202 * _tmp443 -
-                         _tmp203 * _tmp441 + _tmp203 * _tmp443 + _tmp398 * sqrt_info(4, 2) +
-                         _tmp440 * sqrt_info(4, 0) - _tmp442 * sqrt_info(4, 0) +
+  const Scalar _tmp449 = _tmp168 * _tmp396;
+  const Scalar _tmp450 = _tmp188 * _tmp447 - _tmp189 * _tmp440 + _tmp189 * _tmp447 +
+                         _tmp391 * sqrt_info(2, 1) - _tmp441 * sqrt_info(2, 0) +
+                         _tmp442 * sqrt_info(2, 0) + _tmp444 * sqrt_info(2, 0) -
+                         _tmp446 * sqrt_info(2, 1) + _tmp449 * sqrt_info(2, 2);
+  const Scalar _tmp451 = _tmp440 * _tmp74;
+  const Scalar _tmp452 = _tmp194 * _tmp447 + _tmp391 * sqrt_info(3, 1) + _tmp427 * _tmp439 -
+                         _tmp441 * sqrt_info(3, 0) + _tmp442 * sqrt_info(3, 0) +
+                         _tmp444 * sqrt_info(3, 0) - _tmp446 * sqrt_info(3, 1) +
+                         _tmp449 * sqrt_info(3, 2) - _tmp451 * sqrt_info(3, 2);
+  const Scalar _tmp453 = _tmp197 * _tmp447 - _tmp198 * _tmp440 + _tmp198 * _tmp447 +
+                         _tmp264 * _tmp396 + _tmp391 * sqrt_info(4, 1) - _tmp441 * sqrt_info(4, 0) +
+                         _tmp442 * sqrt_info(4, 0) + _tmp444 * sqrt_info(4, 0) -
                          _tmp446 * sqrt_info(4, 1);
-  const Scalar _tmp451 = -_tmp212 * _tmp441 + _tmp212 * _tmp443 - _tmp221 * _tmp441 +
-                         _tmp221 * _tmp443 - _tmp222 * _tmp441 + _tmp222 * _tmp443 +
-                         _tmp398 * sqrt_info(5, 2) + _tmp440 * sqrt_info(5, 0) +
-                         _tmp446 * sqrt_info(5, 1);
-  const Scalar _tmp452 = -_tmp224 * _tmp441 - _tmp225 * _tmp441 + _tmp225 * _tmp443 +
-                         _tmp226 * _tmp397 + _tmp269 * _tmp443 + _tmp406 * _tmp420 +
-                         _tmp440 * sqrt_info(6, 0) - _tmp442 * sqrt_info(6, 0) +
-                         _tmp446 * sqrt_info(6, 1);
-  const Scalar _tmp453 = -_tmp132 * _tmp441 + _tmp132 * _tmp443 - _tmp229 * _tmp441 +
-                         _tmp229 * _tmp443 + _tmp271 * _tmp443 + _tmp398 * sqrt_info(7, 2) +
-                         _tmp440 * sqrt_info(7, 0) - _tmp442 * sqrt_info(7, 0) +
-                         _tmp446 * sqrt_info(7, 1);
-  const Scalar _tmp454 = _tmp231 * _tmp443 - _tmp232 * _tmp441 + _tmp232 * _tmp443 -
-                         _tmp233 * _tmp441 + _tmp233 * _tmp443 + _tmp398 * sqrt_info(8, 2) +
-                         _tmp440 * sqrt_info(8, 0) - _tmp442 * sqrt_info(8, 0) +
+  const Scalar _tmp454 = -_tmp216 * _tmp440 + _tmp216 * _tmp447 + _tmp391 * sqrt_info(5, 1) +
+                         _tmp432 * _tmp439 - _tmp441 * sqrt_info(5, 0) + _tmp442 * sqrt_info(5, 0) +
+                         _tmp444 * sqrt_info(5, 0) + _tmp449 * sqrt_info(5, 2) -
+                         _tmp451 * sqrt_info(5, 2);
+  const Scalar _tmp455 = _tmp218 * _tmp447 - _tmp219 * _tmp440 + _tmp219 * _tmp447 +
+                         _tmp391 * sqrt_info(6, 1) - _tmp441 * sqrt_info(6, 0) +
+                         _tmp442 * sqrt_info(6, 0) + _tmp444 * sqrt_info(6, 0) -
+                         _tmp446 * sqrt_info(6, 1) + _tmp449 * sqrt_info(6, 2);
+  const Scalar _tmp456 = -_tmp221 * _tmp440 + _tmp221 * _tmp447 + _tmp391 * sqrt_info(7, 1) +
+                         _tmp435 * _tmp439 - _tmp441 * sqrt_info(7, 0) + _tmp442 * sqrt_info(7, 0) +
+                         _tmp444 * sqrt_info(7, 0) + _tmp449 * sqrt_info(7, 2) -
+                         _tmp451 * sqrt_info(7, 2);
+  const Scalar _tmp457 = -_tmp133 * _tmp440 + _tmp133 * _tmp447 + _tmp226 * _tmp447 +
+                         _tmp227 * _tmp443 + _tmp228 * _tmp396 + _tmp391 * sqrt_info(8, 1) -
+                         _tmp441 * sqrt_info(8, 0) + _tmp442 * sqrt_info(8, 0) -
                          _tmp446 * sqrt_info(8, 1);
-  const Scalar _tmp455 = _tmp305 + _tmp306;
-  const Scalar _tmp456 = _tmp308 + _tmp309 + _tmp310;
-  const Scalar _tmp457 = _tmp313 + _tmp314;
-  const Scalar _tmp458 = _tmp316 + _tmp317 + _tmp318;
-  const Scalar _tmp459 = _tmp321 + _tmp322;
-  const Scalar _tmp460 = _tmp324 + _tmp325 + _tmp326;
-  const Scalar _tmp461 = _tmp329 + _tmp330;
-  const Scalar _tmp462 = _tmp332 + _tmp333 + _tmp334;
-  const Scalar _tmp463 = _tmp336 + _tmp337 + _tmp338;
-  const Scalar _tmp464 = _tmp340 + _tmp341 + _tmp342;
-  const Scalar _tmp465 = _tmp344 + _tmp345 + _tmp346;
-  const Scalar _tmp466 = _tmp349 + _tmp350;
-  const Scalar _tmp467 = _tmp352 + _tmp353 + _tmp354;
-  const Scalar _tmp468 = _tmp356 + _tmp357 + _tmp358;
-  const Scalar _tmp469 = _tmp360 + _tmp361 + _tmp362;
-  const Scalar _tmp470 = _tmp364 + _tmp365 + _tmp366;
-  const Scalar _tmp471 = _tmp369 + _tmp370;
-  const Scalar _tmp472 = _tmp372 + _tmp373 + _tmp374;
-  const Scalar _tmp473 = _tmp376 + _tmp377 + _tmp378;
-  const Scalar _tmp474 = _tmp380 + _tmp381 + _tmp382;
-  const Scalar _tmp475 = _tmp384 + _tmp385 + _tmp386;
-  const Scalar _tmp476 = Dv_D_accel_bias(0, 0) * sqrt_info(3, 3);
-  const Scalar _tmp477 =
+  const Scalar _tmp458 = _tmp168 * _tmp439;
+  const Scalar _tmp459 = _tmp402 * _tmp413;
+  const Scalar _tmp460 = -_tmp400 * _tmp413 + _tmp458 * sqrt_info(0, 0) + _tmp459 * sqrt_info(0, 0);
+  const Scalar _tmp461 = _tmp401 * _tmp413;
+  const Scalar _tmp462 = _tmp406 * _tmp413;
+  const Scalar _tmp463 = _tmp399 * _tmp413;
+  const Scalar _tmp464 = -_tmp392 - _tmp393 + _tmp394 - _tmp395;
+  const Scalar _tmp465 = _tmp168 * _tmp464;
+  const Scalar _tmp466 = _tmp183 * _tmp461 + _tmp184 * _tmp461 + _tmp458 * sqrt_info(1, 0) -
+                         _tmp462 * sqrt_info(1, 1) - _tmp463 * sqrt_info(1, 0) +
+                         _tmp465 * sqrt_info(1, 1);
+  const Scalar _tmp467 = _tmp413 * _tmp423;
+  const Scalar _tmp468 = _tmp188 * _tmp461 + _tmp189 * _tmp461 + _tmp391 * sqrt_info(2, 2) -
+                         _tmp413 * _tmp416 + _tmp458 * sqrt_info(2, 0) + _tmp459 * sqrt_info(2, 0) -
+                         _tmp462 * sqrt_info(2, 1) + _tmp465 * sqrt_info(2, 1) -
+                         _tmp467 * sqrt_info(2, 2);
+  const Scalar _tmp469 = _tmp399 * sqrt_info(3, 0);
+  const Scalar _tmp470 = _tmp194 * _tmp461 + _tmp391 * sqrt_info(3, 2) + _tmp413 * _tmp427 -
+                         _tmp413 * _tmp469 + _tmp458 * sqrt_info(3, 0) + _tmp459 * sqrt_info(3, 0) -
+                         _tmp462 * sqrt_info(3, 1) + _tmp465 * sqrt_info(3, 1) -
+                         _tmp467 * sqrt_info(3, 2);
+  const Scalar _tmp471 = _tmp406 * sqrt_info(4, 1);
+  const Scalar _tmp472 = _tmp197 * _tmp461 + _tmp198 * _tmp461 + _tmp391 * sqrt_info(4, 2) -
+                         _tmp413 * _tmp471 + _tmp458 * sqrt_info(4, 0) + _tmp459 * sqrt_info(4, 0) -
+                         _tmp463 * sqrt_info(4, 0) + _tmp465 * sqrt_info(4, 1) -
+                         _tmp467 * sqrt_info(4, 2);
+  const Scalar _tmp473 = _tmp216 * _tmp461 + _tmp391 * sqrt_info(5, 2) - _tmp413 * _tmp431 +
+                         _tmp413 * _tmp432 + _tmp458 * sqrt_info(5, 0) + _tmp459 * sqrt_info(5, 0) -
+                         _tmp463 * sqrt_info(5, 0) + _tmp465 * sqrt_info(5, 1) -
+                         _tmp467 * sqrt_info(5, 2);
+  const Scalar _tmp474 = _tmp406 * sqrt_info(6, 1);
+  const Scalar _tmp475 = _tmp218 * _tmp461 + _tmp219 * _tmp461 + _tmp391 * sqrt_info(6, 2) -
+                         _tmp413 * _tmp474 + _tmp458 * sqrt_info(6, 0) + _tmp459 * sqrt_info(6, 0) -
+                         _tmp463 * sqrt_info(6, 0) + _tmp465 * sqrt_info(6, 1) -
+                         _tmp467 * sqrt_info(6, 2);
+  const Scalar _tmp476 = _tmp221 * _tmp461 + _tmp224 * _tmp464 + _tmp391 * sqrt_info(7, 2) +
+                         _tmp413 * _tmp435 + _tmp458 * sqrt_info(7, 0) + _tmp459 * sqrt_info(7, 0) -
+                         _tmp462 * sqrt_info(7, 1) - _tmp463 * sqrt_info(7, 0) -
+                         _tmp467 * sqrt_info(7, 2);
+  const Scalar _tmp477 = _tmp133 * _tmp461 + _tmp226 * _tmp461 + _tmp227 * _tmp439 +
+                         _tmp229 * _tmp464 + _tmp391 * sqrt_info(8, 2) - _tmp413 * _tmp437 +
+                         _tmp459 * sqrt_info(8, 0) - _tmp462 * sqrt_info(8, 1) -
+                         _tmp463 * sqrt_info(8, 0);
+  const Scalar _tmp478 = _tmp307 + _tmp308;
+  const Scalar _tmp479 = _tmp310 + _tmp311 + _tmp312;
+  const Scalar _tmp480 = _tmp315 + _tmp316;
+  const Scalar _tmp481 = _tmp318 + _tmp319 + _tmp320;
+  const Scalar _tmp482 = _tmp323 + _tmp324;
+  const Scalar _tmp483 = _tmp326 + _tmp327 + _tmp328;
+  const Scalar _tmp484 = _tmp331 + _tmp332;
+  const Scalar _tmp485 = _tmp334 + _tmp335 + _tmp336;
+  const Scalar _tmp486 = _tmp338 + _tmp339 + _tmp340;
+  const Scalar _tmp487 = _tmp342 + _tmp343 + _tmp344;
+  const Scalar _tmp488 = _tmp346 + _tmp347 + _tmp348;
+  const Scalar _tmp489 = _tmp351 + _tmp352;
+  const Scalar _tmp490 = _tmp354 + _tmp355 + _tmp356;
+  const Scalar _tmp491 = _tmp358 + _tmp359 + _tmp360;
+  const Scalar _tmp492 = _tmp362 + _tmp363 + _tmp364;
+  const Scalar _tmp493 = _tmp366 + _tmp367 + _tmp368;
+  const Scalar _tmp494 = _tmp371 + _tmp372;
+  const Scalar _tmp495 = _tmp374 + _tmp375 + _tmp376;
+  const Scalar _tmp496 = _tmp378 + _tmp379 + _tmp380;
+  const Scalar _tmp497 = _tmp382 + _tmp383 + _tmp384;
+  const Scalar _tmp498 = _tmp386 + _tmp387 + _tmp388;
+  const Scalar _tmp499 = Dv_D_accel_bias(0, 0) * sqrt_info(3, 3);
+  const Scalar _tmp500 =
       -Dv_D_accel_bias(0, 0) * sqrt_info(4, 3) - Dv_D_accel_bias(1, 0) * sqrt_info(4, 4);
-  const Scalar _tmp478 = -Dv_D_accel_bias(0, 0) * sqrt_info(5, 3) -
+  const Scalar _tmp501 = -Dv_D_accel_bias(0, 0) * sqrt_info(5, 3) -
                          Dv_D_accel_bias(1, 0) * sqrt_info(5, 4) -
                          Dv_D_accel_bias(2, 0) * sqrt_info(5, 5);
-  const Scalar _tmp479 =
+  const Scalar _tmp502 =
       -Dp_D_accel_bias(0, 0) * sqrt_info(6, 6) - Dv_D_accel_bias(0, 0) * sqrt_info(6, 3) -
       Dv_D_accel_bias(1, 0) * sqrt_info(6, 4) - Dv_D_accel_bias(2, 0) * sqrt_info(6, 5);
-  const Scalar _tmp480 =
+  const Scalar _tmp503 =
       -Dp_D_accel_bias(0, 0) * sqrt_info(7, 6) - Dp_D_accel_bias(1, 0) * sqrt_info(7, 7) -
       Dv_D_accel_bias(0, 0) * sqrt_info(7, 3) - Dv_D_accel_bias(1, 0) * sqrt_info(7, 4) -
       Dv_D_accel_bias(2, 0) * sqrt_info(7, 5);
-  const Scalar _tmp481 =
+  const Scalar _tmp504 =
       -Dp_D_accel_bias(0, 0) * sqrt_info(8, 6) - Dp_D_accel_bias(1, 0) * sqrt_info(8, 7) -
       Dp_D_accel_bias(2, 0) * sqrt_info(8, 8) - Dv_D_accel_bias(0, 0) * sqrt_info(8, 3) -
       Dv_D_accel_bias(1, 0) * sqrt_info(8, 4) - Dv_D_accel_bias(2, 0) * sqrt_info(8, 5);
-  const Scalar _tmp482 = Dv_D_accel_bias(0, 1) * sqrt_info(3, 3);
-  const Scalar _tmp483 =
+  const Scalar _tmp505 = Dv_D_accel_bias(0, 1) * sqrt_info(3, 3);
+  const Scalar _tmp506 =
       -Dv_D_accel_bias(0, 1) * sqrt_info(4, 3) - Dv_D_accel_bias(1, 1) * sqrt_info(4, 4);
-  const Scalar _tmp484 = -Dv_D_accel_bias(0, 1) * sqrt_info(5, 3) -
+  const Scalar _tmp507 = -Dv_D_accel_bias(0, 1) * sqrt_info(5, 3) -
                          Dv_D_accel_bias(1, 1) * sqrt_info(5, 4) -
                          Dv_D_accel_bias(2, 1) * sqrt_info(5, 5);
-  const Scalar _tmp485 =
+  const Scalar _tmp508 =
       -Dp_D_accel_bias(0, 1) * sqrt_info(6, 6) - Dv_D_accel_bias(0, 1) * sqrt_info(6, 3) -
       Dv_D_accel_bias(1, 1) * sqrt_info(6, 4) - Dv_D_accel_bias(2, 1) * sqrt_info(6, 5);
-  const Scalar _tmp486 =
+  const Scalar _tmp509 =
       -Dp_D_accel_bias(0, 1) * sqrt_info(7, 6) - Dp_D_accel_bias(1, 1) * sqrt_info(7, 7) -
       Dv_D_accel_bias(0, 1) * sqrt_info(7, 3) - Dv_D_accel_bias(1, 1) * sqrt_info(7, 4) -
       Dv_D_accel_bias(2, 1) * sqrt_info(7, 5);
-  const Scalar _tmp487 =
+  const Scalar _tmp510 =
       -Dp_D_accel_bias(0, 1) * sqrt_info(8, 6) - Dp_D_accel_bias(1, 1) * sqrt_info(8, 7) -
       Dp_D_accel_bias(2, 1) * sqrt_info(8, 8) - Dv_D_accel_bias(0, 1) * sqrt_info(8, 3) -
       Dv_D_accel_bias(1, 1) * sqrt_info(8, 4) - Dv_D_accel_bias(2, 1) * sqrt_info(8, 5);
-  const Scalar _tmp488 = Dv_D_accel_bias(0, 2) * sqrt_info(3, 3);
-  const Scalar _tmp489 =
+  const Scalar _tmp511 = Dv_D_accel_bias(0, 2) * sqrt_info(3, 3);
+  const Scalar _tmp512 =
       -Dv_D_accel_bias(0, 2) * sqrt_info(4, 3) - Dv_D_accel_bias(1, 2) * sqrt_info(4, 4);
-  const Scalar _tmp490 = -Dv_D_accel_bias(0, 2) * sqrt_info(5, 3) -
+  const Scalar _tmp513 = -Dv_D_accel_bias(0, 2) * sqrt_info(5, 3) -
                          Dv_D_accel_bias(1, 2) * sqrt_info(5, 4) -
                          Dv_D_accel_bias(2, 2) * sqrt_info(5, 5);
-  const Scalar _tmp491 =
+  const Scalar _tmp514 =
       -Dp_D_accel_bias(0, 2) * sqrt_info(6, 6) - Dv_D_accel_bias(0, 2) * sqrt_info(6, 3) -
       Dv_D_accel_bias(1, 2) * sqrt_info(6, 4) - Dv_D_accel_bias(2, 2) * sqrt_info(6, 5);
-  const Scalar _tmp492 =
+  const Scalar _tmp515 =
       -Dp_D_accel_bias(0, 2) * sqrt_info(7, 6) - Dp_D_accel_bias(1, 2) * sqrt_info(7, 7) -
       Dv_D_accel_bias(0, 2) * sqrt_info(7, 3) - Dv_D_accel_bias(1, 2) * sqrt_info(7, 4) -
       Dv_D_accel_bias(2, 2) * sqrt_info(7, 5);
-  const Scalar _tmp493 =
+  const Scalar _tmp516 =
       -Dp_D_accel_bias(0, 2) * sqrt_info(8, 6) - Dp_D_accel_bias(1, 2) * sqrt_info(8, 7) -
       Dp_D_accel_bias(2, 2) * sqrt_info(8, 8) - Dv_D_accel_bias(0, 2) * sqrt_info(8, 3) -
       Dv_D_accel_bias(1, 2) * sqrt_info(8, 4) - Dv_D_accel_bias(2, 2) * sqrt_info(8, 5);
-  const Scalar _tmp494 = 2 * _tmp3;
-  const Scalar _tmp495 = 2 * _tmp4;
-  const Scalar _tmp496 = 2 * _tmp5;
-  const Scalar _tmp497 = DR_D_gyro_bias(0, 0) * _tmp494 + DR_D_gyro_bias(1, 0) * _tmp495 +
-                         DR_D_gyro_bias(2, 0) * _tmp496;
-  const Scalar _tmp498 = (Scalar(1) / Scalar(2)) * _tmp11 / (_tmp6 * std::sqrt(_tmp6));
-  const Scalar _tmp499 = _tmp497 * _tmp498;
-  const Scalar _tmp500 = _DR[0] * _tmp3;
-  const Scalar _tmp501 = _tmp4 * _tmp498;
-  const Scalar _tmp502 = _DR[1] * _tmp501;
-  const Scalar _tmp503 = _DR[2] * _tmp5;
-  const Scalar _tmp504 = _tmp498 * _tmp503;
-  const Scalar _tmp505 = (Scalar(1) / Scalar(4)) * _tmp497;
-  const Scalar _tmp506 = Scalar(1.0) / (_tmp6);
-  const Scalar _tmp507 = _tmp5 * _tmp506;
-  const Scalar _tmp508 = _tmp505 * _tmp507;
-  const Scalar _tmp509 = _tmp3 * _tmp506;
-  const Scalar _tmp510 = _tmp24 * _tmp509;
-  const Scalar _tmp511 = _tmp4 * _tmp506;
-  const Scalar _tmp512 = _tmp505 * _tmp511;
-  const Scalar _tmp513 = -DR_D_gyro_bias(0, 0) * _tmp14 - DR_D_gyro_bias(1, 0) * _tmp13 -
-                         DR_D_gyro_bias(2, 0) * _tmp23 - _tmp18 * _tmp505 - _tmp20 * _tmp512 -
-                         _tmp27 * _tmp508 + _tmp497 * _tmp502 + _tmp497 * _tmp504 +
-                         _tmp499 * _tmp500 - _tmp505 * _tmp510;
-  const Scalar _tmp514 = _DR[3] * _tmp3;
-  const Scalar _tmp515 = _DR[1] * _tmp5;
-  const Scalar _tmp516 = _tmp10 * _tmp509;
-  const Scalar _tmp517 = _DR[2] * _tmp501;
-  const Scalar _tmp518 = DR_D_gyro_bias(0, 0) * _tmp18 - DR_D_gyro_bias(1, 0) * _tmp23 +
-                         DR_D_gyro_bias(2, 0) * _tmp13 - _tmp14 * _tmp505 + _tmp20 * _tmp508 -
-                         _tmp27 * _tmp512 + _tmp497 * _tmp517 - _tmp499 * _tmp514 -
-                         _tmp499 * _tmp515 + _tmp505 * _tmp516;
-  const Scalar _tmp519 = _DR[3] * _tmp501;
-  const Scalar _tmp520 = _tmp27 * _tmp509;
-  const Scalar _tmp521 = _DR[2] * _tmp3;
-  const Scalar _tmp522 = _DR[0] * _tmp5;
-  const Scalar _tmp523 = DR_D_gyro_bias(0, 0) * _tmp23 + DR_D_gyro_bias(1, 0) * _tmp18 -
-                         DR_D_gyro_bias(2, 0) * _tmp14 + _tmp10 * _tmp512 - _tmp13 * _tmp505 -
-                         _tmp24 * _tmp508 - _tmp497 * _tmp519 - _tmp499 * _tmp521 +
-                         _tmp499 * _tmp522 + _tmp505 * _tmp520;
-  const Scalar _tmp524 = _DR[0] * _tmp501;
-  const Scalar _tmp525 = _DR[1] * _tmp3;
-  const Scalar _tmp526 = _tmp498 * _tmp525;
-  const Scalar _tmp527 = _DR[3] * _tmp5;
-  const Scalar _tmp528 = _tmp20 * _tmp509;
-  const Scalar _tmp529 = -DR_D_gyro_bias(0, 0) * _tmp13 + DR_D_gyro_bias(1, 0) * _tmp14 +
-                         DR_D_gyro_bias(2, 0) * _tmp18 + _tmp10 * _tmp508 - _tmp23 * _tmp505 +
-                         _tmp24 * _tmp512 - _tmp497 * _tmp524 + _tmp497 * _tmp526 -
-                         _tmp499 * _tmp527 - _tmp505 * _tmp528;
-  const Scalar _tmp530 =
-      -_pose_i[0] * _tmp513 - _pose_i[1] * _tmp529 + _pose_i[2] * _tmp523 - _pose_i[3] * _tmp518;
-  const Scalar _tmp531 =
-      -_pose_i[0] * _tmp518 - _pose_i[1] * _tmp523 - _pose_i[2] * _tmp529 + _pose_i[3] * _tmp513;
-  const Scalar _tmp532 =
-      _pose_i[0] * _tmp529 - _pose_i[1] * _tmp513 - _pose_i[2] * _tmp518 - _pose_i[3] * _tmp523;
-  const Scalar _tmp533 =
-      -_pose_i[0] * _tmp523 + _pose_i[1] * _tmp518 - _pose_i[2] * _tmp513 - _pose_i[3] * _tmp529;
-  const Scalar _tmp534 = _tmp171 * (_pose_j[0] * _tmp531 - _pose_j[1] * _tmp533 +
-                                    _pose_j[2] * _tmp532 + _pose_j[3] * _tmp530);
-  const Scalar _tmp535 =
-      _pose_j[0] * _tmp530 + _pose_j[1] * _tmp532 + _pose_j[2] * _tmp533 - _pose_j[3] * _tmp531;
-  const Scalar _tmp536 = _tmp399 * _tmp535;
-  const Scalar _tmp537 = _tmp425 * _tmp535;
-  const Scalar _tmp538 = _tmp244 * _tmp536 + _tmp534 * sqrt_info(0, 0) - _tmp537 * sqrt_info(0, 0);
-  const Scalar _tmp539 =
-      _pose_j[0] * _tmp533 + _pose_j[1] * _tmp531 - _pose_j[2] * _tmp530 + _pose_j[3] * _tmp532;
-  const Scalar _tmp540 = _tmp171 * _tmp539;
-  const Scalar _tmp541 = _tmp394 * _tmp535;
-  const Scalar _tmp542 = _tmp185 * _tmp536 - _tmp185 * _tmp541 + _tmp186 * _tmp536 +
-                         _tmp534 * sqrt_info(1, 0) - _tmp537 * sqrt_info(1, 0) +
-                         _tmp540 * sqrt_info(1, 1);
-  const Scalar _tmp543 =
-      -_pose_j[0] * _tmp532 + _pose_j[1] * _tmp530 + _pose_j[2] * _tmp531 + _pose_j[3] * _tmp533;
-  const Scalar _tmp544 = _tmp190 * _tmp536 - _tmp190 * _tmp541 + _tmp191 * _tmp536 +
-                         _tmp192 * _tmp536 - _tmp192 * _tmp541 + _tmp194 * _tmp543 +
-                         _tmp534 * sqrt_info(2, 0) - _tmp537 * sqrt_info(2, 0) +
-                         _tmp540 * sqrt_info(2, 1);
-  const Scalar _tmp545 = _tmp171 * _tmp543;
-  const Scalar _tmp546 = -Dv_D_gyro_bias(0, 0) * sqrt_info(3, 3) + _tmp196 * _tmp536 -
-                         _tmp196 * _tmp541 + _tmp197 * _tmp536 - _tmp197 * _tmp541 +
-                         _tmp199 * _tmp539 + _tmp254 * _tmp536 + _tmp534 * sqrt_info(3, 0) -
-                         _tmp537 * sqrt_info(3, 0) + _tmp545 * sqrt_info(3, 2);
-  const Scalar _tmp547 = -Dv_D_gyro_bias(0, 0) * sqrt_info(4, 3) -
-                         Dv_D_gyro_bias(1, 0) * sqrt_info(4, 4) + _tmp201 * _tmp536 -
-                         _tmp201 * _tmp541 + _tmp202 * _tmp536 + _tmp203 * _tmp536 -
-                         _tmp203 * _tmp541 + _tmp534 * sqrt_info(4, 0) - _tmp537 * sqrt_info(4, 0) +
-                         _tmp540 * sqrt_info(4, 1) + _tmp545 * sqrt_info(4, 2);
-  const Scalar _tmp548 =
+  const Scalar _tmp517 = 2 * _tmp3;
+  const Scalar _tmp518 = 2 * _tmp4;
+  const Scalar _tmp519 = 2 * _tmp5;
+  const Scalar _tmp520 = DR_D_gyro_bias(0, 0) * _tmp517 + DR_D_gyro_bias(1, 0) * _tmp518 +
+                         DR_D_gyro_bias(2, 0) * _tmp519;
+  const Scalar _tmp521 = (Scalar(1) / Scalar(2)) * _tmp11 / (_tmp6 * std::sqrt(_tmp6));
+  const Scalar _tmp522 = _tmp520 * _tmp521;
+  const Scalar _tmp523 = _DR[0] * _tmp3;
+  const Scalar _tmp524 = _DR[1] * _tmp4;
+  const Scalar _tmp525 = _DR[2] * _tmp5;
+  const Scalar _tmp526 = Scalar(1.0) / (_tmp6);
+  const Scalar _tmp527 = (Scalar(1) / Scalar(4)) * _tmp526;
+  const Scalar _tmp528 = _tmp25 * _tmp527;
+  const Scalar _tmp529 = _tmp5 * _tmp528;
+  const Scalar _tmp530 = _tmp3 * _tmp520;
+  const Scalar _tmp531 = _tmp22 * _tmp527;
+  const Scalar _tmp532 = _tmp4 * _tmp520;
+  const Scalar _tmp533 = _tmp19 * _tmp527;
+  const Scalar _tmp534 = (Scalar(1) / Scalar(4)) * _tmp18;
+  const Scalar _tmp535 = -DR_D_gyro_bias(0, 0) * _tmp14 - DR_D_gyro_bias(1, 0) * _tmp13 -
+                         DR_D_gyro_bias(2, 0) * _tmp15 - _tmp520 * _tmp529 - _tmp520 * _tmp534 +
+                         _tmp522 * _tmp523 + _tmp522 * _tmp524 + _tmp522 * _tmp525 -
+                         _tmp530 * _tmp531 - _tmp532 * _tmp533;
+  const Scalar _tmp536 = _DR[3] * _tmp521;
+  const Scalar _tmp537 = _DR[1] * _tmp5;
+  const Scalar _tmp538 = _tmp5 * _tmp533;
+  const Scalar _tmp539 = _tmp10 * _tmp527;
+  const Scalar _tmp540 = (Scalar(1) / Scalar(4)) * _tmp14;
+  const Scalar _tmp541 = _DR[2] * _tmp4;
+  const Scalar _tmp542 = DR_D_gyro_bias(0, 0) * _tmp18 - DR_D_gyro_bias(1, 0) * _tmp15 +
+                         DR_D_gyro_bias(2, 0) * _tmp13 + _tmp520 * _tmp538 - _tmp520 * _tmp540 -
+                         _tmp522 * _tmp537 + _tmp522 * _tmp541 - _tmp528 * _tmp532 -
+                         _tmp530 * _tmp536 + _tmp530 * _tmp539;
+  const Scalar _tmp543 = _tmp4 * _tmp536;
+  const Scalar _tmp544 = (Scalar(1) / Scalar(4)) * _tmp13;
+  const Scalar _tmp545 = _tmp5 * _tmp531;
+  const Scalar _tmp546 = _DR[2] * _tmp3;
+  const Scalar _tmp547 = _DR[0] * _tmp5;
+  const Scalar _tmp548 = DR_D_gyro_bias(0, 0) * _tmp15 + DR_D_gyro_bias(1, 0) * _tmp18 -
+                         DR_D_gyro_bias(2, 0) * _tmp14 - _tmp520 * _tmp543 - _tmp520 * _tmp544 -
+                         _tmp520 * _tmp545 - _tmp522 * _tmp546 + _tmp522 * _tmp547 +
+                         _tmp528 * _tmp530 + _tmp532 * _tmp539;
+  const Scalar _tmp549 = _DR[0] * _tmp4;
+  const Scalar _tmp550 = _DR[1] * _tmp3;
+  const Scalar _tmp551 = _tmp5 * _tmp536;
+  const Scalar _tmp552 = _tmp5 * _tmp539;
+  const Scalar _tmp553 = (Scalar(1) / Scalar(4)) * _tmp15;
+  const Scalar _tmp554 = -DR_D_gyro_bias(0, 0) * _tmp13 + DR_D_gyro_bias(1, 0) * _tmp14 +
+                         DR_D_gyro_bias(2, 0) * _tmp18 - _tmp520 * _tmp551 + _tmp520 * _tmp552 -
+                         _tmp520 * _tmp553 - _tmp522 * _tmp549 + _tmp522 * _tmp550 -
+                         _tmp530 * _tmp533 + _tmp531 * _tmp532;
+  const Scalar _tmp555 =
+      -_pose_i[0] * _tmp535 - _pose_i[1] * _tmp554 + _pose_i[2] * _tmp548 - _pose_i[3] * _tmp542;
+  const Scalar _tmp556 =
+      -_pose_i[0] * _tmp542 - _pose_i[1] * _tmp548 - _pose_i[2] * _tmp554 + _pose_i[3] * _tmp535;
+  const Scalar _tmp557 =
+      _pose_i[0] * _tmp554 - _pose_i[1] * _tmp535 - _pose_i[2] * _tmp542 - _pose_i[3] * _tmp548;
+  const Scalar _tmp558 =
+      -_pose_i[0] * _tmp548 + _pose_i[1] * _tmp542 - _pose_i[2] * _tmp535 - _pose_i[3] * _tmp554;
+  const Scalar _tmp559 = _tmp167 * (_pose_j[0] * _tmp556 - _pose_j[1] * _tmp558 +
+                                    _pose_j[2] * _tmp557 + _pose_j[3] * _tmp555);
+  const Scalar _tmp560 = _tmp55 * _tmp559;
+  const Scalar _tmp561 =
+      _pose_j[0] * _tmp555 + _pose_j[1] * _tmp557 + _pose_j[2] * _tmp558 - _pose_j[3] * _tmp556;
+  const Scalar _tmp562 = _tmp402 * _tmp561;
+  const Scalar _tmp563 = -_tmp400 * _tmp561 + _tmp560 * sqrt_info(0, 0) + _tmp562 * sqrt_info(0, 0);
+  const Scalar _tmp564 =
+      _pose_j[0] * _tmp558 + _pose_j[1] * _tmp556 - _pose_j[2] * _tmp555 + _pose_j[3] * _tmp557;
+  const Scalar _tmp565 = _tmp168 * _tmp564;
+  const Scalar _tmp566 = _tmp399 * _tmp561;
+  const Scalar _tmp567 = _tmp401 * _tmp561;
+  const Scalar _tmp568 = _tmp406 * _tmp561;
+  const Scalar _tmp569 = _tmp183 * _tmp567 + _tmp184 * _tmp567 + _tmp560 * sqrt_info(1, 0) +
+                         _tmp565 * sqrt_info(1, 1) - _tmp566 * sqrt_info(1, 0) -
+                         _tmp568 * sqrt_info(1, 1);
+  const Scalar _tmp570 =
+      -_pose_j[0] * _tmp557 + _pose_j[1] * _tmp555 + _pose_j[2] * _tmp556 + _pose_j[3] * _tmp558;
+  const Scalar _tmp571 = _tmp168 * _tmp570;
+  const Scalar _tmp572 = _tmp423 * _tmp561;
+  const Scalar _tmp573 = _tmp188 * _tmp567 + _tmp189 * _tmp567 - _tmp416 * _tmp561 +
+                         _tmp560 * sqrt_info(2, 0) + _tmp562 * sqrt_info(2, 0) +
+                         _tmp565 * sqrt_info(2, 1) - _tmp568 * sqrt_info(2, 1) +
+                         _tmp571 * sqrt_info(2, 2) - _tmp572 * sqrt_info(2, 2);
+  const Scalar _tmp574 = -Dv_D_gyro_bias(0, 0) * sqrt_info(3, 3) + _tmp427 * _tmp561 +
+                         _tmp428 * _tmp561 - _tmp469 * _tmp561 + _tmp560 * sqrt_info(3, 0) +
+                         _tmp562 * sqrt_info(3, 0) + _tmp565 * sqrt_info(3, 1) -
+                         _tmp568 * sqrt_info(3, 1) + _tmp571 * sqrt_info(3, 2) -
+                         _tmp572 * sqrt_info(3, 2);
+  const Scalar _tmp575 =
+      -Dv_D_gyro_bias(0, 0) * sqrt_info(4, 3) - Dv_D_gyro_bias(1, 0) * sqrt_info(4, 4) +
+      _tmp197 * _tmp567 + _tmp198 * _tmp567 - _tmp471 * _tmp561 + _tmp560 * sqrt_info(4, 0) +
+      _tmp562 * sqrt_info(4, 0) + _tmp565 * sqrt_info(4, 1) - _tmp566 * sqrt_info(4, 0) +
+      _tmp571 * sqrt_info(4, 2) - _tmp572 * sqrt_info(4, 2);
+  const Scalar _tmp576 =
       -Dv_D_gyro_bias(0, 0) * sqrt_info(5, 3) - Dv_D_gyro_bias(1, 0) * sqrt_info(5, 4) -
-      Dv_D_gyro_bias(2, 0) * sqrt_info(5, 5) + _tmp212 * _tmp536 - _tmp212 * _tmp541 +
-      _tmp221 * _tmp536 - _tmp221 * _tmp541 + _tmp222 * _tmp536 - _tmp222 * _tmp541 +
-      _tmp534 * sqrt_info(5, 0) + _tmp540 * sqrt_info(5, 1) + _tmp545 * sqrt_info(5, 2);
-  const Scalar _tmp549 =
+      Dv_D_gyro_bias(2, 0) * sqrt_info(5, 5) + _tmp216 * _tmp567 - _tmp431 * _tmp561 +
+      _tmp432 * _tmp561 + _tmp560 * sqrt_info(5, 0) + _tmp562 * sqrt_info(5, 0) +
+      _tmp565 * sqrt_info(5, 1) - _tmp566 * sqrt_info(5, 0) + _tmp571 * sqrt_info(5, 2) -
+      _tmp572 * sqrt_info(5, 2);
+  const Scalar _tmp577 =
       -Dp_D_gyro_bias(0, 0) * sqrt_info(6, 6) - Dv_D_gyro_bias(0, 0) * sqrt_info(6, 3) -
-      Dv_D_gyro_bias(1, 0) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 0) * sqrt_info(6, 5) -
-      _tmp224 * _tmp541 + _tmp225 * _tmp536 - _tmp225 * _tmp541 + _tmp226 * _tmp543 +
-      _tmp269 * _tmp536 + _tmp420 * _tmp535 + _tmp534 * sqrt_info(6, 0) -
-      _tmp537 * sqrt_info(6, 0) + _tmp540 * sqrt_info(6, 1);
-  const Scalar _tmp550 =
+      Dv_D_gyro_bias(1, 0) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 0) * sqrt_info(6, 5) +
+      _tmp218 * _tmp567 + _tmp219 * _tmp567 - _tmp474 * _tmp561 + _tmp560 * sqrt_info(6, 0) +
+      _tmp562 * sqrt_info(6, 0) + _tmp565 * sqrt_info(6, 1) - _tmp566 * sqrt_info(6, 0) +
+      _tmp571 * sqrt_info(6, 2) - _tmp572 * sqrt_info(6, 2);
+  const Scalar _tmp578 =
       -Dp_D_gyro_bias(0, 0) * sqrt_info(7, 6) - Dp_D_gyro_bias(1, 0) * sqrt_info(7, 7) -
       Dv_D_gyro_bias(0, 0) * sqrt_info(7, 3) - Dv_D_gyro_bias(1, 0) * sqrt_info(7, 4) -
-      Dv_D_gyro_bias(2, 0) * sqrt_info(7, 5) + _tmp132 * _tmp536 - _tmp132 * _tmp541 +
-      _tmp229 * _tmp536 - _tmp229 * _tmp541 + _tmp271 * _tmp536 + _tmp534 * sqrt_info(7, 0) -
-      _tmp537 * sqrt_info(7, 0) + _tmp540 * sqrt_info(7, 1) + _tmp545 * sqrt_info(7, 2);
-  const Scalar _tmp551 =
+      Dv_D_gyro_bias(2, 0) * sqrt_info(7, 5) + _tmp221 * _tmp567 + _tmp224 * _tmp564 +
+      _tmp435 * _tmp561 + _tmp560 * sqrt_info(7, 0) + _tmp562 * sqrt_info(7, 0) -
+      _tmp566 * sqrt_info(7, 0) - _tmp568 * sqrt_info(7, 1) + _tmp571 * sqrt_info(7, 2) -
+      _tmp572 * sqrt_info(7, 2);
+  const Scalar _tmp579 =
       -Dp_D_gyro_bias(0, 0) * sqrt_info(8, 6) - Dp_D_gyro_bias(1, 0) * sqrt_info(8, 7) -
       Dp_D_gyro_bias(2, 0) * sqrt_info(8, 8) - Dv_D_gyro_bias(0, 0) * sqrt_info(8, 3) -
       Dv_D_gyro_bias(1, 0) * sqrt_info(8, 4) - Dv_D_gyro_bias(2, 0) * sqrt_info(8, 5) +
-      _tmp231 * _tmp536 + _tmp232 * _tmp536 - _tmp232 * _tmp541 + _tmp233 * _tmp536 -
-      _tmp233 * _tmp541 + _tmp534 * sqrt_info(8, 0) - _tmp537 * sqrt_info(8, 0) +
-      _tmp540 * sqrt_info(8, 1) + _tmp545 * sqrt_info(8, 2);
-  const Scalar _tmp552 = DR_D_gyro_bias(0, 1) * _tmp494 + DR_D_gyro_bias(1, 1) * _tmp495 +
-                         DR_D_gyro_bias(2, 1) * _tmp496;
-  const Scalar _tmp553 = _tmp498 * _tmp552;
-  const Scalar _tmp554 = (Scalar(1) / Scalar(4)) * _tmp552;
-  const Scalar _tmp555 = _tmp507 * _tmp554;
-  const Scalar _tmp556 = _tmp27 * _tmp511;
-  const Scalar _tmp557 = DR_D_gyro_bias(0, 1) * _tmp18 - DR_D_gyro_bias(1, 1) * _tmp23 +
-                         DR_D_gyro_bias(2, 1) * _tmp13 - _tmp14 * _tmp554 + _tmp20 * _tmp555 -
-                         _tmp514 * _tmp553 - _tmp515 * _tmp553 + _tmp516 * _tmp554 +
-                         _tmp517 * _tmp552 - _tmp554 * _tmp556;
-  const Scalar _tmp558 = _tmp10 * _tmp511;
-  const Scalar _tmp559 = DR_D_gyro_bias(0, 1) * _tmp23 + DR_D_gyro_bias(1, 1) * _tmp18 -
-                         DR_D_gyro_bias(2, 1) * _tmp14 - _tmp13 * _tmp554 - _tmp24 * _tmp555 -
-                         _tmp519 * _tmp552 + _tmp520 * _tmp554 - _tmp521 * _tmp553 +
-                         _tmp522 * _tmp553 + _tmp554 * _tmp558;
-  const Scalar _tmp560 = _tmp24 * _tmp511;
-  const Scalar _tmp561 = -DR_D_gyro_bias(0, 1) * _tmp13 + DR_D_gyro_bias(1, 1) * _tmp14 +
-                         DR_D_gyro_bias(2, 1) * _tmp18 + _tmp10 * _tmp555 - _tmp23 * _tmp554 -
-                         _tmp524 * _tmp552 + _tmp526 * _tmp552 - _tmp527 * _tmp553 -
-                         _tmp528 * _tmp554 + _tmp554 * _tmp560;
-  const Scalar _tmp562 = _tmp27 * _tmp507;
-  const Scalar _tmp563 = _tmp20 * _tmp511;
-  const Scalar _tmp564 = -DR_D_gyro_bias(0, 1) * _tmp14 - DR_D_gyro_bias(1, 1) * _tmp13 -
-                         DR_D_gyro_bias(2, 1) * _tmp23 - _tmp18 * _tmp554 + _tmp500 * _tmp553 +
-                         _tmp502 * _tmp552 + _tmp504 * _tmp552 - _tmp510 * _tmp554 -
-                         _tmp554 * _tmp562 - _tmp554 * _tmp563;
-  const Scalar _tmp565 =
-      _pose_i[0] * _tmp561 - _pose_i[1] * _tmp564 - _pose_i[2] * _tmp557 - _pose_i[3] * _tmp559;
-  const Scalar _tmp566 =
-      -_pose_i[0] * _tmp559 + _pose_i[1] * _tmp557 - _pose_i[2] * _tmp564 - _pose_i[3] * _tmp561;
-  const Scalar _tmp567 =
-      -_pose_i[0] * _tmp564 - _pose_i[1] * _tmp561 + _pose_i[2] * _tmp559 - _pose_i[3] * _tmp557;
-  const Scalar _tmp568 =
-      -_pose_i[0] * _tmp557 - _pose_i[1] * _tmp559 - _pose_i[2] * _tmp561 + _pose_i[3] * _tmp564;
-  const Scalar _tmp569 =
-      _pose_j[0] * _tmp567 + _pose_j[1] * _tmp565 + _pose_j[2] * _tmp566 - _pose_j[3] * _tmp568;
-  const Scalar _tmp570 = _tmp425 * _tmp569;
-  const Scalar _tmp571 = _tmp399 * _tmp569;
-  const Scalar _tmp572 = _tmp171 * (_pose_j[0] * _tmp568 - _pose_j[1] * _tmp566 +
-                                    _pose_j[2] * _tmp565 + _pose_j[3] * _tmp567);
-  const Scalar _tmp573 = _tmp244 * _tmp571 - _tmp570 * sqrt_info(0, 0) + _tmp572 * sqrt_info(0, 0);
-  const Scalar _tmp574 =
-      _pose_j[0] * _tmp566 + _pose_j[1] * _tmp568 - _pose_j[2] * _tmp567 + _pose_j[3] * _tmp565;
-  const Scalar _tmp575 = _tmp171 * _tmp574;
-  const Scalar _tmp576 = _tmp394 * _tmp569;
-  const Scalar _tmp577 = _tmp185 * _tmp571 - _tmp185 * _tmp576 + _tmp186 * _tmp571 -
-                         _tmp570 * sqrt_info(1, 0) + _tmp572 * sqrt_info(1, 0) +
-                         _tmp575 * sqrt_info(1, 1);
-  const Scalar _tmp578 =
-      -_pose_j[0] * _tmp565 + _pose_j[1] * _tmp567 + _pose_j[2] * _tmp568 + _pose_j[3] * _tmp566;
-  const Scalar _tmp579 = _tmp190 * _tmp571 - _tmp190 * _tmp576 + _tmp191 * _tmp571 +
-                         _tmp192 * _tmp571 - _tmp192 * _tmp576 + _tmp194 * _tmp578 -
-                         _tmp570 * sqrt_info(2, 0) + _tmp572 * sqrt_info(2, 0) +
-                         _tmp575 * sqrt_info(2, 1);
-  const Scalar _tmp580 = _tmp171 * _tmp578;
-  const Scalar _tmp581 = -Dv_D_gyro_bias(0, 1) * sqrt_info(3, 3) + _tmp196 * _tmp571 -
-                         _tmp196 * _tmp576 + _tmp197 * _tmp571 - _tmp197 * _tmp576 +
-                         _tmp199 * _tmp574 + _tmp254 * _tmp571 - _tmp570 * sqrt_info(3, 0) +
-                         _tmp572 * sqrt_info(3, 0) + _tmp580 * sqrt_info(3, 2);
-  const Scalar _tmp582 = -Dv_D_gyro_bias(0, 1) * sqrt_info(4, 3) -
-                         Dv_D_gyro_bias(1, 1) * sqrt_info(4, 4) + _tmp201 * _tmp571 -
-                         _tmp201 * _tmp576 + _tmp202 * _tmp571 + _tmp203 * _tmp571 -
-                         _tmp203 * _tmp576 - _tmp570 * sqrt_info(4, 0) + _tmp572 * sqrt_info(4, 0) +
-                         _tmp575 * sqrt_info(4, 1) + _tmp580 * sqrt_info(4, 2);
-  const Scalar _tmp583 =
+      _tmp131 * _tmp559 + _tmp133 * _tmp567 + _tmp226 * _tmp567 + _tmp228 * _tmp570 -
+      _tmp437 * _tmp561 + _tmp562 * sqrt_info(8, 0) + _tmp565 * sqrt_info(8, 1) -
+      _tmp566 * sqrt_info(8, 0) - _tmp568 * sqrt_info(8, 1);
+  const Scalar _tmp580 = DR_D_gyro_bias(2, 1) * _tmp12;
+  const Scalar _tmp581 = DR_D_gyro_bias(0, 1) * _tmp517 + DR_D_gyro_bias(1, 1) * _tmp518 +
+                         DR_D_gyro_bias(2, 1) * _tmp519;
+  const Scalar _tmp582 = _tmp536 * _tmp581;
+  const Scalar _tmp583 = _tmp521 * _tmp581;
+  const Scalar _tmp584 = (Scalar(1) / Scalar(4)) * _tmp581;
+  const Scalar _tmp585 = _tmp526 * _tmp584;
+  const Scalar _tmp586 = _tmp5 * _tmp585;
+  const Scalar _tmp587 = _tmp10 * _tmp585;
+  const Scalar _tmp588 = _tmp25 * _tmp585;
+  const Scalar _tmp589 = DR_D_gyro_bias(0, 1) * _tmp18 - DR_D_gyro_bias(1, 1) * _tmp15 +
+                         _DR[1] * _tmp580 - _tmp14 * _tmp584 + _tmp19 * _tmp586 - _tmp3 * _tmp582 +
+                         _tmp3 * _tmp587 - _tmp4 * _tmp588 - _tmp537 * _tmp583 + _tmp541 * _tmp583;
+  const Scalar _tmp590 = _tmp4 * _tmp585;
+  const Scalar _tmp591 = DR_D_gyro_bias(0, 1) * _tmp15 + DR_D_gyro_bias(1, 1) * _tmp18 -
+                         DR_D_gyro_bias(2, 1) * _tmp14 + _tmp10 * _tmp590 - _tmp13 * _tmp584 -
+                         _tmp22 * _tmp586 + _tmp3 * _tmp588 - _tmp543 * _tmp581 -
+                         _tmp546 * _tmp583 + _tmp547 * _tmp583;
+  const Scalar _tmp592 = _tmp3 * _tmp585;
+  const Scalar _tmp593 = -DR_D_gyro_bias(0, 1) * _tmp13 + DR_D_gyro_bias(1, 1) * _tmp14 +
+                         _DR[3] * _tmp580 - _tmp15 * _tmp584 - _tmp19 * _tmp592 + _tmp22 * _tmp590 -
+                         _tmp5 * _tmp582 + _tmp5 * _tmp587 - _tmp549 * _tmp583 + _tmp550 * _tmp583;
+  const Scalar _tmp594 = -DR_D_gyro_bias(0, 1) * _tmp14 - DR_D_gyro_bias(1, 1) * _tmp13 -
+                         DR_D_gyro_bias(2, 1) * _tmp15 - _tmp18 * _tmp584 - _tmp19 * _tmp590 -
+                         _tmp22 * _tmp592 - _tmp5 * _tmp588 + _tmp523 * _tmp583 +
+                         _tmp524 * _tmp583 + _tmp525 * _tmp583;
+  const Scalar _tmp595 =
+      _pose_i[0] * _tmp593 - _pose_i[1] * _tmp594 - _pose_i[2] * _tmp589 - _pose_i[3] * _tmp591;
+  const Scalar _tmp596 =
+      -_pose_i[0] * _tmp591 + _pose_i[1] * _tmp589 - _pose_i[2] * _tmp594 - _pose_i[3] * _tmp593;
+  const Scalar _tmp597 =
+      -_pose_i[0] * _tmp594 - _pose_i[1] * _tmp593 + _pose_i[2] * _tmp591 - _pose_i[3] * _tmp589;
+  const Scalar _tmp598 =
+      -_pose_i[0] * _tmp589 - _pose_i[1] * _tmp591 - _pose_i[2] * _tmp593 + _pose_i[3] * _tmp594;
+  const Scalar _tmp599 =
+      _pose_j[0] * _tmp597 + _pose_j[1] * _tmp595 + _pose_j[2] * _tmp596 - _pose_j[3] * _tmp598;
+  const Scalar _tmp600 = _tmp402 * _tmp599;
+  const Scalar _tmp601 =
+      _pose_j[0] * _tmp598 - _pose_j[1] * _tmp596 + _pose_j[2] * _tmp595 + _pose_j[3] * _tmp597;
+  const Scalar _tmp602 = _tmp168 * _tmp601;
+  const Scalar _tmp603 = -_tmp400 * _tmp599 + _tmp600 * sqrt_info(0, 0) + _tmp602 * sqrt_info(0, 0);
+  const Scalar _tmp604 = _tmp401 * _tmp599;
+  const Scalar _tmp605 = _tmp406 * _tmp599;
+  const Scalar _tmp606 =
+      _pose_j[0] * _tmp596 + _pose_j[1] * _tmp598 - _pose_j[2] * _tmp597 + _pose_j[3] * _tmp595;
+  const Scalar _tmp607 = _tmp168 * _tmp606;
+  const Scalar _tmp608 = _tmp399 * _tmp599;
+  const Scalar _tmp609 = _tmp183 * _tmp604 + _tmp184 * _tmp604 + _tmp602 * sqrt_info(1, 0) -
+                         _tmp605 * sqrt_info(1, 1) + _tmp607 * sqrt_info(1, 1) -
+                         _tmp608 * sqrt_info(1, 0);
+  const Scalar _tmp610 = _tmp423 * _tmp599;
+  const Scalar _tmp611 =
+      -_pose_j[0] * _tmp595 + _pose_j[1] * _tmp597 + _pose_j[2] * _tmp598 + _pose_j[3] * _tmp596;
+  const Scalar _tmp612 = _tmp168 * _tmp611;
+  const Scalar _tmp613 = _tmp188 * _tmp604 + _tmp189 * _tmp604 - _tmp416 * _tmp599 +
+                         _tmp600 * sqrt_info(2, 0) + _tmp602 * sqrt_info(2, 0) -
+                         _tmp605 * sqrt_info(2, 1) + _tmp607 * sqrt_info(2, 1) -
+                         _tmp610 * sqrt_info(2, 2) + _tmp612 * sqrt_info(2, 2);
+  const Scalar _tmp614 = -Dv_D_gyro_bias(0, 1) * sqrt_info(3, 3) + _tmp427 * _tmp599 +
+                         _tmp428 * _tmp599 + _tmp600 * sqrt_info(3, 0) + _tmp602 * sqrt_info(3, 0) -
+                         _tmp605 * sqrt_info(3, 1) + _tmp607 * sqrt_info(3, 1) -
+                         _tmp608 * sqrt_info(3, 0) - _tmp610 * sqrt_info(3, 2) +
+                         _tmp612 * sqrt_info(3, 2);
+  const Scalar _tmp615 =
+      -Dv_D_gyro_bias(0, 1) * sqrt_info(4, 3) - Dv_D_gyro_bias(1, 1) * sqrt_info(4, 4) +
+      _tmp197 * _tmp604 + _tmp198 * _tmp604 + _tmp600 * sqrt_info(4, 0) +
+      _tmp602 * sqrt_info(4, 0) - _tmp605 * sqrt_info(4, 1) + _tmp607 * sqrt_info(4, 1) -
+      _tmp608 * sqrt_info(4, 0) - _tmp610 * sqrt_info(4, 2) + _tmp612 * sqrt_info(4, 2);
+  const Scalar _tmp616 =
       -Dv_D_gyro_bias(0, 1) * sqrt_info(5, 3) - Dv_D_gyro_bias(1, 1) * sqrt_info(5, 4) -
-      Dv_D_gyro_bias(2, 1) * sqrt_info(5, 5) + _tmp212 * _tmp571 - _tmp212 * _tmp576 +
-      _tmp221 * _tmp571 - _tmp221 * _tmp576 + _tmp222 * _tmp571 - _tmp222 * _tmp576 +
-      _tmp572 * sqrt_info(5, 0) + _tmp575 * sqrt_info(5, 1) + _tmp580 * sqrt_info(5, 2);
-  const Scalar _tmp584 =
+      Dv_D_gyro_bias(2, 1) * sqrt_info(5, 5) + _tmp216 * _tmp604 - _tmp431 * _tmp599 +
+      _tmp432 * _tmp599 + _tmp600 * sqrt_info(5, 0) + _tmp602 * sqrt_info(5, 0) +
+      _tmp607 * sqrt_info(5, 1) - _tmp608 * sqrt_info(5, 0) - _tmp610 * sqrt_info(5, 2) +
+      _tmp612 * sqrt_info(5, 2);
+  const Scalar _tmp617 =
       -Dp_D_gyro_bias(0, 1) * sqrt_info(6, 6) - Dv_D_gyro_bias(0, 1) * sqrt_info(6, 3) -
-      Dv_D_gyro_bias(1, 1) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 1) * sqrt_info(6, 5) -
-      _tmp224 * _tmp576 + _tmp225 * _tmp571 - _tmp225 * _tmp576 + _tmp226 * _tmp578 +
-      _tmp269 * _tmp571 + _tmp420 * _tmp569 - _tmp570 * sqrt_info(6, 0) +
-      _tmp572 * sqrt_info(6, 0) + _tmp575 * sqrt_info(6, 1);
-  const Scalar _tmp585 =
+      Dv_D_gyro_bias(1, 1) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 1) * sqrt_info(6, 5) +
+      _tmp218 * _tmp604 + _tmp219 * _tmp604 + _tmp600 * sqrt_info(6, 0) +
+      _tmp602 * sqrt_info(6, 0) - _tmp605 * sqrt_info(6, 1) + _tmp607 * sqrt_info(6, 1) -
+      _tmp608 * sqrt_info(6, 0) - _tmp610 * sqrt_info(6, 2) + _tmp612 * sqrt_info(6, 2);
+  const Scalar _tmp618 =
       -Dp_D_gyro_bias(0, 1) * sqrt_info(7, 6) - Dp_D_gyro_bias(1, 1) * sqrt_info(7, 7) -
       Dv_D_gyro_bias(0, 1) * sqrt_info(7, 3) - Dv_D_gyro_bias(1, 1) * sqrt_info(7, 4) -
-      Dv_D_gyro_bias(2, 1) * sqrt_info(7, 5) + _tmp132 * _tmp571 - _tmp132 * _tmp576 +
-      _tmp229 * _tmp571 - _tmp229 * _tmp576 + _tmp271 * _tmp571 - _tmp570 * sqrt_info(7, 0) +
-      _tmp572 * sqrt_info(7, 0) + _tmp575 * sqrt_info(7, 1) + _tmp580 * sqrt_info(7, 2);
-  const Scalar _tmp586 =
+      Dv_D_gyro_bias(2, 1) * sqrt_info(7, 5) + _tmp221 * _tmp604 + _tmp224 * _tmp606 +
+      _tmp435 * _tmp599 + _tmp600 * sqrt_info(7, 0) + _tmp602 * sqrt_info(7, 0) -
+      _tmp605 * sqrt_info(7, 1) - _tmp608 * sqrt_info(7, 0) - _tmp610 * sqrt_info(7, 2) +
+      _tmp612 * sqrt_info(7, 2);
+  const Scalar _tmp619 =
       -Dp_D_gyro_bias(0, 1) * sqrt_info(8, 6) - Dp_D_gyro_bias(1, 1) * sqrt_info(8, 7) -
       Dp_D_gyro_bias(2, 1) * sqrt_info(8, 8) - Dv_D_gyro_bias(0, 1) * sqrt_info(8, 3) -
       Dv_D_gyro_bias(1, 1) * sqrt_info(8, 4) - Dv_D_gyro_bias(2, 1) * sqrt_info(8, 5) +
-      _tmp231 * _tmp571 + _tmp232 * _tmp571 - _tmp232 * _tmp576 + _tmp233 * _tmp571 -
-      _tmp233 * _tmp576 - _tmp570 * sqrt_info(8, 0) + _tmp572 * sqrt_info(8, 0) +
-      _tmp575 * sqrt_info(8, 1) + _tmp580 * sqrt_info(8, 2);
-  const Scalar _tmp587 = DR_D_gyro_bias(0, 2) * _tmp494 + DR_D_gyro_bias(1, 2) * _tmp495 +
-                         DR_D_gyro_bias(2, 2) * _tmp496;
-  const Scalar _tmp588 = (Scalar(1) / Scalar(4)) * _tmp587;
-  const Scalar _tmp589 = _tmp507 * _tmp588;
-  const Scalar _tmp590 = _tmp498 * _tmp587;
-  const Scalar _tmp591 = DR_D_gyro_bias(0, 2) * _tmp23 + DR_D_gyro_bias(1, 2) * _tmp18 -
-                         DR_D_gyro_bias(2, 2) * _tmp14 - _tmp13 * _tmp588 - _tmp24 * _tmp589 -
-                         _tmp519 * _tmp587 + _tmp520 * _tmp588 - _tmp521 * _tmp590 +
-                         _tmp522 * _tmp590 + _tmp558 * _tmp588;
-  const Scalar _tmp592 = -DR_D_gyro_bias(0, 2) * _tmp14 - DR_D_gyro_bias(1, 2) * _tmp13 -
-                         DR_D_gyro_bias(2, 2) * _tmp23 - _tmp18 * _tmp588 + _tmp500 * _tmp590 +
-                         _tmp502 * _tmp587 + _tmp503 * _tmp590 - _tmp510 * _tmp588 -
-                         _tmp562 * _tmp588 - _tmp563 * _tmp588;
-  const Scalar _tmp593 = DR_D_gyro_bias(0, 2) * _tmp18 - DR_D_gyro_bias(1, 2) * _tmp23 +
-                         DR_D_gyro_bias(2, 2) * _tmp13 - _tmp14 * _tmp588 + _tmp20 * _tmp589 -
-                         _tmp514 * _tmp590 - _tmp515 * _tmp590 + _tmp516 * _tmp588 +
-                         _tmp517 * _tmp587 - _tmp556 * _tmp588;
-  const Scalar _tmp594 = -DR_D_gyro_bias(0, 2) * _tmp13 + DR_D_gyro_bias(1, 2) * _tmp14 +
-                         DR_D_gyro_bias(2, 2) * _tmp18 + _tmp10 * _tmp589 - _tmp23 * _tmp588 -
-                         _tmp524 * _tmp587 + _tmp525 * _tmp590 - _tmp527 * _tmp590 -
-                         _tmp528 * _tmp588 + _tmp560 * _tmp588;
-  const Scalar _tmp595 =
-      -_pose_i[0] * _tmp593 - _pose_i[1] * _tmp591 - _pose_i[2] * _tmp594 + _pose_i[3] * _tmp592;
-  const Scalar _tmp596 =
-      -_pose_i[0] * _tmp592 - _pose_i[1] * _tmp594 + _pose_i[2] * _tmp591 - _pose_i[3] * _tmp593;
-  const Scalar _tmp597 =
-      _pose_i[0] * _tmp594 - _pose_i[1] * _tmp592 - _pose_i[2] * _tmp593 - _pose_i[3] * _tmp591;
-  const Scalar _tmp598 =
-      -_pose_i[0] * _tmp591 + _pose_i[1] * _tmp593 - _pose_i[2] * _tmp592 - _pose_i[3] * _tmp594;
-  const Scalar _tmp599 = _tmp171 * (_pose_j[0] * _tmp595 - _pose_j[1] * _tmp598 +
-                                    _pose_j[2] * _tmp597 + _pose_j[3] * _tmp596);
-  const Scalar _tmp600 =
-      _pose_j[0] * _tmp596 + _pose_j[1] * _tmp597 + _pose_j[2] * _tmp598 - _pose_j[3] * _tmp595;
-  const Scalar _tmp601 = _tmp394 * _tmp600;
-  const Scalar _tmp602 = _tmp50 * _tmp601;
-  const Scalar _tmp603 = _tmp399 * _tmp600;
-  const Scalar _tmp604 = _tmp244 * _tmp603 + _tmp599 * sqrt_info(0, 0) - _tmp602 * sqrt_info(0, 0);
-  const Scalar _tmp605 =
-      _pose_j[0] * _tmp598 + _pose_j[1] * _tmp595 - _pose_j[2] * _tmp596 + _pose_j[3] * _tmp597;
-  const Scalar _tmp606 = _tmp171 * _tmp605;
-  const Scalar _tmp607 = -_tmp185 * _tmp601 + _tmp185 * _tmp603 + _tmp186 * _tmp603 +
-                         _tmp599 * sqrt_info(1, 0) - _tmp602 * sqrt_info(1, 0) +
-                         _tmp606 * sqrt_info(1, 1);
-  const Scalar _tmp608 =
-      -_pose_j[0] * _tmp597 + _pose_j[1] * _tmp596 + _pose_j[2] * _tmp595 + _pose_j[3] * _tmp598;
-  const Scalar _tmp609 = _tmp601 * _tmp77;
-  const Scalar _tmp610 = -_tmp190 * _tmp601 + _tmp190 * _tmp603 + _tmp191 * _tmp603 +
-                         _tmp192 * _tmp603 + _tmp194 * _tmp608 + _tmp599 * sqrt_info(2, 0) -
-                         _tmp602 * sqrt_info(2, 0) + _tmp606 * sqrt_info(2, 1) -
-                         _tmp609 * sqrt_info(2, 2);
-  const Scalar _tmp611 = _tmp171 * _tmp608;
-  const Scalar _tmp612 = -Dv_D_gyro_bias(0, 2) * sqrt_info(3, 3) - _tmp196 * _tmp601 +
-                         _tmp196 * _tmp603 - _tmp197 * _tmp601 + _tmp197 * _tmp603 +
-                         _tmp199 * _tmp605 + _tmp254 * _tmp603 + _tmp599 * sqrt_info(3, 0) -
-                         _tmp602 * sqrt_info(3, 0) + _tmp611 * sqrt_info(3, 2);
-  const Scalar _tmp613 =
-      -Dv_D_gyro_bias(0, 2) * sqrt_info(4, 3) - Dv_D_gyro_bias(1, 2) * sqrt_info(4, 4) -
-      _tmp201 * _tmp601 + _tmp201 * _tmp603 + _tmp202 * _tmp603 + _tmp203 * _tmp603 +
-      _tmp599 * sqrt_info(4, 0) - _tmp602 * sqrt_info(4, 0) + _tmp606 * sqrt_info(4, 1) -
-      _tmp609 * sqrt_info(4, 2) + _tmp611 * sqrt_info(4, 2);
-  const Scalar _tmp614 =
+      _tmp133 * _tmp604 + _tmp226 * _tmp604 + _tmp227 * _tmp601 + _tmp228 * _tmp611 +
+      _tmp229 * _tmp606 - _tmp437 * _tmp599 + _tmp600 * sqrt_info(8, 0) -
+      _tmp605 * sqrt_info(8, 1) - _tmp608 * sqrt_info(8, 0);
+  const Scalar _tmp620 = DR_D_gyro_bias(0, 2) * _tmp517 + DR_D_gyro_bias(1, 2) * _tmp518 +
+                         DR_D_gyro_bias(2, 2) * _tmp519;
+  const Scalar _tmp621 = _tmp4 * _tmp620;
+  const Scalar _tmp622 = _tmp3 * _tmp620;
+  const Scalar _tmp623 = _tmp521 * _tmp620;
+  const Scalar _tmp624 = _tmp3 * _tmp623;
+  const Scalar _tmp625 = DR_D_gyro_bias(0, 2) * _tmp15 + DR_D_gyro_bias(1, 2) * _tmp18 -
+                         DR_D_gyro_bias(2, 2) * _tmp14 - _DR[2] * _tmp624 + _tmp528 * _tmp622 -
+                         _tmp536 * _tmp621 + _tmp539 * _tmp621 - _tmp544 * _tmp620 -
+                         _tmp545 * _tmp620 + _tmp547 * _tmp623;
+  const Scalar _tmp626 = _tmp521 * _tmp621;
+  const Scalar _tmp627 = _tmp5 * _tmp623;
+  const Scalar _tmp628 = -DR_D_gyro_bias(0, 2) * _tmp14 - DR_D_gyro_bias(1, 2) * _tmp13 -
+                         DR_D_gyro_bias(2, 2) * _tmp15 + _DR[0] * _tmp624 + _DR[1] * _tmp626 +
+                         _DR[2] * _tmp627 - _tmp529 * _tmp620 - _tmp531 * _tmp622 -
+                         _tmp533 * _tmp621 - _tmp534 * _tmp620;
+  const Scalar _tmp629 = DR_D_gyro_bias(0, 2) * _tmp18 - DR_D_gyro_bias(1, 2) * _tmp15 +
+                         DR_D_gyro_bias(2, 2) * _tmp13 - _DR[1] * _tmp627 + _DR[2] * _tmp626 -
+                         _tmp528 * _tmp621 - _tmp536 * _tmp622 + _tmp538 * _tmp620 +
+                         _tmp539 * _tmp622 - _tmp540 * _tmp620;
+  const Scalar _tmp630 = -DR_D_gyro_bias(0, 2) * _tmp13 + DR_D_gyro_bias(1, 2) * _tmp14 +
+                         DR_D_gyro_bias(2, 2) * _tmp18 - _DR[0] * _tmp626 + _tmp531 * _tmp621 -
+                         _tmp533 * _tmp622 + _tmp550 * _tmp623 - _tmp551 * _tmp620 +
+                         _tmp552 * _tmp620 - _tmp553 * _tmp620;
+  const Scalar _tmp631 =
+      -_pose_i[0] * _tmp629 - _pose_i[1] * _tmp625 - _pose_i[2] * _tmp630 + _pose_i[3] * _tmp628;
+  const Scalar _tmp632 =
+      -_pose_i[0] * _tmp628 - _pose_i[1] * _tmp630 + _pose_i[2] * _tmp625 - _pose_i[3] * _tmp629;
+  const Scalar _tmp633 =
+      _pose_i[0] * _tmp630 - _pose_i[1] * _tmp628 - _pose_i[2] * _tmp629 - _pose_i[3] * _tmp625;
+  const Scalar _tmp634 =
+      -_pose_i[0] * _tmp625 + _pose_i[1] * _tmp629 - _pose_i[2] * _tmp628 - _pose_i[3] * _tmp630;
+  const Scalar _tmp635 =
+      _pose_j[0] * _tmp631 - _pose_j[1] * _tmp634 + _pose_j[2] * _tmp633 + _pose_j[3] * _tmp632;
+  const Scalar _tmp636 = _tmp168 * _tmp635;
+  const Scalar _tmp637 =
+      _pose_j[0] * _tmp632 + _pose_j[1] * _tmp633 + _pose_j[2] * _tmp634 - _pose_j[3] * _tmp631;
+  const Scalar _tmp638 = _tmp402 * _tmp637;
+  const Scalar _tmp639 = -_tmp400 * _tmp637 + _tmp636 * sqrt_info(0, 0) + _tmp638 * sqrt_info(0, 0);
+  const Scalar _tmp640 = _tmp401 * _tmp637;
+  const Scalar _tmp641 =
+      _pose_j[0] * _tmp634 + _pose_j[1] * _tmp631 - _pose_j[2] * _tmp632 + _pose_j[3] * _tmp633;
+  const Scalar _tmp642 = _tmp168 * _tmp641;
+  const Scalar _tmp643 = _tmp406 * _tmp637;
+  const Scalar _tmp644 = _tmp399 * _tmp637;
+  const Scalar _tmp645 = _tmp183 * _tmp640 + _tmp184 * _tmp640 + _tmp636 * sqrt_info(1, 0) +
+                         _tmp642 * sqrt_info(1, 1) - _tmp643 * sqrt_info(1, 1) -
+                         _tmp644 * sqrt_info(1, 0);
+  const Scalar _tmp646 =
+      -_pose_j[0] * _tmp633 + _pose_j[1] * _tmp632 + _pose_j[2] * _tmp631 + _pose_j[3] * _tmp634;
+  const Scalar _tmp647 = _tmp168 * _tmp646;
+  const Scalar _tmp648 = _tmp423 * _tmp637;
+  const Scalar _tmp649 = _tmp188 * _tmp640 + _tmp189 * _tmp640 - _tmp416 * _tmp637 +
+                         _tmp636 * sqrt_info(2, 0) + _tmp638 * sqrt_info(2, 0) +
+                         _tmp642 * sqrt_info(2, 1) - _tmp643 * sqrt_info(2, 1) +
+                         _tmp647 * sqrt_info(2, 2) - _tmp648 * sqrt_info(2, 2);
+  const Scalar _tmp650 = -Dv_D_gyro_bias(0, 2) * sqrt_info(3, 3) + _tmp194 * _tmp640 +
+                         _tmp427 * _tmp637 + _tmp636 * sqrt_info(3, 0) + _tmp638 * sqrt_info(3, 0) +
+                         _tmp642 * sqrt_info(3, 1) - _tmp643 * sqrt_info(3, 1) -
+                         _tmp644 * sqrt_info(3, 0) + _tmp647 * sqrt_info(3, 2) -
+                         _tmp648 * sqrt_info(3, 2);
+  const Scalar _tmp651 =
+      -Dv_D_gyro_bias(0, 2) * sqrt_info(4, 3) - Dv_D_gyro_bias(1, 2) * sqrt_info(4, 4) +
+      _tmp197 * _tmp640 + _tmp198 * _tmp640 - _tmp471 * _tmp637 + _tmp636 * sqrt_info(4, 0) +
+      _tmp638 * sqrt_info(4, 0) + _tmp642 * sqrt_info(4, 1) - _tmp644 * sqrt_info(4, 0) +
+      _tmp647 * sqrt_info(4, 2) - _tmp648 * sqrt_info(4, 2);
+  const Scalar _tmp652 =
       -Dv_D_gyro_bias(0, 2) * sqrt_info(5, 3) - Dv_D_gyro_bias(1, 2) * sqrt_info(5, 4) -
-      Dv_D_gyro_bias(2, 2) * sqrt_info(5, 5) + _tmp212 * _tmp603 - _tmp221 * _tmp601 +
-      _tmp221 * _tmp603 - _tmp222 * _tmp601 + _tmp222 * _tmp603 + _tmp599 * sqrt_info(5, 0) +
-      _tmp606 * sqrt_info(5, 1) - _tmp609 * sqrt_info(5, 2) + _tmp611 * sqrt_info(5, 2);
-  const Scalar _tmp615 =
+      Dv_D_gyro_bias(2, 2) * sqrt_info(5, 5) + _tmp216 * _tmp640 - _tmp431 * _tmp637 +
+      _tmp432 * _tmp637 + _tmp636 * sqrt_info(5, 0) + _tmp638 * sqrt_info(5, 0) +
+      _tmp642 * sqrt_info(5, 1) - _tmp644 * sqrt_info(5, 0) + _tmp647 * sqrt_info(5, 2) -
+      _tmp648 * sqrt_info(5, 2);
+  const Scalar _tmp653 =
       -Dp_D_gyro_bias(0, 2) * sqrt_info(6, 6) - Dv_D_gyro_bias(0, 2) * sqrt_info(6, 3) -
-      Dv_D_gyro_bias(1, 2) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 2) * sqrt_info(6, 5) -
-      _tmp224 * _tmp601 + _tmp225 * _tmp603 + _tmp226 * _tmp608 + _tmp269 * _tmp603 +
-      _tmp420 * _tmp600 + _tmp599 * sqrt_info(6, 0) - _tmp602 * sqrt_info(6, 0) +
-      _tmp606 * sqrt_info(6, 1) - _tmp609 * sqrt_info(6, 2);
-  const Scalar _tmp616 =
+      Dv_D_gyro_bias(1, 2) * sqrt_info(6, 4) - Dv_D_gyro_bias(2, 2) * sqrt_info(6, 5) +
+      _tmp218 * _tmp640 + _tmp219 * _tmp640 - _tmp474 * _tmp637 + _tmp636 * sqrt_info(6, 0) +
+      _tmp638 * sqrt_info(6, 0) + _tmp642 * sqrt_info(6, 1) - _tmp644 * sqrt_info(6, 0) +
+      _tmp647 * sqrt_info(6, 2) - _tmp648 * sqrt_info(6, 2);
+  const Scalar _tmp654 =
       -Dp_D_gyro_bias(0, 2) * sqrt_info(7, 6) - Dp_D_gyro_bias(1, 2) * sqrt_info(7, 7) -
       Dv_D_gyro_bias(0, 2) * sqrt_info(7, 3) - Dv_D_gyro_bias(1, 2) * sqrt_info(7, 4) -
-      Dv_D_gyro_bias(2, 2) * sqrt_info(7, 5) - _tmp132 * _tmp601 + _tmp132 * _tmp603 -
-      _tmp229 * _tmp601 + _tmp229 * _tmp603 + _tmp271 * _tmp603 + _tmp599 * sqrt_info(7, 0) -
-      _tmp602 * sqrt_info(7, 0) + _tmp606 * sqrt_info(7, 1) + _tmp611 * sqrt_info(7, 2);
-  const Scalar _tmp617 =
+      Dv_D_gyro_bias(2, 2) * sqrt_info(7, 5) + _tmp221 * _tmp640 + _tmp224 * _tmp641 +
+      _tmp435 * _tmp637 + _tmp636 * sqrt_info(7, 0) + _tmp638 * sqrt_info(7, 0) -
+      _tmp643 * sqrt_info(7, 1) - _tmp644 * sqrt_info(7, 0) + _tmp647 * sqrt_info(7, 2) -
+      _tmp648 * sqrt_info(7, 2);
+  const Scalar _tmp655 =
       -Dp_D_gyro_bias(0, 2) * sqrt_info(8, 6) - Dp_D_gyro_bias(1, 2) * sqrt_info(8, 7) -
       Dp_D_gyro_bias(2, 2) * sqrt_info(8, 8) - Dv_D_gyro_bias(0, 2) * sqrt_info(8, 3) -
       Dv_D_gyro_bias(1, 2) * sqrt_info(8, 4) - Dv_D_gyro_bias(2, 2) * sqrt_info(8, 5) +
-      _tmp231 * _tmp603 - _tmp232 * _tmp601 + _tmp232 * _tmp603 + _tmp233 * _tmp603 +
-      _tmp599 * sqrt_info(8, 0) - _tmp602 * sqrt_info(8, 0) + _tmp606 * sqrt_info(8, 1) -
-      _tmp609 * sqrt_info(8, 2) + _tmp611 * sqrt_info(8, 2);
-  const Scalar _tmp618 = std::pow(_gravity_direction[1], Scalar(2));
-  const Scalar _tmp619 = std::max<Scalar>(
-      0, -(((std::pow(_gravity_direction[2], Scalar(2)) + _tmp618 -
-             10 * epsilon * std::copysign(Scalar(1.0), _gravity_direction[0])) > 0) -
-           ((std::pow(_gravity_direction[2], Scalar(2)) + _tmp618 -
-             10 * epsilon * std::copysign(Scalar(1.0), _gravity_direction[0])) < 0)));
-  const Scalar _tmp620 =
+      _tmp133 * _tmp640 + _tmp226 * _tmp640 + _tmp227 * _tmp635 + _tmp228 * _tmp646 +
+      _tmp229 * _tmp641 - _tmp437 * _tmp637 + _tmp638 * sqrt_info(8, 0) -
+      _tmp643 * sqrt_info(8, 1) - _tmp644 * sqrt_info(8, 0);
+  const Scalar _tmp656 =
       _gravity_direction[2] + epsilon * std::copysign(Scalar(1.0), _gravity_direction[2]);
-  const Scalar _tmp621 = std::pow(_tmp620, Scalar(2));
-  const Scalar _tmp622 = _tmp618 + _tmp621;
-  const Scalar _tmp623 = Scalar(1.0) / (_tmp622);
-  const Scalar _tmp624 = 2 * _gravity_direction[1] * _tmp620;
-  const Scalar _tmp625 = _tmp619 * _tmp623 * _tmp624;
-  const Scalar _tmp626 = 1 - _tmp619;
-  const Scalar _tmp627 = _gravity_direction[0] - 1;
-  const Scalar _tmp628 = Scalar(1.0) / (_tmp622 + std::pow(_tmp627, Scalar(2)));
-  const Scalar _tmp629 = _tmp626 * _tmp628;
-  const Scalar _tmp630 = _tmp624 * _tmp629;
-  const Scalar _tmp631 = _tmp625 + _tmp630;
-  const Scalar _tmp632 = _tmp631 * _tmp86;
-  const Scalar _tmp633 = 2 * _tmp618;
-  const Scalar _tmp634 = -_tmp619 * (-_tmp623 * _tmp633 + 1) - _tmp626 * (-_tmp628 * _tmp633 + 1);
-  const Scalar _tmp635 = _tmp634 * _tmp86;
-  const Scalar _tmp636 = _tmp627 * _tmp629;
-  const Scalar _tmp637 = 2 * _tmp636;
-  const Scalar _tmp638 = _tmp637 * _tmp85;
-  const Scalar _tmp639 = -_tmp100 * _tmp635 - _tmp101 * _tmp638 - _tmp632 * _tmp96;
-  const Scalar _tmp640 = _tmp639 * sqrt_info(3, 3);
-  const Scalar _tmp641 = _tmp101 * _tmp637;
-  const Scalar _tmp642 = -_tmp108 * _tmp635 - _tmp111 * _tmp632 - _tmp113 * _tmp641;
-  const Scalar _tmp643 = _tmp639 * sqrt_info(4, 3) + _tmp642 * sqrt_info(4, 4);
-  const Scalar _tmp644 = -_tmp117 * _tmp632 - _tmp119 * _tmp635 - _tmp120 * _tmp641;
-  const Scalar _tmp645 =
-      _tmp639 * sqrt_info(5, 3) + _tmp642 * sqrt_info(5, 4) + _tmp644 * sqrt_info(5, 5);
-  const Scalar _tmp646 = _tmp125 * _tmp631;
-  const Scalar _tmp647 = _tmp125 * _tmp634;
-  const Scalar _tmp648 = _tmp124 * _tmp636;
-  const Scalar _tmp649 = _tmp648 * _tmp85;
-  const Scalar _tmp650 = -_gravity_direction[1] * _tmp649 - _tmp100 * _tmp647 - _tmp646 * _tmp96;
-  const Scalar _tmp651 = _tmp639 * sqrt_info(6, 3) + _tmp642 * sqrt_info(6, 4) +
-                         _tmp644 * sqrt_info(6, 5) + _tmp650 * sqrt_info(6, 6);
-  const Scalar _tmp652 = _gravity_direction[1] * _tmp648;
-  const Scalar _tmp653 = -_tmp108 * _tmp647 - _tmp111 * _tmp646 - _tmp113 * _tmp652;
-  const Scalar _tmp654 = _tmp639 * sqrt_info(7, 3) + _tmp642 * sqrt_info(7, 4) +
-                         _tmp644 * sqrt_info(7, 5) + _tmp650 * sqrt_info(7, 6) +
-                         _tmp653 * sqrt_info(7, 7);
-  const Scalar _tmp655 =
-      _tmp639 * sqrt_info(8, 3) + _tmp642 * sqrt_info(8, 4) + _tmp644 * sqrt_info(8, 5) +
-      _tmp650 * sqrt_info(8, 6) + _tmp653 * sqrt_info(8, 7) +
-      sqrt_info(8, 8) * (-_tmp117 * _tmp646 - _tmp119 * _tmp647 - _tmp120 * _tmp652);
-  const Scalar _tmp656 = -_tmp625 - _tmp630;
-  const Scalar _tmp657 = _tmp656 * _tmp86;
-  const Scalar _tmp658 = 2 * _tmp621;
-  const Scalar _tmp659 = _tmp619 * (-_tmp623 * _tmp658 + 1) + _tmp626 * (-_tmp628 * _tmp658 + 1);
-  const Scalar _tmp660 = _tmp659 * _tmp86;
-  const Scalar _tmp661 = _tmp620 * _tmp86;
-  const Scalar _tmp662 = -_tmp100 * _tmp657 + _tmp638 * _tmp661 - _tmp660 * _tmp96;
-  const Scalar _tmp663 = _tmp662 * sqrt_info(3, 3);
-  const Scalar _tmp664 = _tmp637 * _tmp661;
-  const Scalar _tmp665 = -_tmp108 * _tmp657 - _tmp111 * _tmp660 + _tmp113 * _tmp664;
-  const Scalar _tmp666 = _tmp662 * sqrt_info(4, 3) + _tmp665 * sqrt_info(4, 4);
-  const Scalar _tmp667 = -_tmp117 * _tmp660 - _tmp119 * _tmp657 + _tmp120 * _tmp664;
-  const Scalar _tmp668 =
-      _tmp662 * sqrt_info(5, 3) + _tmp665 * sqrt_info(5, 4) + _tmp667 * sqrt_info(5, 5);
-  const Scalar _tmp669 = _tmp125 * _tmp656;
-  const Scalar _tmp670 = _tmp125 * _tmp659;
-  const Scalar _tmp671 = -_tmp100 * _tmp669 + _tmp620 * _tmp649 - _tmp670 * _tmp96;
-  const Scalar _tmp672 = _tmp662 * sqrt_info(6, 3) + _tmp665 * sqrt_info(6, 4) +
-                         _tmp667 * sqrt_info(6, 5) + _tmp671 * sqrt_info(6, 6);
-  const Scalar _tmp673 = _tmp620 * _tmp648;
-  const Scalar _tmp674 = -_tmp108 * _tmp669 - _tmp111 * _tmp670 + _tmp113 * _tmp673;
-  const Scalar _tmp675 = _tmp662 * sqrt_info(7, 3) + _tmp665 * sqrt_info(7, 4) +
-                         _tmp667 * sqrt_info(7, 5) + _tmp671 * sqrt_info(7, 6) +
-                         _tmp674 * sqrt_info(7, 7);
-  const Scalar _tmp676 =
-      _tmp662 * sqrt_info(8, 3) + _tmp665 * sqrt_info(8, 4) + _tmp667 * sqrt_info(8, 5) +
-      _tmp671 * sqrt_info(8, 6) + _tmp674 * sqrt_info(8, 7) +
-      sqrt_info(8, 8) * (-_tmp117 * _tmp670 - _tmp119 * _tmp669 + _tmp120 * _tmp673);
-  const Scalar _tmp677 = _tmp227 * _tmp304;
-  const Scalar _tmp678 = _tmp227 * _tmp312;
-  const Scalar _tmp679 = _tmp227 * _tmp320;
-  const Scalar _tmp680 = _tmp200 * _tmp328;
-  const Scalar _tmp681 = _tmp200 * _tmp348;
-  const Scalar _tmp682 = _tmp200 * _tmp368;
-  const Scalar _tmp683 = _tmp270 * _tmp304;
-  const Scalar _tmp684 = _tmp270 * _tmp312;
-  const Scalar _tmp685 = _tmp270 * _tmp320;
-  const Scalar _tmp686 = _tmp263 * _tmp328;
-  const Scalar _tmp687 = _tmp263 * _tmp348;
-  const Scalar _tmp688 = _tmp263 * _tmp368;
-  const Scalar _tmp689 = _tmp300 * _tmp304;
-  const Scalar _tmp690 = _tmp300 * _tmp312;
-  const Scalar _tmp691 = _tmp300 * _tmp320;
-  const Scalar _tmp692 = _tmp292 * _tmp328;
-  const Scalar _tmp693 = _tmp292 * _tmp348;
-  const Scalar _tmp694 = _tmp292 * _tmp368;
-  const Scalar _tmp695 = std::pow(_tmp85, Scalar(2));
-  const Scalar _tmp696 = std::pow(sqrt_info(6, 6), Scalar(2));
-  const Scalar _tmp697 = _tmp695 * _tmp696;
-  const Scalar _tmp698 = _tmp100 * _tmp696;
-  const Scalar _tmp699 = _tmp698 * _tmp85;
-  const Scalar _tmp700 = _tmp85 * _tmp96;
-  const Scalar _tmp701 = _tmp696 * _tmp700;
-  const Scalar _tmp702 = _tmp304 * _tmp339;
-  const Scalar _tmp703 = _tmp304 * _tmp359;
-  const Scalar _tmp704 = _tmp304 * _tmp379;
-  const Scalar _tmp705 = _tmp304 * _tmp421;
-  const Scalar _tmp706 = _tmp304 * _tmp437;
-  const Scalar _tmp707 = _tmp304 * _tmp452;
-  const Scalar _tmp708 = -_tmp699;
-  const Scalar _tmp709 = -_tmp701;
-  const Scalar _tmp710 = _tmp304 * _tmp463;
-  const Scalar _tmp711 = _tmp304 * _tmp468;
-  const Scalar _tmp712 = _tmp304 * _tmp473;
-  const Scalar _tmp713 = _tmp304 * _tmp479;
-  const Scalar _tmp714 = _tmp304 * _tmp485;
-  const Scalar _tmp715 = _tmp304 * _tmp491;
-  const Scalar _tmp716 = _tmp304 * _tmp549;
-  const Scalar _tmp717 = _tmp304 * _tmp584;
-  const Scalar _tmp718 = _tmp304 * _tmp615;
-  const Scalar _tmp719 = _tmp304 * _tmp651;
-  const Scalar _tmp720 = _tmp304 * _tmp672;
-  const Scalar _tmp721 = std::pow(_tmp100, Scalar(2));
-  const Scalar _tmp722 = _tmp696 * _tmp721;
-  const Scalar _tmp723 = _tmp698 * _tmp96;
-  const Scalar _tmp724 = _tmp312 * _tmp339;
-  const Scalar _tmp725 = _tmp312 * _tmp359;
-  const Scalar _tmp726 = _tmp312 * _tmp379;
-  const Scalar _tmp727 = _tmp312 * _tmp421;
-  const Scalar _tmp728 = _tmp312 * _tmp437;
-  const Scalar _tmp729 = _tmp312 * _tmp452;
-  const Scalar _tmp730 = -_tmp723;
-  const Scalar _tmp731 = _tmp312 * _tmp463;
-  const Scalar _tmp732 = _tmp312 * _tmp468;
-  const Scalar _tmp733 = _tmp312 * _tmp473;
-  const Scalar _tmp734 = _tmp312 * _tmp479;
-  const Scalar _tmp735 = _tmp312 * _tmp485;
-  const Scalar _tmp736 = _tmp312 * _tmp491;
-  const Scalar _tmp737 = _tmp312 * _tmp549;
-  const Scalar _tmp738 = _tmp312 * _tmp584;
-  const Scalar _tmp739 = _tmp312 * _tmp615;
-  const Scalar _tmp740 = _tmp312 * _tmp651;
-  const Scalar _tmp741 = _tmp312 * _tmp672;
-  const Scalar _tmp742 = std::pow(_tmp96, Scalar(2));
-  const Scalar _tmp743 = _tmp696 * _tmp742;
-  const Scalar _tmp744 = _tmp320 * _tmp339;
-  const Scalar _tmp745 = _tmp320 * _tmp359;
-  const Scalar _tmp746 = _tmp320 * _tmp379;
-  const Scalar _tmp747 = _tmp320 * _tmp421;
-  const Scalar _tmp748 = _tmp320 * _tmp437;
-  const Scalar _tmp749 = _tmp320 * _tmp452;
-  const Scalar _tmp750 = _tmp320 * _tmp463;
-  const Scalar _tmp751 = _tmp320 * _tmp468;
-  const Scalar _tmp752 = _tmp320 * _tmp473;
-  const Scalar _tmp753 = _tmp320 * _tmp479;
-  const Scalar _tmp754 = _tmp320 * _tmp485;
-  const Scalar _tmp755 = _tmp320 * _tmp491;
-  const Scalar _tmp756 = _tmp320 * _tmp549;
-  const Scalar _tmp757 = _tmp320 * _tmp584;
-  const Scalar _tmp758 = _tmp320 * _tmp615;
-  const Scalar _tmp759 = _tmp320 * _tmp651;
-  const Scalar _tmp760 = _tmp320 * _tmp672;
-  const Scalar _tmp761 = std::pow(sqrt_info(3, 3), Scalar(2));
-  const Scalar _tmp762 = _tmp695 * _tmp761;
-  const Scalar _tmp763 = _tmp100 * _tmp761;
-  const Scalar _tmp764 = _tmp763 * _tmp85;
-  const Scalar _tmp765 = _tmp700 * _tmp761;
-  const Scalar _tmp766 = _tmp328 * _tmp417;
-  const Scalar _tmp767 = _tmp328 * _tmp434;
-  const Scalar _tmp768 = _tmp328 * _tmp449;
-  const Scalar _tmp769 = -_tmp764;
-  const Scalar _tmp770 = -_tmp765;
-  const Scalar _tmp771 = Dv_D_accel_bias(0, 0) * _tmp761;
-  const Scalar _tmp772 = _tmp771 * _tmp85;
-  const Scalar _tmp773 = Dv_D_accel_bias(0, 1) * _tmp761;
-  const Scalar _tmp774 = _tmp773 * _tmp85;
-  const Scalar _tmp775 = Dv_D_accel_bias(0, 2) * _tmp761;
-  const Scalar _tmp776 = _tmp775 * _tmp85;
-  const Scalar _tmp777 = _tmp328 * _tmp546;
-  const Scalar _tmp778 = _tmp328 * _tmp581;
-  const Scalar _tmp779 = _tmp328 * _tmp612;
-  const Scalar _tmp780 = _tmp639 * _tmp761;
-  const Scalar _tmp781 = _tmp780 * _tmp85;
-  const Scalar _tmp782 = _tmp662 * _tmp761;
-  const Scalar _tmp783 = _tmp782 * _tmp85;
-  const Scalar _tmp784 = _tmp721 * _tmp761;
-  const Scalar _tmp785 = _tmp763 * _tmp96;
-  const Scalar _tmp786 = _tmp348 * _tmp417;
-  const Scalar _tmp787 = _tmp348 * _tmp434;
-  const Scalar _tmp788 = _tmp348 * _tmp449;
-  const Scalar _tmp789 = -_tmp785;
-  const Scalar _tmp790 = Dv_D_accel_bias(0, 0) * _tmp763;
-  const Scalar _tmp791 = Dv_D_accel_bias(0, 1) * _tmp763;
-  const Scalar _tmp792 = Dv_D_accel_bias(0, 2) * _tmp763;
-  const Scalar _tmp793 = _tmp348 * _tmp546;
-  const Scalar _tmp794 = _tmp348 * _tmp581;
-  const Scalar _tmp795 = _tmp348 * _tmp612;
-  const Scalar _tmp796 = _tmp100 * _tmp780;
-  const Scalar _tmp797 = _tmp662 * _tmp763;
-  const Scalar _tmp798 = _tmp742 * _tmp761;
-  const Scalar _tmp799 = _tmp368 * _tmp417;
-  const Scalar _tmp800 = _tmp368 * _tmp434;
-  const Scalar _tmp801 = _tmp368 * _tmp449;
-  const Scalar _tmp802 = _tmp771 * _tmp96;
-  const Scalar _tmp803 = _tmp773 * _tmp96;
-  const Scalar _tmp804 = _tmp775 * _tmp96;
-  const Scalar _tmp805 = _tmp368 * _tmp546;
-  const Scalar _tmp806 = _tmp368 * _tmp581;
-  const Scalar _tmp807 = _tmp368 * _tmp612;
-  const Scalar _tmp808 = _tmp780 * _tmp96;
-  const Scalar _tmp809 = _tmp782 * _tmp96;
-  const Scalar _tmp810 = _tmp131 * _tmp304;
-  const Scalar _tmp811 = _tmp131 * _tmp312;
-  const Scalar _tmp812 = _tmp131 * _tmp320;
-  const Scalar _tmp813 = _tmp105 * _tmp328;
-  const Scalar _tmp814 = _tmp105 * _tmp348;
-  const Scalar _tmp815 = _tmp105 * _tmp368;
+  const Scalar _tmp657 = 2 * _gravity_direction[1] * _tmp656;
+  const Scalar _tmp658 = std::pow(_gravity_direction[1], Scalar(2));
+  const Scalar _tmp659 = std::max<Scalar>(
+      0, -(((std::pow(_gravity_direction[2], Scalar(2)) + _tmp658 -
+             10 * epsilon * std::copysign(Scalar(1.0), _gravity_direction[0])) > 0) -
+           ((std::pow(_gravity_direction[2], Scalar(2)) + _tmp658 -
+             10 * epsilon * std::copysign(Scalar(1.0), _gravity_direction[0])) < 0)));
+  const Scalar _tmp660 = 1 - _tmp659;
+  const Scalar _tmp661 = _gravity_direction[0] - 1;
+  const Scalar _tmp662 = std::pow(_tmp656, Scalar(2));
+  const Scalar _tmp663 = _tmp658 + _tmp662;
+  const Scalar _tmp664 = Scalar(1.0) / (std::pow(_tmp661, Scalar(2)) + _tmp663);
+  const Scalar _tmp665 = _tmp660 * _tmp664;
+  const Scalar _tmp666 = _tmp657 * _tmp665;
+  const Scalar _tmp667 = Scalar(1.0) / (_tmp663);
+  const Scalar _tmp668 = _tmp657 * _tmp659 * _tmp667;
+  const Scalar _tmp669 = _tmp666 + _tmp668;
+  const Scalar _tmp670 = _tmp669 * _tmp82;
+  const Scalar _tmp671 = 2 * _tmp658;
+  const Scalar _tmp672 = -_tmp659 * (-_tmp667 * _tmp671 + 1) - _tmp660 * (-_tmp664 * _tmp671 + 1);
+  const Scalar _tmp673 = _tmp672 * _tmp82;
+  const Scalar _tmp674 = _tmp661 * _tmp665;
+  const Scalar _tmp675 = 2 * _tmp674;
+  const Scalar _tmp676 = _tmp675 * _tmp97;
+  const Scalar _tmp677 = -_tmp670 * _tmp92 - _tmp673 * _tmp96 - _tmp676 * _tmp81;
+  const Scalar _tmp678 = _tmp677 * sqrt_info(3, 3);
+  const Scalar _tmp679 = -_tmp104 * _tmp673 - _tmp107 * _tmp670 - _tmp109 * _tmp676;
+  const Scalar _tmp680 = _tmp677 * sqrt_info(4, 3) + _tmp679 * sqrt_info(4, 4);
+  const Scalar _tmp681 = -_tmp113 * _tmp670 - _tmp115 * _tmp673 - _tmp116 * _tmp676;
+  const Scalar _tmp682 =
+      _tmp677 * sqrt_info(5, 3) + _tmp679 * sqrt_info(5, 4) + _tmp681 * sqrt_info(5, 5);
+  const Scalar _tmp683 = _tmp121 * _tmp92;
+  const Scalar _tmp684 = _tmp120 * _tmp674;
+  const Scalar _tmp685 = _gravity_direction[1] * _tmp684;
+  const Scalar _tmp686 = _tmp121 * _tmp672;
+  const Scalar _tmp687 = -_tmp669 * _tmp683 - _tmp685 * _tmp81 - _tmp686 * _tmp96;
+  const Scalar _tmp688 = _tmp677 * sqrt_info(6, 3) + _tmp679 * sqrt_info(6, 4) +
+                         _tmp681 * sqrt_info(6, 5) + _tmp687 * sqrt_info(6, 6);
+  const Scalar _tmp689 = _tmp109 * _tmp684;
+  const Scalar _tmp690 = _tmp107 * _tmp121;
+  const Scalar _tmp691 = -_gravity_direction[1] * _tmp689 - _tmp104 * _tmp686 - _tmp669 * _tmp690;
+  const Scalar _tmp692 = _tmp677 * sqrt_info(7, 3) + _tmp679 * sqrt_info(7, 4) +
+                         _tmp681 * sqrt_info(7, 5) + _tmp687 * sqrt_info(7, 6) +
+                         _tmp691 * sqrt_info(7, 7);
+  const Scalar _tmp693 = _tmp113 * _tmp121;
+  const Scalar _tmp694 = _tmp115 * _tmp121;
+  const Scalar _tmp695 =
+      _tmp677 * sqrt_info(8, 3) + _tmp679 * sqrt_info(8, 4) + _tmp681 * sqrt_info(8, 5) +
+      _tmp687 * sqrt_info(8, 6) + _tmp691 * sqrt_info(8, 7) +
+      sqrt_info(8, 8) * (-_tmp116 * _tmp685 - _tmp669 * _tmp693 - _tmp672 * _tmp694);
+  const Scalar _tmp696 = -_tmp666 - _tmp668;
+  const Scalar _tmp697 = _tmp696 * _tmp82;
+  const Scalar _tmp698 = 2 * _tmp662;
+  const Scalar _tmp699 = _tmp659 * (-_tmp667 * _tmp698 + 1) + _tmp660 * (-_tmp664 * _tmp698 + 1);
+  const Scalar _tmp700 = _tmp699 * _tmp82;
+  const Scalar _tmp701 = _tmp656 * _tmp675 * _tmp82;
+  const Scalar _tmp702 = -_tmp697 * _tmp96 - _tmp700 * _tmp92 + _tmp701 * _tmp81;
+  const Scalar _tmp703 = _tmp702 * sqrt_info(3, 3);
+  const Scalar _tmp704 = -_tmp104 * _tmp697 - _tmp107 * _tmp700 + _tmp109 * _tmp701;
+  const Scalar _tmp705 = _tmp702 * sqrt_info(4, 3) + _tmp704 * sqrt_info(4, 4);
+  const Scalar _tmp706 = -_tmp113 * _tmp700 - _tmp115 * _tmp697 + _tmp116 * _tmp701;
+  const Scalar _tmp707 =
+      _tmp702 * sqrt_info(5, 3) + _tmp704 * sqrt_info(5, 4) + _tmp706 * sqrt_info(5, 5);
+  const Scalar _tmp708 = _tmp656 * _tmp684;
+  const Scalar _tmp709 = _tmp121 * _tmp696;
+  const Scalar _tmp710 = -_tmp683 * _tmp699 + _tmp708 * _tmp81 - _tmp709 * _tmp96;
+  const Scalar _tmp711 = _tmp702 * sqrt_info(6, 3) + _tmp704 * sqrt_info(6, 4) +
+                         _tmp706 * sqrt_info(6, 5) + _tmp710 * sqrt_info(6, 6);
+  const Scalar _tmp712 = -_tmp104 * _tmp709 + _tmp656 * _tmp689 - _tmp690 * _tmp699;
+  const Scalar _tmp713 = _tmp702 * sqrt_info(7, 3) + _tmp704 * sqrt_info(7, 4) +
+                         _tmp706 * sqrt_info(7, 5) + _tmp710 * sqrt_info(7, 6) +
+                         _tmp712 * sqrt_info(7, 7);
+  const Scalar _tmp714 =
+      _tmp702 * sqrt_info(8, 3) + _tmp704 * sqrt_info(8, 4) + _tmp706 * sqrt_info(8, 5) +
+      _tmp710 * sqrt_info(8, 6) + _tmp712 * sqrt_info(8, 7) +
+      sqrt_info(8, 8) * (_tmp116 * _tmp708 - _tmp693 * _tmp699 - _tmp694 * _tmp696);
+  const Scalar _tmp715 = _tmp220 * _tmp306;
+  const Scalar _tmp716 = _tmp220 * _tmp314;
+  const Scalar _tmp717 = _tmp220 * _tmp322;
+  const Scalar _tmp718 = _tmp196 * _tmp330;
+  const Scalar _tmp719 = _tmp196 * _tmp350;
+  const Scalar _tmp720 = _tmp196 * _tmp370;
+  const Scalar _tmp721 = _tmp270 * _tmp306;
+  const Scalar _tmp722 = _tmp270 * _tmp314;
+  const Scalar _tmp723 = _tmp270 * _tmp322;
+  const Scalar _tmp724 = _tmp263 * _tmp330;
+  const Scalar _tmp725 = _tmp263 * _tmp350;
+  const Scalar _tmp726 = _tmp263 * _tmp370;
+  const Scalar _tmp727 = _tmp302 * _tmp306;
+  const Scalar _tmp728 = _tmp302 * _tmp314;
+  const Scalar _tmp729 = _tmp302 * _tmp322;
+  const Scalar _tmp730 = _tmp294 * _tmp330;
+  const Scalar _tmp731 = _tmp294 * _tmp350;
+  const Scalar _tmp732 = _tmp294 * _tmp370;
+  const Scalar _tmp733 = std::pow(_tmp81, Scalar(2));
+  const Scalar _tmp734 = std::pow(sqrt_info(6, 6), Scalar(2));
+  const Scalar _tmp735 = _tmp733 * _tmp734;
+  const Scalar _tmp736 = _tmp734 * _tmp81;
+  const Scalar _tmp737 = _tmp736 * _tmp96;
+  const Scalar _tmp738 = _tmp736 * _tmp92;
+  const Scalar _tmp739 = _tmp306 * _tmp341;
+  const Scalar _tmp740 = _tmp306 * _tmp361;
+  const Scalar _tmp741 = _tmp306 * _tmp381;
+  const Scalar _tmp742 = _tmp306 * _tmp434;
+  const Scalar _tmp743 = _tmp306 * _tmp455;
+  const Scalar _tmp744 = _tmp306 * _tmp475;
+  const Scalar _tmp745 = -_tmp737;
+  const Scalar _tmp746 = -_tmp738;
+  const Scalar _tmp747 = _tmp306 * _tmp486;
+  const Scalar _tmp748 = _tmp306 * _tmp491;
+  const Scalar _tmp749 = _tmp306 * _tmp496;
+  const Scalar _tmp750 = _tmp306 * _tmp502;
+  const Scalar _tmp751 = _tmp306 * _tmp508;
+  const Scalar _tmp752 = _tmp306 * _tmp514;
+  const Scalar _tmp753 = _tmp306 * _tmp577;
+  const Scalar _tmp754 = _tmp306 * _tmp617;
+  const Scalar _tmp755 = _tmp306 * _tmp653;
+  const Scalar _tmp756 = _tmp306 * _tmp688;
+  const Scalar _tmp757 = _tmp306 * _tmp711;
+  const Scalar _tmp758 = std::pow(_tmp96, Scalar(2));
+  const Scalar _tmp759 = _tmp734 * _tmp758;
+  const Scalar _tmp760 = _tmp734 * _tmp92 * _tmp96;
+  const Scalar _tmp761 = _tmp314 * _tmp341;
+  const Scalar _tmp762 = _tmp314 * _tmp361;
+  const Scalar _tmp763 = _tmp314 * _tmp381;
+  const Scalar _tmp764 = _tmp314 * _tmp434;
+  const Scalar _tmp765 = _tmp314 * _tmp455;
+  const Scalar _tmp766 = _tmp314 * _tmp475;
+  const Scalar _tmp767 = -_tmp760;
+  const Scalar _tmp768 = _tmp314 * _tmp486;
+  const Scalar _tmp769 = _tmp314 * _tmp491;
+  const Scalar _tmp770 = _tmp314 * _tmp496;
+  const Scalar _tmp771 = _tmp314 * _tmp502;
+  const Scalar _tmp772 = _tmp314 * _tmp508;
+  const Scalar _tmp773 = _tmp314 * _tmp514;
+  const Scalar _tmp774 = _tmp314 * _tmp577;
+  const Scalar _tmp775 = _tmp314 * _tmp617;
+  const Scalar _tmp776 = _tmp314 * _tmp653;
+  const Scalar _tmp777 = _tmp314 * _tmp688;
+  const Scalar _tmp778 = _tmp314 * _tmp711;
+  const Scalar _tmp779 = std::pow(_tmp92, Scalar(2));
+  const Scalar _tmp780 = _tmp734 * _tmp779;
+  const Scalar _tmp781 = _tmp322 * _tmp341;
+  const Scalar _tmp782 = _tmp322 * _tmp361;
+  const Scalar _tmp783 = _tmp322 * _tmp381;
+  const Scalar _tmp784 = _tmp322 * _tmp434;
+  const Scalar _tmp785 = _tmp322 * _tmp455;
+  const Scalar _tmp786 = _tmp322 * _tmp475;
+  const Scalar _tmp787 = _tmp322 * _tmp486;
+  const Scalar _tmp788 = _tmp322 * _tmp491;
+  const Scalar _tmp789 = _tmp322 * _tmp496;
+  const Scalar _tmp790 = _tmp322 * _tmp502;
+  const Scalar _tmp791 = _tmp322 * _tmp508;
+  const Scalar _tmp792 = _tmp322 * _tmp514;
+  const Scalar _tmp793 = _tmp322 * _tmp577;
+  const Scalar _tmp794 = _tmp322 * _tmp617;
+  const Scalar _tmp795 = _tmp322 * _tmp653;
+  const Scalar _tmp796 = _tmp322 * _tmp688;
+  const Scalar _tmp797 = _tmp322 * _tmp711;
+  const Scalar _tmp798 = std::pow(sqrt_info(3, 3), Scalar(2));
+  const Scalar _tmp799 = _tmp733 * _tmp798;
+  const Scalar _tmp800 = _tmp798 * _tmp81;
+  const Scalar _tmp801 = _tmp800 * _tmp96;
+  const Scalar _tmp802 = _tmp800 * _tmp92;
+  const Scalar _tmp803 = _tmp330 * _tmp429;
+  const Scalar _tmp804 = _tmp330 * _tmp452;
+  const Scalar _tmp805 = _tmp330 * _tmp470;
+  const Scalar _tmp806 = -_tmp801;
+  const Scalar _tmp807 = -_tmp802;
+  const Scalar _tmp808 = Dv_D_accel_bias(0, 0) * _tmp800;
+  const Scalar _tmp809 = Dv_D_accel_bias(0, 1) * _tmp800;
+  const Scalar _tmp810 = Dv_D_accel_bias(0, 2) * _tmp800;
+  const Scalar _tmp811 = _tmp330 * _tmp574;
+  const Scalar _tmp812 = _tmp330 * _tmp614;
+  const Scalar _tmp813 = _tmp330 * _tmp650;
+  const Scalar _tmp814 = _tmp677 * _tmp798;
+  const Scalar _tmp815 = _tmp81 * _tmp814;
+  const Scalar _tmp816 = _tmp702 * _tmp798;
+  const Scalar _tmp817 = _tmp81 * _tmp816;
+  const Scalar _tmp818 = _tmp758 * _tmp798;
+  const Scalar _tmp819 = _tmp798 * _tmp96;
+  const Scalar _tmp820 = _tmp819 * _tmp92;
+  const Scalar _tmp821 = _tmp350 * _tmp429;
+  const Scalar _tmp822 = _tmp350 * _tmp452;
+  const Scalar _tmp823 = _tmp350 * _tmp470;
+  const Scalar _tmp824 = -_tmp820;
+  const Scalar _tmp825 = Dv_D_accel_bias(0, 0) * _tmp819;
+  const Scalar _tmp826 = Dv_D_accel_bias(0, 1) * _tmp819;
+  const Scalar _tmp827 = Dv_D_accel_bias(0, 2) * _tmp819;
+  const Scalar _tmp828 = _tmp350 * _tmp574;
+  const Scalar _tmp829 = _tmp350 * _tmp614;
+  const Scalar _tmp830 = _tmp350 * _tmp650;
+  const Scalar _tmp831 = _tmp814 * _tmp96;
+  const Scalar _tmp832 = _tmp816 * _tmp96;
+  const Scalar _tmp833 = _tmp779 * _tmp798;
+  const Scalar _tmp834 = _tmp370 * _tmp429;
+  const Scalar _tmp835 = _tmp370 * _tmp452;
+  const Scalar _tmp836 = _tmp370 * _tmp470;
+  const Scalar _tmp837 = _tmp798 * _tmp92;
+  const Scalar _tmp838 = Dv_D_accel_bias(0, 0) * _tmp837;
+  const Scalar _tmp839 = Dv_D_accel_bias(0, 1) * _tmp837;
+  const Scalar _tmp840 = Dv_D_accel_bias(0, 2) * _tmp837;
+  const Scalar _tmp841 = _tmp370 * _tmp574;
+  const Scalar _tmp842 = _tmp370 * _tmp614;
+  const Scalar _tmp843 = _tmp370 * _tmp650;
+  const Scalar _tmp844 = _tmp814 * _tmp92;
+  const Scalar _tmp845 = _tmp816 * _tmp92;
+  const Scalar _tmp846 = Dv_D_accel_bias(0, 2) * _tmp798;
+  const Scalar _tmp847 = _tmp127 * _tmp306;
+  const Scalar _tmp848 = _tmp127 * _tmp314;
+  const Scalar _tmp849 = _tmp127 * _tmp322;
+  const Scalar _tmp850 = _tmp101 * _tmp330;
+  const Scalar _tmp851 = _tmp101 * _tmp350;
+  const Scalar _tmp852 = _tmp101 * _tmp370;
 
   // Output terms (4)
   if (res != nullptr) {
     Eigen::Matrix<Scalar, 9, 1>& _res = (*res);
 
-    _res(0, 0) = _tmp64;
-    _res(1, 0) = _tmp71;
-    _res(2, 0) = _tmp79;
-    _res(3, 0) = _tmp105;
-    _res(4, 0) = _tmp116;
-    _res(5, 0) = _tmp123;
-    _res(6, 0) = _tmp131;
-    _res(7, 0) = _tmp135;
-    _res(8, 0) = _tmp137;
+    _res(0, 0) = _tmp62;
+    _res(1, 0) = _tmp69;
+    _res(2, 0) = _tmp76;
+    _res(3, 0) = _tmp101;
+    _res(4, 0) = _tmp112;
+    _res(5, 0) = _tmp119;
+    _res(6, 0) = _tmp127;
+    _res(7, 0) = _tmp130;
+    _res(8, 0) = _tmp134;
   }
 
   if (jacobian != nullptr) {
     Eigen::Matrix<Scalar, 9, 26>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp184;
-    _jacobian(1, 0) = _tmp189;
-    _jacobian(2, 0) = _tmp195;
-    _jacobian(3, 0) = _tmp200;
-    _jacobian(4, 0) = _tmp211;
-    _jacobian(5, 0) = _tmp223;
-    _jacobian(6, 0) = _tmp227;
-    _jacobian(7, 0) = _tmp230;
-    _jacobian(8, 0) = _tmp234;
-    _jacobian(0, 1) = _tmp248;
+    _jacobian(0, 0) = _tmp181;
+    _jacobian(1, 0) = _tmp187;
+    _jacobian(2, 0) = _tmp193;
+    _jacobian(3, 0) = _tmp196;
+    _jacobian(4, 0) = _tmp206;
+    _jacobian(5, 0) = _tmp217;
+    _jacobian(6, 0) = _tmp220;
+    _jacobian(7, 0) = _tmp225;
+    _jacobian(8, 0) = _tmp230;
+    _jacobian(0, 1) = _tmp246;
     _jacobian(1, 1) = _tmp251;
-    _jacobian(2, 1) = _tmp253;
+    _jacobian(2, 1) = _tmp254;
     _jacobian(3, 1) = _tmp263;
-    _jacobian(4, 1) = _tmp264;
-    _jacobian(5, 1) = _tmp267;
+    _jacobian(4, 1) = _tmp265;
+    _jacobian(5, 1) = _tmp268;
     _jacobian(6, 1) = _tmp270;
-    _jacobian(7, 1) = _tmp272;
-    _jacobian(8, 1) = _tmp273;
+    _jacobian(7, 1) = _tmp271;
+    _jacobian(8, 1) = _tmp272;
     _jacobian(0, 2) = _tmp283;
-    _jacobian(1, 2) = _tmp286;
-    _jacobian(2, 2) = _tmp288;
-    _jacobian(3, 2) = _tmp292;
-    _jacobian(4, 2) = _tmp297;
-    _jacobian(5, 2) = _tmp298;
-    _jacobian(6, 2) = _tmp300;
-    _jacobian(7, 2) = _tmp302;
-    _jacobian(8, 2) = _tmp303;
+    _jacobian(1, 2) = _tmp287;
+    _jacobian(2, 2) = _tmp290;
+    _jacobian(3, 2) = _tmp294;
+    _jacobian(4, 2) = _tmp299;
+    _jacobian(5, 2) = _tmp300;
+    _jacobian(6, 2) = _tmp302;
+    _jacobian(7, 2) = _tmp304;
+    _jacobian(8, 2) = _tmp305;
     _jacobian(0, 3) = 0;
     _jacobian(1, 3) = 0;
     _jacobian(2, 3) = 0;
     _jacobian(3, 3) = 0;
     _jacobian(4, 3) = 0;
     _jacobian(5, 3) = 0;
-    _jacobian(6, 3) = -_tmp304;
-    _jacobian(7, 3) = _tmp307;
-    _jacobian(8, 3) = _tmp311;
+    _jacobian(6, 3) = -_tmp306;
+    _jacobian(7, 3) = _tmp309;
+    _jacobian(8, 3) = _tmp313;
     _jacobian(0, 4) = 0;
     _jacobian(1, 4) = 0;
     _jacobian(2, 4) = 0;
     _jacobian(3, 4) = 0;
     _jacobian(4, 4) = 0;
     _jacobian(5, 4) = 0;
-    _jacobian(6, 4) = -_tmp312;
-    _jacobian(7, 4) = _tmp315;
-    _jacobian(8, 4) = _tmp319;
+    _jacobian(6, 4) = -_tmp314;
+    _jacobian(7, 4) = _tmp317;
+    _jacobian(8, 4) = _tmp321;
     _jacobian(0, 5) = 0;
     _jacobian(1, 5) = 0;
     _jacobian(2, 5) = 0;
     _jacobian(3, 5) = 0;
     _jacobian(4, 5) = 0;
     _jacobian(5, 5) = 0;
-    _jacobian(6, 5) = -_tmp320;
-    _jacobian(7, 5) = _tmp323;
-    _jacobian(8, 5) = _tmp327;
+    _jacobian(6, 5) = -_tmp322;
+    _jacobian(7, 5) = _tmp325;
+    _jacobian(8, 5) = _tmp329;
     _jacobian(0, 6) = 0;
     _jacobian(1, 6) = 0;
     _jacobian(2, 6) = 0;
-    _jacobian(3, 6) = -_tmp328;
-    _jacobian(4, 6) = _tmp331;
-    _jacobian(5, 6) = _tmp335;
-    _jacobian(6, 6) = _tmp339;
-    _jacobian(7, 6) = _tmp343;
-    _jacobian(8, 6) = _tmp347;
+    _jacobian(3, 6) = -_tmp330;
+    _jacobian(4, 6) = _tmp333;
+    _jacobian(5, 6) = _tmp337;
+    _jacobian(6, 6) = _tmp341;
+    _jacobian(7, 6) = _tmp345;
+    _jacobian(8, 6) = _tmp349;
     _jacobian(0, 7) = 0;
     _jacobian(1, 7) = 0;
     _jacobian(2, 7) = 0;
-    _jacobian(3, 7) = -_tmp348;
-    _jacobian(4, 7) = _tmp351;
-    _jacobian(5, 7) = _tmp355;
-    _jacobian(6, 7) = _tmp359;
-    _jacobian(7, 7) = _tmp363;
-    _jacobian(8, 7) = _tmp367;
+    _jacobian(3, 7) = -_tmp350;
+    _jacobian(4, 7) = _tmp353;
+    _jacobian(5, 7) = _tmp357;
+    _jacobian(6, 7) = _tmp361;
+    _jacobian(7, 7) = _tmp365;
+    _jacobian(8, 7) = _tmp369;
     _jacobian(0, 8) = 0;
     _jacobian(1, 8) = 0;
     _jacobian(2, 8) = 0;
-    _jacobian(3, 8) = -_tmp368;
-    _jacobian(4, 8) = _tmp371;
-    _jacobian(5, 8) = _tmp375;
-    _jacobian(6, 8) = _tmp379;
-    _jacobian(7, 8) = _tmp383;
-    _jacobian(8, 8) = _tmp387;
-    _jacobian(0, 9) = _tmp401;
-    _jacobian(1, 9) = _tmp408;
-    _jacobian(2, 9) = _tmp415;
-    _jacobian(3, 9) = _tmp417;
-    _jacobian(4, 9) = _tmp418;
-    _jacobian(5, 9) = _tmp419;
-    _jacobian(6, 9) = _tmp421;
-    _jacobian(7, 9) = _tmp422;
-    _jacobian(8, 9) = _tmp423;
-    _jacobian(0, 10) = _tmp429;
-    _jacobian(1, 10) = _tmp431;
-    _jacobian(2, 10) = _tmp432;
-    _jacobian(3, 10) = _tmp434;
-    _jacobian(4, 10) = _tmp435;
-    _jacobian(5, 10) = _tmp436;
-    _jacobian(6, 10) = _tmp437;
-    _jacobian(7, 10) = _tmp438;
-    _jacobian(8, 10) = _tmp439;
-    _jacobian(0, 11) = _tmp444;
-    _jacobian(1, 11) = _tmp447;
-    _jacobian(2, 11) = _tmp448;
-    _jacobian(3, 11) = _tmp449;
-    _jacobian(4, 11) = _tmp450;
-    _jacobian(5, 11) = _tmp451;
-    _jacobian(6, 11) = _tmp452;
-    _jacobian(7, 11) = _tmp453;
-    _jacobian(8, 11) = _tmp454;
+    _jacobian(3, 8) = -_tmp370;
+    _jacobian(4, 8) = _tmp373;
+    _jacobian(5, 8) = _tmp377;
+    _jacobian(6, 8) = _tmp381;
+    _jacobian(7, 8) = _tmp385;
+    _jacobian(8, 8) = _tmp389;
+    _jacobian(0, 9) = _tmp404;
+    _jacobian(1, 9) = _tmp415;
+    _jacobian(2, 9) = _tmp425;
+    _jacobian(3, 9) = _tmp429;
+    _jacobian(4, 9) = _tmp430;
+    _jacobian(5, 9) = _tmp433;
+    _jacobian(6, 9) = _tmp434;
+    _jacobian(7, 9) = _tmp436;
+    _jacobian(8, 9) = _tmp438;
+    _jacobian(0, 10) = _tmp445;
+    _jacobian(1, 10) = _tmp448;
+    _jacobian(2, 10) = _tmp450;
+    _jacobian(3, 10) = _tmp452;
+    _jacobian(4, 10) = _tmp453;
+    _jacobian(5, 10) = _tmp454;
+    _jacobian(6, 10) = _tmp455;
+    _jacobian(7, 10) = _tmp456;
+    _jacobian(8, 10) = _tmp457;
+    _jacobian(0, 11) = _tmp460;
+    _jacobian(1, 11) = _tmp466;
+    _jacobian(2, 11) = _tmp468;
+    _jacobian(3, 11) = _tmp470;
+    _jacobian(4, 11) = _tmp472;
+    _jacobian(5, 11) = _tmp473;
+    _jacobian(6, 11) = _tmp475;
+    _jacobian(7, 11) = _tmp476;
+    _jacobian(8, 11) = _tmp477;
     _jacobian(0, 12) = 0;
     _jacobian(1, 12) = 0;
     _jacobian(2, 12) = 0;
     _jacobian(3, 12) = 0;
     _jacobian(4, 12) = 0;
     _jacobian(5, 12) = 0;
-    _jacobian(6, 12) = _tmp304;
-    _jacobian(7, 12) = _tmp455;
-    _jacobian(8, 12) = _tmp456;
+    _jacobian(6, 12) = _tmp306;
+    _jacobian(7, 12) = _tmp478;
+    _jacobian(8, 12) = _tmp479;
     _jacobian(0, 13) = 0;
     _jacobian(1, 13) = 0;
     _jacobian(2, 13) = 0;
     _jacobian(3, 13) = 0;
     _jacobian(4, 13) = 0;
     _jacobian(5, 13) = 0;
-    _jacobian(6, 13) = _tmp312;
-    _jacobian(7, 13) = _tmp457;
-    _jacobian(8, 13) = _tmp458;
+    _jacobian(6, 13) = _tmp314;
+    _jacobian(7, 13) = _tmp480;
+    _jacobian(8, 13) = _tmp481;
     _jacobian(0, 14) = 0;
     _jacobian(1, 14) = 0;
     _jacobian(2, 14) = 0;
     _jacobian(3, 14) = 0;
     _jacobian(4, 14) = 0;
     _jacobian(5, 14) = 0;
-    _jacobian(6, 14) = _tmp320;
-    _jacobian(7, 14) = _tmp459;
-    _jacobian(8, 14) = _tmp460;
+    _jacobian(6, 14) = _tmp322;
+    _jacobian(7, 14) = _tmp482;
+    _jacobian(8, 14) = _tmp483;
     _jacobian(0, 15) = 0;
     _jacobian(1, 15) = 0;
     _jacobian(2, 15) = 0;
-    _jacobian(3, 15) = _tmp328;
-    _jacobian(4, 15) = _tmp461;
-    _jacobian(5, 15) = _tmp462;
-    _jacobian(6, 15) = _tmp463;
-    _jacobian(7, 15) = _tmp464;
-    _jacobian(8, 15) = _tmp465;
+    _jacobian(3, 15) = _tmp330;
+    _jacobian(4, 15) = _tmp484;
+    _jacobian(5, 15) = _tmp485;
+    _jacobian(6, 15) = _tmp486;
+    _jacobian(7, 15) = _tmp487;
+    _jacobian(8, 15) = _tmp488;
     _jacobian(0, 16) = 0;
     _jacobian(1, 16) = 0;
     _jacobian(2, 16) = 0;
-    _jacobian(3, 16) = _tmp348;
-    _jacobian(4, 16) = _tmp466;
-    _jacobian(5, 16) = _tmp467;
-    _jacobian(6, 16) = _tmp468;
-    _jacobian(7, 16) = _tmp469;
-    _jacobian(8, 16) = _tmp470;
+    _jacobian(3, 16) = _tmp350;
+    _jacobian(4, 16) = _tmp489;
+    _jacobian(5, 16) = _tmp490;
+    _jacobian(6, 16) = _tmp491;
+    _jacobian(7, 16) = _tmp492;
+    _jacobian(8, 16) = _tmp493;
     _jacobian(0, 17) = 0;
     _jacobian(1, 17) = 0;
     _jacobian(2, 17) = 0;
-    _jacobian(3, 17) = _tmp368;
-    _jacobian(4, 17) = _tmp471;
-    _jacobian(5, 17) = _tmp472;
-    _jacobian(6, 17) = _tmp473;
-    _jacobian(7, 17) = _tmp474;
-    _jacobian(8, 17) = _tmp475;
+    _jacobian(3, 17) = _tmp370;
+    _jacobian(4, 17) = _tmp494;
+    _jacobian(5, 17) = _tmp495;
+    _jacobian(6, 17) = _tmp496;
+    _jacobian(7, 17) = _tmp497;
+    _jacobian(8, 17) = _tmp498;
     _jacobian(0, 18) = 0;
     _jacobian(1, 18) = 0;
     _jacobian(2, 18) = 0;
-    _jacobian(3, 18) = -_tmp476;
-    _jacobian(4, 18) = _tmp477;
-    _jacobian(5, 18) = _tmp478;
-    _jacobian(6, 18) = _tmp479;
-    _jacobian(7, 18) = _tmp480;
-    _jacobian(8, 18) = _tmp481;
+    _jacobian(3, 18) = -_tmp499;
+    _jacobian(4, 18) = _tmp500;
+    _jacobian(5, 18) = _tmp501;
+    _jacobian(6, 18) = _tmp502;
+    _jacobian(7, 18) = _tmp503;
+    _jacobian(8, 18) = _tmp504;
     _jacobian(0, 19) = 0;
     _jacobian(1, 19) = 0;
     _jacobian(2, 19) = 0;
-    _jacobian(3, 19) = -_tmp482;
-    _jacobian(4, 19) = _tmp483;
-    _jacobian(5, 19) = _tmp484;
-    _jacobian(6, 19) = _tmp485;
-    _jacobian(7, 19) = _tmp486;
-    _jacobian(8, 19) = _tmp487;
+    _jacobian(3, 19) = -_tmp505;
+    _jacobian(4, 19) = _tmp506;
+    _jacobian(5, 19) = _tmp507;
+    _jacobian(6, 19) = _tmp508;
+    _jacobian(7, 19) = _tmp509;
+    _jacobian(8, 19) = _tmp510;
     _jacobian(0, 20) = 0;
     _jacobian(1, 20) = 0;
     _jacobian(2, 20) = 0;
-    _jacobian(3, 20) = -_tmp488;
-    _jacobian(4, 20) = _tmp489;
-    _jacobian(5, 20) = _tmp490;
-    _jacobian(6, 20) = _tmp491;
-    _jacobian(7, 20) = _tmp492;
-    _jacobian(8, 20) = _tmp493;
-    _jacobian(0, 21) = _tmp538;
-    _jacobian(1, 21) = _tmp542;
-    _jacobian(2, 21) = _tmp544;
-    _jacobian(3, 21) = _tmp546;
-    _jacobian(4, 21) = _tmp547;
-    _jacobian(5, 21) = _tmp548;
-    _jacobian(6, 21) = _tmp549;
-    _jacobian(7, 21) = _tmp550;
-    _jacobian(8, 21) = _tmp551;
-    _jacobian(0, 22) = _tmp573;
-    _jacobian(1, 22) = _tmp577;
-    _jacobian(2, 22) = _tmp579;
-    _jacobian(3, 22) = _tmp581;
-    _jacobian(4, 22) = _tmp582;
-    _jacobian(5, 22) = _tmp583;
-    _jacobian(6, 22) = _tmp584;
-    _jacobian(7, 22) = _tmp585;
-    _jacobian(8, 22) = _tmp586;
-    _jacobian(0, 23) = _tmp604;
-    _jacobian(1, 23) = _tmp607;
-    _jacobian(2, 23) = _tmp610;
-    _jacobian(3, 23) = _tmp612;
-    _jacobian(4, 23) = _tmp613;
-    _jacobian(5, 23) = _tmp614;
-    _jacobian(6, 23) = _tmp615;
-    _jacobian(7, 23) = _tmp616;
-    _jacobian(8, 23) = _tmp617;
+    _jacobian(3, 20) = -_tmp511;
+    _jacobian(4, 20) = _tmp512;
+    _jacobian(5, 20) = _tmp513;
+    _jacobian(6, 20) = _tmp514;
+    _jacobian(7, 20) = _tmp515;
+    _jacobian(8, 20) = _tmp516;
+    _jacobian(0, 21) = _tmp563;
+    _jacobian(1, 21) = _tmp569;
+    _jacobian(2, 21) = _tmp573;
+    _jacobian(3, 21) = _tmp574;
+    _jacobian(4, 21) = _tmp575;
+    _jacobian(5, 21) = _tmp576;
+    _jacobian(6, 21) = _tmp577;
+    _jacobian(7, 21) = _tmp578;
+    _jacobian(8, 21) = _tmp579;
+    _jacobian(0, 22) = _tmp603;
+    _jacobian(1, 22) = _tmp609;
+    _jacobian(2, 22) = _tmp613;
+    _jacobian(3, 22) = _tmp614;
+    _jacobian(4, 22) = _tmp615;
+    _jacobian(5, 22) = _tmp616;
+    _jacobian(6, 22) = _tmp617;
+    _jacobian(7, 22) = _tmp618;
+    _jacobian(8, 22) = _tmp619;
+    _jacobian(0, 23) = _tmp639;
+    _jacobian(1, 23) = _tmp645;
+    _jacobian(2, 23) = _tmp649;
+    _jacobian(3, 23) = _tmp650;
+    _jacobian(4, 23) = _tmp651;
+    _jacobian(5, 23) = _tmp652;
+    _jacobian(6, 23) = _tmp653;
+    _jacobian(7, 23) = _tmp654;
+    _jacobian(8, 23) = _tmp655;
     _jacobian(0, 24) = 0;
     _jacobian(1, 24) = 0;
     _jacobian(2, 24) = 0;
-    _jacobian(3, 24) = _tmp640;
-    _jacobian(4, 24) = _tmp643;
-    _jacobian(5, 24) = _tmp645;
-    _jacobian(6, 24) = _tmp651;
-    _jacobian(7, 24) = _tmp654;
-    _jacobian(8, 24) = _tmp655;
+    _jacobian(3, 24) = _tmp678;
+    _jacobian(4, 24) = _tmp680;
+    _jacobian(5, 24) = _tmp682;
+    _jacobian(6, 24) = _tmp688;
+    _jacobian(7, 24) = _tmp692;
+    _jacobian(8, 24) = _tmp695;
     _jacobian(0, 25) = 0;
     _jacobian(1, 25) = 0;
     _jacobian(2, 25) = 0;
-    _jacobian(3, 25) = _tmp663;
-    _jacobian(4, 25) = _tmp666;
-    _jacobian(5, 25) = _tmp668;
-    _jacobian(6, 25) = _tmp672;
-    _jacobian(7, 25) = _tmp675;
-    _jacobian(8, 25) = _tmp676;
+    _jacobian(3, 25) = _tmp703;
+    _jacobian(4, 25) = _tmp705;
+    _jacobian(5, 25) = _tmp707;
+    _jacobian(6, 25) = _tmp711;
+    _jacobian(7, 25) = _tmp713;
+    _jacobian(8, 25) = _tmp714;
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 26, 26>& _hessian = (*hessian);
 
     _hessian(0, 0) =
-        std::pow(_tmp184, Scalar(2)) + std::pow(_tmp189, Scalar(2)) + std::pow(_tmp195, Scalar(2)) +
-        std::pow(_tmp200, Scalar(2)) + std::pow(_tmp211, Scalar(2)) + std::pow(_tmp223, Scalar(2)) +
-        std::pow(_tmp227, Scalar(2)) + std::pow(_tmp230, Scalar(2)) + std::pow(_tmp234, Scalar(2));
-    _hessian(1, 0) = _tmp184 * _tmp248 + _tmp189 * _tmp251 + _tmp195 * _tmp253 + _tmp200 * _tmp263 +
-                     _tmp211 * _tmp264 + _tmp223 * _tmp267 + _tmp227 * _tmp270 + _tmp230 * _tmp272 +
-                     _tmp234 * _tmp273;
-    _hessian(2, 0) = _tmp184 * _tmp283 + _tmp189 * _tmp286 + _tmp195 * _tmp288 + _tmp200 * _tmp292 +
-                     _tmp211 * _tmp297 + _tmp223 * _tmp298 + _tmp227 * _tmp300 + _tmp230 * _tmp302 +
-                     _tmp234 * _tmp303;
-    _hessian(3, 0) = _tmp230 * _tmp307 + _tmp234 * _tmp311 - _tmp677;
-    _hessian(4, 0) = _tmp230 * _tmp315 + _tmp234 * _tmp319 - _tmp678;
-    _hessian(5, 0) = _tmp230 * _tmp323 + _tmp234 * _tmp327 - _tmp679;
-    _hessian(6, 0) = _tmp211 * _tmp331 + _tmp223 * _tmp335 + _tmp227 * _tmp339 + _tmp230 * _tmp343 +
-                     _tmp234 * _tmp347 - _tmp680;
-    _hessian(7, 0) = _tmp211 * _tmp351 + _tmp223 * _tmp355 + _tmp227 * _tmp359 + _tmp230 * _tmp363 +
-                     _tmp234 * _tmp367 - _tmp681;
-    _hessian(8, 0) = _tmp211 * _tmp371 + _tmp223 * _tmp375 + _tmp227 * _tmp379 + _tmp230 * _tmp383 +
-                     _tmp234 * _tmp387 - _tmp682;
-    _hessian(9, 0) = _tmp184 * _tmp401 + _tmp189 * _tmp408 + _tmp195 * _tmp415 + _tmp200 * _tmp417 +
-                     _tmp211 * _tmp418 + _tmp223 * _tmp419 + _tmp227 * _tmp421 + _tmp230 * _tmp422 +
-                     _tmp234 * _tmp423;
-    _hessian(10, 0) = _tmp184 * _tmp429 + _tmp189 * _tmp431 + _tmp195 * _tmp432 +
-                      _tmp200 * _tmp434 + _tmp211 * _tmp435 + _tmp223 * _tmp436 +
-                      _tmp227 * _tmp437 + _tmp230 * _tmp438 + _tmp234 * _tmp439;
-    _hessian(11, 0) = _tmp184 * _tmp444 + _tmp189 * _tmp447 + _tmp195 * _tmp448 +
-                      _tmp200 * _tmp449 + _tmp211 * _tmp450 + _tmp223 * _tmp451 +
-                      _tmp227 * _tmp452 + _tmp230 * _tmp453 + _tmp234 * _tmp454;
-    _hessian(12, 0) = _tmp230 * _tmp455 + _tmp234 * _tmp456 + _tmp677;
-    _hessian(13, 0) = _tmp230 * _tmp457 + _tmp234 * _tmp458 + _tmp678;
-    _hessian(14, 0) = _tmp230 * _tmp459 + _tmp234 * _tmp460 + _tmp679;
-    _hessian(15, 0) = _tmp211 * _tmp461 + _tmp223 * _tmp462 + _tmp227 * _tmp463 +
-                      _tmp230 * _tmp464 + _tmp234 * _tmp465 + _tmp680;
-    _hessian(16, 0) = _tmp211 * _tmp466 + _tmp223 * _tmp467 + _tmp227 * _tmp468 +
-                      _tmp230 * _tmp469 + _tmp234 * _tmp470 + _tmp681;
-    _hessian(17, 0) = _tmp211 * _tmp471 + _tmp223 * _tmp472 + _tmp227 * _tmp473 +
-                      _tmp230 * _tmp474 + _tmp234 * _tmp475 + _tmp682;
-    _hessian(18, 0) = -_tmp200 * _tmp476 + _tmp211 * _tmp477 + _tmp223 * _tmp478 +
-                      _tmp227 * _tmp479 + _tmp230 * _tmp480 + _tmp234 * _tmp481;
-    _hessian(19, 0) = -_tmp200 * _tmp482 + _tmp211 * _tmp483 + _tmp223 * _tmp484 +
-                      _tmp227 * _tmp485 + _tmp230 * _tmp486 + _tmp234 * _tmp487;
-    _hessian(20, 0) = -_tmp200 * _tmp488 + _tmp211 * _tmp489 + _tmp223 * _tmp490 +
-                      _tmp227 * _tmp491 + _tmp230 * _tmp492 + _tmp234 * _tmp493;
-    _hessian(21, 0) = _tmp184 * _tmp538 + _tmp189 * _tmp542 + _tmp195 * _tmp544 +
-                      _tmp200 * _tmp546 + _tmp211 * _tmp547 + _tmp223 * _tmp548 +
-                      _tmp227 * _tmp549 + _tmp230 * _tmp550 + _tmp234 * _tmp551;
-    _hessian(22, 0) = _tmp184 * _tmp573 + _tmp189 * _tmp577 + _tmp195 * _tmp579 +
-                      _tmp200 * _tmp581 + _tmp211 * _tmp582 + _tmp223 * _tmp583 +
-                      _tmp227 * _tmp584 + _tmp230 * _tmp585 + _tmp234 * _tmp586;
-    _hessian(23, 0) = _tmp184 * _tmp604 + _tmp189 * _tmp607 + _tmp195 * _tmp610 +
-                      _tmp200 * _tmp612 + _tmp211 * _tmp613 + _tmp223 * _tmp614 +
-                      _tmp227 * _tmp615 + _tmp230 * _tmp616 + _tmp234 * _tmp617;
-    _hessian(24, 0) = _tmp200 * _tmp640 + _tmp211 * _tmp643 + _tmp223 * _tmp645 +
-                      _tmp227 * _tmp651 + _tmp230 * _tmp654 + _tmp234 * _tmp655;
-    _hessian(25, 0) = _tmp200 * _tmp663 + _tmp211 * _tmp666 + _tmp223 * _tmp668 +
-                      _tmp227 * _tmp672 + _tmp230 * _tmp675 + _tmp234 * _tmp676;
+        std::pow(_tmp181, Scalar(2)) + std::pow(_tmp187, Scalar(2)) + std::pow(_tmp193, Scalar(2)) +
+        std::pow(_tmp196, Scalar(2)) + std::pow(_tmp206, Scalar(2)) + std::pow(_tmp217, Scalar(2)) +
+        std::pow(_tmp220, Scalar(2)) + std::pow(_tmp225, Scalar(2)) + std::pow(_tmp230, Scalar(2));
+    _hessian(1, 0) = _tmp181 * _tmp246 + _tmp187 * _tmp251 + _tmp193 * _tmp254 + _tmp196 * _tmp263 +
+                     _tmp206 * _tmp265 + _tmp217 * _tmp268 + _tmp220 * _tmp270 + _tmp225 * _tmp271 +
+                     _tmp230 * _tmp272;
+    _hessian(2, 0) = _tmp181 * _tmp283 + _tmp187 * _tmp287 + _tmp193 * _tmp290 + _tmp196 * _tmp294 +
+                     _tmp206 * _tmp299 + _tmp217 * _tmp300 + _tmp220 * _tmp302 + _tmp225 * _tmp304 +
+                     _tmp230 * _tmp305;
+    _hessian(3, 0) = _tmp225 * _tmp309 + _tmp230 * _tmp313 - _tmp715;
+    _hessian(4, 0) = _tmp225 * _tmp317 + _tmp230 * _tmp321 - _tmp716;
+    _hessian(5, 0) = _tmp225 * _tmp325 + _tmp230 * _tmp329 - _tmp717;
+    _hessian(6, 0) = _tmp206 * _tmp333 + _tmp217 * _tmp337 + _tmp220 * _tmp341 + _tmp225 * _tmp345 +
+                     _tmp230 * _tmp349 - _tmp718;
+    _hessian(7, 0) = _tmp206 * _tmp353 + _tmp217 * _tmp357 + _tmp220 * _tmp361 + _tmp225 * _tmp365 +
+                     _tmp230 * _tmp369 - _tmp719;
+    _hessian(8, 0) = _tmp206 * _tmp373 + _tmp217 * _tmp377 + _tmp220 * _tmp381 + _tmp225 * _tmp385 +
+                     _tmp230 * _tmp389 - _tmp720;
+    _hessian(9, 0) = _tmp181 * _tmp404 + _tmp187 * _tmp415 + _tmp193 * _tmp425 + _tmp196 * _tmp429 +
+                     _tmp206 * _tmp430 + _tmp217 * _tmp433 + _tmp220 * _tmp434 + _tmp225 * _tmp436 +
+                     _tmp230 * _tmp438;
+    _hessian(10, 0) = _tmp181 * _tmp445 + _tmp187 * _tmp448 + _tmp193 * _tmp450 +
+                      _tmp196 * _tmp452 + _tmp206 * _tmp453 + _tmp217 * _tmp454 +
+                      _tmp220 * _tmp455 + _tmp225 * _tmp456 + _tmp230 * _tmp457;
+    _hessian(11, 0) = _tmp181 * _tmp460 + _tmp187 * _tmp466 + _tmp193 * _tmp468 +
+                      _tmp196 * _tmp470 + _tmp206 * _tmp472 + _tmp217 * _tmp473 +
+                      _tmp220 * _tmp475 + _tmp225 * _tmp476 + _tmp230 * _tmp477;
+    _hessian(12, 0) = _tmp225 * _tmp478 + _tmp230 * _tmp479 + _tmp715;
+    _hessian(13, 0) = _tmp225 * _tmp480 + _tmp230 * _tmp481 + _tmp716;
+    _hessian(14, 0) = _tmp225 * _tmp482 + _tmp230 * _tmp483 + _tmp717;
+    _hessian(15, 0) = _tmp206 * _tmp484 + _tmp217 * _tmp485 + _tmp220 * _tmp486 +
+                      _tmp225 * _tmp487 + _tmp230 * _tmp488 + _tmp718;
+    _hessian(16, 0) = _tmp206 * _tmp489 + _tmp217 * _tmp490 + _tmp220 * _tmp491 +
+                      _tmp225 * _tmp492 + _tmp230 * _tmp493 + _tmp719;
+    _hessian(17, 0) = _tmp206 * _tmp494 + _tmp217 * _tmp495 + _tmp220 * _tmp496 +
+                      _tmp225 * _tmp497 + _tmp230 * _tmp498 + _tmp720;
+    _hessian(18, 0) = -_tmp196 * _tmp499 + _tmp206 * _tmp500 + _tmp217 * _tmp501 +
+                      _tmp220 * _tmp502 + _tmp225 * _tmp503 + _tmp230 * _tmp504;
+    _hessian(19, 0) = -_tmp196 * _tmp505 + _tmp206 * _tmp506 + _tmp217 * _tmp507 +
+                      _tmp220 * _tmp508 + _tmp225 * _tmp509 + _tmp230 * _tmp510;
+    _hessian(20, 0) = -_tmp196 * _tmp511 + _tmp206 * _tmp512 + _tmp217 * _tmp513 +
+                      _tmp220 * _tmp514 + _tmp225 * _tmp515 + _tmp230 * _tmp516;
+    _hessian(21, 0) = _tmp181 * _tmp563 + _tmp187 * _tmp569 + _tmp193 * _tmp573 +
+                      _tmp196 * _tmp574 + _tmp206 * _tmp575 + _tmp217 * _tmp576 +
+                      _tmp220 * _tmp577 + _tmp225 * _tmp578 + _tmp230 * _tmp579;
+    _hessian(22, 0) = _tmp181 * _tmp603 + _tmp187 * _tmp609 + _tmp193 * _tmp613 +
+                      _tmp196 * _tmp614 + _tmp206 * _tmp615 + _tmp217 * _tmp616 +
+                      _tmp220 * _tmp617 + _tmp225 * _tmp618 + _tmp230 * _tmp619;
+    _hessian(23, 0) = _tmp181 * _tmp639 + _tmp187 * _tmp645 + _tmp193 * _tmp649 +
+                      _tmp196 * _tmp650 + _tmp206 * _tmp651 + _tmp217 * _tmp652 +
+                      _tmp220 * _tmp653 + _tmp225 * _tmp654 + _tmp230 * _tmp655;
+    _hessian(24, 0) = _tmp196 * _tmp678 + _tmp206 * _tmp680 + _tmp217 * _tmp682 +
+                      _tmp220 * _tmp688 + _tmp225 * _tmp692 + _tmp230 * _tmp695;
+    _hessian(25, 0) = _tmp196 * _tmp703 + _tmp206 * _tmp705 + _tmp217 * _tmp707 +
+                      _tmp220 * _tmp711 + _tmp225 * _tmp713 + _tmp230 * _tmp714;
     _hessian(0, 1) = 0;
     _hessian(1, 1) =
-        std::pow(_tmp248, Scalar(2)) + std::pow(_tmp251, Scalar(2)) + std::pow(_tmp253, Scalar(2)) +
-        std::pow(_tmp263, Scalar(2)) + std::pow(_tmp264, Scalar(2)) + std::pow(_tmp267, Scalar(2)) +
-        std::pow(_tmp270, Scalar(2)) + std::pow(_tmp272, Scalar(2)) + std::pow(_tmp273, Scalar(2));
-    _hessian(2, 1) = _tmp248 * _tmp283 + _tmp251 * _tmp286 + _tmp253 * _tmp288 + _tmp263 * _tmp292 +
-                     _tmp264 * _tmp297 + _tmp267 * _tmp298 + _tmp270 * _tmp300 + _tmp272 * _tmp302 +
-                     _tmp273 * _tmp303;
-    _hessian(3, 1) = _tmp272 * _tmp307 + _tmp273 * _tmp311 - _tmp683;
-    _hessian(4, 1) = _tmp272 * _tmp315 + _tmp273 * _tmp319 - _tmp684;
-    _hessian(5, 1) = _tmp272 * _tmp323 + _tmp273 * _tmp327 - _tmp685;
-    _hessian(6, 1) = _tmp264 * _tmp331 + _tmp267 * _tmp335 + _tmp270 * _tmp339 + _tmp272 * _tmp343 +
-                     _tmp273 * _tmp347 - _tmp686;
-    _hessian(7, 1) = _tmp264 * _tmp351 + _tmp267 * _tmp355 + _tmp270 * _tmp359 + _tmp272 * _tmp363 +
-                     _tmp273 * _tmp367 - _tmp687;
-    _hessian(8, 1) = _tmp264 * _tmp371 + _tmp267 * _tmp375 + _tmp270 * _tmp379 + _tmp272 * _tmp383 +
-                     _tmp273 * _tmp387 - _tmp688;
-    _hessian(9, 1) = _tmp248 * _tmp401 + _tmp251 * _tmp408 + _tmp253 * _tmp415 + _tmp263 * _tmp417 +
-                     _tmp264 * _tmp418 + _tmp267 * _tmp419 + _tmp270 * _tmp421 + _tmp272 * _tmp422 +
-                     _tmp273 * _tmp423;
-    _hessian(10, 1) = _tmp248 * _tmp429 + _tmp251 * _tmp431 + _tmp253 * _tmp432 +
-                      _tmp263 * _tmp434 + _tmp264 * _tmp435 + _tmp267 * _tmp436 +
-                      _tmp270 * _tmp437 + _tmp272 * _tmp438 + _tmp273 * _tmp439;
-    _hessian(11, 1) = _tmp248 * _tmp444 + _tmp251 * _tmp447 + _tmp253 * _tmp448 +
-                      _tmp263 * _tmp449 + _tmp264 * _tmp450 + _tmp267 * _tmp451 +
-                      _tmp270 * _tmp452 + _tmp272 * _tmp453 + _tmp273 * _tmp454;
-    _hessian(12, 1) = _tmp272 * _tmp455 + _tmp273 * _tmp456 + _tmp683;
-    _hessian(13, 1) = _tmp272 * _tmp457 + _tmp273 * _tmp458 + _tmp684;
-    _hessian(14, 1) = _tmp272 * _tmp459 + _tmp273 * _tmp460 + _tmp685;
-    _hessian(15, 1) = _tmp264 * _tmp461 + _tmp267 * _tmp462 + _tmp270 * _tmp463 +
-                      _tmp272 * _tmp464 + _tmp273 * _tmp465 + _tmp686;
-    _hessian(16, 1) = _tmp264 * _tmp466 + _tmp267 * _tmp467 + _tmp270 * _tmp468 +
-                      _tmp272 * _tmp469 + _tmp273 * _tmp470 + _tmp687;
-    _hessian(17, 1) = _tmp264 * _tmp471 + _tmp267 * _tmp472 + _tmp270 * _tmp473 +
-                      _tmp272 * _tmp474 + _tmp273 * _tmp475 + _tmp688;
-    _hessian(18, 1) = -_tmp263 * _tmp476 + _tmp264 * _tmp477 + _tmp267 * _tmp478 +
-                      _tmp270 * _tmp479 + _tmp272 * _tmp480 + _tmp273 * _tmp481;
-    _hessian(19, 1) = -_tmp263 * _tmp482 + _tmp264 * _tmp483 + _tmp267 * _tmp484 +
-                      _tmp270 * _tmp485 + _tmp272 * _tmp486 + _tmp273 * _tmp487;
-    _hessian(20, 1) = -_tmp263 * _tmp488 + _tmp264 * _tmp489 + _tmp267 * _tmp490 +
-                      _tmp270 * _tmp491 + _tmp272 * _tmp492 + _tmp273 * _tmp493;
-    _hessian(21, 1) = _tmp248 * _tmp538 + _tmp251 * _tmp542 + _tmp253 * _tmp544 +
-                      _tmp263 * _tmp546 + _tmp264 * _tmp547 + _tmp267 * _tmp548 +
-                      _tmp270 * _tmp549 + _tmp272 * _tmp550 + _tmp273 * _tmp551;
-    _hessian(22, 1) = _tmp248 * _tmp573 + _tmp251 * _tmp577 + _tmp253 * _tmp579 +
-                      _tmp263 * _tmp581 + _tmp264 * _tmp582 + _tmp267 * _tmp583 +
-                      _tmp270 * _tmp584 + _tmp272 * _tmp585 + _tmp273 * _tmp586;
-    _hessian(23, 1) = _tmp248 * _tmp604 + _tmp251 * _tmp607 + _tmp253 * _tmp610 +
-                      _tmp263 * _tmp612 + _tmp264 * _tmp613 + _tmp267 * _tmp614 +
-                      _tmp270 * _tmp615 + _tmp272 * _tmp616 + _tmp273 * _tmp617;
-    _hessian(24, 1) = _tmp263 * _tmp640 + _tmp264 * _tmp643 + _tmp267 * _tmp645 +
-                      _tmp270 * _tmp651 + _tmp272 * _tmp654 + _tmp273 * _tmp655;
-    _hessian(25, 1) = _tmp263 * _tmp663 + _tmp264 * _tmp666 + _tmp267 * _tmp668 +
-                      _tmp270 * _tmp672 + _tmp272 * _tmp675 + _tmp273 * _tmp676;
+        std::pow(_tmp246, Scalar(2)) + std::pow(_tmp251, Scalar(2)) + std::pow(_tmp254, Scalar(2)) +
+        std::pow(_tmp263, Scalar(2)) + std::pow(_tmp265, Scalar(2)) + std::pow(_tmp268, Scalar(2)) +
+        std::pow(_tmp270, Scalar(2)) + std::pow(_tmp271, Scalar(2)) + std::pow(_tmp272, Scalar(2));
+    _hessian(2, 1) = _tmp246 * _tmp283 + _tmp251 * _tmp287 + _tmp254 * _tmp290 + _tmp263 * _tmp294 +
+                     _tmp265 * _tmp299 + _tmp268 * _tmp300 + _tmp270 * _tmp302 + _tmp271 * _tmp304 +
+                     _tmp272 * _tmp305;
+    _hessian(3, 1) = _tmp271 * _tmp309 + _tmp272 * _tmp313 - _tmp721;
+    _hessian(4, 1) = _tmp271 * _tmp317 + _tmp272 * _tmp321 - _tmp722;
+    _hessian(5, 1) = _tmp271 * _tmp325 + _tmp272 * _tmp329 - _tmp723;
+    _hessian(6, 1) = _tmp265 * _tmp333 + _tmp268 * _tmp337 + _tmp270 * _tmp341 + _tmp271 * _tmp345 +
+                     _tmp272 * _tmp349 - _tmp724;
+    _hessian(7, 1) = _tmp265 * _tmp353 + _tmp268 * _tmp357 + _tmp270 * _tmp361 + _tmp271 * _tmp365 +
+                     _tmp272 * _tmp369 - _tmp725;
+    _hessian(8, 1) = _tmp265 * _tmp373 + _tmp268 * _tmp377 + _tmp270 * _tmp381 + _tmp271 * _tmp385 +
+                     _tmp272 * _tmp389 - _tmp726;
+    _hessian(9, 1) = _tmp246 * _tmp404 + _tmp251 * _tmp415 + _tmp254 * _tmp425 + _tmp263 * _tmp429 +
+                     _tmp265 * _tmp430 + _tmp268 * _tmp433 + _tmp270 * _tmp434 + _tmp271 * _tmp436 +
+                     _tmp272 * _tmp438;
+    _hessian(10, 1) = _tmp246 * _tmp445 + _tmp251 * _tmp448 + _tmp254 * _tmp450 +
+                      _tmp263 * _tmp452 + _tmp265 * _tmp453 + _tmp268 * _tmp454 +
+                      _tmp270 * _tmp455 + _tmp271 * _tmp456 + _tmp272 * _tmp457;
+    _hessian(11, 1) = _tmp246 * _tmp460 + _tmp251 * _tmp466 + _tmp254 * _tmp468 +
+                      _tmp263 * _tmp470 + _tmp265 * _tmp472 + _tmp268 * _tmp473 +
+                      _tmp270 * _tmp475 + _tmp271 * _tmp476 + _tmp272 * _tmp477;
+    _hessian(12, 1) = _tmp271 * _tmp478 + _tmp272 * _tmp479 + _tmp721;
+    _hessian(13, 1) = _tmp271 * _tmp480 + _tmp272 * _tmp481 + _tmp722;
+    _hessian(14, 1) = _tmp271 * _tmp482 + _tmp272 * _tmp483 + _tmp723;
+    _hessian(15, 1) = _tmp265 * _tmp484 + _tmp268 * _tmp485 + _tmp270 * _tmp486 +
+                      _tmp271 * _tmp487 + _tmp272 * _tmp488 + _tmp724;
+    _hessian(16, 1) = _tmp265 * _tmp489 + _tmp268 * _tmp490 + _tmp270 * _tmp491 +
+                      _tmp271 * _tmp492 + _tmp272 * _tmp493 + _tmp725;
+    _hessian(17, 1) = _tmp265 * _tmp494 + _tmp268 * _tmp495 + _tmp270 * _tmp496 +
+                      _tmp271 * _tmp497 + _tmp272 * _tmp498 + _tmp726;
+    _hessian(18, 1) = -_tmp263 * _tmp499 + _tmp265 * _tmp500 + _tmp268 * _tmp501 +
+                      _tmp270 * _tmp502 + _tmp271 * _tmp503 + _tmp272 * _tmp504;
+    _hessian(19, 1) = -_tmp263 * _tmp505 + _tmp265 * _tmp506 + _tmp268 * _tmp507 +
+                      _tmp270 * _tmp508 + _tmp271 * _tmp509 + _tmp272 * _tmp510;
+    _hessian(20, 1) = -_tmp263 * _tmp511 + _tmp265 * _tmp512 + _tmp268 * _tmp513 +
+                      _tmp270 * _tmp514 + _tmp271 * _tmp515 + _tmp272 * _tmp516;
+    _hessian(21, 1) = _tmp246 * _tmp563 + _tmp251 * _tmp569 + _tmp254 * _tmp573 +
+                      _tmp263 * _tmp574 + _tmp265 * _tmp575 + _tmp268 * _tmp576 +
+                      _tmp270 * _tmp577 + _tmp271 * _tmp578 + _tmp272 * _tmp579;
+    _hessian(22, 1) = _tmp246 * _tmp603 + _tmp251 * _tmp609 + _tmp254 * _tmp613 +
+                      _tmp263 * _tmp614 + _tmp265 * _tmp615 + _tmp268 * _tmp616 +
+                      _tmp270 * _tmp617 + _tmp271 * _tmp618 + _tmp272 * _tmp619;
+    _hessian(23, 1) = _tmp246 * _tmp639 + _tmp251 * _tmp645 + _tmp254 * _tmp649 +
+                      _tmp263 * _tmp650 + _tmp265 * _tmp651 + _tmp268 * _tmp652 +
+                      _tmp270 * _tmp653 + _tmp271 * _tmp654 + _tmp272 * _tmp655;
+    _hessian(24, 1) = _tmp263 * _tmp678 + _tmp265 * _tmp680 + _tmp268 * _tmp682 +
+                      _tmp270 * _tmp688 + _tmp271 * _tmp692 + _tmp272 * _tmp695;
+    _hessian(25, 1) = _tmp263 * _tmp703 + _tmp265 * _tmp705 + _tmp268 * _tmp707 +
+                      _tmp270 * _tmp711 + _tmp271 * _tmp713 + _tmp272 * _tmp714;
     _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
     _hessian(2, 2) =
-        std::pow(_tmp283, Scalar(2)) + std::pow(_tmp286, Scalar(2)) + std::pow(_tmp288, Scalar(2)) +
-        std::pow(_tmp292, Scalar(2)) + std::pow(_tmp297, Scalar(2)) + std::pow(_tmp298, Scalar(2)) +
-        std::pow(_tmp300, Scalar(2)) + std::pow(_tmp302, Scalar(2)) + std::pow(_tmp303, Scalar(2));
-    _hessian(3, 2) = _tmp302 * _tmp307 + _tmp303 * _tmp311 - _tmp689;
-    _hessian(4, 2) = _tmp302 * _tmp315 + _tmp303 * _tmp319 - _tmp690;
-    _hessian(5, 2) = _tmp302 * _tmp323 + _tmp303 * _tmp327 - _tmp691;
-    _hessian(6, 2) = _tmp297 * _tmp331 + _tmp298 * _tmp335 + _tmp300 * _tmp339 + _tmp302 * _tmp343 +
-                     _tmp303 * _tmp347 - _tmp692;
-    _hessian(7, 2) = _tmp297 * _tmp351 + _tmp298 * _tmp355 + _tmp300 * _tmp359 + _tmp302 * _tmp363 +
-                     _tmp303 * _tmp367 - _tmp693;
-    _hessian(8, 2) = _tmp297 * _tmp371 + _tmp298 * _tmp375 + _tmp300 * _tmp379 + _tmp302 * _tmp383 +
-                     _tmp303 * _tmp387 - _tmp694;
-    _hessian(9, 2) = _tmp283 * _tmp401 + _tmp286 * _tmp408 + _tmp288 * _tmp415 + _tmp292 * _tmp417 +
-                     _tmp297 * _tmp418 + _tmp298 * _tmp419 + _tmp300 * _tmp421 + _tmp302 * _tmp422 +
-                     _tmp303 * _tmp423;
-    _hessian(10, 2) = _tmp283 * _tmp429 + _tmp286 * _tmp431 + _tmp288 * _tmp432 +
-                      _tmp292 * _tmp434 + _tmp297 * _tmp435 + _tmp298 * _tmp436 +
-                      _tmp300 * _tmp437 + _tmp302 * _tmp438 + _tmp303 * _tmp439;
-    _hessian(11, 2) = _tmp283 * _tmp444 + _tmp286 * _tmp447 + _tmp288 * _tmp448 +
-                      _tmp292 * _tmp449 + _tmp297 * _tmp450 + _tmp298 * _tmp451 +
-                      _tmp300 * _tmp452 + _tmp302 * _tmp453 + _tmp303 * _tmp454;
-    _hessian(12, 2) = _tmp302 * _tmp455 + _tmp303 * _tmp456 + _tmp689;
-    _hessian(13, 2) = _tmp302 * _tmp457 + _tmp303 * _tmp458 + _tmp690;
-    _hessian(14, 2) = _tmp302 * _tmp459 + _tmp303 * _tmp460 + _tmp691;
-    _hessian(15, 2) = _tmp297 * _tmp461 + _tmp298 * _tmp462 + _tmp300 * _tmp463 +
-                      _tmp302 * _tmp464 + _tmp303 * _tmp465 + _tmp692;
-    _hessian(16, 2) = _tmp297 * _tmp466 + _tmp298 * _tmp467 + _tmp300 * _tmp468 +
-                      _tmp302 * _tmp469 + _tmp303 * _tmp470 + _tmp693;
-    _hessian(17, 2) = _tmp297 * _tmp471 + _tmp298 * _tmp472 + _tmp300 * _tmp473 +
-                      _tmp302 * _tmp474 + _tmp303 * _tmp475 + _tmp694;
-    _hessian(18, 2) = -_tmp292 * _tmp476 + _tmp297 * _tmp477 + _tmp298 * _tmp478 +
-                      _tmp300 * _tmp479 + _tmp302 * _tmp480 + _tmp303 * _tmp481;
-    _hessian(19, 2) = -_tmp292 * _tmp482 + _tmp297 * _tmp483 + _tmp298 * _tmp484 +
-                      _tmp300 * _tmp485 + _tmp302 * _tmp486 + _tmp303 * _tmp487;
-    _hessian(20, 2) = -_tmp292 * _tmp488 + _tmp297 * _tmp489 + _tmp298 * _tmp490 +
-                      _tmp300 * _tmp491 + _tmp302 * _tmp492 + _tmp303 * _tmp493;
-    _hessian(21, 2) = _tmp283 * _tmp538 + _tmp286 * _tmp542 + _tmp288 * _tmp544 +
-                      _tmp292 * _tmp546 + _tmp297 * _tmp547 + _tmp298 * _tmp548 +
-                      _tmp300 * _tmp549 + _tmp302 * _tmp550 + _tmp303 * _tmp551;
-    _hessian(22, 2) = _tmp283 * _tmp573 + _tmp286 * _tmp577 + _tmp288 * _tmp579 +
-                      _tmp292 * _tmp581 + _tmp297 * _tmp582 + _tmp298 * _tmp583 +
-                      _tmp300 * _tmp584 + _tmp302 * _tmp585 + _tmp303 * _tmp586;
-    _hessian(23, 2) = _tmp283 * _tmp604 + _tmp286 * _tmp607 + _tmp288 * _tmp610 +
-                      _tmp292 * _tmp612 + _tmp297 * _tmp613 + _tmp298 * _tmp614 +
-                      _tmp300 * _tmp615 + _tmp302 * _tmp616 + _tmp303 * _tmp617;
-    _hessian(24, 2) = _tmp292 * _tmp640 + _tmp297 * _tmp643 + _tmp298 * _tmp645 +
-                      _tmp300 * _tmp651 + _tmp302 * _tmp654 + _tmp303 * _tmp655;
-    _hessian(25, 2) = _tmp292 * _tmp663 + _tmp297 * _tmp666 + _tmp298 * _tmp668 +
-                      _tmp300 * _tmp672 + _tmp302 * _tmp675 + _tmp303 * _tmp676;
+        std::pow(_tmp283, Scalar(2)) + std::pow(_tmp287, Scalar(2)) + std::pow(_tmp290, Scalar(2)) +
+        std::pow(_tmp294, Scalar(2)) + std::pow(_tmp299, Scalar(2)) + std::pow(_tmp300, Scalar(2)) +
+        std::pow(_tmp302, Scalar(2)) + std::pow(_tmp304, Scalar(2)) + std::pow(_tmp305, Scalar(2));
+    _hessian(3, 2) = _tmp304 * _tmp309 + _tmp305 * _tmp313 - _tmp727;
+    _hessian(4, 2) = _tmp304 * _tmp317 + _tmp305 * _tmp321 - _tmp728;
+    _hessian(5, 2) = _tmp304 * _tmp325 + _tmp305 * _tmp329 - _tmp729;
+    _hessian(6, 2) = _tmp299 * _tmp333 + _tmp300 * _tmp337 + _tmp302 * _tmp341 + _tmp304 * _tmp345 +
+                     _tmp305 * _tmp349 - _tmp730;
+    _hessian(7, 2) = _tmp299 * _tmp353 + _tmp300 * _tmp357 + _tmp302 * _tmp361 + _tmp304 * _tmp365 +
+                     _tmp305 * _tmp369 - _tmp731;
+    _hessian(8, 2) = _tmp299 * _tmp373 + _tmp300 * _tmp377 + _tmp302 * _tmp381 + _tmp304 * _tmp385 +
+                     _tmp305 * _tmp389 - _tmp732;
+    _hessian(9, 2) = _tmp283 * _tmp404 + _tmp287 * _tmp415 + _tmp290 * _tmp425 + _tmp294 * _tmp429 +
+                     _tmp299 * _tmp430 + _tmp300 * _tmp433 + _tmp302 * _tmp434 + _tmp304 * _tmp436 +
+                     _tmp305 * _tmp438;
+    _hessian(10, 2) = _tmp283 * _tmp445 + _tmp287 * _tmp448 + _tmp290 * _tmp450 +
+                      _tmp294 * _tmp452 + _tmp299 * _tmp453 + _tmp300 * _tmp454 +
+                      _tmp302 * _tmp455 + _tmp304 * _tmp456 + _tmp305 * _tmp457;
+    _hessian(11, 2) = _tmp283 * _tmp460 + _tmp287 * _tmp466 + _tmp290 * _tmp468 +
+                      _tmp294 * _tmp470 + _tmp299 * _tmp472 + _tmp300 * _tmp473 +
+                      _tmp302 * _tmp475 + _tmp304 * _tmp476 + _tmp305 * _tmp477;
+    _hessian(12, 2) = _tmp304 * _tmp478 + _tmp305 * _tmp479 + _tmp727;
+    _hessian(13, 2) = _tmp304 * _tmp480 + _tmp305 * _tmp481 + _tmp728;
+    _hessian(14, 2) = _tmp304 * _tmp482 + _tmp305 * _tmp483 + _tmp729;
+    _hessian(15, 2) = _tmp299 * _tmp484 + _tmp300 * _tmp485 + _tmp302 * _tmp486 +
+                      _tmp304 * _tmp487 + _tmp305 * _tmp488 + _tmp730;
+    _hessian(16, 2) = _tmp299 * _tmp489 + _tmp300 * _tmp490 + _tmp302 * _tmp491 +
+                      _tmp304 * _tmp492 + _tmp305 * _tmp493 + _tmp731;
+    _hessian(17, 2) = _tmp299 * _tmp494 + _tmp300 * _tmp495 + _tmp302 * _tmp496 +
+                      _tmp304 * _tmp497 + _tmp305 * _tmp498 + _tmp732;
+    _hessian(18, 2) = -_tmp294 * _tmp499 + _tmp299 * _tmp500 + _tmp300 * _tmp501 +
+                      _tmp302 * _tmp502 + _tmp304 * _tmp503 + _tmp305 * _tmp504;
+    _hessian(19, 2) = -_tmp294 * _tmp505 + _tmp299 * _tmp506 + _tmp300 * _tmp507 +
+                      _tmp302 * _tmp508 + _tmp304 * _tmp509 + _tmp305 * _tmp510;
+    _hessian(20, 2) = -_tmp294 * _tmp511 + _tmp299 * _tmp512 + _tmp300 * _tmp513 +
+                      _tmp302 * _tmp514 + _tmp304 * _tmp515 + _tmp305 * _tmp516;
+    _hessian(21, 2) = _tmp283 * _tmp563 + _tmp287 * _tmp569 + _tmp290 * _tmp573 +
+                      _tmp294 * _tmp574 + _tmp299 * _tmp575 + _tmp300 * _tmp576 +
+                      _tmp302 * _tmp577 + _tmp304 * _tmp578 + _tmp305 * _tmp579;
+    _hessian(22, 2) = _tmp283 * _tmp603 + _tmp287 * _tmp609 + _tmp290 * _tmp613 +
+                      _tmp294 * _tmp614 + _tmp299 * _tmp615 + _tmp300 * _tmp616 +
+                      _tmp302 * _tmp617 + _tmp304 * _tmp618 + _tmp305 * _tmp619;
+    _hessian(23, 2) = _tmp283 * _tmp639 + _tmp287 * _tmp645 + _tmp290 * _tmp649 +
+                      _tmp294 * _tmp650 + _tmp299 * _tmp651 + _tmp300 * _tmp652 +
+                      _tmp302 * _tmp653 + _tmp304 * _tmp654 + _tmp305 * _tmp655;
+    _hessian(24, 2) = _tmp294 * _tmp678 + _tmp299 * _tmp680 + _tmp300 * _tmp682 +
+                      _tmp302 * _tmp688 + _tmp304 * _tmp692 + _tmp305 * _tmp695;
+    _hessian(25, 2) = _tmp294 * _tmp703 + _tmp299 * _tmp705 + _tmp300 * _tmp707 +
+                      _tmp302 * _tmp711 + _tmp304 * _tmp713 + _tmp305 * _tmp714;
     _hessian(0, 3) = 0;
     _hessian(1, 3) = 0;
     _hessian(2, 3) = 0;
-    _hessian(3, 3) = std::pow(_tmp307, Scalar(2)) + std::pow(_tmp311, Scalar(2)) + _tmp697;
-    _hessian(4, 3) = _tmp307 * _tmp315 + _tmp311 * _tmp319 + _tmp699;
-    _hessian(5, 3) = _tmp307 * _tmp323 + _tmp311 * _tmp327 + _tmp701;
-    _hessian(6, 3) = _tmp307 * _tmp343 + _tmp311 * _tmp347 - _tmp702;
-    _hessian(7, 3) = _tmp307 * _tmp363 + _tmp311 * _tmp367 - _tmp703;
-    _hessian(8, 3) = _tmp307 * _tmp383 + _tmp311 * _tmp387 - _tmp704;
-    _hessian(9, 3) = _tmp307 * _tmp422 + _tmp311 * _tmp423 - _tmp705;
-    _hessian(10, 3) = _tmp307 * _tmp438 + _tmp311 * _tmp439 - _tmp706;
-    _hessian(11, 3) = _tmp307 * _tmp453 + _tmp311 * _tmp454 - _tmp707;
-    _hessian(12, 3) = _tmp307 * _tmp455 + _tmp311 * _tmp456 - _tmp697;
-    _hessian(13, 3) = _tmp307 * _tmp457 + _tmp311 * _tmp458 + _tmp708;
-    _hessian(14, 3) = _tmp307 * _tmp459 + _tmp311 * _tmp460 + _tmp709;
-    _hessian(15, 3) = _tmp307 * _tmp464 + _tmp311 * _tmp465 - _tmp710;
-    _hessian(16, 3) = _tmp307 * _tmp469 + _tmp311 * _tmp470 - _tmp711;
-    _hessian(17, 3) = _tmp307 * _tmp474 + _tmp311 * _tmp475 - _tmp712;
-    _hessian(18, 3) = _tmp307 * _tmp480 + _tmp311 * _tmp481 - _tmp713;
-    _hessian(19, 3) = _tmp307 * _tmp486 + _tmp311 * _tmp487 - _tmp714;
-    _hessian(20, 3) = _tmp307 * _tmp492 + _tmp311 * _tmp493 - _tmp715;
-    _hessian(21, 3) = _tmp307 * _tmp550 + _tmp311 * _tmp551 - _tmp716;
-    _hessian(22, 3) = _tmp307 * _tmp585 + _tmp311 * _tmp586 - _tmp717;
-    _hessian(23, 3) = _tmp307 * _tmp616 + _tmp311 * _tmp617 - _tmp718;
-    _hessian(24, 3) = _tmp307 * _tmp654 + _tmp311 * _tmp655 - _tmp719;
-    _hessian(25, 3) = _tmp307 * _tmp675 + _tmp311 * _tmp676 - _tmp720;
+    _hessian(3, 3) = std::pow(_tmp309, Scalar(2)) + std::pow(_tmp313, Scalar(2)) + _tmp735;
+    _hessian(4, 3) = _tmp309 * _tmp317 + _tmp313 * _tmp321 + _tmp737;
+    _hessian(5, 3) = _tmp309 * _tmp325 + _tmp313 * _tmp329 + _tmp738;
+    _hessian(6, 3) = _tmp309 * _tmp345 + _tmp313 * _tmp349 - _tmp739;
+    _hessian(7, 3) = _tmp309 * _tmp365 + _tmp313 * _tmp369 - _tmp740;
+    _hessian(8, 3) = _tmp309 * _tmp385 + _tmp313 * _tmp389 - _tmp741;
+    _hessian(9, 3) = _tmp309 * _tmp436 + _tmp313 * _tmp438 - _tmp742;
+    _hessian(10, 3) = _tmp309 * _tmp456 + _tmp313 * _tmp457 - _tmp743;
+    _hessian(11, 3) = _tmp309 * _tmp476 + _tmp313 * _tmp477 - _tmp744;
+    _hessian(12, 3) = _tmp309 * _tmp478 + _tmp313 * _tmp479 - _tmp735;
+    _hessian(13, 3) = _tmp309 * _tmp480 + _tmp313 * _tmp481 + _tmp745;
+    _hessian(14, 3) = _tmp309 * _tmp482 + _tmp313 * _tmp483 + _tmp746;
+    _hessian(15, 3) = _tmp309 * _tmp487 + _tmp313 * _tmp488 - _tmp747;
+    _hessian(16, 3) = _tmp309 * _tmp492 + _tmp313 * _tmp493 - _tmp748;
+    _hessian(17, 3) = _tmp309 * _tmp497 + _tmp313 * _tmp498 - _tmp749;
+    _hessian(18, 3) = _tmp309 * _tmp503 + _tmp313 * _tmp504 - _tmp750;
+    _hessian(19, 3) = _tmp309 * _tmp509 + _tmp313 * _tmp510 - _tmp751;
+    _hessian(20, 3) = _tmp309 * _tmp515 + _tmp313 * _tmp516 - _tmp752;
+    _hessian(21, 3) = _tmp309 * _tmp578 + _tmp313 * _tmp579 - _tmp753;
+    _hessian(22, 3) = _tmp309 * _tmp618 + _tmp313 * _tmp619 - _tmp754;
+    _hessian(23, 3) = _tmp309 * _tmp654 + _tmp313 * _tmp655 - _tmp755;
+    _hessian(24, 3) = _tmp309 * _tmp692 + _tmp313 * _tmp695 - _tmp756;
+    _hessian(25, 3) = _tmp309 * _tmp713 + _tmp313 * _tmp714 - _tmp757;
     _hessian(0, 4) = 0;
     _hessian(1, 4) = 0;
     _hessian(2, 4) = 0;
     _hessian(3, 4) = 0;
-    _hessian(4, 4) = std::pow(_tmp315, Scalar(2)) + std::pow(_tmp319, Scalar(2)) + _tmp722;
-    _hessian(5, 4) = _tmp315 * _tmp323 + _tmp319 * _tmp327 + _tmp723;
-    _hessian(6, 4) = _tmp315 * _tmp343 + _tmp319 * _tmp347 - _tmp724;
-    _hessian(7, 4) = _tmp315 * _tmp363 + _tmp319 * _tmp367 - _tmp725;
-    _hessian(8, 4) = _tmp315 * _tmp383 + _tmp319 * _tmp387 - _tmp726;
-    _hessian(9, 4) = _tmp315 * _tmp422 + _tmp319 * _tmp423 - _tmp727;
-    _hessian(10, 4) = _tmp315 * _tmp438 + _tmp319 * _tmp439 - _tmp728;
-    _hessian(11, 4) = _tmp315 * _tmp453 + _tmp319 * _tmp454 - _tmp729;
-    _hessian(12, 4) = _tmp315 * _tmp455 + _tmp319 * _tmp456 + _tmp708;
-    _hessian(13, 4) = _tmp315 * _tmp457 + _tmp319 * _tmp458 - _tmp722;
-    _hessian(14, 4) = _tmp315 * _tmp459 + _tmp319 * _tmp460 + _tmp730;
-    _hessian(15, 4) = _tmp315 * _tmp464 + _tmp319 * _tmp465 - _tmp731;
-    _hessian(16, 4) = _tmp315 * _tmp469 + _tmp319 * _tmp470 - _tmp732;
-    _hessian(17, 4) = _tmp315 * _tmp474 + _tmp319 * _tmp475 - _tmp733;
-    _hessian(18, 4) = _tmp315 * _tmp480 + _tmp319 * _tmp481 - _tmp734;
-    _hessian(19, 4) = _tmp315 * _tmp486 + _tmp319 * _tmp487 - _tmp735;
-    _hessian(20, 4) = _tmp315 * _tmp492 + _tmp319 * _tmp493 - _tmp736;
-    _hessian(21, 4) = _tmp315 * _tmp550 + _tmp319 * _tmp551 - _tmp737;
-    _hessian(22, 4) = _tmp315 * _tmp585 + _tmp319 * _tmp586 - _tmp738;
-    _hessian(23, 4) = _tmp315 * _tmp616 + _tmp319 * _tmp617 - _tmp739;
-    _hessian(24, 4) = _tmp315 * _tmp654 + _tmp319 * _tmp655 - _tmp740;
-    _hessian(25, 4) = _tmp315 * _tmp675 + _tmp319 * _tmp676 - _tmp741;
+    _hessian(4, 4) = std::pow(_tmp317, Scalar(2)) + std::pow(_tmp321, Scalar(2)) + _tmp759;
+    _hessian(5, 4) = _tmp317 * _tmp325 + _tmp321 * _tmp329 + _tmp760;
+    _hessian(6, 4) = _tmp317 * _tmp345 + _tmp321 * _tmp349 - _tmp761;
+    _hessian(7, 4) = _tmp317 * _tmp365 + _tmp321 * _tmp369 - _tmp762;
+    _hessian(8, 4) = _tmp317 * _tmp385 + _tmp321 * _tmp389 - _tmp763;
+    _hessian(9, 4) = _tmp317 * _tmp436 + _tmp321 * _tmp438 - _tmp764;
+    _hessian(10, 4) = _tmp317 * _tmp456 + _tmp321 * _tmp457 - _tmp765;
+    _hessian(11, 4) = _tmp317 * _tmp476 + _tmp321 * _tmp477 - _tmp766;
+    _hessian(12, 4) = _tmp317 * _tmp478 + _tmp321 * _tmp479 + _tmp745;
+    _hessian(13, 4) = _tmp317 * _tmp480 + _tmp321 * _tmp481 - _tmp759;
+    _hessian(14, 4) = _tmp317 * _tmp482 + _tmp321 * _tmp483 + _tmp767;
+    _hessian(15, 4) = _tmp317 * _tmp487 + _tmp321 * _tmp488 - _tmp768;
+    _hessian(16, 4) = _tmp317 * _tmp492 + _tmp321 * _tmp493 - _tmp769;
+    _hessian(17, 4) = _tmp317 * _tmp497 + _tmp321 * _tmp498 - _tmp770;
+    _hessian(18, 4) = _tmp317 * _tmp503 + _tmp321 * _tmp504 - _tmp771;
+    _hessian(19, 4) = _tmp317 * _tmp509 + _tmp321 * _tmp510 - _tmp772;
+    _hessian(20, 4) = _tmp317 * _tmp515 + _tmp321 * _tmp516 - _tmp773;
+    _hessian(21, 4) = _tmp317 * _tmp578 + _tmp321 * _tmp579 - _tmp774;
+    _hessian(22, 4) = _tmp317 * _tmp618 + _tmp321 * _tmp619 - _tmp775;
+    _hessian(23, 4) = _tmp317 * _tmp654 + _tmp321 * _tmp655 - _tmp776;
+    _hessian(24, 4) = _tmp317 * _tmp692 + _tmp321 * _tmp695 - _tmp777;
+    _hessian(25, 4) = _tmp317 * _tmp713 + _tmp321 * _tmp714 - _tmp778;
     _hessian(0, 5) = 0;
     _hessian(1, 5) = 0;
     _hessian(2, 5) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 5) = 0;
-    _hessian(5, 5) = std::pow(_tmp323, Scalar(2)) + std::pow(_tmp327, Scalar(2)) + _tmp743;
-    _hessian(6, 5) = _tmp323 * _tmp343 + _tmp327 * _tmp347 - _tmp744;
-    _hessian(7, 5) = _tmp323 * _tmp363 + _tmp327 * _tmp367 - _tmp745;
-    _hessian(8, 5) = _tmp323 * _tmp383 + _tmp327 * _tmp387 - _tmp746;
-    _hessian(9, 5) = _tmp323 * _tmp422 + _tmp327 * _tmp423 - _tmp747;
-    _hessian(10, 5) = _tmp323 * _tmp438 + _tmp327 * _tmp439 - _tmp748;
-    _hessian(11, 5) = _tmp323 * _tmp453 + _tmp327 * _tmp454 - _tmp749;
-    _hessian(12, 5) = _tmp323 * _tmp455 + _tmp327 * _tmp456 + _tmp709;
-    _hessian(13, 5) = _tmp323 * _tmp457 + _tmp327 * _tmp458 + _tmp730;
-    _hessian(14, 5) = _tmp323 * _tmp459 + _tmp327 * _tmp460 - _tmp743;
-    _hessian(15, 5) = _tmp323 * _tmp464 + _tmp327 * _tmp465 - _tmp750;
-    _hessian(16, 5) = _tmp323 * _tmp469 + _tmp327 * _tmp470 - _tmp751;
-    _hessian(17, 5) = _tmp323 * _tmp474 + _tmp327 * _tmp475 - _tmp752;
-    _hessian(18, 5) = _tmp323 * _tmp480 + _tmp327 * _tmp481 - _tmp753;
-    _hessian(19, 5) = _tmp323 * _tmp486 + _tmp327 * _tmp487 - _tmp754;
-    _hessian(20, 5) = _tmp323 * _tmp492 + _tmp327 * _tmp493 - _tmp755;
-    _hessian(21, 5) = _tmp323 * _tmp550 + _tmp327 * _tmp551 - _tmp756;
-    _hessian(22, 5) = _tmp323 * _tmp585 + _tmp327 * _tmp586 - _tmp757;
-    _hessian(23, 5) = _tmp323 * _tmp616 + _tmp327 * _tmp617 - _tmp758;
-    _hessian(24, 5) = _tmp323 * _tmp654 + _tmp327 * _tmp655 - _tmp759;
-    _hessian(25, 5) = _tmp323 * _tmp675 + _tmp327 * _tmp676 - _tmp760;
+    _hessian(5, 5) = std::pow(_tmp325, Scalar(2)) + std::pow(_tmp329, Scalar(2)) + _tmp780;
+    _hessian(6, 5) = _tmp325 * _tmp345 + _tmp329 * _tmp349 - _tmp781;
+    _hessian(7, 5) = _tmp325 * _tmp365 + _tmp329 * _tmp369 - _tmp782;
+    _hessian(8, 5) = _tmp325 * _tmp385 + _tmp329 * _tmp389 - _tmp783;
+    _hessian(9, 5) = _tmp325 * _tmp436 + _tmp329 * _tmp438 - _tmp784;
+    _hessian(10, 5) = _tmp325 * _tmp456 + _tmp329 * _tmp457 - _tmp785;
+    _hessian(11, 5) = _tmp325 * _tmp476 + _tmp329 * _tmp477 - _tmp786;
+    _hessian(12, 5) = _tmp325 * _tmp478 + _tmp329 * _tmp479 + _tmp746;
+    _hessian(13, 5) = _tmp325 * _tmp480 + _tmp329 * _tmp481 + _tmp767;
+    _hessian(14, 5) = _tmp325 * _tmp482 + _tmp329 * _tmp483 - _tmp780;
+    _hessian(15, 5) = _tmp325 * _tmp487 + _tmp329 * _tmp488 - _tmp787;
+    _hessian(16, 5) = _tmp325 * _tmp492 + _tmp329 * _tmp493 - _tmp788;
+    _hessian(17, 5) = _tmp325 * _tmp497 + _tmp329 * _tmp498 - _tmp789;
+    _hessian(18, 5) = _tmp325 * _tmp503 + _tmp329 * _tmp504 - _tmp790;
+    _hessian(19, 5) = _tmp325 * _tmp509 + _tmp329 * _tmp510 - _tmp791;
+    _hessian(20, 5) = _tmp325 * _tmp515 + _tmp329 * _tmp516 - _tmp792;
+    _hessian(21, 5) = _tmp325 * _tmp578 + _tmp329 * _tmp579 - _tmp793;
+    _hessian(22, 5) = _tmp325 * _tmp618 + _tmp329 * _tmp619 - _tmp794;
+    _hessian(23, 5) = _tmp325 * _tmp654 + _tmp329 * _tmp655 - _tmp795;
+    _hessian(24, 5) = _tmp325 * _tmp692 + _tmp329 * _tmp695 - _tmp796;
+    _hessian(25, 5) = _tmp325 * _tmp713 + _tmp329 * _tmp714 - _tmp797;
     _hessian(0, 6) = 0;
     _hessian(1, 6) = 0;
     _hessian(2, 6) = 0;
     _hessian(3, 6) = 0;
     _hessian(4, 6) = 0;
     _hessian(5, 6) = 0;
-    _hessian(6, 6) = std::pow(_tmp331, Scalar(2)) + std::pow(_tmp335, Scalar(2)) +
-                     std::pow(_tmp339, Scalar(2)) + std::pow(_tmp343, Scalar(2)) +
-                     std::pow(_tmp347, Scalar(2)) + _tmp762;
-    _hessian(7, 6) = _tmp331 * _tmp351 + _tmp335 * _tmp355 + _tmp339 * _tmp359 + _tmp343 * _tmp363 +
-                     _tmp347 * _tmp367 + _tmp764;
-    _hessian(8, 6) = _tmp331 * _tmp371 + _tmp335 * _tmp375 + _tmp339 * _tmp379 + _tmp343 * _tmp383 +
-                     _tmp347 * _tmp387 + _tmp765;
-    _hessian(9, 6) = _tmp331 * _tmp418 + _tmp335 * _tmp419 + _tmp339 * _tmp421 + _tmp343 * _tmp422 +
-                     _tmp347 * _tmp423 - _tmp766;
-    _hessian(10, 6) = _tmp331 * _tmp435 + _tmp335 * _tmp436 + _tmp339 * _tmp437 +
-                      _tmp343 * _tmp438 + _tmp347 * _tmp439 - _tmp767;
-    _hessian(11, 6) = _tmp331 * _tmp450 + _tmp335 * _tmp451 + _tmp339 * _tmp452 +
-                      _tmp343 * _tmp453 + _tmp347 * _tmp454 - _tmp768;
-    _hessian(12, 6) = _tmp343 * _tmp455 + _tmp347 * _tmp456 + _tmp702;
-    _hessian(13, 6) = _tmp343 * _tmp457 + _tmp347 * _tmp458 + _tmp724;
-    _hessian(14, 6) = _tmp343 * _tmp459 + _tmp347 * _tmp460 + _tmp744;
-    _hessian(15, 6) = _tmp331 * _tmp461 + _tmp335 * _tmp462 + _tmp339 * _tmp463 +
-                      _tmp343 * _tmp464 + _tmp347 * _tmp465 - _tmp762;
-    _hessian(16, 6) = _tmp331 * _tmp466 + _tmp335 * _tmp467 + _tmp339 * _tmp468 +
-                      _tmp343 * _tmp469 + _tmp347 * _tmp470 + _tmp769;
-    _hessian(17, 6) = _tmp331 * _tmp471 + _tmp335 * _tmp472 + _tmp339 * _tmp473 +
-                      _tmp343 * _tmp474 + _tmp347 * _tmp475 + _tmp770;
-    _hessian(18, 6) = _tmp331 * _tmp477 + _tmp335 * _tmp478 + _tmp339 * _tmp479 +
-                      _tmp343 * _tmp480 + _tmp347 * _tmp481 + _tmp772;
-    _hessian(19, 6) = _tmp331 * _tmp483 + _tmp335 * _tmp484 + _tmp339 * _tmp485 +
-                      _tmp343 * _tmp486 + _tmp347 * _tmp487 + _tmp774;
-    _hessian(20, 6) = _tmp331 * _tmp489 + _tmp335 * _tmp490 + _tmp339 * _tmp491 +
-                      _tmp343 * _tmp492 + _tmp347 * _tmp493 + _tmp776;
-    _hessian(21, 6) = _tmp331 * _tmp547 + _tmp335 * _tmp548 + _tmp339 * _tmp549 +
-                      _tmp343 * _tmp550 + _tmp347 * _tmp551 - _tmp777;
-    _hessian(22, 6) = _tmp331 * _tmp582 + _tmp335 * _tmp583 + _tmp339 * _tmp584 +
-                      _tmp343 * _tmp585 + _tmp347 * _tmp586 - _tmp778;
-    _hessian(23, 6) = _tmp331 * _tmp613 + _tmp335 * _tmp614 + _tmp339 * _tmp615 +
-                      _tmp343 * _tmp616 + _tmp347 * _tmp617 - _tmp779;
-    _hessian(24, 6) = _tmp331 * _tmp643 + _tmp335 * _tmp645 + _tmp339 * _tmp651 +
-                      _tmp343 * _tmp654 + _tmp347 * _tmp655 - _tmp781;
-    _hessian(25, 6) = _tmp331 * _tmp666 + _tmp335 * _tmp668 + _tmp339 * _tmp672 +
-                      _tmp343 * _tmp675 + _tmp347 * _tmp676 - _tmp783;
+    _hessian(6, 6) = std::pow(_tmp333, Scalar(2)) + std::pow(_tmp337, Scalar(2)) +
+                     std::pow(_tmp341, Scalar(2)) + std::pow(_tmp345, Scalar(2)) +
+                     std::pow(_tmp349, Scalar(2)) + _tmp799;
+    _hessian(7, 6) = _tmp333 * _tmp353 + _tmp337 * _tmp357 + _tmp341 * _tmp361 + _tmp345 * _tmp365 +
+                     _tmp349 * _tmp369 + _tmp801;
+    _hessian(8, 6) = _tmp333 * _tmp373 + _tmp337 * _tmp377 + _tmp341 * _tmp381 + _tmp345 * _tmp385 +
+                     _tmp349 * _tmp389 + _tmp802;
+    _hessian(9, 6) = _tmp333 * _tmp430 + _tmp337 * _tmp433 + _tmp341 * _tmp434 + _tmp345 * _tmp436 +
+                     _tmp349 * _tmp438 - _tmp803;
+    _hessian(10, 6) = _tmp333 * _tmp453 + _tmp337 * _tmp454 + _tmp341 * _tmp455 +
+                      _tmp345 * _tmp456 + _tmp349 * _tmp457 - _tmp804;
+    _hessian(11, 6) = _tmp333 * _tmp472 + _tmp337 * _tmp473 + _tmp341 * _tmp475 +
+                      _tmp345 * _tmp476 + _tmp349 * _tmp477 - _tmp805;
+    _hessian(12, 6) = _tmp345 * _tmp478 + _tmp349 * _tmp479 + _tmp739;
+    _hessian(13, 6) = _tmp345 * _tmp480 + _tmp349 * _tmp481 + _tmp761;
+    _hessian(14, 6) = _tmp345 * _tmp482 + _tmp349 * _tmp483 + _tmp781;
+    _hessian(15, 6) = _tmp333 * _tmp484 + _tmp337 * _tmp485 + _tmp341 * _tmp486 +
+                      _tmp345 * _tmp487 + _tmp349 * _tmp488 - _tmp799;
+    _hessian(16, 6) = _tmp333 * _tmp489 + _tmp337 * _tmp490 + _tmp341 * _tmp491 +
+                      _tmp345 * _tmp492 + _tmp349 * _tmp493 + _tmp806;
+    _hessian(17, 6) = _tmp333 * _tmp494 + _tmp337 * _tmp495 + _tmp341 * _tmp496 +
+                      _tmp345 * _tmp497 + _tmp349 * _tmp498 + _tmp807;
+    _hessian(18, 6) = _tmp333 * _tmp500 + _tmp337 * _tmp501 + _tmp341 * _tmp502 +
+                      _tmp345 * _tmp503 + _tmp349 * _tmp504 + _tmp808;
+    _hessian(19, 6) = _tmp333 * _tmp506 + _tmp337 * _tmp507 + _tmp341 * _tmp508 +
+                      _tmp345 * _tmp509 + _tmp349 * _tmp510 + _tmp809;
+    _hessian(20, 6) = _tmp333 * _tmp512 + _tmp337 * _tmp513 + _tmp341 * _tmp514 +
+                      _tmp345 * _tmp515 + _tmp349 * _tmp516 + _tmp810;
+    _hessian(21, 6) = _tmp333 * _tmp575 + _tmp337 * _tmp576 + _tmp341 * _tmp577 +
+                      _tmp345 * _tmp578 + _tmp349 * _tmp579 - _tmp811;
+    _hessian(22, 6) = _tmp333 * _tmp615 + _tmp337 * _tmp616 + _tmp341 * _tmp617 +
+                      _tmp345 * _tmp618 + _tmp349 * _tmp619 - _tmp812;
+    _hessian(23, 6) = _tmp333 * _tmp651 + _tmp337 * _tmp652 + _tmp341 * _tmp653 +
+                      _tmp345 * _tmp654 + _tmp349 * _tmp655 - _tmp813;
+    _hessian(24, 6) = _tmp333 * _tmp680 + _tmp337 * _tmp682 + _tmp341 * _tmp688 +
+                      _tmp345 * _tmp692 + _tmp349 * _tmp695 - _tmp815;
+    _hessian(25, 6) = _tmp333 * _tmp705 + _tmp337 * _tmp707 + _tmp341 * _tmp711 +
+                      _tmp345 * _tmp713 + _tmp349 * _tmp714 - _tmp817;
     _hessian(0, 7) = 0;
     _hessian(1, 7) = 0;
     _hessian(2, 7) = 0;
@@ -1856,42 +1911,42 @@ void InternalImuUnitGravityFactor(
     _hessian(4, 7) = 0;
     _hessian(5, 7) = 0;
     _hessian(6, 7) = 0;
-    _hessian(7, 7) = std::pow(_tmp351, Scalar(2)) + std::pow(_tmp355, Scalar(2)) +
-                     std::pow(_tmp359, Scalar(2)) + std::pow(_tmp363, Scalar(2)) +
-                     std::pow(_tmp367, Scalar(2)) + _tmp784;
-    _hessian(8, 7) = _tmp351 * _tmp371 + _tmp355 * _tmp375 + _tmp359 * _tmp379 + _tmp363 * _tmp383 +
-                     _tmp367 * _tmp387 + _tmp785;
-    _hessian(9, 7) = _tmp351 * _tmp418 + _tmp355 * _tmp419 + _tmp359 * _tmp421 + _tmp363 * _tmp422 +
-                     _tmp367 * _tmp423 - _tmp786;
-    _hessian(10, 7) = _tmp351 * _tmp435 + _tmp355 * _tmp436 + _tmp359 * _tmp437 +
-                      _tmp363 * _tmp438 + _tmp367 * _tmp439 - _tmp787;
-    _hessian(11, 7) = _tmp351 * _tmp450 + _tmp355 * _tmp451 + _tmp359 * _tmp452 +
-                      _tmp363 * _tmp453 + _tmp367 * _tmp454 - _tmp788;
-    _hessian(12, 7) = _tmp363 * _tmp455 + _tmp367 * _tmp456 + _tmp703;
-    _hessian(13, 7) = _tmp363 * _tmp457 + _tmp367 * _tmp458 + _tmp725;
-    _hessian(14, 7) = _tmp363 * _tmp459 + _tmp367 * _tmp460 + _tmp745;
-    _hessian(15, 7) = _tmp351 * _tmp461 + _tmp355 * _tmp462 + _tmp359 * _tmp463 +
-                      _tmp363 * _tmp464 + _tmp367 * _tmp465 + _tmp769;
-    _hessian(16, 7) = _tmp351 * _tmp466 + _tmp355 * _tmp467 + _tmp359 * _tmp468 +
-                      _tmp363 * _tmp469 + _tmp367 * _tmp470 - _tmp784;
-    _hessian(17, 7) = _tmp351 * _tmp471 + _tmp355 * _tmp472 + _tmp359 * _tmp473 +
-                      _tmp363 * _tmp474 + _tmp367 * _tmp475 + _tmp789;
-    _hessian(18, 7) = _tmp351 * _tmp477 + _tmp355 * _tmp478 + _tmp359 * _tmp479 +
-                      _tmp363 * _tmp480 + _tmp367 * _tmp481 + _tmp790;
-    _hessian(19, 7) = _tmp351 * _tmp483 + _tmp355 * _tmp484 + _tmp359 * _tmp485 +
-                      _tmp363 * _tmp486 + _tmp367 * _tmp487 + _tmp791;
-    _hessian(20, 7) = _tmp351 * _tmp489 + _tmp355 * _tmp490 + _tmp359 * _tmp491 +
-                      _tmp363 * _tmp492 + _tmp367 * _tmp493 + _tmp792;
-    _hessian(21, 7) = _tmp351 * _tmp547 + _tmp355 * _tmp548 + _tmp359 * _tmp549 +
-                      _tmp363 * _tmp550 + _tmp367 * _tmp551 - _tmp793;
-    _hessian(22, 7) = _tmp351 * _tmp582 + _tmp355 * _tmp583 + _tmp359 * _tmp584 +
-                      _tmp363 * _tmp585 + _tmp367 * _tmp586 - _tmp794;
-    _hessian(23, 7) = _tmp351 * _tmp613 + _tmp355 * _tmp614 + _tmp359 * _tmp615 +
-                      _tmp363 * _tmp616 + _tmp367 * _tmp617 - _tmp795;
-    _hessian(24, 7) = _tmp351 * _tmp643 + _tmp355 * _tmp645 + _tmp359 * _tmp651 +
-                      _tmp363 * _tmp654 + _tmp367 * _tmp655 - _tmp796;
-    _hessian(25, 7) = _tmp351 * _tmp666 + _tmp355 * _tmp668 + _tmp359 * _tmp672 +
-                      _tmp363 * _tmp675 + _tmp367 * _tmp676 - _tmp797;
+    _hessian(7, 7) = std::pow(_tmp353, Scalar(2)) + std::pow(_tmp357, Scalar(2)) +
+                     std::pow(_tmp361, Scalar(2)) + std::pow(_tmp365, Scalar(2)) +
+                     std::pow(_tmp369, Scalar(2)) + _tmp818;
+    _hessian(8, 7) = _tmp353 * _tmp373 + _tmp357 * _tmp377 + _tmp361 * _tmp381 + _tmp365 * _tmp385 +
+                     _tmp369 * _tmp389 + _tmp820;
+    _hessian(9, 7) = _tmp353 * _tmp430 + _tmp357 * _tmp433 + _tmp361 * _tmp434 + _tmp365 * _tmp436 +
+                     _tmp369 * _tmp438 - _tmp821;
+    _hessian(10, 7) = _tmp353 * _tmp453 + _tmp357 * _tmp454 + _tmp361 * _tmp455 +
+                      _tmp365 * _tmp456 + _tmp369 * _tmp457 - _tmp822;
+    _hessian(11, 7) = _tmp353 * _tmp472 + _tmp357 * _tmp473 + _tmp361 * _tmp475 +
+                      _tmp365 * _tmp476 + _tmp369 * _tmp477 - _tmp823;
+    _hessian(12, 7) = _tmp365 * _tmp478 + _tmp369 * _tmp479 + _tmp740;
+    _hessian(13, 7) = _tmp365 * _tmp480 + _tmp369 * _tmp481 + _tmp762;
+    _hessian(14, 7) = _tmp365 * _tmp482 + _tmp369 * _tmp483 + _tmp782;
+    _hessian(15, 7) = _tmp353 * _tmp484 + _tmp357 * _tmp485 + _tmp361 * _tmp486 +
+                      _tmp365 * _tmp487 + _tmp369 * _tmp488 + _tmp806;
+    _hessian(16, 7) = _tmp353 * _tmp489 + _tmp357 * _tmp490 + _tmp361 * _tmp491 +
+                      _tmp365 * _tmp492 + _tmp369 * _tmp493 - _tmp818;
+    _hessian(17, 7) = _tmp353 * _tmp494 + _tmp357 * _tmp495 + _tmp361 * _tmp496 +
+                      _tmp365 * _tmp497 + _tmp369 * _tmp498 + _tmp824;
+    _hessian(18, 7) = _tmp353 * _tmp500 + _tmp357 * _tmp501 + _tmp361 * _tmp502 +
+                      _tmp365 * _tmp503 + _tmp369 * _tmp504 + _tmp825;
+    _hessian(19, 7) = _tmp353 * _tmp506 + _tmp357 * _tmp507 + _tmp361 * _tmp508 +
+                      _tmp365 * _tmp509 + _tmp369 * _tmp510 + _tmp826;
+    _hessian(20, 7) = _tmp353 * _tmp512 + _tmp357 * _tmp513 + _tmp361 * _tmp514 +
+                      _tmp365 * _tmp515 + _tmp369 * _tmp516 + _tmp827;
+    _hessian(21, 7) = _tmp353 * _tmp575 + _tmp357 * _tmp576 + _tmp361 * _tmp577 +
+                      _tmp365 * _tmp578 + _tmp369 * _tmp579 - _tmp828;
+    _hessian(22, 7) = _tmp353 * _tmp615 + _tmp357 * _tmp616 + _tmp361 * _tmp617 +
+                      _tmp365 * _tmp618 + _tmp369 * _tmp619 - _tmp829;
+    _hessian(23, 7) = _tmp353 * _tmp651 + _tmp357 * _tmp652 + _tmp361 * _tmp653 +
+                      _tmp365 * _tmp654 + _tmp369 * _tmp655 - _tmp830;
+    _hessian(24, 7) = _tmp353 * _tmp680 + _tmp357 * _tmp682 + _tmp361 * _tmp688 +
+                      _tmp365 * _tmp692 + _tmp369 * _tmp695 - _tmp831;
+    _hessian(25, 7) = _tmp353 * _tmp705 + _tmp357 * _tmp707 + _tmp361 * _tmp711 +
+                      _tmp365 * _tmp713 + _tmp369 * _tmp714 - _tmp832;
     _hessian(0, 8) = 0;
     _hessian(1, 8) = 0;
     _hessian(2, 8) = 0;
@@ -1900,40 +1955,40 @@ void InternalImuUnitGravityFactor(
     _hessian(5, 8) = 0;
     _hessian(6, 8) = 0;
     _hessian(7, 8) = 0;
-    _hessian(8, 8) = std::pow(_tmp371, Scalar(2)) + std::pow(_tmp375, Scalar(2)) +
-                     std::pow(_tmp379, Scalar(2)) + std::pow(_tmp383, Scalar(2)) +
-                     std::pow(_tmp387, Scalar(2)) + _tmp798;
-    _hessian(9, 8) = _tmp371 * _tmp418 + _tmp375 * _tmp419 + _tmp379 * _tmp421 + _tmp383 * _tmp422 +
-                     _tmp387 * _tmp423 - _tmp799;
-    _hessian(10, 8) = _tmp371 * _tmp435 + _tmp375 * _tmp436 + _tmp379 * _tmp437 +
-                      _tmp383 * _tmp438 + _tmp387 * _tmp439 - _tmp800;
-    _hessian(11, 8) = _tmp371 * _tmp450 + _tmp375 * _tmp451 + _tmp379 * _tmp452 +
-                      _tmp383 * _tmp453 + _tmp387 * _tmp454 - _tmp801;
-    _hessian(12, 8) = _tmp383 * _tmp455 + _tmp387 * _tmp456 + _tmp704;
-    _hessian(13, 8) = _tmp383 * _tmp457 + _tmp387 * _tmp458 + _tmp726;
-    _hessian(14, 8) = _tmp383 * _tmp459 + _tmp387 * _tmp460 + _tmp746;
-    _hessian(15, 8) = _tmp371 * _tmp461 + _tmp375 * _tmp462 + _tmp379 * _tmp463 +
-                      _tmp383 * _tmp464 + _tmp387 * _tmp465 + _tmp770;
-    _hessian(16, 8) = _tmp371 * _tmp466 + _tmp375 * _tmp467 + _tmp379 * _tmp468 +
-                      _tmp383 * _tmp469 + _tmp387 * _tmp470 + _tmp789;
-    _hessian(17, 8) = _tmp371 * _tmp471 + _tmp375 * _tmp472 + _tmp379 * _tmp473 +
-                      _tmp383 * _tmp474 + _tmp387 * _tmp475 - _tmp798;
-    _hessian(18, 8) = _tmp371 * _tmp477 + _tmp375 * _tmp478 + _tmp379 * _tmp479 +
-                      _tmp383 * _tmp480 + _tmp387 * _tmp481 + _tmp802;
-    _hessian(19, 8) = _tmp371 * _tmp483 + _tmp375 * _tmp484 + _tmp379 * _tmp485 +
-                      _tmp383 * _tmp486 + _tmp387 * _tmp487 + _tmp803;
-    _hessian(20, 8) = _tmp371 * _tmp489 + _tmp375 * _tmp490 + _tmp379 * _tmp491 +
-                      _tmp383 * _tmp492 + _tmp387 * _tmp493 + _tmp804;
-    _hessian(21, 8) = _tmp371 * _tmp547 + _tmp375 * _tmp548 + _tmp379 * _tmp549 +
-                      _tmp383 * _tmp550 + _tmp387 * _tmp551 - _tmp805;
-    _hessian(22, 8) = _tmp371 * _tmp582 + _tmp375 * _tmp583 + _tmp379 * _tmp584 +
-                      _tmp383 * _tmp585 + _tmp387 * _tmp586 - _tmp806;
-    _hessian(23, 8) = _tmp371 * _tmp613 + _tmp375 * _tmp614 + _tmp379 * _tmp615 +
-                      _tmp383 * _tmp616 + _tmp387 * _tmp617 - _tmp807;
-    _hessian(24, 8) = _tmp371 * _tmp643 + _tmp375 * _tmp645 + _tmp379 * _tmp651 +
-                      _tmp383 * _tmp654 + _tmp387 * _tmp655 - _tmp808;
-    _hessian(25, 8) = _tmp371 * _tmp666 + _tmp375 * _tmp668 + _tmp379 * _tmp672 +
-                      _tmp383 * _tmp675 + _tmp387 * _tmp676 - _tmp809;
+    _hessian(8, 8) = std::pow(_tmp373, Scalar(2)) + std::pow(_tmp377, Scalar(2)) +
+                     std::pow(_tmp381, Scalar(2)) + std::pow(_tmp385, Scalar(2)) +
+                     std::pow(_tmp389, Scalar(2)) + _tmp833;
+    _hessian(9, 8) = _tmp373 * _tmp430 + _tmp377 * _tmp433 + _tmp381 * _tmp434 + _tmp385 * _tmp436 +
+                     _tmp389 * _tmp438 - _tmp834;
+    _hessian(10, 8) = _tmp373 * _tmp453 + _tmp377 * _tmp454 + _tmp381 * _tmp455 +
+                      _tmp385 * _tmp456 + _tmp389 * _tmp457 - _tmp835;
+    _hessian(11, 8) = _tmp373 * _tmp472 + _tmp377 * _tmp473 + _tmp381 * _tmp475 +
+                      _tmp385 * _tmp476 + _tmp389 * _tmp477 - _tmp836;
+    _hessian(12, 8) = _tmp385 * _tmp478 + _tmp389 * _tmp479 + _tmp741;
+    _hessian(13, 8) = _tmp385 * _tmp480 + _tmp389 * _tmp481 + _tmp763;
+    _hessian(14, 8) = _tmp385 * _tmp482 + _tmp389 * _tmp483 + _tmp783;
+    _hessian(15, 8) = _tmp373 * _tmp484 + _tmp377 * _tmp485 + _tmp381 * _tmp486 +
+                      _tmp385 * _tmp487 + _tmp389 * _tmp488 + _tmp807;
+    _hessian(16, 8) = _tmp373 * _tmp489 + _tmp377 * _tmp490 + _tmp381 * _tmp491 +
+                      _tmp385 * _tmp492 + _tmp389 * _tmp493 + _tmp824;
+    _hessian(17, 8) = _tmp373 * _tmp494 + _tmp377 * _tmp495 + _tmp381 * _tmp496 +
+                      _tmp385 * _tmp497 + _tmp389 * _tmp498 - _tmp833;
+    _hessian(18, 8) = _tmp373 * _tmp500 + _tmp377 * _tmp501 + _tmp381 * _tmp502 +
+                      _tmp385 * _tmp503 + _tmp389 * _tmp504 + _tmp838;
+    _hessian(19, 8) = _tmp373 * _tmp506 + _tmp377 * _tmp507 + _tmp381 * _tmp508 +
+                      _tmp385 * _tmp509 + _tmp389 * _tmp510 + _tmp839;
+    _hessian(20, 8) = _tmp373 * _tmp512 + _tmp377 * _tmp513 + _tmp381 * _tmp514 +
+                      _tmp385 * _tmp515 + _tmp389 * _tmp516 + _tmp840;
+    _hessian(21, 8) = _tmp373 * _tmp575 + _tmp377 * _tmp576 + _tmp381 * _tmp577 +
+                      _tmp385 * _tmp578 + _tmp389 * _tmp579 - _tmp841;
+    _hessian(22, 8) = _tmp373 * _tmp615 + _tmp377 * _tmp616 + _tmp381 * _tmp617 +
+                      _tmp385 * _tmp618 + _tmp389 * _tmp619 - _tmp842;
+    _hessian(23, 8) = _tmp373 * _tmp651 + _tmp377 * _tmp652 + _tmp381 * _tmp653 +
+                      _tmp385 * _tmp654 + _tmp389 * _tmp655 - _tmp843;
+    _hessian(24, 8) = _tmp373 * _tmp680 + _tmp377 * _tmp682 + _tmp381 * _tmp688 +
+                      _tmp385 * _tmp692 + _tmp389 * _tmp695 - _tmp844;
+    _hessian(25, 8) = _tmp373 * _tmp705 + _tmp377 * _tmp707 + _tmp381 * _tmp711 +
+                      _tmp385 * _tmp713 + _tmp389 * _tmp714 - _tmp845;
     _hessian(0, 9) = 0;
     _hessian(1, 9) = 0;
     _hessian(2, 9) = 0;
@@ -1944,43 +1999,43 @@ void InternalImuUnitGravityFactor(
     _hessian(7, 9) = 0;
     _hessian(8, 9) = 0;
     _hessian(9, 9) =
-        std::pow(_tmp401, Scalar(2)) + std::pow(_tmp408, Scalar(2)) + std::pow(_tmp415, Scalar(2)) +
-        std::pow(_tmp417, Scalar(2)) + std::pow(_tmp418, Scalar(2)) + std::pow(_tmp419, Scalar(2)) +
-        std::pow(_tmp421, Scalar(2)) + std::pow(_tmp422, Scalar(2)) + std::pow(_tmp423, Scalar(2));
-    _hessian(10, 9) = _tmp401 * _tmp429 + _tmp408 * _tmp431 + _tmp415 * _tmp432 +
-                      _tmp417 * _tmp434 + _tmp418 * _tmp435 + _tmp419 * _tmp436 +
-                      _tmp421 * _tmp437 + _tmp422 * _tmp438 + _tmp423 * _tmp439;
-    _hessian(11, 9) = _tmp401 * _tmp444 + _tmp408 * _tmp447 + _tmp415 * _tmp448 +
-                      _tmp417 * _tmp449 + _tmp418 * _tmp450 + _tmp419 * _tmp451 +
-                      _tmp421 * _tmp452 + _tmp422 * _tmp453 + _tmp423 * _tmp454;
-    _hessian(12, 9) = _tmp422 * _tmp455 + _tmp423 * _tmp456 + _tmp705;
-    _hessian(13, 9) = _tmp422 * _tmp457 + _tmp423 * _tmp458 + _tmp727;
-    _hessian(14, 9) = _tmp422 * _tmp459 + _tmp423 * _tmp460 + _tmp747;
-    _hessian(15, 9) = _tmp418 * _tmp461 + _tmp419 * _tmp462 + _tmp421 * _tmp463 +
-                      _tmp422 * _tmp464 + _tmp423 * _tmp465 + _tmp766;
-    _hessian(16, 9) = _tmp418 * _tmp466 + _tmp419 * _tmp467 + _tmp421 * _tmp468 +
-                      _tmp422 * _tmp469 + _tmp423 * _tmp470 + _tmp786;
-    _hessian(17, 9) = _tmp418 * _tmp471 + _tmp419 * _tmp472 + _tmp421 * _tmp473 +
-                      _tmp422 * _tmp474 + _tmp423 * _tmp475 + _tmp799;
-    _hessian(18, 9) = -_tmp417 * _tmp476 + _tmp418 * _tmp477 + _tmp419 * _tmp478 +
-                      _tmp421 * _tmp479 + _tmp422 * _tmp480 + _tmp423 * _tmp481;
-    _hessian(19, 9) = -_tmp417 * _tmp482 + _tmp418 * _tmp483 + _tmp419 * _tmp484 +
-                      _tmp421 * _tmp485 + _tmp422 * _tmp486 + _tmp423 * _tmp487;
-    _hessian(20, 9) = -_tmp417 * _tmp488 + _tmp418 * _tmp489 + _tmp419 * _tmp490 +
-                      _tmp421 * _tmp491 + _tmp422 * _tmp492 + _tmp423 * _tmp493;
-    _hessian(21, 9) = _tmp401 * _tmp538 + _tmp408 * _tmp542 + _tmp415 * _tmp544 +
-                      _tmp417 * _tmp546 + _tmp418 * _tmp547 + _tmp419 * _tmp548 +
-                      _tmp421 * _tmp549 + _tmp422 * _tmp550 + _tmp423 * _tmp551;
-    _hessian(22, 9) = _tmp401 * _tmp573 + _tmp408 * _tmp577 + _tmp415 * _tmp579 +
-                      _tmp417 * _tmp581 + _tmp418 * _tmp582 + _tmp419 * _tmp583 +
-                      _tmp421 * _tmp584 + _tmp422 * _tmp585 + _tmp423 * _tmp586;
-    _hessian(23, 9) = _tmp401 * _tmp604 + _tmp408 * _tmp607 + _tmp415 * _tmp610 +
-                      _tmp417 * _tmp612 + _tmp418 * _tmp613 + _tmp419 * _tmp614 +
-                      _tmp421 * _tmp615 + _tmp422 * _tmp616 + _tmp423 * _tmp617;
-    _hessian(24, 9) = _tmp417 * _tmp640 + _tmp418 * _tmp643 + _tmp419 * _tmp645 +
-                      _tmp421 * _tmp651 + _tmp422 * _tmp654 + _tmp423 * _tmp655;
-    _hessian(25, 9) = _tmp417 * _tmp663 + _tmp418 * _tmp666 + _tmp419 * _tmp668 +
-                      _tmp421 * _tmp672 + _tmp422 * _tmp675 + _tmp423 * _tmp676;
+        std::pow(_tmp404, Scalar(2)) + std::pow(_tmp415, Scalar(2)) + std::pow(_tmp425, Scalar(2)) +
+        std::pow(_tmp429, Scalar(2)) + std::pow(_tmp430, Scalar(2)) + std::pow(_tmp433, Scalar(2)) +
+        std::pow(_tmp434, Scalar(2)) + std::pow(_tmp436, Scalar(2)) + std::pow(_tmp438, Scalar(2));
+    _hessian(10, 9) = _tmp404 * _tmp445 + _tmp415 * _tmp448 + _tmp425 * _tmp450 +
+                      _tmp429 * _tmp452 + _tmp430 * _tmp453 + _tmp433 * _tmp454 +
+                      _tmp434 * _tmp455 + _tmp436 * _tmp456 + _tmp438 * _tmp457;
+    _hessian(11, 9) = _tmp404 * _tmp460 + _tmp415 * _tmp466 + _tmp425 * _tmp468 +
+                      _tmp429 * _tmp470 + _tmp430 * _tmp472 + _tmp433 * _tmp473 +
+                      _tmp434 * _tmp475 + _tmp436 * _tmp476 + _tmp438 * _tmp477;
+    _hessian(12, 9) = _tmp436 * _tmp478 + _tmp438 * _tmp479 + _tmp742;
+    _hessian(13, 9) = _tmp436 * _tmp480 + _tmp438 * _tmp481 + _tmp764;
+    _hessian(14, 9) = _tmp436 * _tmp482 + _tmp438 * _tmp483 + _tmp784;
+    _hessian(15, 9) = _tmp430 * _tmp484 + _tmp433 * _tmp485 + _tmp434 * _tmp486 +
+                      _tmp436 * _tmp487 + _tmp438 * _tmp488 + _tmp803;
+    _hessian(16, 9) = _tmp430 * _tmp489 + _tmp433 * _tmp490 + _tmp434 * _tmp491 +
+                      _tmp436 * _tmp492 + _tmp438 * _tmp493 + _tmp821;
+    _hessian(17, 9) = _tmp430 * _tmp494 + _tmp433 * _tmp495 + _tmp434 * _tmp496 +
+                      _tmp436 * _tmp497 + _tmp438 * _tmp498 + _tmp834;
+    _hessian(18, 9) = -_tmp429 * _tmp499 + _tmp430 * _tmp500 + _tmp433 * _tmp501 +
+                      _tmp434 * _tmp502 + _tmp436 * _tmp503 + _tmp438 * _tmp504;
+    _hessian(19, 9) = -_tmp429 * _tmp505 + _tmp430 * _tmp506 + _tmp433 * _tmp507 +
+                      _tmp434 * _tmp508 + _tmp436 * _tmp509 + _tmp438 * _tmp510;
+    _hessian(20, 9) = -_tmp429 * _tmp511 + _tmp430 * _tmp512 + _tmp433 * _tmp513 +
+                      _tmp434 * _tmp514 + _tmp436 * _tmp515 + _tmp438 * _tmp516;
+    _hessian(21, 9) = _tmp404 * _tmp563 + _tmp415 * _tmp569 + _tmp425 * _tmp573 +
+                      _tmp429 * _tmp574 + _tmp430 * _tmp575 + _tmp433 * _tmp576 +
+                      _tmp434 * _tmp577 + _tmp436 * _tmp578 + _tmp438 * _tmp579;
+    _hessian(22, 9) = _tmp404 * _tmp603 + _tmp415 * _tmp609 + _tmp425 * _tmp613 +
+                      _tmp429 * _tmp614 + _tmp430 * _tmp615 + _tmp433 * _tmp616 +
+                      _tmp434 * _tmp617 + _tmp436 * _tmp618 + _tmp438 * _tmp619;
+    _hessian(23, 9) = _tmp404 * _tmp639 + _tmp415 * _tmp645 + _tmp425 * _tmp649 +
+                      _tmp429 * _tmp650 + _tmp430 * _tmp651 + _tmp433 * _tmp652 +
+                      _tmp434 * _tmp653 + _tmp436 * _tmp654 + _tmp438 * _tmp655;
+    _hessian(24, 9) = _tmp429 * _tmp678 + _tmp430 * _tmp680 + _tmp433 * _tmp682 +
+                      _tmp434 * _tmp688 + _tmp436 * _tmp692 + _tmp438 * _tmp695;
+    _hessian(25, 9) = _tmp429 * _tmp703 + _tmp430 * _tmp705 + _tmp433 * _tmp707 +
+                      _tmp434 * _tmp711 + _tmp436 * _tmp713 + _tmp438 * _tmp714;
     _hessian(0, 10) = 0;
     _hessian(1, 10) = 0;
     _hessian(2, 10) = 0;
@@ -1992,40 +2047,40 @@ void InternalImuUnitGravityFactor(
     _hessian(8, 10) = 0;
     _hessian(9, 10) = 0;
     _hessian(10, 10) =
-        std::pow(_tmp429, Scalar(2)) + std::pow(_tmp431, Scalar(2)) + std::pow(_tmp432, Scalar(2)) +
-        std::pow(_tmp434, Scalar(2)) + std::pow(_tmp435, Scalar(2)) + std::pow(_tmp436, Scalar(2)) +
-        std::pow(_tmp437, Scalar(2)) + std::pow(_tmp438, Scalar(2)) + std::pow(_tmp439, Scalar(2));
-    _hessian(11, 10) = _tmp429 * _tmp444 + _tmp431 * _tmp447 + _tmp432 * _tmp448 +
-                       _tmp434 * _tmp449 + _tmp435 * _tmp450 + _tmp436 * _tmp451 +
-                       _tmp437 * _tmp452 + _tmp438 * _tmp453 + _tmp439 * _tmp454;
-    _hessian(12, 10) = _tmp438 * _tmp455 + _tmp439 * _tmp456 + _tmp706;
-    _hessian(13, 10) = _tmp438 * _tmp457 + _tmp439 * _tmp458 + _tmp728;
-    _hessian(14, 10) = _tmp438 * _tmp459 + _tmp439 * _tmp460 + _tmp748;
-    _hessian(15, 10) = _tmp435 * _tmp461 + _tmp436 * _tmp462 + _tmp437 * _tmp463 +
-                       _tmp438 * _tmp464 + _tmp439 * _tmp465 + _tmp767;
-    _hessian(16, 10) = _tmp435 * _tmp466 + _tmp436 * _tmp467 + _tmp437 * _tmp468 +
-                       _tmp438 * _tmp469 + _tmp439 * _tmp470 + _tmp787;
-    _hessian(17, 10) = _tmp435 * _tmp471 + _tmp436 * _tmp472 + _tmp437 * _tmp473 +
-                       _tmp438 * _tmp474 + _tmp439 * _tmp475 + _tmp800;
-    _hessian(18, 10) = -_tmp434 * _tmp476 + _tmp435 * _tmp477 + _tmp436 * _tmp478 +
-                       _tmp437 * _tmp479 + _tmp438 * _tmp480 + _tmp439 * _tmp481;
-    _hessian(19, 10) = -_tmp434 * _tmp482 + _tmp435 * _tmp483 + _tmp436 * _tmp484 +
-                       _tmp437 * _tmp485 + _tmp438 * _tmp486 + _tmp439 * _tmp487;
-    _hessian(20, 10) = -_tmp434 * _tmp488 + _tmp435 * _tmp489 + _tmp436 * _tmp490 +
-                       _tmp437 * _tmp491 + _tmp438 * _tmp492 + _tmp439 * _tmp493;
-    _hessian(21, 10) = _tmp429 * _tmp538 + _tmp431 * _tmp542 + _tmp432 * _tmp544 +
-                       _tmp434 * _tmp546 + _tmp435 * _tmp547 + _tmp436 * _tmp548 +
-                       _tmp437 * _tmp549 + _tmp438 * _tmp550 + _tmp439 * _tmp551;
-    _hessian(22, 10) = _tmp429 * _tmp573 + _tmp431 * _tmp577 + _tmp432 * _tmp579 +
-                       _tmp434 * _tmp581 + _tmp435 * _tmp582 + _tmp436 * _tmp583 +
-                       _tmp437 * _tmp584 + _tmp438 * _tmp585 + _tmp439 * _tmp586;
-    _hessian(23, 10) = _tmp429 * _tmp604 + _tmp431 * _tmp607 + _tmp432 * _tmp610 +
-                       _tmp434 * _tmp612 + _tmp435 * _tmp613 + _tmp436 * _tmp614 +
-                       _tmp437 * _tmp615 + _tmp438 * _tmp616 + _tmp439 * _tmp617;
-    _hessian(24, 10) = _tmp434 * _tmp640 + _tmp435 * _tmp643 + _tmp436 * _tmp645 +
-                       _tmp437 * _tmp651 + _tmp438 * _tmp654 + _tmp439 * _tmp655;
-    _hessian(25, 10) = _tmp434 * _tmp663 + _tmp435 * _tmp666 + _tmp436 * _tmp668 +
-                       _tmp437 * _tmp672 + _tmp438 * _tmp675 + _tmp439 * _tmp676;
+        std::pow(_tmp445, Scalar(2)) + std::pow(_tmp448, Scalar(2)) + std::pow(_tmp450, Scalar(2)) +
+        std::pow(_tmp452, Scalar(2)) + std::pow(_tmp453, Scalar(2)) + std::pow(_tmp454, Scalar(2)) +
+        std::pow(_tmp455, Scalar(2)) + std::pow(_tmp456, Scalar(2)) + std::pow(_tmp457, Scalar(2));
+    _hessian(11, 10) = _tmp445 * _tmp460 + _tmp448 * _tmp466 + _tmp450 * _tmp468 +
+                       _tmp452 * _tmp470 + _tmp453 * _tmp472 + _tmp454 * _tmp473 +
+                       _tmp455 * _tmp475 + _tmp456 * _tmp476 + _tmp457 * _tmp477;
+    _hessian(12, 10) = _tmp456 * _tmp478 + _tmp457 * _tmp479 + _tmp743;
+    _hessian(13, 10) = _tmp456 * _tmp480 + _tmp457 * _tmp481 + _tmp765;
+    _hessian(14, 10) = _tmp456 * _tmp482 + _tmp457 * _tmp483 + _tmp785;
+    _hessian(15, 10) = _tmp453 * _tmp484 + _tmp454 * _tmp485 + _tmp455 * _tmp486 +
+                       _tmp456 * _tmp487 + _tmp457 * _tmp488 + _tmp804;
+    _hessian(16, 10) = _tmp453 * _tmp489 + _tmp454 * _tmp490 + _tmp455 * _tmp491 +
+                       _tmp456 * _tmp492 + _tmp457 * _tmp493 + _tmp822;
+    _hessian(17, 10) = _tmp453 * _tmp494 + _tmp454 * _tmp495 + _tmp455 * _tmp496 +
+                       _tmp456 * _tmp497 + _tmp457 * _tmp498 + _tmp835;
+    _hessian(18, 10) = -_tmp452 * _tmp499 + _tmp453 * _tmp500 + _tmp454 * _tmp501 +
+                       _tmp455 * _tmp502 + _tmp456 * _tmp503 + _tmp457 * _tmp504;
+    _hessian(19, 10) = -_tmp452 * _tmp505 + _tmp453 * _tmp506 + _tmp454 * _tmp507 +
+                       _tmp455 * _tmp508 + _tmp456 * _tmp509 + _tmp457 * _tmp510;
+    _hessian(20, 10) = -_tmp452 * _tmp511 + _tmp453 * _tmp512 + _tmp454 * _tmp513 +
+                       _tmp455 * _tmp514 + _tmp456 * _tmp515 + _tmp457 * _tmp516;
+    _hessian(21, 10) = _tmp445 * _tmp563 + _tmp448 * _tmp569 + _tmp450 * _tmp573 +
+                       _tmp452 * _tmp574 + _tmp453 * _tmp575 + _tmp454 * _tmp576 +
+                       _tmp455 * _tmp577 + _tmp456 * _tmp578 + _tmp457 * _tmp579;
+    _hessian(22, 10) = _tmp445 * _tmp603 + _tmp448 * _tmp609 + _tmp450 * _tmp613 +
+                       _tmp452 * _tmp614 + _tmp453 * _tmp615 + _tmp454 * _tmp616 +
+                       _tmp455 * _tmp617 + _tmp456 * _tmp618 + _tmp457 * _tmp619;
+    _hessian(23, 10) = _tmp445 * _tmp639 + _tmp448 * _tmp645 + _tmp450 * _tmp649 +
+                       _tmp452 * _tmp650 + _tmp453 * _tmp651 + _tmp454 * _tmp652 +
+                       _tmp455 * _tmp653 + _tmp456 * _tmp654 + _tmp457 * _tmp655;
+    _hessian(24, 10) = _tmp452 * _tmp678 + _tmp453 * _tmp680 + _tmp454 * _tmp682 +
+                       _tmp455 * _tmp688 + _tmp456 * _tmp692 + _tmp457 * _tmp695;
+    _hessian(25, 10) = _tmp452 * _tmp703 + _tmp453 * _tmp705 + _tmp454 * _tmp707 +
+                       _tmp455 * _tmp711 + _tmp456 * _tmp713 + _tmp457 * _tmp714;
     _hessian(0, 11) = 0;
     _hessian(1, 11) = 0;
     _hessian(2, 11) = 0;
@@ -2038,37 +2093,37 @@ void InternalImuUnitGravityFactor(
     _hessian(9, 11) = 0;
     _hessian(10, 11) = 0;
     _hessian(11, 11) =
-        std::pow(_tmp444, Scalar(2)) + std::pow(_tmp447, Scalar(2)) + std::pow(_tmp448, Scalar(2)) +
-        std::pow(_tmp449, Scalar(2)) + std::pow(_tmp450, Scalar(2)) + std::pow(_tmp451, Scalar(2)) +
-        std::pow(_tmp452, Scalar(2)) + std::pow(_tmp453, Scalar(2)) + std::pow(_tmp454, Scalar(2));
-    _hessian(12, 11) = _tmp453 * _tmp455 + _tmp454 * _tmp456 + _tmp707;
-    _hessian(13, 11) = _tmp453 * _tmp457 + _tmp454 * _tmp458 + _tmp729;
-    _hessian(14, 11) = _tmp453 * _tmp459 + _tmp454 * _tmp460 + _tmp749;
-    _hessian(15, 11) = _tmp450 * _tmp461 + _tmp451 * _tmp462 + _tmp452 * _tmp463 +
-                       _tmp453 * _tmp464 + _tmp454 * _tmp465 + _tmp768;
-    _hessian(16, 11) = _tmp450 * _tmp466 + _tmp451 * _tmp467 + _tmp452 * _tmp468 +
-                       _tmp453 * _tmp469 + _tmp454 * _tmp470 + _tmp788;
-    _hessian(17, 11) = _tmp450 * _tmp471 + _tmp451 * _tmp472 + _tmp452 * _tmp473 +
-                       _tmp453 * _tmp474 + _tmp454 * _tmp475 + _tmp801;
-    _hessian(18, 11) = -_tmp449 * _tmp476 + _tmp450 * _tmp477 + _tmp451 * _tmp478 +
-                       _tmp452 * _tmp479 + _tmp453 * _tmp480 + _tmp454 * _tmp481;
-    _hessian(19, 11) = -_tmp449 * _tmp482 + _tmp450 * _tmp483 + _tmp451 * _tmp484 +
-                       _tmp452 * _tmp485 + _tmp453 * _tmp486 + _tmp454 * _tmp487;
-    _hessian(20, 11) = -_tmp449 * _tmp488 + _tmp450 * _tmp489 + _tmp451 * _tmp490 +
-                       _tmp452 * _tmp491 + _tmp453 * _tmp492 + _tmp454 * _tmp493;
-    _hessian(21, 11) = _tmp444 * _tmp538 + _tmp447 * _tmp542 + _tmp448 * _tmp544 +
-                       _tmp449 * _tmp546 + _tmp450 * _tmp547 + _tmp451 * _tmp548 +
-                       _tmp452 * _tmp549 + _tmp453 * _tmp550 + _tmp454 * _tmp551;
-    _hessian(22, 11) = _tmp444 * _tmp573 + _tmp447 * _tmp577 + _tmp448 * _tmp579 +
-                       _tmp449 * _tmp581 + _tmp450 * _tmp582 + _tmp451 * _tmp583 +
-                       _tmp452 * _tmp584 + _tmp453 * _tmp585 + _tmp454 * _tmp586;
-    _hessian(23, 11) = _tmp444 * _tmp604 + _tmp447 * _tmp607 + _tmp448 * _tmp610 +
-                       _tmp449 * _tmp612 + _tmp450 * _tmp613 + _tmp451 * _tmp614 +
-                       _tmp452 * _tmp615 + _tmp453 * _tmp616 + _tmp454 * _tmp617;
-    _hessian(24, 11) = _tmp449 * _tmp640 + _tmp450 * _tmp643 + _tmp451 * _tmp645 +
-                       _tmp452 * _tmp651 + _tmp453 * _tmp654 + _tmp454 * _tmp655;
-    _hessian(25, 11) = _tmp449 * _tmp663 + _tmp450 * _tmp666 + _tmp451 * _tmp668 +
-                       _tmp452 * _tmp672 + _tmp453 * _tmp675 + _tmp454 * _tmp676;
+        std::pow(_tmp460, Scalar(2)) + std::pow(_tmp466, Scalar(2)) + std::pow(_tmp468, Scalar(2)) +
+        std::pow(_tmp470, Scalar(2)) + std::pow(_tmp472, Scalar(2)) + std::pow(_tmp473, Scalar(2)) +
+        std::pow(_tmp475, Scalar(2)) + std::pow(_tmp476, Scalar(2)) + std::pow(_tmp477, Scalar(2));
+    _hessian(12, 11) = _tmp476 * _tmp478 + _tmp477 * _tmp479 + _tmp744;
+    _hessian(13, 11) = _tmp476 * _tmp480 + _tmp477 * _tmp481 + _tmp766;
+    _hessian(14, 11) = _tmp476 * _tmp482 + _tmp477 * _tmp483 + _tmp786;
+    _hessian(15, 11) = _tmp472 * _tmp484 + _tmp473 * _tmp485 + _tmp475 * _tmp486 +
+                       _tmp476 * _tmp487 + _tmp477 * _tmp488 + _tmp805;
+    _hessian(16, 11) = _tmp472 * _tmp489 + _tmp473 * _tmp490 + _tmp475 * _tmp491 +
+                       _tmp476 * _tmp492 + _tmp477 * _tmp493 + _tmp823;
+    _hessian(17, 11) = _tmp472 * _tmp494 + _tmp473 * _tmp495 + _tmp475 * _tmp496 +
+                       _tmp476 * _tmp497 + _tmp477 * _tmp498 + _tmp836;
+    _hessian(18, 11) = -_tmp470 * _tmp499 + _tmp472 * _tmp500 + _tmp473 * _tmp501 +
+                       _tmp475 * _tmp502 + _tmp476 * _tmp503 + _tmp477 * _tmp504;
+    _hessian(19, 11) = -_tmp470 * _tmp505 + _tmp472 * _tmp506 + _tmp473 * _tmp507 +
+                       _tmp475 * _tmp508 + _tmp476 * _tmp509 + _tmp477 * _tmp510;
+    _hessian(20, 11) = -_tmp470 * _tmp511 + _tmp472 * _tmp512 + _tmp473 * _tmp513 +
+                       _tmp475 * _tmp514 + _tmp476 * _tmp515 + _tmp477 * _tmp516;
+    _hessian(21, 11) = _tmp460 * _tmp563 + _tmp466 * _tmp569 + _tmp468 * _tmp573 +
+                       _tmp470 * _tmp574 + _tmp472 * _tmp575 + _tmp473 * _tmp576 +
+                       _tmp475 * _tmp577 + _tmp476 * _tmp578 + _tmp477 * _tmp579;
+    _hessian(22, 11) = _tmp460 * _tmp603 + _tmp466 * _tmp609 + _tmp468 * _tmp613 +
+                       _tmp470 * _tmp614 + _tmp472 * _tmp615 + _tmp473 * _tmp616 +
+                       _tmp475 * _tmp617 + _tmp476 * _tmp618 + _tmp477 * _tmp619;
+    _hessian(23, 11) = _tmp460 * _tmp639 + _tmp466 * _tmp645 + _tmp468 * _tmp649 +
+                       _tmp470 * _tmp650 + _tmp472 * _tmp651 + _tmp473 * _tmp652 +
+                       _tmp475 * _tmp653 + _tmp476 * _tmp654 + _tmp477 * _tmp655;
+    _hessian(24, 11) = _tmp470 * _tmp678 + _tmp472 * _tmp680 + _tmp473 * _tmp682 +
+                       _tmp475 * _tmp688 + _tmp476 * _tmp692 + _tmp477 * _tmp695;
+    _hessian(25, 11) = _tmp470 * _tmp703 + _tmp472 * _tmp705 + _tmp473 * _tmp707 +
+                       _tmp475 * _tmp711 + _tmp476 * _tmp713 + _tmp477 * _tmp714;
     _hessian(0, 12) = 0;
     _hessian(1, 12) = 0;
     _hessian(2, 12) = 0;
@@ -2081,20 +2136,20 @@ void InternalImuUnitGravityFactor(
     _hessian(9, 12) = 0;
     _hessian(10, 12) = 0;
     _hessian(11, 12) = 0;
-    _hessian(12, 12) = std::pow(_tmp455, Scalar(2)) + std::pow(_tmp456, Scalar(2)) + _tmp697;
-    _hessian(13, 12) = _tmp455 * _tmp457 + _tmp456 * _tmp458 + _tmp699;
-    _hessian(14, 12) = _tmp455 * _tmp459 + _tmp456 * _tmp460 + _tmp701;
-    _hessian(15, 12) = _tmp455 * _tmp464 + _tmp456 * _tmp465 + _tmp710;
-    _hessian(16, 12) = _tmp455 * _tmp469 + _tmp456 * _tmp470 + _tmp711;
-    _hessian(17, 12) = _tmp455 * _tmp474 + _tmp456 * _tmp475 + _tmp712;
-    _hessian(18, 12) = _tmp455 * _tmp480 + _tmp456 * _tmp481 + _tmp713;
-    _hessian(19, 12) = _tmp455 * _tmp486 + _tmp456 * _tmp487 + _tmp714;
-    _hessian(20, 12) = _tmp455 * _tmp492 + _tmp456 * _tmp493 + _tmp715;
-    _hessian(21, 12) = _tmp455 * _tmp550 + _tmp456 * _tmp551 + _tmp716;
-    _hessian(22, 12) = _tmp455 * _tmp585 + _tmp456 * _tmp586 + _tmp717;
-    _hessian(23, 12) = _tmp455 * _tmp616 + _tmp456 * _tmp617 + _tmp718;
-    _hessian(24, 12) = _tmp455 * _tmp654 + _tmp456 * _tmp655 + _tmp719;
-    _hessian(25, 12) = _tmp455 * _tmp675 + _tmp456 * _tmp676 + _tmp720;
+    _hessian(12, 12) = std::pow(_tmp478, Scalar(2)) + std::pow(_tmp479, Scalar(2)) + _tmp735;
+    _hessian(13, 12) = _tmp478 * _tmp480 + _tmp479 * _tmp481 + _tmp737;
+    _hessian(14, 12) = _tmp478 * _tmp482 + _tmp479 * _tmp483 + _tmp738;
+    _hessian(15, 12) = _tmp478 * _tmp487 + _tmp479 * _tmp488 + _tmp747;
+    _hessian(16, 12) = _tmp478 * _tmp492 + _tmp479 * _tmp493 + _tmp748;
+    _hessian(17, 12) = _tmp478 * _tmp497 + _tmp479 * _tmp498 + _tmp749;
+    _hessian(18, 12) = _tmp478 * _tmp503 + _tmp479 * _tmp504 + _tmp750;
+    _hessian(19, 12) = _tmp478 * _tmp509 + _tmp479 * _tmp510 + _tmp751;
+    _hessian(20, 12) = _tmp478 * _tmp515 + _tmp479 * _tmp516 + _tmp752;
+    _hessian(21, 12) = _tmp478 * _tmp578 + _tmp479 * _tmp579 + _tmp753;
+    _hessian(22, 12) = _tmp478 * _tmp618 + _tmp479 * _tmp619 + _tmp754;
+    _hessian(23, 12) = _tmp478 * _tmp654 + _tmp479 * _tmp655 + _tmp755;
+    _hessian(24, 12) = _tmp478 * _tmp692 + _tmp479 * _tmp695 + _tmp756;
+    _hessian(25, 12) = _tmp478 * _tmp713 + _tmp479 * _tmp714 + _tmp757;
     _hessian(0, 13) = 0;
     _hessian(1, 13) = 0;
     _hessian(2, 13) = 0;
@@ -2108,19 +2163,19 @@ void InternalImuUnitGravityFactor(
     _hessian(10, 13) = 0;
     _hessian(11, 13) = 0;
     _hessian(12, 13) = 0;
-    _hessian(13, 13) = std::pow(_tmp457, Scalar(2)) + std::pow(_tmp458, Scalar(2)) + _tmp722;
-    _hessian(14, 13) = _tmp457 * _tmp459 + _tmp458 * _tmp460 + _tmp723;
-    _hessian(15, 13) = _tmp457 * _tmp464 + _tmp458 * _tmp465 + _tmp731;
-    _hessian(16, 13) = _tmp457 * _tmp469 + _tmp458 * _tmp470 + _tmp732;
-    _hessian(17, 13) = _tmp457 * _tmp474 + _tmp458 * _tmp475 + _tmp733;
-    _hessian(18, 13) = _tmp457 * _tmp480 + _tmp458 * _tmp481 + _tmp734;
-    _hessian(19, 13) = _tmp457 * _tmp486 + _tmp458 * _tmp487 + _tmp735;
-    _hessian(20, 13) = _tmp457 * _tmp492 + _tmp458 * _tmp493 + _tmp736;
-    _hessian(21, 13) = _tmp457 * _tmp550 + _tmp458 * _tmp551 + _tmp737;
-    _hessian(22, 13) = _tmp457 * _tmp585 + _tmp458 * _tmp586 + _tmp738;
-    _hessian(23, 13) = _tmp457 * _tmp616 + _tmp458 * _tmp617 + _tmp739;
-    _hessian(24, 13) = _tmp457 * _tmp654 + _tmp458 * _tmp655 + _tmp740;
-    _hessian(25, 13) = _tmp457 * _tmp675 + _tmp458 * _tmp676 + _tmp741;
+    _hessian(13, 13) = std::pow(_tmp480, Scalar(2)) + std::pow(_tmp481, Scalar(2)) + _tmp759;
+    _hessian(14, 13) = _tmp480 * _tmp482 + _tmp481 * _tmp483 + _tmp760;
+    _hessian(15, 13) = _tmp480 * _tmp487 + _tmp481 * _tmp488 + _tmp768;
+    _hessian(16, 13) = _tmp480 * _tmp492 + _tmp481 * _tmp493 + _tmp769;
+    _hessian(17, 13) = _tmp480 * _tmp497 + _tmp481 * _tmp498 + _tmp770;
+    _hessian(18, 13) = _tmp480 * _tmp503 + _tmp481 * _tmp504 + _tmp771;
+    _hessian(19, 13) = _tmp480 * _tmp509 + _tmp481 * _tmp510 + _tmp772;
+    _hessian(20, 13) = _tmp480 * _tmp515 + _tmp481 * _tmp516 + _tmp773;
+    _hessian(21, 13) = _tmp480 * _tmp578 + _tmp481 * _tmp579 + _tmp774;
+    _hessian(22, 13) = _tmp480 * _tmp618 + _tmp481 * _tmp619 + _tmp775;
+    _hessian(23, 13) = _tmp480 * _tmp654 + _tmp481 * _tmp655 + _tmp776;
+    _hessian(24, 13) = _tmp480 * _tmp692 + _tmp481 * _tmp695 + _tmp777;
+    _hessian(25, 13) = _tmp480 * _tmp713 + _tmp481 * _tmp714 + _tmp778;
     _hessian(0, 14) = 0;
     _hessian(1, 14) = 0;
     _hessian(2, 14) = 0;
@@ -2135,18 +2190,18 @@ void InternalImuUnitGravityFactor(
     _hessian(11, 14) = 0;
     _hessian(12, 14) = 0;
     _hessian(13, 14) = 0;
-    _hessian(14, 14) = std::pow(_tmp459, Scalar(2)) + std::pow(_tmp460, Scalar(2)) + _tmp743;
-    _hessian(15, 14) = _tmp459 * _tmp464 + _tmp460 * _tmp465 + _tmp750;
-    _hessian(16, 14) = _tmp459 * _tmp469 + _tmp460 * _tmp470 + _tmp751;
-    _hessian(17, 14) = _tmp459 * _tmp474 + _tmp460 * _tmp475 + _tmp752;
-    _hessian(18, 14) = _tmp459 * _tmp480 + _tmp460 * _tmp481 + _tmp753;
-    _hessian(19, 14) = _tmp459 * _tmp486 + _tmp460 * _tmp487 + _tmp754;
-    _hessian(20, 14) = _tmp459 * _tmp492 + _tmp460 * _tmp493 + _tmp755;
-    _hessian(21, 14) = _tmp459 * _tmp550 + _tmp460 * _tmp551 + _tmp756;
-    _hessian(22, 14) = _tmp459 * _tmp585 + _tmp460 * _tmp586 + _tmp757;
-    _hessian(23, 14) = _tmp459 * _tmp616 + _tmp460 * _tmp617 + _tmp758;
-    _hessian(24, 14) = _tmp459 * _tmp654 + _tmp460 * _tmp655 + _tmp759;
-    _hessian(25, 14) = _tmp459 * _tmp675 + _tmp460 * _tmp676 + _tmp760;
+    _hessian(14, 14) = std::pow(_tmp482, Scalar(2)) + std::pow(_tmp483, Scalar(2)) + _tmp780;
+    _hessian(15, 14) = _tmp482 * _tmp487 + _tmp483 * _tmp488 + _tmp787;
+    _hessian(16, 14) = _tmp482 * _tmp492 + _tmp483 * _tmp493 + _tmp788;
+    _hessian(17, 14) = _tmp482 * _tmp497 + _tmp483 * _tmp498 + _tmp789;
+    _hessian(18, 14) = _tmp482 * _tmp503 + _tmp483 * _tmp504 + _tmp790;
+    _hessian(19, 14) = _tmp482 * _tmp509 + _tmp483 * _tmp510 + _tmp791;
+    _hessian(20, 14) = _tmp482 * _tmp515 + _tmp483 * _tmp516 + _tmp792;
+    _hessian(21, 14) = _tmp482 * _tmp578 + _tmp483 * _tmp579 + _tmp793;
+    _hessian(22, 14) = _tmp482 * _tmp618 + _tmp483 * _tmp619 + _tmp794;
+    _hessian(23, 14) = _tmp482 * _tmp654 + _tmp483 * _tmp655 + _tmp795;
+    _hessian(24, 14) = _tmp482 * _tmp692 + _tmp483 * _tmp695 + _tmp796;
+    _hessian(25, 14) = _tmp482 * _tmp713 + _tmp483 * _tmp714 + _tmp797;
     _hessian(0, 15) = 0;
     _hessian(1, 15) = 0;
     _hessian(2, 15) = 0;
@@ -2162,29 +2217,29 @@ void InternalImuUnitGravityFactor(
     _hessian(12, 15) = 0;
     _hessian(13, 15) = 0;
     _hessian(14, 15) = 0;
-    _hessian(15, 15) = std::pow(_tmp461, Scalar(2)) + std::pow(_tmp462, Scalar(2)) +
-                       std::pow(_tmp463, Scalar(2)) + std::pow(_tmp464, Scalar(2)) +
-                       std::pow(_tmp465, Scalar(2)) + _tmp762;
-    _hessian(16, 15) = _tmp461 * _tmp466 + _tmp462 * _tmp467 + _tmp463 * _tmp468 +
-                       _tmp464 * _tmp469 + _tmp465 * _tmp470 + _tmp764;
-    _hessian(17, 15) = _tmp461 * _tmp471 + _tmp462 * _tmp472 + _tmp463 * _tmp473 +
-                       _tmp464 * _tmp474 + _tmp465 * _tmp475 + _tmp765;
-    _hessian(18, 15) = _tmp461 * _tmp477 + _tmp462 * _tmp478 + _tmp463 * _tmp479 +
-                       _tmp464 * _tmp480 + _tmp465 * _tmp481 - _tmp772;
-    _hessian(19, 15) = _tmp461 * _tmp483 + _tmp462 * _tmp484 + _tmp463 * _tmp485 +
-                       _tmp464 * _tmp486 + _tmp465 * _tmp487 - _tmp774;
-    _hessian(20, 15) = _tmp461 * _tmp489 + _tmp462 * _tmp490 + _tmp463 * _tmp491 +
-                       _tmp464 * _tmp492 + _tmp465 * _tmp493 - _tmp776;
-    _hessian(21, 15) = _tmp461 * _tmp547 + _tmp462 * _tmp548 + _tmp463 * _tmp549 +
-                       _tmp464 * _tmp550 + _tmp465 * _tmp551 + _tmp777;
-    _hessian(22, 15) = _tmp461 * _tmp582 + _tmp462 * _tmp583 + _tmp463 * _tmp584 +
-                       _tmp464 * _tmp585 + _tmp465 * _tmp586 + _tmp778;
-    _hessian(23, 15) = _tmp461 * _tmp613 + _tmp462 * _tmp614 + _tmp463 * _tmp615 +
-                       _tmp464 * _tmp616 + _tmp465 * _tmp617 + _tmp779;
-    _hessian(24, 15) = _tmp461 * _tmp643 + _tmp462 * _tmp645 + _tmp463 * _tmp651 +
-                       _tmp464 * _tmp654 + _tmp465 * _tmp655 + _tmp781;
-    _hessian(25, 15) = _tmp461 * _tmp666 + _tmp462 * _tmp668 + _tmp463 * _tmp672 +
-                       _tmp464 * _tmp675 + _tmp465 * _tmp676 + _tmp783;
+    _hessian(15, 15) = std::pow(_tmp484, Scalar(2)) + std::pow(_tmp485, Scalar(2)) +
+                       std::pow(_tmp486, Scalar(2)) + std::pow(_tmp487, Scalar(2)) +
+                       std::pow(_tmp488, Scalar(2)) + _tmp799;
+    _hessian(16, 15) = _tmp484 * _tmp489 + _tmp485 * _tmp490 + _tmp486 * _tmp491 +
+                       _tmp487 * _tmp492 + _tmp488 * _tmp493 + _tmp801;
+    _hessian(17, 15) = _tmp484 * _tmp494 + _tmp485 * _tmp495 + _tmp486 * _tmp496 +
+                       _tmp487 * _tmp497 + _tmp488 * _tmp498 + _tmp802;
+    _hessian(18, 15) = _tmp484 * _tmp500 + _tmp485 * _tmp501 + _tmp486 * _tmp502 +
+                       _tmp487 * _tmp503 + _tmp488 * _tmp504 - _tmp808;
+    _hessian(19, 15) = _tmp484 * _tmp506 + _tmp485 * _tmp507 + _tmp486 * _tmp508 +
+                       _tmp487 * _tmp509 + _tmp488 * _tmp510 - _tmp809;
+    _hessian(20, 15) = _tmp484 * _tmp512 + _tmp485 * _tmp513 + _tmp486 * _tmp514 +
+                       _tmp487 * _tmp515 + _tmp488 * _tmp516 - _tmp810;
+    _hessian(21, 15) = _tmp484 * _tmp575 + _tmp485 * _tmp576 + _tmp486 * _tmp577 +
+                       _tmp487 * _tmp578 + _tmp488 * _tmp579 + _tmp811;
+    _hessian(22, 15) = _tmp484 * _tmp615 + _tmp485 * _tmp616 + _tmp486 * _tmp617 +
+                       _tmp487 * _tmp618 + _tmp488 * _tmp619 + _tmp812;
+    _hessian(23, 15) = _tmp484 * _tmp651 + _tmp485 * _tmp652 + _tmp486 * _tmp653 +
+                       _tmp487 * _tmp654 + _tmp488 * _tmp655 + _tmp813;
+    _hessian(24, 15) = _tmp484 * _tmp680 + _tmp485 * _tmp682 + _tmp486 * _tmp688 +
+                       _tmp487 * _tmp692 + _tmp488 * _tmp695 + _tmp815;
+    _hessian(25, 15) = _tmp484 * _tmp705 + _tmp485 * _tmp707 + _tmp486 * _tmp711 +
+                       _tmp487 * _tmp713 + _tmp488 * _tmp714 + _tmp817;
     _hessian(0, 16) = 0;
     _hessian(1, 16) = 0;
     _hessian(2, 16) = 0;
@@ -2201,27 +2256,27 @@ void InternalImuUnitGravityFactor(
     _hessian(13, 16) = 0;
     _hessian(14, 16) = 0;
     _hessian(15, 16) = 0;
-    _hessian(16, 16) = std::pow(_tmp466, Scalar(2)) + std::pow(_tmp467, Scalar(2)) +
-                       std::pow(_tmp468, Scalar(2)) + std::pow(_tmp469, Scalar(2)) +
-                       std::pow(_tmp470, Scalar(2)) + _tmp784;
-    _hessian(17, 16) = _tmp466 * _tmp471 + _tmp467 * _tmp472 + _tmp468 * _tmp473 +
-                       _tmp469 * _tmp474 + _tmp470 * _tmp475 + _tmp785;
-    _hessian(18, 16) = _tmp466 * _tmp477 + _tmp467 * _tmp478 + _tmp468 * _tmp479 +
-                       _tmp469 * _tmp480 + _tmp470 * _tmp481 - _tmp790;
-    _hessian(19, 16) = _tmp466 * _tmp483 + _tmp467 * _tmp484 + _tmp468 * _tmp485 +
-                       _tmp469 * _tmp486 + _tmp470 * _tmp487 - _tmp791;
-    _hessian(20, 16) = _tmp466 * _tmp489 + _tmp467 * _tmp490 + _tmp468 * _tmp491 +
-                       _tmp469 * _tmp492 + _tmp470 * _tmp493 - _tmp792;
-    _hessian(21, 16) = _tmp466 * _tmp547 + _tmp467 * _tmp548 + _tmp468 * _tmp549 +
-                       _tmp469 * _tmp550 + _tmp470 * _tmp551 + _tmp793;
-    _hessian(22, 16) = _tmp466 * _tmp582 + _tmp467 * _tmp583 + _tmp468 * _tmp584 +
-                       _tmp469 * _tmp585 + _tmp470 * _tmp586 + _tmp794;
-    _hessian(23, 16) = _tmp466 * _tmp613 + _tmp467 * _tmp614 + _tmp468 * _tmp615 +
-                       _tmp469 * _tmp616 + _tmp470 * _tmp617 + _tmp795;
-    _hessian(24, 16) = _tmp466 * _tmp643 + _tmp467 * _tmp645 + _tmp468 * _tmp651 +
-                       _tmp469 * _tmp654 + _tmp470 * _tmp655 + _tmp796;
-    _hessian(25, 16) = _tmp466 * _tmp666 + _tmp467 * _tmp668 + _tmp468 * _tmp672 +
-                       _tmp469 * _tmp675 + _tmp470 * _tmp676 + _tmp797;
+    _hessian(16, 16) = std::pow(_tmp489, Scalar(2)) + std::pow(_tmp490, Scalar(2)) +
+                       std::pow(_tmp491, Scalar(2)) + std::pow(_tmp492, Scalar(2)) +
+                       std::pow(_tmp493, Scalar(2)) + _tmp818;
+    _hessian(17, 16) = _tmp489 * _tmp494 + _tmp490 * _tmp495 + _tmp491 * _tmp496 +
+                       _tmp492 * _tmp497 + _tmp493 * _tmp498 + _tmp820;
+    _hessian(18, 16) = _tmp489 * _tmp500 + _tmp490 * _tmp501 + _tmp491 * _tmp502 +
+                       _tmp492 * _tmp503 + _tmp493 * _tmp504 - _tmp825;
+    _hessian(19, 16) = _tmp489 * _tmp506 + _tmp490 * _tmp507 + _tmp491 * _tmp508 +
+                       _tmp492 * _tmp509 + _tmp493 * _tmp510 - _tmp826;
+    _hessian(20, 16) = _tmp489 * _tmp512 + _tmp490 * _tmp513 + _tmp491 * _tmp514 +
+                       _tmp492 * _tmp515 + _tmp493 * _tmp516 - _tmp827;
+    _hessian(21, 16) = _tmp489 * _tmp575 + _tmp490 * _tmp576 + _tmp491 * _tmp577 +
+                       _tmp492 * _tmp578 + _tmp493 * _tmp579 + _tmp828;
+    _hessian(22, 16) = _tmp489 * _tmp615 + _tmp490 * _tmp616 + _tmp491 * _tmp617 +
+                       _tmp492 * _tmp618 + _tmp493 * _tmp619 + _tmp829;
+    _hessian(23, 16) = _tmp489 * _tmp651 + _tmp490 * _tmp652 + _tmp491 * _tmp653 +
+                       _tmp492 * _tmp654 + _tmp493 * _tmp655 + _tmp830;
+    _hessian(24, 16) = _tmp489 * _tmp680 + _tmp490 * _tmp682 + _tmp491 * _tmp688 +
+                       _tmp492 * _tmp692 + _tmp493 * _tmp695 + _tmp831;
+    _hessian(25, 16) = _tmp489 * _tmp705 + _tmp490 * _tmp707 + _tmp491 * _tmp711 +
+                       _tmp492 * _tmp713 + _tmp493 * _tmp714 + _tmp832;
     _hessian(0, 17) = 0;
     _hessian(1, 17) = 0;
     _hessian(2, 17) = 0;
@@ -2239,25 +2294,25 @@ void InternalImuUnitGravityFactor(
     _hessian(14, 17) = 0;
     _hessian(15, 17) = 0;
     _hessian(16, 17) = 0;
-    _hessian(17, 17) = std::pow(_tmp471, Scalar(2)) + std::pow(_tmp472, Scalar(2)) +
-                       std::pow(_tmp473, Scalar(2)) + std::pow(_tmp474, Scalar(2)) +
-                       std::pow(_tmp475, Scalar(2)) + _tmp798;
-    _hessian(18, 17) = _tmp471 * _tmp477 + _tmp472 * _tmp478 + _tmp473 * _tmp479 +
-                       _tmp474 * _tmp480 + _tmp475 * _tmp481 - _tmp802;
-    _hessian(19, 17) = _tmp471 * _tmp483 + _tmp472 * _tmp484 + _tmp473 * _tmp485 +
-                       _tmp474 * _tmp486 + _tmp475 * _tmp487 - _tmp803;
-    _hessian(20, 17) = _tmp471 * _tmp489 + _tmp472 * _tmp490 + _tmp473 * _tmp491 +
-                       _tmp474 * _tmp492 + _tmp475 * _tmp493 - _tmp804;
-    _hessian(21, 17) = _tmp471 * _tmp547 + _tmp472 * _tmp548 + _tmp473 * _tmp549 +
-                       _tmp474 * _tmp550 + _tmp475 * _tmp551 + _tmp805;
-    _hessian(22, 17) = _tmp471 * _tmp582 + _tmp472 * _tmp583 + _tmp473 * _tmp584 +
-                       _tmp474 * _tmp585 + _tmp475 * _tmp586 + _tmp806;
-    _hessian(23, 17) = _tmp471 * _tmp613 + _tmp472 * _tmp614 + _tmp473 * _tmp615 +
-                       _tmp474 * _tmp616 + _tmp475 * _tmp617 + _tmp807;
-    _hessian(24, 17) = _tmp471 * _tmp643 + _tmp472 * _tmp645 + _tmp473 * _tmp651 +
-                       _tmp474 * _tmp654 + _tmp475 * _tmp655 + _tmp808;
-    _hessian(25, 17) = _tmp471 * _tmp666 + _tmp472 * _tmp668 + _tmp473 * _tmp672 +
-                       _tmp474 * _tmp675 + _tmp475 * _tmp676 + _tmp809;
+    _hessian(17, 17) = std::pow(_tmp494, Scalar(2)) + std::pow(_tmp495, Scalar(2)) +
+                       std::pow(_tmp496, Scalar(2)) + std::pow(_tmp497, Scalar(2)) +
+                       std::pow(_tmp498, Scalar(2)) + _tmp833;
+    _hessian(18, 17) = _tmp494 * _tmp500 + _tmp495 * _tmp501 + _tmp496 * _tmp502 +
+                       _tmp497 * _tmp503 + _tmp498 * _tmp504 - _tmp838;
+    _hessian(19, 17) = _tmp494 * _tmp506 + _tmp495 * _tmp507 + _tmp496 * _tmp508 +
+                       _tmp497 * _tmp509 + _tmp498 * _tmp510 - _tmp839;
+    _hessian(20, 17) = _tmp494 * _tmp512 + _tmp495 * _tmp513 + _tmp496 * _tmp514 +
+                       _tmp497 * _tmp515 + _tmp498 * _tmp516 - _tmp840;
+    _hessian(21, 17) = _tmp494 * _tmp575 + _tmp495 * _tmp576 + _tmp496 * _tmp577 +
+                       _tmp497 * _tmp578 + _tmp498 * _tmp579 + _tmp841;
+    _hessian(22, 17) = _tmp494 * _tmp615 + _tmp495 * _tmp616 + _tmp496 * _tmp617 +
+                       _tmp497 * _tmp618 + _tmp498 * _tmp619 + _tmp842;
+    _hessian(23, 17) = _tmp494 * _tmp651 + _tmp495 * _tmp652 + _tmp496 * _tmp653 +
+                       _tmp497 * _tmp654 + _tmp498 * _tmp655 + _tmp843;
+    _hessian(24, 17) = _tmp494 * _tmp680 + _tmp495 * _tmp682 + _tmp496 * _tmp688 +
+                       _tmp497 * _tmp692 + _tmp498 * _tmp695 + _tmp844;
+    _hessian(25, 17) = _tmp494 * _tmp705 + _tmp495 * _tmp707 + _tmp496 * _tmp711 +
+                       _tmp497 * _tmp713 + _tmp498 * _tmp714 + _tmp845;
     _hessian(0, 18) = 0;
     _hessian(1, 18) = 0;
     _hessian(2, 18) = 0;
@@ -2276,24 +2331,25 @@ void InternalImuUnitGravityFactor(
     _hessian(15, 18) = 0;
     _hessian(16, 18) = 0;
     _hessian(17, 18) = 0;
-    _hessian(18, 18) = std::pow(Dv_D_accel_bias(0, 0), Scalar(2)) * _tmp761 +
-                       std::pow(_tmp477, Scalar(2)) + std::pow(_tmp478, Scalar(2)) +
-                       std::pow(_tmp479, Scalar(2)) + std::pow(_tmp480, Scalar(2)) +
-                       std::pow(_tmp481, Scalar(2));
-    _hessian(19, 18) = Dv_D_accel_bias(0, 1) * _tmp771 + _tmp477 * _tmp483 + _tmp478 * _tmp484 +
-                       _tmp479 * _tmp485 + _tmp480 * _tmp486 + _tmp481 * _tmp487;
-    _hessian(20, 18) = Dv_D_accel_bias(0, 2) * _tmp771 + _tmp477 * _tmp489 + _tmp478 * _tmp490 +
-                       _tmp479 * _tmp491 + _tmp480 * _tmp492 + _tmp481 * _tmp493;
-    _hessian(21, 18) = -_tmp476 * _tmp546 + _tmp477 * _tmp547 + _tmp478 * _tmp548 +
-                       _tmp479 * _tmp549 + _tmp480 * _tmp550 + _tmp481 * _tmp551;
-    _hessian(22, 18) = -_tmp476 * _tmp581 + _tmp477 * _tmp582 + _tmp478 * _tmp583 +
-                       _tmp479 * _tmp584 + _tmp480 * _tmp585 + _tmp481 * _tmp586;
-    _hessian(23, 18) = -_tmp476 * _tmp612 + _tmp477 * _tmp613 + _tmp478 * _tmp614 +
-                       _tmp479 * _tmp615 + _tmp480 * _tmp616 + _tmp481 * _tmp617;
-    _hessian(24, 18) = -Dv_D_accel_bias(0, 0) * _tmp780 + _tmp477 * _tmp643 + _tmp478 * _tmp645 +
-                       _tmp479 * _tmp651 + _tmp480 * _tmp654 + _tmp481 * _tmp655;
-    _hessian(25, 18) = -Dv_D_accel_bias(0, 0) * _tmp782 + _tmp477 * _tmp666 + _tmp478 * _tmp668 +
-                       _tmp479 * _tmp672 + _tmp480 * _tmp675 + _tmp481 * _tmp676;
+    _hessian(18, 18) = std::pow(Dv_D_accel_bias(0, 0), Scalar(2)) * _tmp798 +
+                       std::pow(_tmp500, Scalar(2)) + std::pow(_tmp501, Scalar(2)) +
+                       std::pow(_tmp502, Scalar(2)) + std::pow(_tmp503, Scalar(2)) +
+                       std::pow(_tmp504, Scalar(2));
+    _hessian(19, 18) = Dv_D_accel_bias(0, 0) * Dv_D_accel_bias(0, 1) * _tmp798 + _tmp500 * _tmp506 +
+                       _tmp501 * _tmp507 + _tmp502 * _tmp508 + _tmp503 * _tmp509 +
+                       _tmp504 * _tmp510;
+    _hessian(20, 18) = Dv_D_accel_bias(0, 0) * _tmp846 + _tmp500 * _tmp512 + _tmp501 * _tmp513 +
+                       _tmp502 * _tmp514 + _tmp503 * _tmp515 + _tmp504 * _tmp516;
+    _hessian(21, 18) = -_tmp499 * _tmp574 + _tmp500 * _tmp575 + _tmp501 * _tmp576 +
+                       _tmp502 * _tmp577 + _tmp503 * _tmp578 + _tmp504 * _tmp579;
+    _hessian(22, 18) = -_tmp499 * _tmp614 + _tmp500 * _tmp615 + _tmp501 * _tmp616 +
+                       _tmp502 * _tmp617 + _tmp503 * _tmp618 + _tmp504 * _tmp619;
+    _hessian(23, 18) = -_tmp499 * _tmp650 + _tmp500 * _tmp651 + _tmp501 * _tmp652 +
+                       _tmp502 * _tmp653 + _tmp503 * _tmp654 + _tmp504 * _tmp655;
+    _hessian(24, 18) = -Dv_D_accel_bias(0, 0) * _tmp814 + _tmp500 * _tmp680 + _tmp501 * _tmp682 +
+                       _tmp502 * _tmp688 + _tmp503 * _tmp692 + _tmp504 * _tmp695;
+    _hessian(25, 18) = -Dv_D_accel_bias(0, 0) * _tmp816 + _tmp500 * _tmp705 + _tmp501 * _tmp707 +
+                       _tmp502 * _tmp711 + _tmp503 * _tmp713 + _tmp504 * _tmp714;
     _hessian(0, 19) = 0;
     _hessian(1, 19) = 0;
     _hessian(2, 19) = 0;
@@ -2313,22 +2369,22 @@ void InternalImuUnitGravityFactor(
     _hessian(16, 19) = 0;
     _hessian(17, 19) = 0;
     _hessian(18, 19) = 0;
-    _hessian(19, 19) = std::pow(Dv_D_accel_bias(0, 1), Scalar(2)) * _tmp761 +
-                       std::pow(_tmp483, Scalar(2)) + std::pow(_tmp484, Scalar(2)) +
-                       std::pow(_tmp485, Scalar(2)) + std::pow(_tmp486, Scalar(2)) +
-                       std::pow(_tmp487, Scalar(2));
-    _hessian(20, 19) = Dv_D_accel_bias(0, 1) * _tmp775 + _tmp483 * _tmp489 + _tmp484 * _tmp490 +
-                       _tmp485 * _tmp491 + _tmp486 * _tmp492 + _tmp487 * _tmp493;
-    _hessian(21, 19) = -_tmp482 * _tmp546 + _tmp483 * _tmp547 + _tmp484 * _tmp548 +
-                       _tmp485 * _tmp549 + _tmp486 * _tmp550 + _tmp487 * _tmp551;
-    _hessian(22, 19) = -_tmp482 * _tmp581 + _tmp483 * _tmp582 + _tmp484 * _tmp583 +
-                       _tmp485 * _tmp584 + _tmp486 * _tmp585 + _tmp487 * _tmp586;
-    _hessian(23, 19) = -_tmp482 * _tmp612 + _tmp483 * _tmp613 + _tmp484 * _tmp614 +
-                       _tmp485 * _tmp615 + _tmp486 * _tmp616 + _tmp487 * _tmp617;
-    _hessian(24, 19) = -Dv_D_accel_bias(0, 1) * _tmp780 + _tmp483 * _tmp643 + _tmp484 * _tmp645 +
-                       _tmp485 * _tmp651 + _tmp486 * _tmp654 + _tmp487 * _tmp655;
-    _hessian(25, 19) = -Dv_D_accel_bias(0, 1) * _tmp782 + _tmp483 * _tmp666 + _tmp484 * _tmp668 +
-                       _tmp485 * _tmp672 + _tmp486 * _tmp675 + _tmp487 * _tmp676;
+    _hessian(19, 19) = std::pow(Dv_D_accel_bias(0, 1), Scalar(2)) * _tmp798 +
+                       std::pow(_tmp506, Scalar(2)) + std::pow(_tmp507, Scalar(2)) +
+                       std::pow(_tmp508, Scalar(2)) + std::pow(_tmp509, Scalar(2)) +
+                       std::pow(_tmp510, Scalar(2));
+    _hessian(20, 19) = Dv_D_accel_bias(0, 1) * _tmp846 + _tmp506 * _tmp512 + _tmp507 * _tmp513 +
+                       _tmp508 * _tmp514 + _tmp509 * _tmp515 + _tmp510 * _tmp516;
+    _hessian(21, 19) = -_tmp505 * _tmp574 + _tmp506 * _tmp575 + _tmp507 * _tmp576 +
+                       _tmp508 * _tmp577 + _tmp509 * _tmp578 + _tmp510 * _tmp579;
+    _hessian(22, 19) = -_tmp505 * _tmp614 + _tmp506 * _tmp615 + _tmp507 * _tmp616 +
+                       _tmp508 * _tmp617 + _tmp509 * _tmp618 + _tmp510 * _tmp619;
+    _hessian(23, 19) = -_tmp505 * _tmp650 + _tmp506 * _tmp651 + _tmp507 * _tmp652 +
+                       _tmp508 * _tmp653 + _tmp509 * _tmp654 + _tmp510 * _tmp655;
+    _hessian(24, 19) = -Dv_D_accel_bias(0, 1) * _tmp814 + _tmp506 * _tmp680 + _tmp507 * _tmp682 +
+                       _tmp508 * _tmp688 + _tmp509 * _tmp692 + _tmp510 * _tmp695;
+    _hessian(25, 19) = -Dv_D_accel_bias(0, 1) * _tmp816 + _tmp506 * _tmp705 + _tmp507 * _tmp707 +
+                       _tmp508 * _tmp711 + _tmp509 * _tmp713 + _tmp510 * _tmp714;
     _hessian(0, 20) = 0;
     _hessian(1, 20) = 0;
     _hessian(2, 20) = 0;
@@ -2349,20 +2405,20 @@ void InternalImuUnitGravityFactor(
     _hessian(17, 20) = 0;
     _hessian(18, 20) = 0;
     _hessian(19, 20) = 0;
-    _hessian(20, 20) = std::pow(Dv_D_accel_bias(0, 2), Scalar(2)) * _tmp761 +
-                       std::pow(_tmp489, Scalar(2)) + std::pow(_tmp490, Scalar(2)) +
-                       std::pow(_tmp491, Scalar(2)) + std::pow(_tmp492, Scalar(2)) +
-                       std::pow(_tmp493, Scalar(2));
-    _hessian(21, 20) = -_tmp488 * _tmp546 + _tmp489 * _tmp547 + _tmp490 * _tmp548 +
-                       _tmp491 * _tmp549 + _tmp492 * _tmp550 + _tmp493 * _tmp551;
-    _hessian(22, 20) = -_tmp488 * _tmp581 + _tmp489 * _tmp582 + _tmp490 * _tmp583 +
-                       _tmp491 * _tmp584 + _tmp492 * _tmp585 + _tmp493 * _tmp586;
-    _hessian(23, 20) = -_tmp488 * _tmp612 + _tmp489 * _tmp613 + _tmp490 * _tmp614 +
-                       _tmp491 * _tmp615 + _tmp492 * _tmp616 + _tmp493 * _tmp617;
-    _hessian(24, 20) = -Dv_D_accel_bias(0, 2) * _tmp780 + _tmp489 * _tmp643 + _tmp490 * _tmp645 +
-                       _tmp491 * _tmp651 + _tmp492 * _tmp654 + _tmp493 * _tmp655;
-    _hessian(25, 20) = -Dv_D_accel_bias(0, 2) * _tmp782 + _tmp489 * _tmp666 + _tmp490 * _tmp668 +
-                       _tmp491 * _tmp672 + _tmp492 * _tmp675 + _tmp493 * _tmp676;
+    _hessian(20, 20) = std::pow(Dv_D_accel_bias(0, 2), Scalar(2)) * _tmp798 +
+                       std::pow(_tmp512, Scalar(2)) + std::pow(_tmp513, Scalar(2)) +
+                       std::pow(_tmp514, Scalar(2)) + std::pow(_tmp515, Scalar(2)) +
+                       std::pow(_tmp516, Scalar(2));
+    _hessian(21, 20) = -_tmp511 * _tmp574 + _tmp512 * _tmp575 + _tmp513 * _tmp576 +
+                       _tmp514 * _tmp577 + _tmp515 * _tmp578 + _tmp516 * _tmp579;
+    _hessian(22, 20) = -_tmp511 * _tmp614 + _tmp512 * _tmp615 + _tmp513 * _tmp616 +
+                       _tmp514 * _tmp617 + _tmp515 * _tmp618 + _tmp516 * _tmp619;
+    _hessian(23, 20) = -_tmp511 * _tmp650 + _tmp512 * _tmp651 + _tmp513 * _tmp652 +
+                       _tmp514 * _tmp653 + _tmp515 * _tmp654 + _tmp516 * _tmp655;
+    _hessian(24, 20) = -Dv_D_accel_bias(0, 2) * _tmp814 + _tmp512 * _tmp680 + _tmp513 * _tmp682 +
+                       _tmp514 * _tmp688 + _tmp515 * _tmp692 + _tmp516 * _tmp695;
+    _hessian(25, 20) = -Dv_D_accel_bias(0, 2) * _tmp816 + _tmp512 * _tmp705 + _tmp513 * _tmp707 +
+                       _tmp514 * _tmp711 + _tmp515 * _tmp713 + _tmp516 * _tmp714;
     _hessian(0, 21) = 0;
     _hessian(1, 21) = 0;
     _hessian(2, 21) = 0;
@@ -2385,19 +2441,19 @@ void InternalImuUnitGravityFactor(
     _hessian(19, 21) = 0;
     _hessian(20, 21) = 0;
     _hessian(21, 21) =
-        std::pow(_tmp538, Scalar(2)) + std::pow(_tmp542, Scalar(2)) + std::pow(_tmp544, Scalar(2)) +
-        std::pow(_tmp546, Scalar(2)) + std::pow(_tmp547, Scalar(2)) + std::pow(_tmp548, Scalar(2)) +
-        std::pow(_tmp549, Scalar(2)) + std::pow(_tmp550, Scalar(2)) + std::pow(_tmp551, Scalar(2));
-    _hessian(22, 21) = _tmp538 * _tmp573 + _tmp542 * _tmp577 + _tmp544 * _tmp579 +
-                       _tmp546 * _tmp581 + _tmp547 * _tmp582 + _tmp548 * _tmp583 +
-                       _tmp549 * _tmp584 + _tmp550 * _tmp585 + _tmp551 * _tmp586;
-    _hessian(23, 21) = _tmp538 * _tmp604 + _tmp542 * _tmp607 + _tmp544 * _tmp610 +
-                       _tmp546 * _tmp612 + _tmp547 * _tmp613 + _tmp548 * _tmp614 +
-                       _tmp549 * _tmp615 + _tmp550 * _tmp616 + _tmp551 * _tmp617;
-    _hessian(24, 21) = _tmp546 * _tmp640 + _tmp547 * _tmp643 + _tmp548 * _tmp645 +
-                       _tmp549 * _tmp651 + _tmp550 * _tmp654 + _tmp551 * _tmp655;
-    _hessian(25, 21) = _tmp546 * _tmp663 + _tmp547 * _tmp666 + _tmp548 * _tmp668 +
-                       _tmp549 * _tmp672 + _tmp550 * _tmp675 + _tmp551 * _tmp676;
+        std::pow(_tmp563, Scalar(2)) + std::pow(_tmp569, Scalar(2)) + std::pow(_tmp573, Scalar(2)) +
+        std::pow(_tmp574, Scalar(2)) + std::pow(_tmp575, Scalar(2)) + std::pow(_tmp576, Scalar(2)) +
+        std::pow(_tmp577, Scalar(2)) + std::pow(_tmp578, Scalar(2)) + std::pow(_tmp579, Scalar(2));
+    _hessian(22, 21) = _tmp563 * _tmp603 + _tmp569 * _tmp609 + _tmp573 * _tmp613 +
+                       _tmp574 * _tmp614 + _tmp575 * _tmp615 + _tmp576 * _tmp616 +
+                       _tmp577 * _tmp617 + _tmp578 * _tmp618 + _tmp579 * _tmp619;
+    _hessian(23, 21) = _tmp563 * _tmp639 + _tmp569 * _tmp645 + _tmp573 * _tmp649 +
+                       _tmp574 * _tmp650 + _tmp575 * _tmp651 + _tmp576 * _tmp652 +
+                       _tmp577 * _tmp653 + _tmp578 * _tmp654 + _tmp579 * _tmp655;
+    _hessian(24, 21) = _tmp574 * _tmp678 + _tmp575 * _tmp680 + _tmp576 * _tmp682 +
+                       _tmp577 * _tmp688 + _tmp578 * _tmp692 + _tmp579 * _tmp695;
+    _hessian(25, 21) = _tmp574 * _tmp703 + _tmp575 * _tmp705 + _tmp576 * _tmp707 +
+                       _tmp577 * _tmp711 + _tmp578 * _tmp713 + _tmp579 * _tmp714;
     _hessian(0, 22) = 0;
     _hessian(1, 22) = 0;
     _hessian(2, 22) = 0;
@@ -2421,16 +2477,16 @@ void InternalImuUnitGravityFactor(
     _hessian(20, 22) = 0;
     _hessian(21, 22) = 0;
     _hessian(22, 22) =
-        std::pow(_tmp573, Scalar(2)) + std::pow(_tmp577, Scalar(2)) + std::pow(_tmp579, Scalar(2)) +
-        std::pow(_tmp581, Scalar(2)) + std::pow(_tmp582, Scalar(2)) + std::pow(_tmp583, Scalar(2)) +
-        std::pow(_tmp584, Scalar(2)) + std::pow(_tmp585, Scalar(2)) + std::pow(_tmp586, Scalar(2));
-    _hessian(23, 22) = _tmp573 * _tmp604 + _tmp577 * _tmp607 + _tmp579 * _tmp610 +
-                       _tmp581 * _tmp612 + _tmp582 * _tmp613 + _tmp583 * _tmp614 +
-                       _tmp584 * _tmp615 + _tmp585 * _tmp616 + _tmp586 * _tmp617;
-    _hessian(24, 22) = _tmp581 * _tmp640 + _tmp582 * _tmp643 + _tmp583 * _tmp645 +
-                       _tmp584 * _tmp651 + _tmp585 * _tmp654 + _tmp586 * _tmp655;
-    _hessian(25, 22) = _tmp581 * _tmp663 + _tmp582 * _tmp666 + _tmp583 * _tmp668 +
-                       _tmp584 * _tmp672 + _tmp585 * _tmp675 + _tmp586 * _tmp676;
+        std::pow(_tmp603, Scalar(2)) + std::pow(_tmp609, Scalar(2)) + std::pow(_tmp613, Scalar(2)) +
+        std::pow(_tmp614, Scalar(2)) + std::pow(_tmp615, Scalar(2)) + std::pow(_tmp616, Scalar(2)) +
+        std::pow(_tmp617, Scalar(2)) + std::pow(_tmp618, Scalar(2)) + std::pow(_tmp619, Scalar(2));
+    _hessian(23, 22) = _tmp603 * _tmp639 + _tmp609 * _tmp645 + _tmp613 * _tmp649 +
+                       _tmp614 * _tmp650 + _tmp615 * _tmp651 + _tmp616 * _tmp652 +
+                       _tmp617 * _tmp653 + _tmp618 * _tmp654 + _tmp619 * _tmp655;
+    _hessian(24, 22) = _tmp614 * _tmp678 + _tmp615 * _tmp680 + _tmp616 * _tmp682 +
+                       _tmp617 * _tmp688 + _tmp618 * _tmp692 + _tmp619 * _tmp695;
+    _hessian(25, 22) = _tmp614 * _tmp703 + _tmp615 * _tmp705 + _tmp616 * _tmp707 +
+                       _tmp617 * _tmp711 + _tmp618 * _tmp713 + _tmp619 * _tmp714;
     _hessian(0, 23) = 0;
     _hessian(1, 23) = 0;
     _hessian(2, 23) = 0;
@@ -2455,13 +2511,13 @@ void InternalImuUnitGravityFactor(
     _hessian(21, 23) = 0;
     _hessian(22, 23) = 0;
     _hessian(23, 23) =
-        std::pow(_tmp604, Scalar(2)) + std::pow(_tmp607, Scalar(2)) + std::pow(_tmp610, Scalar(2)) +
-        std::pow(_tmp612, Scalar(2)) + std::pow(_tmp613, Scalar(2)) + std::pow(_tmp614, Scalar(2)) +
-        std::pow(_tmp615, Scalar(2)) + std::pow(_tmp616, Scalar(2)) + std::pow(_tmp617, Scalar(2));
-    _hessian(24, 23) = _tmp612 * _tmp640 + _tmp613 * _tmp643 + _tmp614 * _tmp645 +
-                       _tmp615 * _tmp651 + _tmp616 * _tmp654 + _tmp617 * _tmp655;
-    _hessian(25, 23) = _tmp612 * _tmp663 + _tmp613 * _tmp666 + _tmp614 * _tmp668 +
-                       _tmp615 * _tmp672 + _tmp616 * _tmp675 + _tmp617 * _tmp676;
+        std::pow(_tmp639, Scalar(2)) + std::pow(_tmp645, Scalar(2)) + std::pow(_tmp649, Scalar(2)) +
+        std::pow(_tmp650, Scalar(2)) + std::pow(_tmp651, Scalar(2)) + std::pow(_tmp652, Scalar(2)) +
+        std::pow(_tmp653, Scalar(2)) + std::pow(_tmp654, Scalar(2)) + std::pow(_tmp655, Scalar(2));
+    _hessian(24, 23) = _tmp650 * _tmp678 + _tmp651 * _tmp680 + _tmp652 * _tmp682 +
+                       _tmp653 * _tmp688 + _tmp654 * _tmp692 + _tmp655 * _tmp695;
+    _hessian(25, 23) = _tmp650 * _tmp703 + _tmp651 * _tmp705 + _tmp652 * _tmp707 +
+                       _tmp653 * _tmp711 + _tmp654 * _tmp713 + _tmp655 * _tmp714;
     _hessian(0, 24) = 0;
     _hessian(1, 24) = 0;
     _hessian(2, 24) = 0;
@@ -2486,11 +2542,11 @@ void InternalImuUnitGravityFactor(
     _hessian(21, 24) = 0;
     _hessian(22, 24) = 0;
     _hessian(23, 24) = 0;
-    _hessian(24, 24) = std::pow(_tmp639, Scalar(2)) * _tmp761 + std::pow(_tmp643, Scalar(2)) +
-                       std::pow(_tmp645, Scalar(2)) + std::pow(_tmp651, Scalar(2)) +
-                       std::pow(_tmp654, Scalar(2)) + std::pow(_tmp655, Scalar(2));
-    _hessian(25, 24) = _tmp643 * _tmp666 + _tmp645 * _tmp668 + _tmp651 * _tmp672 +
-                       _tmp654 * _tmp675 + _tmp655 * _tmp676 + _tmp662 * _tmp780;
+    _hessian(24, 24) = std::pow(_tmp677, Scalar(2)) * _tmp798 + std::pow(_tmp680, Scalar(2)) +
+                       std::pow(_tmp682, Scalar(2)) + std::pow(_tmp688, Scalar(2)) +
+                       std::pow(_tmp692, Scalar(2)) + std::pow(_tmp695, Scalar(2));
+    _hessian(25, 24) = _tmp677 * _tmp816 + _tmp680 * _tmp705 + _tmp682 * _tmp707 +
+                       _tmp688 * _tmp711 + _tmp692 * _tmp713 + _tmp695 * _tmp714;
     _hessian(0, 25) = 0;
     _hessian(1, 25) = 0;
     _hessian(2, 25) = 0;
@@ -2516,69 +2572,69 @@ void InternalImuUnitGravityFactor(
     _hessian(22, 25) = 0;
     _hessian(23, 25) = 0;
     _hessian(24, 25) = 0;
-    _hessian(25, 25) = std::pow(_tmp662, Scalar(2)) * _tmp761 + std::pow(_tmp666, Scalar(2)) +
-                       std::pow(_tmp668, Scalar(2)) + std::pow(_tmp672, Scalar(2)) +
-                       std::pow(_tmp675, Scalar(2)) + std::pow(_tmp676, Scalar(2));
+    _hessian(25, 25) = std::pow(_tmp702, Scalar(2)) * _tmp798 + std::pow(_tmp705, Scalar(2)) +
+                       std::pow(_tmp707, Scalar(2)) + std::pow(_tmp711, Scalar(2)) +
+                       std::pow(_tmp713, Scalar(2)) + std::pow(_tmp714, Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 26, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp105 * _tmp200 + _tmp116 * _tmp211 + _tmp123 * _tmp223 + _tmp131 * _tmp227 +
-                 _tmp135 * _tmp230 + _tmp137 * _tmp234 + _tmp184 * _tmp64 + _tmp189 * _tmp71 +
-                 _tmp195 * _tmp79;
-    _rhs(1, 0) = _tmp105 * _tmp263 + _tmp116 * _tmp264 + _tmp123 * _tmp267 + _tmp131 * _tmp270 +
-                 _tmp135 * _tmp272 + _tmp137 * _tmp273 + _tmp248 * _tmp64 + _tmp251 * _tmp71 +
-                 _tmp253 * _tmp79;
-    _rhs(2, 0) = _tmp105 * _tmp292 + _tmp116 * _tmp297 + _tmp123 * _tmp298 + _tmp131 * _tmp300 +
-                 _tmp135 * _tmp302 + _tmp137 * _tmp303 + _tmp283 * _tmp64 + _tmp286 * _tmp71 +
-                 _tmp288 * _tmp79;
-    _rhs(3, 0) = _tmp135 * _tmp307 + _tmp137 * _tmp311 - _tmp810;
-    _rhs(4, 0) = _tmp135 * _tmp315 + _tmp137 * _tmp319 - _tmp811;
-    _rhs(5, 0) = _tmp135 * _tmp323 + _tmp137 * _tmp327 - _tmp812;
-    _rhs(6, 0) = _tmp116 * _tmp331 + _tmp123 * _tmp335 + _tmp131 * _tmp339 + _tmp135 * _tmp343 +
-                 _tmp137 * _tmp347 - _tmp813;
-    _rhs(7, 0) = _tmp116 * _tmp351 + _tmp123 * _tmp355 + _tmp131 * _tmp359 + _tmp135 * _tmp363 +
-                 _tmp137 * _tmp367 - _tmp814;
-    _rhs(8, 0) = _tmp116 * _tmp371 + _tmp123 * _tmp375 + _tmp131 * _tmp379 + _tmp135 * _tmp383 +
-                 _tmp137 * _tmp387 - _tmp815;
-    _rhs(9, 0) = _tmp105 * _tmp417 + _tmp116 * _tmp418 + _tmp123 * _tmp419 + _tmp131 * _tmp421 +
-                 _tmp135 * _tmp422 + _tmp137 * _tmp423 + _tmp401 * _tmp64 + _tmp408 * _tmp71 +
-                 _tmp415 * _tmp79;
-    _rhs(10, 0) = _tmp105 * _tmp434 + _tmp116 * _tmp435 + _tmp123 * _tmp436 + _tmp131 * _tmp437 +
-                  _tmp135 * _tmp438 + _tmp137 * _tmp439 + _tmp429 * _tmp64 + _tmp431 * _tmp71 +
-                  _tmp432 * _tmp79;
-    _rhs(11, 0) = _tmp105 * _tmp449 + _tmp116 * _tmp450 + _tmp123 * _tmp451 + _tmp131 * _tmp452 +
-                  _tmp135 * _tmp453 + _tmp137 * _tmp454 + _tmp444 * _tmp64 + _tmp447 * _tmp71 +
-                  _tmp448 * _tmp79;
-    _rhs(12, 0) = _tmp135 * _tmp455 + _tmp137 * _tmp456 + _tmp810;
-    _rhs(13, 0) = _tmp135 * _tmp457 + _tmp137 * _tmp458 + _tmp811;
-    _rhs(14, 0) = _tmp135 * _tmp459 + _tmp137 * _tmp460 + _tmp812;
-    _rhs(15, 0) = _tmp116 * _tmp461 + _tmp123 * _tmp462 + _tmp131 * _tmp463 + _tmp135 * _tmp464 +
-                  _tmp137 * _tmp465 + _tmp813;
-    _rhs(16, 0) = _tmp116 * _tmp466 + _tmp123 * _tmp467 + _tmp131 * _tmp468 + _tmp135 * _tmp469 +
-                  _tmp137 * _tmp470 + _tmp814;
-    _rhs(17, 0) = _tmp116 * _tmp471 + _tmp123 * _tmp472 + _tmp131 * _tmp473 + _tmp135 * _tmp474 +
-                  _tmp137 * _tmp475 + _tmp815;
-    _rhs(18, 0) = -_tmp105 * _tmp476 + _tmp116 * _tmp477 + _tmp123 * _tmp478 + _tmp131 * _tmp479 +
-                  _tmp135 * _tmp480 + _tmp137 * _tmp481;
-    _rhs(19, 0) = -_tmp105 * _tmp482 + _tmp116 * _tmp483 + _tmp123 * _tmp484 + _tmp131 * _tmp485 +
-                  _tmp135 * _tmp486 + _tmp137 * _tmp487;
-    _rhs(20, 0) = -_tmp105 * _tmp488 + _tmp116 * _tmp489 + _tmp123 * _tmp490 + _tmp131 * _tmp491 +
-                  _tmp135 * _tmp492 + _tmp137 * _tmp493;
-    _rhs(21, 0) = _tmp105 * _tmp546 + _tmp116 * _tmp547 + _tmp123 * _tmp548 + _tmp131 * _tmp549 +
-                  _tmp135 * _tmp550 + _tmp137 * _tmp551 + _tmp538 * _tmp64 + _tmp542 * _tmp71 +
-                  _tmp544 * _tmp79;
-    _rhs(22, 0) = _tmp105 * _tmp581 + _tmp116 * _tmp582 + _tmp123 * _tmp583 + _tmp131 * _tmp584 +
-                  _tmp135 * _tmp585 + _tmp137 * _tmp586 + _tmp573 * _tmp64 + _tmp577 * _tmp71 +
-                  _tmp579 * _tmp79;
-    _rhs(23, 0) = _tmp105 * _tmp612 + _tmp116 * _tmp613 + _tmp123 * _tmp614 + _tmp131 * _tmp615 +
-                  _tmp135 * _tmp616 + _tmp137 * _tmp617 + _tmp604 * _tmp64 + _tmp607 * _tmp71 +
-                  _tmp610 * _tmp79;
-    _rhs(24, 0) = _tmp105 * _tmp640 + _tmp116 * _tmp643 + _tmp123 * _tmp645 + _tmp131 * _tmp651 +
-                  _tmp135 * _tmp654 + _tmp137 * _tmp655;
-    _rhs(25, 0) = _tmp105 * _tmp663 + _tmp116 * _tmp666 + _tmp123 * _tmp668 + _tmp131 * _tmp672 +
-                  _tmp135 * _tmp675 + _tmp137 * _tmp676;
+    _rhs(0, 0) = _tmp101 * _tmp196 + _tmp112 * _tmp206 + _tmp119 * _tmp217 + _tmp127 * _tmp220 +
+                 _tmp130 * _tmp225 + _tmp134 * _tmp230 + _tmp181 * _tmp62 + _tmp187 * _tmp69 +
+                 _tmp193 * _tmp76;
+    _rhs(1, 0) = _tmp101 * _tmp263 + _tmp112 * _tmp265 + _tmp119 * _tmp268 + _tmp127 * _tmp270 +
+                 _tmp130 * _tmp271 + _tmp134 * _tmp272 + _tmp246 * _tmp62 + _tmp251 * _tmp69 +
+                 _tmp254 * _tmp76;
+    _rhs(2, 0) = _tmp101 * _tmp294 + _tmp112 * _tmp299 + _tmp119 * _tmp300 + _tmp127 * _tmp302 +
+                 _tmp130 * _tmp304 + _tmp134 * _tmp305 + _tmp283 * _tmp62 + _tmp287 * _tmp69 +
+                 _tmp290 * _tmp76;
+    _rhs(3, 0) = _tmp130 * _tmp309 + _tmp134 * _tmp313 - _tmp847;
+    _rhs(4, 0) = _tmp130 * _tmp317 + _tmp134 * _tmp321 - _tmp848;
+    _rhs(5, 0) = _tmp130 * _tmp325 + _tmp134 * _tmp329 - _tmp849;
+    _rhs(6, 0) = _tmp112 * _tmp333 + _tmp119 * _tmp337 + _tmp127 * _tmp341 + _tmp130 * _tmp345 +
+                 _tmp134 * _tmp349 - _tmp850;
+    _rhs(7, 0) = _tmp112 * _tmp353 + _tmp119 * _tmp357 + _tmp127 * _tmp361 + _tmp130 * _tmp365 +
+                 _tmp134 * _tmp369 - _tmp851;
+    _rhs(8, 0) = _tmp112 * _tmp373 + _tmp119 * _tmp377 + _tmp127 * _tmp381 + _tmp130 * _tmp385 +
+                 _tmp134 * _tmp389 - _tmp852;
+    _rhs(9, 0) = _tmp101 * _tmp429 + _tmp112 * _tmp430 + _tmp119 * _tmp433 + _tmp127 * _tmp434 +
+                 _tmp130 * _tmp436 + _tmp134 * _tmp438 + _tmp404 * _tmp62 + _tmp415 * _tmp69 +
+                 _tmp425 * _tmp76;
+    _rhs(10, 0) = _tmp101 * _tmp452 + _tmp112 * _tmp453 + _tmp119 * _tmp454 + _tmp127 * _tmp455 +
+                  _tmp130 * _tmp456 + _tmp134 * _tmp457 + _tmp445 * _tmp62 + _tmp448 * _tmp69 +
+                  _tmp450 * _tmp76;
+    _rhs(11, 0) = _tmp101 * _tmp470 + _tmp112 * _tmp472 + _tmp119 * _tmp473 + _tmp127 * _tmp475 +
+                  _tmp130 * _tmp476 + _tmp134 * _tmp477 + _tmp460 * _tmp62 + _tmp466 * _tmp69 +
+                  _tmp468 * _tmp76;
+    _rhs(12, 0) = _tmp130 * _tmp478 + _tmp134 * _tmp479 + _tmp847;
+    _rhs(13, 0) = _tmp130 * _tmp480 + _tmp134 * _tmp481 + _tmp848;
+    _rhs(14, 0) = _tmp130 * _tmp482 + _tmp134 * _tmp483 + _tmp849;
+    _rhs(15, 0) = _tmp112 * _tmp484 + _tmp119 * _tmp485 + _tmp127 * _tmp486 + _tmp130 * _tmp487 +
+                  _tmp134 * _tmp488 + _tmp850;
+    _rhs(16, 0) = _tmp112 * _tmp489 + _tmp119 * _tmp490 + _tmp127 * _tmp491 + _tmp130 * _tmp492 +
+                  _tmp134 * _tmp493 + _tmp851;
+    _rhs(17, 0) = _tmp112 * _tmp494 + _tmp119 * _tmp495 + _tmp127 * _tmp496 + _tmp130 * _tmp497 +
+                  _tmp134 * _tmp498 + _tmp852;
+    _rhs(18, 0) = -_tmp101 * _tmp499 + _tmp112 * _tmp500 + _tmp119 * _tmp501 + _tmp127 * _tmp502 +
+                  _tmp130 * _tmp503 + _tmp134 * _tmp504;
+    _rhs(19, 0) = -_tmp101 * _tmp505 + _tmp112 * _tmp506 + _tmp119 * _tmp507 + _tmp127 * _tmp508 +
+                  _tmp130 * _tmp509 + _tmp134 * _tmp510;
+    _rhs(20, 0) = -_tmp101 * _tmp511 + _tmp112 * _tmp512 + _tmp119 * _tmp513 + _tmp127 * _tmp514 +
+                  _tmp130 * _tmp515 + _tmp134 * _tmp516;
+    _rhs(21, 0) = _tmp101 * _tmp574 + _tmp112 * _tmp575 + _tmp119 * _tmp576 + _tmp127 * _tmp577 +
+                  _tmp130 * _tmp578 + _tmp134 * _tmp579 + _tmp563 * _tmp62 + _tmp569 * _tmp69 +
+                  _tmp573 * _tmp76;
+    _rhs(22, 0) = _tmp101 * _tmp614 + _tmp112 * _tmp615 + _tmp119 * _tmp616 + _tmp127 * _tmp617 +
+                  _tmp130 * _tmp618 + _tmp134 * _tmp619 + _tmp603 * _tmp62 + _tmp609 * _tmp69 +
+                  _tmp613 * _tmp76;
+    _rhs(23, 0) = _tmp101 * _tmp650 + _tmp112 * _tmp651 + _tmp119 * _tmp652 + _tmp127 * _tmp653 +
+                  _tmp130 * _tmp654 + _tmp134 * _tmp655 + _tmp62 * _tmp639 + _tmp645 * _tmp69 +
+                  _tmp649 * _tmp76;
+    _rhs(24, 0) = _tmp101 * _tmp678 + _tmp112 * _tmp680 + _tmp119 * _tmp682 + _tmp127 * _tmp688 +
+                  _tmp130 * _tmp692 + _tmp134 * _tmp695;
+    _rhs(25, 0) = _tmp101 * _tmp703 + _tmp112 * _tmp705 + _tmp119 * _tmp707 + _tmp127 * _tmp711 +
+                  _tmp130 * _tmp713 + _tmp134 * _tmp714;
   }
 }  // NOLINT(readability/fn_size)
 

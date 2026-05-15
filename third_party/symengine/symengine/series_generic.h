@@ -19,8 +19,8 @@ class UnivariateSeries
     // UnivariateSeries 1 + 2*x + x**2 + O(x**5) has dict_ = {{0, 1}, {1, 2},
     // {2, 1}} with var_ = "x" and prec_ = 5
 public:
-    using SeriesBase::pow;
     using SeriesBase::mul;
+    using SeriesBase::pow;
     IMPLEMENT_TYPEID(SYMENGINE_UNIVARIATESERIES)
     UnivariateSeries(const UExprDict &sp, const std::string varname,
                      const unsigned degree)
@@ -39,12 +39,12 @@ public:
 
     static RCP<const UnivariateSeries>
     series(const RCP<const Basic> &t, const std::string &x, unsigned int prec);
-    virtual hash_t __hash__() const;
-    virtual int compare(const Basic &o) const;
+    hash_t __hash__() const override;
+    int compare(const Basic &o) const override;
     bool operator==(const UnivariateSeries &u) const;
-    virtual RCP<const Basic> as_basic() const;
-    virtual umap_int_basic as_dict() const;
-    virtual RCP<const Basic> get_coeff(int) const;
+    RCP<const Basic> as_basic() const override;
+    umap_int_basic as_dict() const override;
+    RCP<const Basic> get_coeff(int) const override;
     static UExprDict var(const std::string &s);
 
     static Expression convert(const Basic &x);
@@ -82,5 +82,5 @@ univariate_series(RCP<const Symbol> i, unsigned int prec, const UExprDict &s)
     return make_rcp<const UnivariateSeries>(std::move(s), i->get_name(), prec);
 }
 
-} // SymEngine
+} // namespace SymEngine
 #endif

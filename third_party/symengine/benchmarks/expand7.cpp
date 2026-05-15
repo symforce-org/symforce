@@ -10,13 +10,13 @@
 #include "symengine/constants.h"
 
 using SymEngine::Basic;
+using SymEngine::integer;
+using SymEngine::map_basic_basic;
+using SymEngine::one;
 using SymEngine::RCP;
+using SymEngine::sqrt;
 using SymEngine::symbol;
 using SymEngine::zero;
-using SymEngine::one;
-using SymEngine::map_basic_basic;
-using SymEngine::sqrt;
-using SymEngine::integer;
 
 int main(int argc, char *argv[])
 {

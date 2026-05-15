@@ -41,6 +41,8 @@
 
 #include "Teuchos_TestForException.hpp"
 
+#include <iostream>
+
 
 //
 // ToDo: Make these functions thread-safe!
@@ -107,4 +109,9 @@ void Teuchos::TestForException_setEnableStacktrace(bool enableStrackTrace)
 bool Teuchos::TestForException_getEnableStacktrace()
 {
   return loc_enableStackTrace();
+}
+
+void Teuchos::TestForTermination_terminate(const std::string &msg) {
+    std::cerr << msg;
+    std::terminate();
 }

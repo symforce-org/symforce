@@ -14,11 +14,11 @@ std::string poly_print(const Expression &x)
     }
     return x.get_basic()->__str__();
 }
-}
+} // namespace detail
 
 Expression::Expression(const std::string &s)
 {
     m_basic = parse(s);
 }
 
-} // SymEngine
+} // namespace SymEngine

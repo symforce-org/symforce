@@ -11,9 +11,9 @@ namespace SymEngine
 class CodePrinter : public BaseVisitor<CodePrinter, StrPrinter>
 {
 public:
-    using StrPrinter::str_;
     using StrPrinter::apply;
     using StrPrinter::bvisit;
+    using StrPrinter::str_;
     void bvisit(const Basic &x);
     void bvisit(const Complex &x);
     void bvisit(const Interval &x);
@@ -46,23 +46,23 @@ public:
 class C89CodePrinter : public BaseVisitor<C89CodePrinter, CodePrinter>
 {
 public:
-    using CodePrinter::str_;
     using CodePrinter::apply;
     using CodePrinter::bvisit;
+    using CodePrinter::str_;
     void bvisit(const Infty &x);
     void _print_pow(std::ostringstream &o, const RCP<const Basic> &a,
-                    const RCP<const Basic> &b);
+                    const RCP<const Basic> &b) override;
 };
 
 class C99CodePrinter : public BaseVisitor<C99CodePrinter, C89CodePrinter>
 {
 public:
-    using C89CodePrinter::str_;
     using C89CodePrinter::apply;
     using C89CodePrinter::bvisit;
+    using C89CodePrinter::str_;
     void bvisit(const Infty &x);
     void _print_pow(std::ostringstream &o, const RCP<const Basic> &a,
-                    const RCP<const Basic> &b);
+                    const RCP<const Basic> &b) override;
     void bvisit(const Gamma &x);
     void bvisit(const LogGamma &x);
 };
@@ -70,18 +70,18 @@ public:
 class JSCodePrinter : public BaseVisitor<JSCodePrinter, CodePrinter>
 {
 public:
-    using CodePrinter::str_;
     using CodePrinter::apply;
     using CodePrinter::bvisit;
+    using CodePrinter::str_;
     void bvisit(const Constant &x);
     void _print_pow(std::ostringstream &o, const RCP<const Basic> &a,
-                    const RCP<const Basic> &b);
+                    const RCP<const Basic> &b) override;
     void bvisit(const Abs &x);
     void bvisit(const Sin &x);
     void bvisit(const Cos &x);
     void bvisit(const Max &x);
     void bvisit(const Min &x);
 };
-}
+} // namespace SymEngine
 
 #endif // SYMENGINE_CODEGEN_H

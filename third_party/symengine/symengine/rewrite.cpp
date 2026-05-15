@@ -9,9 +9,7 @@ class RewriteAsExp : public BaseVisitor<RewriteAsExp, TransformVisitor>
 public:
     using TransformVisitor::bvisit;
 
-    RewriteAsExp() : BaseVisitor<RewriteAsExp, TransformVisitor>()
-    {
-    }
+    RewriteAsExp() : BaseVisitor<RewriteAsExp, TransformVisitor>() {}
 
     void bvisit(const Sin &x)
     {
@@ -130,4 +128,108 @@ RCP<const Basic> rewrite_as_exp(const RCP<const Basic> &x)
     return b.apply(x);
 }
 
-} // SymEngine
+class RewriteAsSin : public BaseVisitor<RewriteAsSin, TransformVisitor>
+{
+public:
+    using TransformVisitor::bvisit;
+
+    RewriteAsSin() : BaseVisitor<RewriteAsSin, TransformVisitor>() {}
+
+    void bvisit(const Cos &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = sin(unevaluated_expr(add(newarg, div(pi, integer(2)))));
+    }
+
+    void bvisit(const Tan &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(mul(integer(2), pow(sin(newarg), integer(2))),
+                      sin(mul(integer(2), newarg)));
+    }
+
+    void bvisit(const Cot &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(sin(mul(integer(2), newarg)),
+                      mul(integer(2), pow(sin(newarg), integer(2))));
+    }
+
+    void bvisit(const Csc &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(integer(1), sin(newarg));
+    }
+
+    void bvisit(const Sec &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(integer(1),
+                      sin(unevaluated_expr(add(newarg, div(pi, integer(2))))));
+    }
+};
+
+RCP<const Basic> rewrite_as_sin(const RCP<const Basic> &x)
+{
+    RewriteAsSin b;
+    return b.apply(x);
+}
+
+class RewriteAsCos : public BaseVisitor<RewriteAsCos, TransformVisitor>
+{
+public:
+    using TransformVisitor::bvisit;
+
+    RewriteAsCos() : BaseVisitor<RewriteAsCos, TransformVisitor>() {}
+
+    void bvisit(const Sin &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = cos(unevaluated_expr(sub(newarg, div(pi, integer(2)))));
+    }
+
+    void bvisit(const Tan &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(cos(unevaluated_expr(sub(newarg, div(pi, integer(2))))),
+                      cos(newarg));
+    }
+
+    void bvisit(const Cot &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(cos(newarg),
+                      cos(unevaluated_expr(sub(newarg, div(pi, integer(2))))));
+    }
+
+    void bvisit(const Csc &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(integer(1),
+                      cos(unevaluated_expr(sub(newarg, div(pi, integer(2))))));
+    }
+
+    void bvisit(const Sec &x)
+    {
+        auto farg = x.get_arg();
+        auto newarg = apply(farg);
+        result_ = div(integer(1), cos(newarg));
+    }
+};
+
+RCP<const Basic> rewrite_as_cos(const RCP<const Basic> &x)
+{
+    RewriteAsCos b;
+    return b.apply(x);
+}
+
+} // namespace SymEngine

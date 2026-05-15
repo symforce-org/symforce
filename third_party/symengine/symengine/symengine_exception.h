@@ -12,6 +12,7 @@ typedef enum {
     SYMENGINE_NOT_IMPLEMENTED = 3,
     SYMENGINE_DOMAIN_ERROR = 4,
     SYMENGINE_PARSE_ERROR = 5,
+    SYMENGINE_SERIALIZATION_ERROR = 6,
 } symengine_exceptions_t;
 
 #ifdef __cplusplus
@@ -40,7 +41,7 @@ public:
         : SymEngineException(msg, SYMENGINE_RUNTIME_ERROR)
     {
     }
-    const char *what() const throw()
+    const char *what() const throw() override
     {
         return m_msg.c_str();
     }
@@ -85,6 +86,15 @@ public:
     {
     }
 };
-}
+
+class SerializationError : public SymEngineException
+{
+public:
+    SerializationError(const std::string &msg)
+        : SymEngineException(msg, SYMENGINE_SERIALIZATION_ERROR)
+    {
+    }
+};
+} // namespace SymEngine
 #endif // __cplusplus
 #endif // SYMENGINE_EXCEPTION_H

@@ -441,7 +441,6 @@ public:
         }
 
         result_ = [=](const double *x) {
-
             bool result = bool(applys[0](x));
             for (unsigned int i = 0; i < applys.size(); i++) {
                 result = result && bool(applys[i](x));
@@ -458,7 +457,6 @@ public:
         }
 
         result_ = [=](const double *x) {
-
             bool result = bool(applys[0](x));
             for (unsigned int i = 0; i < applys.size(); i++) {
                 result = result || bool(applys[i](x));
@@ -475,7 +473,6 @@ public:
         }
 
         result_ = [=](const double *x) {
-
             bool result = bool(applys[0](x));
             for (unsigned int i = 0; i < applys.size(); i++) {
                 result = result != bool(applys[i](x));
@@ -498,7 +495,6 @@ public:
         }
 
         result_ = [=](const double *x) {
-
             double result = applys[0](x);
             for (unsigned int i = 0; i < applys.size(); i++) {
                 result = std::max(result, applys[i](x));
@@ -515,7 +511,6 @@ public:
         }
 
         result_ = [=](const double *x) {
-
             double result = applys[0](x);
             for (unsigned int i = 0; i < applys.size(); i++) {
                 result = std::min(result, applys[i](x));
@@ -565,7 +560,13 @@ public:
                 "LambdaDouble can only represent real valued infinity");
         }
     }
-
+    void bvisit(const NaN &nan)
+    {
+        assert(&nan == &(*Nan) /* singleton, or do we support NaN quiet/singaling nan with payload? */);
+        result_ = [](const double * /* x  */) {
+            return std::numeric_limits<double>::signaling_NaN();
+        };
+    }
     void bvisit(const Contains &cts)
     {
         const auto fn_expr = apply(*cts.get_expr());
@@ -670,5 +671,5 @@ public:
     }
 #endif
 };
-}
+} // namespace SymEngine
 #endif // SYMENGINE_LAMBDA_DOUBLE_H

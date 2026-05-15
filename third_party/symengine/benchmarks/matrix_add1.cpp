@@ -6,10 +6,10 @@
 #include <symengine/matrix.h>
 
 using SymEngine::Basic;
-using SymEngine::Integer;
-using SymEngine::RCP;
-using SymEngine::integer;
 using SymEngine::DenseMatrix;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::RCP;
 
 int main(int argc, char *argv[])
 {

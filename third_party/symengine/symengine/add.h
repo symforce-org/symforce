@@ -47,7 +47,7 @@ public:
      *  @see Basic for an implementation to get the cached version.
      *  @return 64-bit integer value for the hash.
      */
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
 
     /**
      *  @brief Test equality.
@@ -55,7 +55,7 @@ public:
      *  @param o a constant reference to object to test against.
      *  @return True if `this` is equal to `o`.
      */
-    virtual bool __eq__(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
 
     /**
      *  @brief Compares `Add` objects.
@@ -63,7 +63,7 @@ public:
      *  @see `unified_compare()` for the actual implementation.
      *  @return 1 if `this` is equal to `o` otherwise (-1).
      */
-    virtual int compare(const Basic &o) const;
+    int compare(const Basic &o) const override;
 
     /**
      *  @brief Create an appropriate instance from dictionary quickly.
@@ -136,7 +136,7 @@ public:
      * @brief Returns the arguments of the Add.
      * @return list of arguments.
      */
-    virtual vec_basic get_args() const;
+    vec_basic get_args() const override;
 
     //!< @return const reference to the coefficient of the `Add`.
     inline const RCP<const Number> &get_coef() const

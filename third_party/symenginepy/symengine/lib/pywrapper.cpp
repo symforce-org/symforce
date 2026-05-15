@@ -1,4 +1,5 @@
 #include "pywrapper.h"
+#include <symengine/serialize-cereal.h>
 
 #if PY_MAJOR_VERSION >= 3
 #define PyInt_FromLong PyLong_FromLong
@@ -175,17 +176,12 @@ RCP<const Number> PyNumber::eval(long bits) const {
 }
 
 std::string PyNumber::__str__() const {
-    PyObject* temp;
-    std::string str;
-#if PY_MAJOR_VERSION > 2
-    temp = PyUnicode_AsUTF8String(pyobject_);
-    str = std::string(PyBytes_AsString(temp));
-#else
-    temp = PyObject_Str(pyobject_);
-    str = std::string(PyString_AsString(temp));
-#endif
-    Py_XDECREF(temp);
-    return str;
+    Py_ssize_t size;
+    PyObject *pystr = PyObject_Str(pyobject_);
+    const char* data = PyUnicode_AsUTF8AndSize(pystr, &size);
+    std::string result = std::string(data, size);
+    Py_XDECREF(pystr);
+    return result;
 }
 
 // PyFunctionClass
@@ -272,6 +268,104 @@ int PyFunction::compare(const Basic &o) const {
     int cmp = pyfunction_class_->compare(*s.get_pyfunction_class());
     if (cmp != 0) return cmp;
     return unified_compare(get_vec(), s.get_vec());
+}
+
+inline PyObject* get_pickle_module() {
+    static PyObject *module = NULL;
+    if (module == NULL) {
+        module = PyImport_ImportModule("pickle");
+    }
+    if (module == NULL) {
+        throw SymEngineException("error importing pickle module.");
+    }
+    return module;
+}
+
+PyObject* pickle_loads(const std::string &pickle_str) {
+    PyObject *module = get_pickle_module();
+    PyObject *pickle_bytes = PyBytes_FromStringAndSize(pickle_str.data(), pickle_str.size());
+    PyObject *obj = PyObject_CallMethod(module, "loads", "O", pickle_bytes);
+    Py_XDECREF(pickle_bytes);
+    if (obj == NULL) {
+        throw SerializationError("error when loading pickled symbol subclass object");
+    }
+    return obj;
+}
+
+RCP<const Basic> load_basic(cereal::PortableBinaryInputArchive &ar, RCP<const Symbol> &)
+{
+    bool is_pysymbol;
+    bool store_pickle;
+    std::string name;
+    ar(is_pysymbol);
+    ar(name);
+    if (is_pysymbol) {
+        std::string pickle_str;
+        ar(pickle_str);
+        ar(store_pickle);
+        PyObject *obj = pickle_loads(pickle_str);
+        RCP<const Basic> result = make_rcp<PySymbol>(name, obj, store_pickle);
+        Py_XDECREF(obj);
+        return result;
+    } else {
+        return symbol(name);
+    }
+}
+
+std::string pickle_dumps(const PyObject * obj) {
+    PyObject *module = get_pickle_module();
+    PyObject *pickle_bytes = PyObject_CallMethod(module, "dumps", "O", obj);
+    if (pickle_bytes == NULL) {
+        throw SerializationError("error when pickling symbol subclass object");
+    }
+    Py_ssize_t size;
+    char* buffer;
+    PyBytes_AsStringAndSize(pickle_bytes, &buffer, &size);
+    return std::string(buffer, size);
+}
+
+void save_basic(cereal::PortableBinaryOutputArchive &ar, const Symbol &b)
+{
+    bool is_pysymbol = is_a_sub<PySymbol>(b);
+    ar(is_pysymbol);
+    ar(b.__str__());
+    if (is_pysymbol) {
+        RCP<const PySymbol> p = rcp_static_cast<const PySymbol>(b.rcp_from_this());
+        PyObject *obj = p->get_py_object();
+        std::string pickle_str = pickle_dumps(obj);
+        ar(pickle_str);
+        ar(p->store_pickle);
+        Py_XDECREF(obj);
+    }
+}
+
+std::string wrapper_dumps(const Basic &x)
+{
+    std::ostringstream oss;
+    unsigned short major = SYMENGINE_MAJOR_VERSION;
+    unsigned short minor = SYMENGINE_MINOR_VERSION;
+    cereal::PortableBinaryOutputArchive{oss}(major, minor,
+                                             x.rcp_from_this());
+    return oss.str();
+}
+
+RCP<const Basic> wrapper_loads(const std::string &serialized)
+{
+    unsigned short major, minor;
+    RCP<const Basic> obj;
+    std::istringstream iss(serialized);
+    cereal::PortableBinaryInputArchive iarchive{iss};
+    iarchive(major, minor);
+    if (major != SYMENGINE_MAJOR_VERSION or minor != SYMENGINE_MINOR_VERSION) {
+        throw SerializationError(StreamFmt()
+                                 << "SymEngine-" << SYMENGINE_MAJOR_VERSION
+                                 << "." << SYMENGINE_MINOR_VERSION
+                                 << " was asked to deserialize an object "
+                                 << "created using SymEngine-" << major << "."
+                                 << minor << ".");
+    }
+    iarchive(obj);
+    return obj;
 }
 
 } // SymEngine

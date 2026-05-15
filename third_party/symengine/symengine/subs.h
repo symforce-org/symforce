@@ -93,10 +93,6 @@ public:
                 // TODO: Check if Mul::dict_add_term is enough
                 Mul::dict_add_term_new(outArg(coef), d, p.second, p.first);
             } else if (is_a_Number(*factor)) {
-                if (down_cast<const Number &>(*factor).is_zero()) {
-                    result_ = factor;
-                    return;
-                }
                 imulnum(outArg(coef), rcp_static_cast<const Number>(factor));
             } else if (is_a<Mul>(*factor)) {
                 RCP<const Mul> tmp = rcp_static_cast<const Mul>(factor);
@@ -192,7 +188,39 @@ public:
                 throw SymEngineException("expected an object of type Boolean");
             v.insert(rcp_static_cast<const Boolean>(a));
         }
-        result_ = x.create(v);
+        result_ = logical_and(v);
+    }
+
+    void bvisit(const Or &x)
+    {
+        set_boolean v;
+        for (const auto &elem : x.get_container()) {
+            auto a = apply(elem);
+            if (not is_a_Boolean(*a))
+                throw SymEngineException("expected an object of type Boolean");
+            v.insert(rcp_static_cast<const Boolean>(a));
+        }
+        result_ = logical_or(v);
+    }
+
+    void bvisit(const Not &x)
+    {
+        RCP<const Basic> a = apply(x.get_arg());
+        if (not is_a_Boolean(*a))
+            throw SymEngineException("expected an object of type Boolean");
+        result_ = logical_not(rcp_static_cast<const Boolean>(a));
+    }
+
+    void bvisit(const Xor &x)
+    {
+        vec_boolean v;
+        for (const auto &elem : x.get_container()) {
+            auto a = apply(elem);
+            if (not is_a_Boolean(*a))
+                throw SymEngineException("expected an object of type Boolean");
+            v.push_back(rcp_static_cast<const Boolean>(a));
+        }
+        result_ = logical_xor(v);
     }
 
     void bvisit(const FiniteSet &x)
@@ -268,13 +296,25 @@ public:
         result_ = subs(expr, new_subs_dict);
     }
 
+    void bvisit(const ComplexBase &x)
+    {
+        auto it = subs_dict_.find(I);
+        if (it != subs_dict_.end()) {
+            result_ = add(apply(x.real_part()),
+                          mul(apply(x.imaginary_part()), it->second));
+        } else {
+            result_ = x.rcp_from_this();
+        }
+    }
+
     void bvisit(const DataBufferElement &x)
     {
         RCP<const Basic> name = apply(x.get_name());
         RCP<const Basic> i = apply(x.get_i());
 
         if (not is_a<Symbol>(*name)) {
-            throw std::runtime_error("Can't substitute DataBufferElement symbol with non-symbol.");
+            throw std::runtime_error(
+                "Can't substitute DataBufferElement symbol with non-symbol.");
         }
 
         RCP<const Symbol> name_sym = rcp_static_cast<const Symbol>(name);
@@ -336,8 +376,8 @@ public:
         RCP<const Basic> exp_new = apply(x.get_exp());
         if (subs_dict_.size() == 1 and is_a<Pow>(*((*subs_dict_.begin()).first))
             and not is_a<Add>(
-                    *down_cast<const Pow &>(*(*subs_dict_.begin()).first)
-                         .get_exp())) {
+                *down_cast<const Pow &>(*(*subs_dict_.begin()).first)
+                     .get_exp())) {
             auto &subs_first
                 = down_cast<const Pow &>(*(*subs_dict_.begin()).first);
             if (eq(*subs_first.get_base(), *base_new)) {
@@ -384,9 +424,9 @@ public:
             // If p.first and p.second are symbols and arg_ is
             // independent of p.second, p.first can be replaced
             if (is_a<Symbol>(*p.first) and is_a<Symbol>(*p.second)
-                and eq(*x.get_arg()->diff(
-                           rcp_static_cast<const Symbol>(p.second)),
-                       *zero)) {
+                and eq(
+                    *x.get_arg()->diff(rcp_static_cast<const Symbol>(p.second)),
+                    *zero)) {
                 insert(n, p.first, p.second);
                 continue;
             }

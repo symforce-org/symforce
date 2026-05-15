@@ -7,36 +7,36 @@
 #include <symengine/polys/basic_conversions.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
+using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::E;
+using SymEngine::eq;
+using SymEngine::Expression;
+using SymEngine::from_basic;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::MExprPoly;
+using SymEngine::MIntPoly;
+using SymEngine::minus_one;
+using SymEngine::Number;
+using SymEngine::one;
+using SymEngine::pi;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::Rational;
+using SymEngine::rational_class;
+using SymEngine::RCP;
+using SymEngine::rcp_static_cast;
+using SymEngine::set_basic;
+using SymEngine::sin;
 using SymEngine::symbol;
 using SymEngine::Symbol;
-using SymEngine::Integer;
-using SymEngine::Pow;
-using SymEngine::RCP;
-using SymEngine::Rational;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::Basic;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::minus_one;
-using SymEngine::E;
-using SymEngine::Expression;
-using SymEngine::pi;
-using SymEngine::integer;
-using SymEngine::add;
-using SymEngine::umap_basic_num;
-using SymEngine::Number;
-using SymEngine::rcp_static_cast;
-using SymEngine::sin;
-using SymEngine::eq;
-using SymEngine::UIntPoly;
-using SymEngine::URatPoly;
+using SymEngine::SymEngineException;
 using SymEngine::UExprPoly;
-using SymEngine::from_basic;
-using SymEngine::set_basic;
-using SymEngine::MIntPoly;
-using SymEngine::MExprPoly;
-using SymEngine::rational_class;
+using SymEngine::UIntPoly;
+using SymEngine::umap_basic_num;
+using SymEngine::URatPoly;
+using SymEngine::zero;
 
 using namespace SymEngine::literals;
 using rc = rational_class;
@@ -251,13 +251,13 @@ TEST_CASE("basic_to_poly UInt", "[b2poly]")
 
     CHECK_THROWS_AS(
         from_basic<UIntPoly>(URatPoly::from_vec(gen, {{3_q, 1_q, 1_q}}), gen),
-        SymEngineException &); // Rat->Int
+        SymEngineException); // Rat->Int
     CHECK_THROWS_AS(
         from_basic<UIntPoly>(
             UExprPoly::from_vec(
                 gen, {{Expression("y"), Expression(1), Expression(1)}}),
             gen),
-        SymEngineException &); // Expr->Int
+        SymEngineException); // Expr->Int
 
 #ifdef HAVE_SYMENGINE_FLINT
     auto fpoly = SymEngine::UIntPolyFlint::from_vec(gen, {{3_z, 1_z, 1_z}});
@@ -267,7 +267,7 @@ TEST_CASE("basic_to_poly UInt", "[b2poly]")
     CHECK_THROWS_AS(
         from_basic<UIntPoly>(
             SymEngine::URatPolyFlint::from_vec(gen, {{3_q, 1_q, 1_q}}), gen),
-        SymEngineException &);
+        SymEngineException);
 #endif
 
 #ifdef HAVE_SYMENGINE_PIRANHA
@@ -278,7 +278,7 @@ TEST_CASE("basic_to_poly UInt", "[b2poly]")
     CHECK_THROWS_AS(
         from_basic<UIntPoly>(
             SymEngine::URatPolyPiranha::from_vec(gen, {{3_q, 1_q, 1_q}}), gen),
-        SymEngineException &);
+        SymEngineException);
 #endif
 
     // 0
@@ -291,47 +291,47 @@ TEST_CASE("basic_to_poly UInt", "[b2poly]")
     // x + y
     basic = add(x, y);
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // x + 1/2
     basic = add(x, hf);
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // x/2 + 1
     basic = add(div(x, i2), one);
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // x + 1/x
     basic = add(x, div(one, x));
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // xy + 1
     basic = add(mul(x, y), one);
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // x**(1/2) + 1
     basic = add(pow(x, hf), one);
     gen = x;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // 3**x + 2**x
     basic = add(pow(i3, x), pow(i2, x));
     gen = twopx;
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // 2**(2**(2x + 1)) + 2**(2**x)
     basic = add(pow(i2, twopx), pow(i2, pow(i2, add(mul(i2, x), one))));
     gen = pow(i2, twopx);
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 
     // 9**(x + (1/3))
     basic = pow(i9, add(div(one, i3), x));
     gen = pow(i9, x);
-    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<UIntPoly>(basic, gen), SymEngineException);
 }
 
 TEST_CASE("basic_to_poly URat", "[b2poly]")
@@ -373,7 +373,7 @@ TEST_CASE("basic_to_poly URat", "[b2poly]")
             UExprPoly::from_vec(
                 gen, {{Expression("y"), Expression(1), Expression(1)}}),
             gen),
-        SymEngineException &); // Expr->Rat
+        SymEngineException); // Expr->Rat
 
 #ifdef HAVE_SYMENGINE_FLINT
     auto fpoly = SymEngine::UIntPolyFlint::from_vec(gen, {{2_z, 3_z}});
@@ -404,11 +404,11 @@ TEST_CASE("basic_to_poly URat", "[b2poly]")
 
     // x + y
     basic = add(x, y);
-    CHECK_THROWS_AS(from_basic<URatPoly>(basic), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<URatPoly>(basic), SymEngineException);
 
     // x + 1/x
     basic = add(x, div(one, x));
-    CHECK_THROWS_AS(from_basic<URatPoly>(basic), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<URatPoly>(basic), SymEngineException);
 }
 
 TEST_CASE("basic_to_poly UExpr", "[b2poly]")
@@ -606,7 +606,7 @@ TEST_CASE("basic_to_poly UIntFlint", "[b2poly]")
 
     CHECK_THROWS_AS(from_basic<UIntPolyFlint>(
                         URatPoly::from_vec(gen, {{1_q, 2_q, 0_q, 4_q}}), x),
-                    SymEngineException &);
+                    SymEngineException);
 
     // (x**(1/2)+1)**3 + (x+2)**6
     basic = add(pow(add(pow(x, hf), one), i3), pow(add(x, i2), i6));
@@ -633,7 +633,7 @@ TEST_CASE("basic_to_poly UIntFlint", "[b2poly]")
     CHECK_THROWS_AS(
         from_basic<UIntPolyFlint>(
             SymEngine::URatPolyFlint::from_vec(gen, {{1_q, 2_q, 0_q, 4_q}}), x),
-        SymEngineException &);
+        SymEngineException);
 
 #ifdef HAVE_SYMENGINE_PIRANHA
     auto ppoly
@@ -645,7 +645,7 @@ TEST_CASE("basic_to_poly UIntFlint", "[b2poly]")
         from_basic<UIntPolyFlint>(
             SymEngine::URatPolyPiranha::from_vec(gen, {{1_q, 2_q, 0_q, 4_q}}),
             x),
-        SymEngineException &);
+        SymEngineException);
 #endif
 
     CHECK_THROWS_AS(
@@ -653,7 +653,7 @@ TEST_CASE("basic_to_poly UIntFlint", "[b2poly]")
             UExprPoly::from_vec(gen, {{Expression(1), Expression(2),
                                        Expression(0), Expression(4)}}),
             x),
-        SymEngineException &);
+        SymEngineException);
 }
 #endif
 
@@ -757,22 +757,22 @@ TEST_CASE("basic_to_poly MInt", "[b2poly]")
     // x + y
     basic = add(x, y);
     gens = {x};
-    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException);
 
     // x + 1/2
     basic = add(x, hf);
     gens = {x};
-    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException);
 
     // x**(1/2) + 1
     basic = add(pow(x, hf), one);
     gens = {x};
-    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException);
 
     // x + y + x/y
     basic = add({x, y, div(x, y)});
     gens = {x, y};
-    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException &);
+    CHECK_THROWS_AS(from_basic<MIntPoly>(basic, gens), SymEngineException);
 }
 
 TEST_CASE("basic_to_poly MExpr", "[b2poly]")

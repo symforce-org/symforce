@@ -97,56 +97,56 @@ public:
         return mpc_get_prec(i.get_mpc_t());
     }
     //! \return size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
     //! Get the real part of the complex number
-    virtual RCP<const Number> real_part() const;
+    RCP<const Number> real_part() const override;
     //! Get the imaginary part of the complex number
-    virtual RCP<const Number> imaginary_part() const;
+    RCP<const Number> imaginary_part() const override;
     //! Get the conjugate of the complex number
-    virtual RCP<const Basic> conjugate() const;
+    RCP<const Basic> conjugate() const override;
     //! \return `true` if positive
-    inline virtual bool is_positive() const
+    inline bool is_positive() const override
     {
         return false;
     }
     //! \return `true` if negative
-    inline virtual bool is_negative() const
+    inline bool is_negative() const override
     {
         return false;
     }
     //! \returns `true`
-    inline virtual bool is_complex() const
+    inline bool is_complex() const override
     {
         return true;
     }
     //! \return `true` if this number is an exact number
-    inline virtual bool is_exact() const
+    inline bool is_exact() const override
     {
         return false;
     }
     //! Get `Evaluate` singleton to evaluate numerically
-    virtual Evaluate &get_eval() const;
+    Evaluate &get_eval() const override;
 
     //! \return `true` if equal to `0`
-    virtual bool is_zero() const
+    bool is_zero() const override
     {
         return mpc_cmp_si_si(i.get_mpc_t(), 0, 0) == 0;
     }
     //! \return `false`
     // A mpc_t is not exactly equal to `1`
-    virtual bool is_one() const
+    bool is_one() const override
     {
         return false;
     }
     //! \return `false`
     // A mpc_t is not exactly equal to `-1`
-    virtual bool is_minus_one() const
+    bool is_minus_one() const override
     {
         return false;
     }
@@ -163,7 +163,7 @@ public:
     RCP<const Number> add(const ComplexMPC &other) const;
 
     //! Converts the param `other` appropriately and then calls `add`
-    virtual RCP<const Number> add(const Number &other) const
+    RCP<const Number> add(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return add(down_cast<const Rational &>(other));
@@ -193,7 +193,7 @@ public:
     RCP<const Number> sub(const ComplexMPC &other) const;
 
     //! Converts the param `other` appropriately and then calls `sub`
-    virtual RCP<const Number> sub(const Number &other) const
+    RCP<const Number> sub(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return sub(down_cast<const Rational &>(other));
@@ -222,7 +222,7 @@ public:
     RCP<const Number> rsub(const RealMPFR &other) const;
 
     //! Converts the param `other` appropriately and then calls `sub`
-    virtual RCP<const Number> rsub(const Number &other) const
+    RCP<const Number> rsub(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return rsub(down_cast<const Rational &>(other));
@@ -250,7 +250,7 @@ public:
     RCP<const Number> mul(const ComplexMPC &other) const;
 
     //! Converts the param `other` appropriately and then calls `mul`
-    virtual RCP<const Number> mul(const Number &other) const
+    RCP<const Number> mul(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return mul(down_cast<const Rational &>(other));
@@ -280,7 +280,7 @@ public:
     RCP<const Number> div(const ComplexMPC &other) const;
 
     //! Converts the param `other` appropriately and then calls `div`
-    virtual RCP<const Number> div(const Number &other) const
+    RCP<const Number> div(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return div(down_cast<const Rational &>(other));
@@ -309,7 +309,7 @@ public:
     RCP<const Number> rdiv(const RealMPFR &other) const;
 
     //! Converts the param `other` appropriately and then calls `div`
-    virtual RCP<const Number> rdiv(const Number &other) const
+    RCP<const Number> rdiv(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return rdiv(down_cast<const Rational &>(other));
@@ -337,7 +337,7 @@ public:
     RCP<const Number> pow(const ComplexMPC &other) const;
 
     //! Converts the param `other` appropriately and then calls `pow`
-    virtual RCP<const Number> pow(const Number &other) const
+    RCP<const Number> pow(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return pow(down_cast<const Rational &>(other));
@@ -366,7 +366,7 @@ public:
     RCP<const Number> rpow(const RealMPFR &other) const;
 
     //! Converts the param `other` appropriately and then calls `pow`
-    virtual RCP<const Number> rpow(const Number &other) const
+    RCP<const Number> rpow(const Number &other) const override
     {
         if (is_a<Rational>(other)) {
             return rpow(down_cast<const Rational &>(other));
@@ -390,7 +390,7 @@ inline RCP<const ComplexMPC> complex_mpc(mpc_class x)
 {
     return rcp(new ComplexMPC(std::move(x)));
 }
-}
+} // namespace SymEngine
 #else
 
 namespace SymEngine
@@ -400,7 +400,7 @@ class ComplexMPC : public ComplexBase
 public:
     IMPLEMENT_TYPEID(SYMENGINE_COMPLEX_MPC)
 };
-}
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_MPC
 #endif // SymEngine

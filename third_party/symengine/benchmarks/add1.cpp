@@ -9,16 +9,16 @@
 #include <symengine/mul.h>
 #include <symengine/pow.h>
 
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
-using SymEngine::Pow;
-using SymEngine::Symbol;
-using SymEngine::symbol;
+using SymEngine::Basic;
 using SymEngine::integer;
+using SymEngine::Mul;
 using SymEngine::multinomial_coefficients;
+using SymEngine::Pow;
 using SymEngine::RCP;
 using SymEngine::rcp_dynamic_cast;
+using SymEngine::Symbol;
+using SymEngine::symbol;
 
 int main(int argc, char *argv[])
 {

@@ -130,7 +130,12 @@ llvm::Function *LLVMVisitor::get_function_type(llvm::LLVMContext *context)
     F->addParamAttr(0, llvm::Attribute::NoCapture);
     F->addParamAttr(1, llvm::Attribute::NoCapture);
     F->addFnAttr(llvm::Attribute::NoUnwind);
+#if (LLVM_VERSION_MAJOR < 15)
     F->addFnAttr(llvm::Attribute::UWTable);
+#else
+    F->addFnAttr(llvm::Attribute::getWithUWTableKind(
+        *context, llvm::UWTableKind::Default));
+#endif
 #endif
     return F;
 }
@@ -280,7 +285,7 @@ void LLVMVisitor::init(const vec_basic &inputs, const vec_basic &outputs,
     builder->CreateRetVoid();
 
     // Validate the generated code, checking for consistency.
-    llvm::verifyFunction(*F);
+    llvm::verifyFunction(*F, &llvm::outs());
 
     //     std::cout << "LLVM IR" << std::endl;
     // #if (LLVM_VERSION_MAJOR < 5)
@@ -309,20 +314,18 @@ void LLVMVisitor::init(const vec_basic &inputs, const vec_basic &outputs,
     {
     public:
         std::string &ss_;
-        MemoryBufferRefCallback(std::string &ss) : ss_(ss)
-        {
-        }
+        MemoryBufferRefCallback(std::string &ss) : ss_(ss) {}
 
-        virtual void notifyObjectCompiled(const llvm::Module *M,
-                                          llvm::MemoryBufferRef obj)
+        void notifyObjectCompiled(const llvm::Module *M,
+                                  llvm::MemoryBufferRef obj) override
         {
             const char *c = obj.getBufferStart();
             // Saving the object code in a std::string
             ss_.assign(c, obj.getBufferSize());
         }
 
-        virtual std::unique_ptr<llvm::MemoryBuffer>
-        getObject(const llvm::Module *M)
+        std::unique_ptr<llvm::MemoryBuffer>
+        getObject(const llvm::Module *M) override
         {
             return NULL;
         }
@@ -497,7 +500,9 @@ llvm::Function *LLVMVisitor::get_powi()
 {
     std::vector<llvm::Type *> arg_type;
     arg_type.push_back(get_float_type(&mod->getContext()));
+#if (LLVM_VERSION_MAJOR > 12)
     arg_type.push_back(llvm::Type::getInt32Ty(mod->getContext()));
+#endif
     return llvm::Intrinsic::getDeclaration(mod, llvm::Intrinsic::powi,
                                            arg_type);
 }
@@ -543,7 +548,7 @@ void LLVMVisitor::bvisit(const Pow &x)
             args.push_back(apply(*x.get_base()));
             args.push_back(apply(*x.get_exp()));
             fun = get_float_intrinsic(get_float_type(&mod->getContext()),
-                                      llvm::Intrinsic::pow, 2, mod);
+                                      llvm::Intrinsic::pow, 1, mod);
         }
     }
     auto r = builder->CreateCall(fun, args);
@@ -627,7 +632,11 @@ void LLVMVisitor::bvisit(const Piecewise &x)
     then_bb = builder->GetInsertBlock();
 
     // Emit else block.
+#if (LLVM_VERSION_MAJOR < 16)
     function->getBasicBlockList().push_back(else_bb);
+#else
+    function->insert(function->end(), else_bb);
+#endif
     builder->SetInsertPoint(else_bb);
     llvm::Value *else_value = apply(*pw->get_vec().back().first);
     builder->CreateBr(merge_bb);
@@ -637,7 +646,11 @@ void LLVMVisitor::bvisit(const Piecewise &x)
     else_bb = builder->GetInsertBlock();
 
     // Emit merge block.
+#if (LLVM_VERSION_MAJOR < 16)
     function->getBasicBlockList().push_back(merge_bb);
+#else
+    function->insert(function->end(), merge_bb);
+#endif
     builder->SetInsertPoint(merge_bb);
     llvm::PHINode *phi_node
         = builder->CreatePHI(get_float_type(&mod->getContext()), 2);
@@ -695,6 +708,12 @@ void LLVMVisitor::bvisit(const Infty &x)
         throw SymEngineException(
             "LLVMDouble can only represent real valued infinity");
     }
+}
+
+void LLVMVisitor::bvisit(const NaN &x)
+{
+    result_ = llvm::ConstantFP::getNaN(get_float_type(&mod->getContext()),
+                                       /*negative=*/false, /*payload=*/0);
 }
 
 void LLVMVisitor::bvisit(const BooleanAtom &x)
@@ -839,7 +858,7 @@ void LLVMVisitor::bvisit(const Min &x)
     llvm::Value *value = nullptr;
     llvm::Function *fun;
     fun = get_float_intrinsic(get_float_type(&mod->getContext()),
-                              llvm::Intrinsic::minnum, 2, mod);
+                              llvm::Intrinsic::minnum, 1, mod);
     for (auto &arg : x.get_vec()) {
         if (value != nullptr) {
             std::vector<llvm::Value *> args;
@@ -860,7 +879,7 @@ void LLVMVisitor::bvisit(const Max &x)
     llvm::Value *value = nullptr;
     llvm::Function *fun;
     fun = get_float_intrinsic(get_float_type(&mod->getContext()),
-                              llvm::Intrinsic::maxnum, 2, mod);
+                              llvm::Intrinsic::maxnum, 1, mod);
     for (auto &arg : x.get_vec()) {
         if (value != nullptr) {
             std::vector<llvm::Value *> args;
@@ -891,7 +910,8 @@ void LLVMVisitor::bvisit(const Symbol &x)
         result_ = it->second;
         return;
     }
-    throw std::runtime_error("Symbol " + x.__str__()
+
+    throw SymEngineException("Symbol " + x.__str__()
                              + " not in the symbols vector.");
 }
 
@@ -943,9 +963,9 @@ void LLVMLongDoubleVisitor::visit(const Constant &x)
 }
 #endif
 
-void LLVMVisitor::bvisit(const Basic &)
+void LLVMVisitor::bvisit(const Basic &x)
 {
-    throw std::runtime_error("Not implemented.");
+    throw NotImplementedError(x.__str__());
 }
 
 const std::string &LLVMVisitor::dumps() const
@@ -986,18 +1006,16 @@ void LLVMVisitor::loads(const std::string &s)
         const std::string &s_;
 
     public:
-        MCJITObjectLoader(const std::string &s) : s_(s)
-        {
-        }
-        virtual void notifyObjectCompiled(const llvm::Module *M,
-                                          llvm::MemoryBufferRef obj)
+        MCJITObjectLoader(const std::string &s) : s_(s) {}
+        void notifyObjectCompiled(const llvm::Module *M,
+                                  llvm::MemoryBufferRef obj) override
         {
         }
 
         // No need to check M because there is only one function
         // Return it after reading from the file.
-        virtual std::unique_ptr<llvm::MemoryBuffer>
-        getObject(const llvm::Module *M)
+        std::unique_ptr<llvm::MemoryBuffer>
+        getObject(const llvm::Module *M) override
         {
             return llvm::MemoryBuffer::getMemBufferCopy(llvm::StringRef(s_));
         }

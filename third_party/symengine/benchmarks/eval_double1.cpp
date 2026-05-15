@@ -11,19 +11,19 @@
 #include <symengine/functions.h>
 #include <symengine/eval_double.h>
 
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
-using SymEngine::Pow;
-using SymEngine::Symbol;
-using SymEngine::umap_basic_num;
+using SymEngine::Basic;
+using SymEngine::eval_double;
 using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::Mul;
 using SymEngine::multinomial_coefficients;
+using SymEngine::Pow;
 using SymEngine::RCP;
 using SymEngine::rcp_dynamic_cast;
-using SymEngine::integer;
 using SymEngine::sin;
-using SymEngine::eval_double;
+using SymEngine::Symbol;
+using SymEngine::umap_basic_num;
 
 int main(int argc, char *argv[])
 {

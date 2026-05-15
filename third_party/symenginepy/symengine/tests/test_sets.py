@@ -1,12 +1,14 @@
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 from symengine.lib.symengine_wrapper import (Interval, EmptySet, UniversalSet,
-    FiniteSet, Union, Complement, ImageSet, ConditionSet, Reals, Integers,
-    And, Or, oo, Symbol, true, Ge, Eq, Gt)
+    FiniteSet, Union, Complement, ImageSet, ConditionSet, Reals, Rationals,
+    Integers, And, Or, oo, Symbol, true, Ge, Eq, Gt)
 
 
 def test_Interval():
     assert Interval(0, oo) == Interval(0, oo, False, True)
+    assert Interval(0, oo) == Interval(0, oo, left_open=False, right_open=True)
     assert Interval(-oo, 0) == Interval(-oo, 0, True, False)
+    assert Interval(-oo, 0) == Interval(-oo, 0, left_open=True, right_open=False)
     assert Interval(oo, -oo) == EmptySet()
     assert Interval(oo, oo) == EmptySet()
     assert Interval(-oo, -oo) == EmptySet()
@@ -17,6 +19,9 @@ def test_Interval():
     assert Interval(1, 1, True, False) == EmptySet()
     assert Interval(1, 1, True, True) == EmptySet()
     assert Interval(1, 2).union(Interval(2, 3)) == Interval(1, 3)
+
+    assert Interval(-oo, 0).start == -oo
+    assert Interval(-oo, 0).end == 0
 
 
 def test_EmptySet():
@@ -38,7 +43,13 @@ def test_Reals():
     assert R.contains(0) == true
 
 
-def test_Reals():
+def test_Rationals():
+    Q = Rationals()
+    assert Q.union(FiniteSet(2, 3)) == Q
+    assert Q.contains(0) == true
+
+
+def test_Integers():
     Z = Integers()
     assert Z.union(FiniteSet(2, 4)) == Z
     assert Z.contains(0) == true

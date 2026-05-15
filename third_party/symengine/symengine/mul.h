@@ -83,13 +83,13 @@ public:
     //! dictionary:
     Mul(const RCP<const Number> &coef, map_basic_basic &&dict);
     //! \return size of the hash
-    virtual hash_t __hash__() const;
+    hash_t __hash__() const override;
     /*! Equality comparator
      * \param o - Object to be compared with
      * \return whether the 2 objects are equal
      * */
-    virtual bool __eq__(const Basic &o) const;
-    virtual int compare(const Basic &o) const;
+    bool __eq__(const Basic &o) const override;
+    int compare(const Basic &o) const override;
 
     // Performs canonicalization first:
     //! Create a Mul from a dict
@@ -120,7 +120,7 @@ public:
     bool is_canonical(const RCP<const Number> &coef,
                       const map_basic_basic &dict) const;
 
-    virtual vec_basic get_args() const;
+    vec_basic get_args() const override;
 
     inline const RCP<const Number> &get_coef() const
     {
@@ -139,6 +139,6 @@ RCP<const Basic> div(const RCP<const Basic> &a, const RCP<const Basic> &b);
 //! Negation
 RCP<const Basic> neg(const RCP<const Basic> &a);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

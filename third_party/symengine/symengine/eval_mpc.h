@@ -22,7 +22,7 @@ namespace SymEngine
 // Use `mpc_init2` to initialize `result`
 void eval_mpc(mpc_ptr result, const Basic &b, mpfr_rnd_t rnd);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif // HAVE_SYMENGINE_MPC
 

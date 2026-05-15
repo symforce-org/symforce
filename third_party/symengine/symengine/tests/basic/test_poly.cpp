@@ -7,25 +7,25 @@
 #include <symengine/monomials.h>
 #include <symengine/symengine_exception.h>
 
-using SymEngine::SymEngineException;
-using SymEngine::Basic;
 using SymEngine::Add;
-using SymEngine::Mul;
-using SymEngine::Pow;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::umap_basic_num;
+using SymEngine::Basic;
+using SymEngine::expr2poly;
 using SymEngine::Integer;
 using SymEngine::integer;
 using SymEngine::map_vec_mpz;
-using SymEngine::expr2poly;
-using SymEngine::vec_int;
 using SymEngine::monomial_mul;
+using SymEngine::Mul;
 using SymEngine::poly_mul;
-using SymEngine::umap_vec_mpz;
+using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
 using SymEngine::RCP;
 using SymEngine::rcp_dynamic_cast;
-using SymEngine::print_stack_on_segfault;
+using SymEngine::Symbol;
+using SymEngine::symbol;
+using SymEngine::SymEngineException;
+using SymEngine::umap_basic_num;
+using SymEngine::umap_vec_mpz;
+using SymEngine::vec_int;
 
 TEST_CASE("monomial_mul: poly", "[poly]")
 {

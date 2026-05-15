@@ -1,17 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function)
-
-
 import array
 import cmath
 from functools import reduce
 import itertools
 from operator import mul
 import math
-import sys
 
 import symengine as se
-from symengine.utilities import raises
+from symengine.test_utilities import raises
 from symengine import have_numpy
 import unittest
 from unittest.case import SkipTest

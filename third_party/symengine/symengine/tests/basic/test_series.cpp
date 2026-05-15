@@ -7,20 +7,20 @@
 #include <symengine/series.h>
 #include <symengine/symengine_casts.h>
 
+using SymEngine::Add;
+using SymEngine::add;
 using SymEngine::Basic;
+using SymEngine::cos;
+using SymEngine::down_cast;
 using SymEngine::Integer;
 using SymEngine::integer;
-using SymEngine::rational;
-using SymEngine::Symbol;
 using SymEngine::Number;
-using SymEngine::symbol;
-using SymEngine::Add;
+using SymEngine::rational;
 using SymEngine::RCP;
-using SymEngine::add;
-using SymEngine::sin;
-using SymEngine::cos;
 using SymEngine::series;
-using SymEngine::down_cast;
+using SymEngine::sin;
+using SymEngine::Symbol;
+using SymEngine::symbol;
 
 TEST_CASE("Expression series expansion interface", "[Expansion interface]")
 {

@@ -3,35 +3,37 @@
 #include <symengine/logic.h>
 #include <symengine/add.h>
 #include <symengine/real_double.h>
+#include <symengine/complex_double.h>
 
 using SymEngine::Basic;
-using SymEngine::RCP;
-using SymEngine::make_rcp;
-using SymEngine::real_double;
+using SymEngine::Boolean;
+using SymEngine::boolFalse;
+using SymEngine::boolTrue;
+using SymEngine::complex_double;
+using SymEngine::ComplexInf;
 using SymEngine::Eq;
-using SymEngine::Ne;
+using SymEngine::Equality;
+using SymEngine::gamma;
 using SymEngine::Ge;
 using SymEngine::Gt;
-using SymEngine::Le;
-using SymEngine::Lt;
-using SymEngine::Equality;
-using SymEngine::zero;
-using SymEngine::one;
-using SymEngine::integer;
-using SymEngine::gamma;
 using SymEngine::I;
+using SymEngine::Inf;
+using SymEngine::integer;
+using SymEngine::Le;
+using SymEngine::logical_not;
+using SymEngine::Lt;
+using SymEngine::make_rcp;
+using SymEngine::Nan;
+using SymEngine::Ne;
+using SymEngine::NegInf;
+using SymEngine::one;
+using SymEngine::RCP;
+using SymEngine::rcp_static_cast;
+using SymEngine::real_double;
 using SymEngine::Symbol;
 using SymEngine::symbol;
-using SymEngine::Inf;
-using SymEngine::NegInf;
-using SymEngine::ComplexInf;
-using SymEngine::boolTrue;
-using SymEngine::boolFalse;
-using SymEngine::Boolean;
-using SymEngine::Nan;
-using SymEngine::logical_not;
-using SymEngine::rcp_static_cast;
 using SymEngine::SymEngineException;
+using SymEngine::zero;
 
 TEST_CASE("Hash Size for Relationals", "[Relationals]")
 {
@@ -100,6 +102,21 @@ TEST_CASE("Comparing Relationals", "[Relationals]")
     a = Lt(x, y);
     b = Lt(x, y);
     CHECK(eq(*a, *b));
+
+    RCP<const Basic> im1 = integer(-1);
+    RCP<const Basic> i0 = integer(0);
+    RCP<const Basic> i1 = integer(1);
+    RCP<const Basic> r1 = complex_double(std::complex<double>(0.1, 0.2));
+    RCP<const Basic> r2 = complex_double(std::complex<double>(1, 0.2));
+    RCP<const Basic> comp = integer(r1->compare(*r1));
+    CHECK(eq(*comp, *i0));
+    comp = integer(r1->compare(*r2));
+    CHECK(eq(*comp, *im1));
+    comp = integer(r2->compare(*r1));
+    CHECK(eq(*comp, *i1));
+    r2 = complex_double(std::complex<double>(0.1, 0.3));
+    comp = integer(r2->compare(*r1));
+    CHECK(eq(*comp, *i1));
 }
 
 TEST_CASE("Canonicalization", "[Relationals]")
@@ -175,8 +192,8 @@ TEST_CASE("Infinity", "[Relationals]")
     a = Le(NegInf, one);
     CHECK(eq(*a, *boolTrue));
 
-    CHECK_THROWS_AS(Lt(ComplexInf, zero), SymEngineException &);
-    CHECK_THROWS_AS(Le(ComplexInf, zero), SymEngineException &);
+    CHECK_THROWS_AS(Lt(ComplexInf, zero), SymEngineException);
+    CHECK_THROWS_AS(Le(ComplexInf, zero), SymEngineException);
 }
 
 TEST_CASE("Boolean Values", "[Relationals]")
@@ -238,10 +255,10 @@ TEST_CASE("Boolean Values", "[Relationals]")
     a = Gt(one, zero);
     CHECK(eq(*a, *boolTrue));
 
-    CHECK_THROWS_AS(Ge(I, one), SymEngineException &);
-    CHECK_THROWS_AS(Gt(I, one), SymEngineException &);
-    CHECK_THROWS_AS(Lt(I, one), SymEngineException &);
-    CHECK_THROWS_AS(Le(I, one), SymEngineException &);
+    CHECK_THROWS_AS(Ge(I, one), SymEngineException);
+    CHECK_THROWS_AS(Gt(I, one), SymEngineException);
+    CHECK_THROWS_AS(Lt(I, one), SymEngineException);
+    CHECK_THROWS_AS(Le(I, one), SymEngineException);
 }
 
 TEST_CASE("Logical Not", "[Relationals]")
@@ -291,16 +308,16 @@ TEST_CASE("Nan Exceptions", "[Relationals]")
     a = Ne(Nan, Nan);
     CHECK(eq(*a, *boolTrue));
 
-    CHECK_THROWS_AS(Gt(Nan, one), SymEngineException &);
-    CHECK_THROWS_AS(Ge(Nan, one), SymEngineException &);
-    CHECK_THROWS_AS(Lt(Nan, one), SymEngineException &);
-    CHECK_THROWS_AS(Le(Nan, one), SymEngineException &);
+    CHECK_THROWS_AS(Gt(Nan, one), SymEngineException);
+    CHECK_THROWS_AS(Ge(Nan, one), SymEngineException);
+    CHECK_THROWS_AS(Lt(Nan, one), SymEngineException);
+    CHECK_THROWS_AS(Le(Nan, one), SymEngineException);
 }
 
 TEST_CASE("Boolean Exceptions", "[Relationals]")
 {
-    CHECK_THROWS_AS(Gt(boolFalse, boolTrue), SymEngineException &);
-    CHECK_THROWS_AS(Ge(boolTrue, boolTrue), SymEngineException &);
-    CHECK_THROWS_AS(Lt(boolFalse, boolTrue), SymEngineException &);
-    CHECK_THROWS_AS(Le(boolTrue, boolTrue), SymEngineException &);
+    CHECK_THROWS_AS(Gt(boolFalse, boolTrue), SymEngineException);
+    CHECK_THROWS_AS(Ge(boolTrue, boolTrue), SymEngineException);
+    CHECK_THROWS_AS(Lt(boolFalse, boolTrue), SymEngineException);
+    CHECK_THROWS_AS(Le(boolTrue, boolTrue), SymEngineException);
 }

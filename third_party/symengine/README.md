@@ -1,6 +1,6 @@
 # SymEngine
 
-[![Build Status](https://travis-ci.org/symengine/symengine.png?branch=master)](https://travis-ci.org/symengine/symengine)
+[![Build and test symengine](https://github.com/symengine/symengine/actions/workflows/ci.yml/badge.svg)](https://github.com/symengine/symengine/actions/workflows/ci.yml)
 [![Build status](https://ci.appveyor.com/api/projects/status/qs1gvno1ht1gf0q8/branch/master?svg=true)](https://ci.appveyor.com/project/symengine/symengine/branch/master)
 [![codecov.io](https://codecov.io/github/symengine/symengine/coverage.svg?branch=master)](https://codecov.io/github/symengine/symengine?branch=master)
 
@@ -37,6 +37,10 @@ SymEngine mailinglist: http://groups.google.com/group/symengine
 ### Conda package manager
 
     conda install symengine -c conda-forge
+
+### Conan package manager
+
+    conan install symengine/<version>@
 
 ### Building from source
 
@@ -116,9 +120,10 @@ their default values indicated below:
         -DWITH_MPFR:BOOL=OFF \                        # Install with MPFR library
         -DWITH_MPC:BOOL=OFF \                         # Install with MPC library
         -DWITH_LLVM:BOOL=OFF \                        # Build with LLVM libraries
+        -DWITH_SYSTEM_CEREAL:BOOL=OFF \               # Build with cereal headers from the system instead of
+                                                        the vendored copy
         -DBUILD_TESTS:BOOL=ON \                       # Build with tests
         -DBUILD_BENCHMARKS:BOOL=ON \                  # Build with benchmarks
-        -DBUILD_BENCHMARKS_NONIUS:BOOL=OFF \          # Build with Nonius benchmarks
         -DBUILD_BENCHMARKS_GOOGLE:BOOL=OFF \          # Build with Google Benchmark benchmarks
         -DINTEGER_CLASS:STRING=gmp \                  # Choose storage type for Integer. one of gmp, gmpxx,
                                                         flint, piranha, boostmp
@@ -147,9 +152,8 @@ multiprecision integer and rational classes. This would make boost, the only
 dependency and all the code would be under permissive licenses, namely, MIT,
 BSD 3-clause and Boost License.
 
-The Nonius based benchmarks (`BUILD_BENCHMARKS_NONIUS`) and Piranha
-(`WITH_PIRANHA`) depend on Boost, so they are off by default. The benchmarked
-code (both with and without Nonius) seems to depend on the order of which you
+Piranha (`WITH_PIRANHA`) depends on Boost, so it is off by default. The benchmarked
+code seems to depend on the order of which you
 execute the benchmarks in a given executable, due to internal malloc
 implementation. We have found that this order dependence is reduced by enabling
 `WITH_TCMALLOC=ON` and since it also speeds the benchmarks up, we recommend

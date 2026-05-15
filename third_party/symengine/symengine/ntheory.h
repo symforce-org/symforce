@@ -99,57 +99,6 @@ int factor_pollard_rho_method(const Ptr<RCP<const Integer>> &f,
 void prime_factors(std::vector<RCP<const Integer>> &primes, const Integer &n);
 //! Find multiplicities of prime factors of `n`
 void prime_factor_multiplicities(map_integer_uint &primes, const Integer &n);
-// Sieve class stores all the primes upto a limit. When a prime or a list of
-// prime
-// is requested, if the prime is not there in the sieve, it is extended to hold
-// that
-// prime. The implementation is a very basic Eratosthenes sieve, but the code
-// should
-// be quite optimized. For limit=1e8, it is about 20x slower than the
-// `primesieve` library (1206ms vs 55.63ms).
-class Sieve
-{
-
-private:
-    static std::vector<unsigned> _primes;
-    static void _extend(unsigned limit);
-    static unsigned _sieve_size;
-    static bool _clear;
-
-public:
-    // Returns all primes up to the `limit` (including). The vector `primes`
-    // should
-    // be empty on input and it will be filled with the primes.
-    //! \param primes: holds all primes up to the `limit` (including).
-    static void generate_primes(std::vector<unsigned> &primes, unsigned limit);
-    // Clear the array of primes stored
-    static void clear();
-    // Set the sieve size in kilobytes. Set it to L1d cache size for best
-    // performance.
-    // Default value is 32.
-    static void set_sieve_size(unsigned size);
-    // Set whether the sieve is cleared after the sieve is extended in internal
-    // functions
-    static void set_clear(bool clear);
-
-    class iterator
-    {
-
-    private:
-        unsigned _index;
-        unsigned _limit;
-
-    public:
-        // Iterator that generates primes upto limit
-        iterator(unsigned limit);
-        // Iterator that generates primes with no limit.
-        iterator();
-        // Destructor
-        ~iterator();
-        // Next prime
-        unsigned next_prime();
-    };
-};
 
 //! Computes the Bernoulli number Bn as an exact fraction, for an isolated
 //! integer n
@@ -212,5 +161,26 @@ int mobius(const Integer &a);
 // Mertens Function
 // mertens(n) -> Sum of mobius(i) for i from 1 to n
 long mertens(const unsigned long a);
-}
+
+integer_class mp_polygonal_number(const integer_class &s,
+                                  const integer_class &n);
+integer_class mp_principal_polygonal_root(const integer_class &s,
+                                          const integer_class &x);
+
+/**
+ * @brief Decompose a positive integer into perfect powers
+ * @param n Integer to decompose
+ * @param lowest_exponent Can be set to find the perfect power with the
+ *        lowest exponent. Default is to find the highest exponent.
+ * @returns The base and exponent as a pair of integers.
+ *          (n, 1) if no perfect power exists.
+ *
+ * See https://en.wikipedia.org/wiki/Perfect_power
+ */
+std::pair<integer_class, integer_class>
+mp_perfect_power_decomposition(const integer_class &n,
+                               bool lowest_exponent = false);
+
+} // namespace SymEngine
+
 #endif

@@ -127,4 +127,4 @@ unsigned int reconcile(vec_uint &v1, vec_uint &v2, set_basic &s,
     return pos;
 }
 
-} // SymEngine
+} // namespace SymEngine

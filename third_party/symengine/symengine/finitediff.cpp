@@ -66,4 +66,4 @@ vec_basic generate_fdiff_weights_vector(const vec_basic &grid,
     }
     return weights;
 }
-}
+} // namespace SymEngine

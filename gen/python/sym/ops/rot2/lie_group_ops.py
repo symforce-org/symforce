@@ -107,9 +107,9 @@ class LieGroupOps(object):
         _tmp1 = alpha * math.atan2(
             _a[0] * _b[1] - _a[1] * _b[0], _tmp0 + math.copysign(epsilon, _tmp0)
         )
-        _tmp2 = math.cos(_tmp1)
-        _tmp3 = math.sin(_tmp1)
+        _tmp2 = math.sin(_tmp1)
+        _tmp3 = math.cos(_tmp1)
 
         # Output terms
-        _res = sym.Rot2.from_storage([_a[0] * _tmp2 - _a[1] * _tmp3, _a[0] * _tmp3 + _a[1] * _tmp2])
+        _res = sym.Rot2.from_storage([_a[0] * _tmp3 - _a[1] * _tmp2, _a[0] * _tmp2 + _a[1] * _tmp3])
         return _res

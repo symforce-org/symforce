@@ -150,4 +150,4 @@ bool perfect_power(const Integer &n)
     return mp_perfect_power_p(n.as_integer_class());
 }
 
-} // SymEngine
+} // namespace SymEngine

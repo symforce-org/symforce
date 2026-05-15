@@ -305,9 +305,7 @@ protected:
     bool is_;
 
 public:
-    IsALinearArgTrigVisitor(Ptr<const Symbol> x) : x_(x)
-    {
-    }
+    IsALinearArgTrigVisitor(Ptr<const Symbol> x) : x_(x) {}
 
     bool apply(const Basic &b)
     {
@@ -433,8 +431,9 @@ public:
                 auto logabs = log(add(mul(re, re), mul(im, im)));
                 auto logarg = atan2(im, re);
                 inv.insert(imageset(
-                    nD_, add(mul(add(mul({integer(2), nD_, pi}), logarg), I),
-                             div(logabs, integer(2))),
+                    nD_,
+                    add(mul(add(mul({integer(2), nD_, pi}), logarg), I),
+                        div(logabs, integer(2))),
                     interval(NegInf, Inf, true,
                              true))); // TODO : replace interval(-oo,oo) with
                 // Set of Integers once Class for Range is implemented.
@@ -642,4 +641,4 @@ linear_eqns_to_matrix(const vec_basic &equations, const vec_sym &syms)
     return std::make_pair(
         A, DenseMatrix(numeric_cast<unsigned int>(equations.size()), 1, bvec));
 }
-}
+} // namespace SymEngine

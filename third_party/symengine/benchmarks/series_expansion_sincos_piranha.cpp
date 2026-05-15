@@ -10,18 +10,18 @@
 #include <symengine/mul.h>
 #include <symengine/series.h>
 
-using SymEngine::Basic;
-using SymEngine::Symbol;
-using SymEngine::symbol;
-using SymEngine::integer;
 using SymEngine::add;
+using SymEngine::Basic;
+using SymEngine::cos;
+using SymEngine::integer;
 using SymEngine::mul;
 using SymEngine::pow;
-using SymEngine::sin;
-using SymEngine::cos;
 using SymEngine::RCP;
-using SymEngine::series;
 using SymEngine::rcp_dynamic_cast;
+using SymEngine::series;
+using SymEngine::sin;
+using SymEngine::Symbol;
+using SymEngine::symbol;
 
 int main(int argc, char *argv[])
 {

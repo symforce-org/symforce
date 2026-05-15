@@ -8,7 +8,7 @@ endif()
 
 if (WITH_GENERATE_PARSER)
     add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser/parser.tab.cc
-                      COMMAND ${BISON_EXECUTABLE} -d parser.yy
+                      COMMAND ${BISON_EXECUTABLE} -Wcounterexamples -d parser.yy
                       DEPENDS parser/parser.yy
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
                      )
@@ -19,6 +19,17 @@ if (WITH_GENERATE_PARSER)
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
                      )
 
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser/sbml/sbml_parser.tab.cc
+            COMMAND ${BISON_EXECUTABLE} -d sbml_parser.yy
+            DEPENDS parser/sbml/sbml_parser.yy
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser/sbml
+            )
+
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser/sbml/sbml_tokenizer.cpp
+            COMMAND ${RE2C_EXECUTABLE} -W  --no-generation-date -b sbml_tokenizer.re -o sbml_tokenizer.cpp
+            DEPENDS parser/sbml/sbml_tokenizer.re
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser/sbml
+            )
 endif()
 
 add_subdirectory(utilities/matchpycpp)
@@ -51,22 +62,30 @@ set(SRC
     mul.cpp
     nan.cpp
     ntheory.cpp
+    ntheory_funcs.cpp
     number.cpp
     numer_denom.cpp
     parser/parser_old.cpp
     parser/parser.tab.cc
     parser/parser.cpp
     parser/tokenizer.cpp
+    parser/sbml/sbml_parser.tab.cc
+    parser/sbml/sbml_parser.cpp
+    parser/sbml/sbml_tokenizer.cpp
     polys/basic_conversions.cpp
     polys/msymenginepoly.cpp
     polys/uexprpoly.cpp
     polys/uintpoly.cpp
     polys/uratpoly.cpp
     pow.cpp
+    prime_sieve.cpp
     printers/codegen.cpp
     printers/mathml.cpp
+    printers/sbml.cpp
     printers/strprinter.cpp
     printers/latex.cpp
+    printers/unicode.cpp
+    printers/stringbox.cpp
     rational.cpp
     real_double.cpp
     rewrite.cpp
@@ -74,12 +93,37 @@ set(SRC
     series.cpp
     series_generic.cpp
     sets.cpp
+    set_funcs.cpp
     solve.cpp
     sparse_matrix.cpp
     symbol.cpp
     symengine_rcp.cpp
     visitor.cpp
     test_visitors.cpp
+    assumptions.cpp
+    refine.cpp
+    simplify.cpp
+    tuple.cpp
+    matrices/identity_matrix.cpp
+    matrices/matrix_symbol.cpp
+    matrices/zero_matrix.cpp
+    matrices/diagonal_matrix.cpp
+    matrices/immutable_dense_matrix.cpp
+    matrices/matrix_add.cpp
+    matrices/hadamard_product.cpp
+    matrices/matrix_mul.cpp
+    matrices/conjugate_matrix.cpp
+    matrices/transpose.cpp
+    matrices/trace.cpp
+    matrices/size.cpp
+    matrices/is_zero.cpp
+    matrices/is_real.cpp
+    matrices/is_symmetric.cpp
+    matrices/is_square.cpp
+    matrices/is_diagonal.cpp
+    matrices/is_lower.cpp
+    matrices/is_upper.cpp
+    matrices/is_toeplitz.cpp
 )
 
 if ("${SYMENGINE_INTEGER_CLASS}" STREQUAL "BOOSTMP")
@@ -153,11 +197,13 @@ set(HEADERS
     mul.h
     nan.h
     ntheory.h
+    ntheory_funcs.h
     number.h
     parser.h
     parser/parser.h
-    parser/parser_stype.h
     parser/tokenizer.h
+    parser/sbml/sbml_parser.h
+    parser/sbml/sbml_tokenizer.h
     polys/basic_conversions.h
     polys/cancel.h
     polys/uexprpoly.h
@@ -169,15 +215,20 @@ set(HEADERS
     polys/usymenginepoly.h
     polys/msymenginepoly.h
     pow.h
+    prime_sieve.h
     printers/codegen.h
     printers/mathml.h
+    printers/sbml.h
     printers/strprinter.h
     printers/latex.h
+    printers/unicode.h
+    printers/stringbox.h
     printers.h
     rational.h
     real_double.h
     real_mpfr.h
     rings.h
+    serialize-cereal.h
     series_flint.h
     series_generic.h
     series.h
@@ -191,10 +242,35 @@ set(HEADERS
     symengine_casts.h
     symengine_exception.h
     symengine_rcp.h
+    tribool.h
     type_codes.inc
     visitor.h
     test_visitors.h
+    assumptions.h
+    refine.h
+    simplify.h
+    utilities/stream_fmt.h
+    tuple.h
+    matrix_expressions.h
+    matrices/matrix_expr.h
+    matrices/identity_matrix.h
+    matrices/matrix_symbol.h
+    matrices/zero_matrix.h
+    matrices/diagonal_matrix.h
+    matrices/immutable_dense_matrix.h
+    matrices/matrix_add.h
+    matrices/hadamard_product.h
+    matrices/matrix_mul.h
+    matrices/conjugate_matrix.h
+    matrices/size.h
+    matrices/transpose.h
+    matrices/trace.h
 )
+
+if (NOT WITH_SYSTEM_CEREAL)
+  file(GLOB_RECURSE CEREAL_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "utilities/cereal/include/*")
+  set(HEADERS ${HEADERS} ${CEREAL_HEADERS})
+endif()
 
 include(GNUInstallDirs)
 
@@ -210,13 +286,6 @@ include_directories(BEFORE ${symengine_BINARY_DIR})
 include_directories(BEFORE ${symengine_SOURCE_DIR})
 
 add_library(symengine ${SRC})
-
-
-if (WITH_COTIRE)
-    # throws if CMAKE_VERSION < 2.8.12
-    include(cotire)
-    cotire(symengine)
-endif()
 
 include(GenerateExportHeader)
 generate_export_header(symengine)
@@ -242,8 +311,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set_source_files_properties(parser/parser.tab.cc PROPERTIES COMPILE_FLAGS "-Wno-conversion")
 endif()
 
-if (WITH_LLVM AND NOT ${LLVM_VERSION} VERSION_LESS "10.0.0")
-    set_target_properties(symengine PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED yes)
+if (WITH_LLVM)
+    if (NOT ${LLVM_VERSION} VERSION_LESS "16.0.0")
+        set_target_properties(symengine PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED yes)
+    elseif (NOT ${LLVM_VERSION} VERSION_LESS "10.0.0")
+        set_target_properties(symengine PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED yes)
+    endif()
 endif()
 
 if (WITH_SYMENGINE_TEUCHOS)
@@ -291,4 +364,10 @@ if (BUILD_TESTS)
     add_subdirectory(tests)
     add_subdirectory(utilities/matchpycpp/tests)
     add_subdirectory(utilities/matchpycpp/autogen_tests)
+endif()
+
+if (WITH_COTIRE)
+    # throws if CMAKE_VERSION < 2.8.12
+    include(cotire)
+    cotire(symengine)
 endif()

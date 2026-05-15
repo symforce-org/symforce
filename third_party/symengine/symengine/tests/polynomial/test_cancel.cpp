@@ -5,15 +5,15 @@
 #include <symengine/polys/uintpoly_flint.h>
 
 using SymEngine::Basic;
-using SymEngine::RCP;
-using SymEngine::UIntPolyFlint;
 using SymEngine::cancel;
 using SymEngine::exp;
 using SymEngine::integer;
 using SymEngine::mul;
 using SymEngine::pow;
+using SymEngine::RCP;
 using SymEngine::sub;
 using SymEngine::symbol;
+using SymEngine::UIntPolyFlint;
 
 using namespace SymEngine::literals;
 

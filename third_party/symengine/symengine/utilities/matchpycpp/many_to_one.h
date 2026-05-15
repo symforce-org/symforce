@@ -101,7 +101,7 @@ public:
         int subject_id;
         // int pattern_index;
         multiset<int> pattern_set;
-        tuple<> pattern_vars;
+        // tuple<> pattern_vars;
         set<int> subject_pattern_ids;
         if (max_optional_count > 0) {
             subject_id = get<0>(this->subjects[None]);

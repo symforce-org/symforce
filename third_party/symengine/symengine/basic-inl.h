@@ -49,48 +49,6 @@ inline bool is_same_type(const Basic &a, const Basic &b)
     return a.get_type_code() == b.get_type_code();
 }
 
-inline bool is_true(tribool x)
-{
-    return x == tribool::tritrue;
-}
-
-inline bool is_false(tribool x)
-{
-    return x == tribool::trifalse;
-}
-
-inline bool is_indeterminate(tribool x)
-{
-    return x == tribool::indeterminate;
-}
-
-inline tribool and_tribool(tribool a, tribool b)
-{
-    if (!(a & b)) {
-        return tribool::trifalse;
-    } else {
-        return (tribool)(a | b);
-    }
-}
-
-inline tribool not_tribool(tribool a)
-{
-    if (is_indeterminate(a))
-        return a;
-    else
-        return (tribool)!a;
-}
-
-// The weak kleene conjunction
-// Indeterminate if any indeterminate otherwise like regular and
-inline tribool andwk_tribool(tribool a, tribool b)
-{
-    if (is_indeterminate(a) or is_indeterminate(b))
-        return tribool::indeterminate;
-    else
-        return (tribool)(a && b);
-}
-
 //! `<<` Operator
 inline std::ostream &operator<<(std::ostream &out, const SymEngine::Basic &p)
 {
@@ -161,7 +119,7 @@ std::string to_string(const T &value)
 #endif
 }
 
-} // SymEngine
+} // namespace SymEngine
 
 // std namespace functions
 namespace std
@@ -174,6 +132,6 @@ struct hash<SymEngine::Basic> {
         return static_cast<std::size_t>(b.hash());
     }
 };
-}
+} // namespace std
 
 #endif

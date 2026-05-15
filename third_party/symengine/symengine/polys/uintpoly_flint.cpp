@@ -5,12 +5,9 @@ namespace SymEngine
 {
 
 UIntPolyFlint::UIntPolyFlint(const RCP<const Basic> &var, fzp_t &&dict)
-    : UFlintPoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : UFlintPoly(var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t UIntPolyFlint::__hash__() const
+      hash_t UIntPolyFlint::__hash__() const
 {
     std::hash<std::string> str_hash;
     hash_t seed = SYMENGINE_UINTPOLYFLINT;
@@ -21,12 +18,9 @@ hash_t UIntPolyFlint::__hash__() const
 }
 
 URatPolyFlint::URatPolyFlint(const RCP<const Basic> &var, fqp_t &&dict)
-    : UFlintPoly(var, std::move(dict))
-{
-    SYMENGINE_ASSIGN_TYPEID()
-}
+    : UFlintPoly(var, std::move(dict)){SYMENGINE_ASSIGN_TYPEID()}
 
-hash_t URatPolyFlint::__hash__() const
+      hash_t URatPolyFlint::__hash__() const
 {
     std::hash<std::string> str_hash;
     hash_t seed = SYMENGINE_URATPOLYFLINT;
@@ -35,4 +29,4 @@ hash_t URatPolyFlint::__hash__() const
     hash_combine(seed, str_hash(get_poly().to_string()));
     return seed;
 }
-}
+} // namespace SymEngine

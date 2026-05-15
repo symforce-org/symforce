@@ -68,6 +68,14 @@ add_executable(test_parser test_parser.cpp)
 target_link_libraries(test_parser symengine catch)
 add_test(test_parser ${PROJECT_BINARY_DIR}/test_parser)
 
+add_executable(test_serialize-cereal test_serialize-cereal.cpp)
+target_link_libraries(test_serialize-cereal symengine catch)
+add_test(test_serialize-cereal ${PROJECT_BINARY_DIR}/test_serialize-cereal)
+
+add_executable(test_sbml_parser test_sbml_parser.cpp)
+target_link_libraries(test_sbml_parser symengine catch)
+add_test(test_sbml_parser ${PROJECT_BINARY_DIR}/test_sbml_parser)
+
 add_executable(test_sets test_sets.cpp)
 target_link_libraries(test_sets symengine catch)
 add_test(test_sets ${PROJECT_BINARY_DIR}/test_sets)
@@ -110,3 +118,23 @@ add_test(test_count_ops ${PROJECT_BINARY_DIR}/test_count_ops)
 add_executable(test_test_visitors test_test_visitors.cpp)
 target_link_libraries(test_test_visitors symengine catch)
 add_test(test_test_visitors ${PROJECT_BINARY_DIR}/test_test_visitors)
+
+add_executable(test_assumptions test_assumptions.cpp)
+target_link_libraries(test_assumptions symengine catch)
+add_test(test_assumptions ${PROJECT_BINARY_DIR}/test_assumptions)
+
+add_executable(test_refine test_refine.cpp)
+target_link_libraries(test_refine symengine catch)
+add_test(test_refine ${PROJECT_BINARY_DIR}/test_refine)
+
+add_executable(test_simplify test_simplify.cpp)
+target_link_libraries(test_simplify symengine catch)
+add_test(test_simplify ${PROJECT_BINARY_DIR}/test_simplify)
+
+add_executable(test_tuple test_tuple.cpp)
+target_link_libraries(test_tuple symengine catch)
+add_test(test_tuple ${PROJECT_BINARY_DIR}/test_tuple)
+
+add_executable(test_tribool test_tribool.cpp)
+target_link_libraries(test_tribool symengine catch)
+add_test(test_tribool ${PROJECT_BINARY_DIR}/test_tribool)

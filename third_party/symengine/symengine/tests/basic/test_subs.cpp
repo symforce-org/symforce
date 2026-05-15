@@ -3,43 +3,52 @@
 
 #include <symengine/subs.h>
 
-using SymEngine::Basic;
 using SymEngine::Add;
+using SymEngine::Basic;
+using SymEngine::Boolean;
+using SymEngine::boolFalse;
+using SymEngine::boolTrue;
+using SymEngine::ComplexInf;
+using SymEngine::down_cast;
+using SymEngine::dummy;
+using SymEngine::E;
+using SymEngine::erf;
+using SymEngine::finiteset;
+using SymEngine::function_symbol;
+using SymEngine::gamma;
+using SymEngine::I;
+using SymEngine::imageset;
+using SymEngine::Integer;
+using SymEngine::integer;
+using SymEngine::interval;
+using SymEngine::is_a;
+using SymEngine::kronecker_delta;
+using SymEngine::levi_civita;
+using SymEngine::logical_and;
+using SymEngine::logical_not;
+using SymEngine::logical_or;
+using SymEngine::logical_xor;
+using SymEngine::map_basic_basic;
+using SymEngine::msubs;
 using SymEngine::Mul;
+using SymEngine::multinomial_coefficients;
+using SymEngine::Nan;
+using SymEngine::one;
 using SymEngine::Pow;
+using SymEngine::print_stack_on_segfault;
+using SymEngine::RCP;
+using SymEngine::rcp_dynamic_cast;
+using SymEngine::real_double;
+using SymEngine::Set;
+using SymEngine::set_union;
+using SymEngine::sin;
+using SymEngine::ssubs;
+using SymEngine::subs;
 using SymEngine::Symbol;
 using SymEngine::symbol;
 using SymEngine::umap_basic_num;
-using SymEngine::Integer;
-using SymEngine::integer;
-using SymEngine::multinomial_coefficients;
-using SymEngine::one;
-using SymEngine::zero;
-using SymEngine::sin;
-using SymEngine::erf;
-using SymEngine::RCP;
-using SymEngine::rcp_dynamic_cast;
-using SymEngine::map_basic_basic;
-using SymEngine::print_stack_on_segfault;
-using SymEngine::real_double;
-using SymEngine::kronecker_delta;
-using SymEngine::levi_civita;
-using SymEngine::msubs;
 using SymEngine::xreplace;
-using SymEngine::ssubs;
-using SymEngine::subs;
-using SymEngine::function_symbol;
-using SymEngine::gamma;
-using SymEngine::ComplexInf;
-using SymEngine::interval;
-using SymEngine::imageset;
-using SymEngine::dummy;
-using SymEngine::Set;
-using SymEngine::set_union;
-using SymEngine::finiteset;
-using SymEngine::E;
-using SymEngine::is_a;
-using SymEngine::down_cast;
+using SymEngine::zero;
 
 TEST_CASE("Symbol: subs", "[subs]")
 {
@@ -57,6 +66,26 @@ TEST_CASE("Symbol: subs", "[subs]")
     d[x] = y;
     REQUIRE(eq(*r1->subs(d), *r2));
     REQUIRE(neq(*r1->subs(d), *r1));
+}
+
+TEST_CASE("Number: subs", "[subs]")
+{
+    RCP<const Basic> x = symbol("x");
+    RCP<const Basic> i2 = integer(2);
+    RCP<const Basic> i4 = integer(4);
+
+    RCP<const Basic> r1 = add(x, i2);
+    RCP<const Basic> r2 = add(x, i4);
+    map_basic_basic d;
+    d[i2] = i4;
+    REQUIRE(eq(*r1->subs(d), *r2));
+    d.clear();
+
+    r1 = mul(x, add(i2, I));
+    r2 = mul(x, sub(i2, I));
+    d[I] = neg(I);
+    REQUIRE(eq(*r1->subs(d), *r2));
+    d.clear();
 }
 
 TEST_CASE("Add: subs", "[subs]")
@@ -184,6 +213,19 @@ TEST_CASE("Mul: subs", "[subs]")
     r1 = mul(i2, x);
     d[i2] = one;
     REQUIRE(eq(*r1->subs(d), *x));
+
+    d.clear();
+    r1 = div(sin(x), x);
+    d[x] = zero;
+    REQUIRE(eq(*r1->subs(d), *Nan));
+
+    d.clear();
+    r1 = mul(real_double(2.0), x);
+    // xreplace with an empty mapping dict should be a no-op
+    r2 = r1->xreplace(d);
+    std::cout << "r1: " << *r1 << std::endl;
+    std::cout << "r2: " << *r2 << std::endl;
+    REQUIRE(eq(*r1, *r2));
 }
 
 TEST_CASE("Pow: subs", "[subs]")
@@ -593,4 +635,42 @@ TEST_CASE("Cache: subs", "[subs]")
 
     t = msubs(g, {{f, i3}}, true);
     REQUIRE(eq(*t, *s));
+}
+
+TEST_CASE("Logic: subs", "[subs]")
+{
+    RCP<const Symbol> x = symbol("x");
+    RCP<const Boolean> and_expr
+        = logical_and({Gt(x, integer(1)), Lt(x, integer(3))});
+    RCP<const Boolean> or_expr
+        = logical_or({Gt(x, integer(1)), Lt(x, integer(3))});
+    RCP<const Boolean> not_expr = logical_not(
+        contains(x, interval(integer(1), integer(3), false, false)));
+    RCP<const Boolean> xor_expr
+        = logical_xor({Gt(x, integer(1)), Gt(x, integer(3))});
+    RCP<const Basic> t;
+
+    t = subs(and_expr, {{x, integer(2)}});
+    REQUIRE(eq(*t, *boolTrue));
+
+    t = subs(and_expr, {{x, integer(4)}});
+    REQUIRE(eq(*t, *boolFalse));
+
+    t = subs(or_expr, {{x, integer(2)}});
+    REQUIRE(eq(*t, *boolTrue));
+
+    t = subs(or_expr, {{x, integer(4)}});
+    REQUIRE(eq(*t, *boolTrue));
+
+    t = subs(not_expr, {{x, integer(2)}});
+    REQUIRE(eq(*t, *boolFalse));
+
+    t = subs(not_expr, {{x, integer(5)}});
+    REQUIRE(eq(*t, *boolTrue));
+
+    t = subs(xor_expr, {{x, integer(2)}});
+    REQUIRE(eq(*t, *boolTrue));
+
+    t = subs(xor_expr, {{x, integer(5)}});
+    REQUIRE(eq(*t, *boolFalse));
 }

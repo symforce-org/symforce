@@ -18,6 +18,6 @@ void expr2poly(const RCP<const Basic> &p, umap_basic_num &syms,
 //! Multiply two polynomials: `C = A*B`
 void poly_mul(const umap_vec_mpz &A, const umap_vec_mpz &B, umap_vec_mpz &C);
 
-} // SymEngine
+} // namespace SymEngine
 
 #endif

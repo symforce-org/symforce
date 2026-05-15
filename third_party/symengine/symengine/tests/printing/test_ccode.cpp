@@ -5,56 +5,56 @@
 #include <symengine/printers/codegen.h>
 #include <symengine/sets.h>
 
+using SymEngine::abs;
+using SymEngine::acos;
+using SymEngine::acosh;
+using SymEngine::add;
+using SymEngine::asin;
+using SymEngine::asinh;
+using SymEngine::atan;
+using SymEngine::atan2;
+using SymEngine::atanh;
 using SymEngine::Basic;
+using SymEngine::boolTrue;
+using SymEngine::C89CodePrinter;
+using SymEngine::C99CodePrinter;
+using SymEngine::cbrt;
+using SymEngine::ccode;
+using SymEngine::ceiling;
+using SymEngine::cos;
+using SymEngine::cosh;
 using SymEngine::E;
-using SymEngine::pi;
+using SymEngine::Eq;
+using SymEngine::erf;
+using SymEngine::erfc;
+using SymEngine::exp;
+using SymEngine::floor;
+using SymEngine::gamma;
+using SymEngine::Inf;
 using SymEngine::Integer;
 using SymEngine::integer;
 using SymEngine::Interval;
-using SymEngine::Eq;
-using SymEngine::Ne;
-using SymEngine::Le;
-using SymEngine::Lt;
 using SymEngine::interval;
-using SymEngine::symbol;
-using SymEngine::piecewise;
-using SymEngine::add;
-using SymEngine::Inf;
-using SymEngine::NegInf;
-using SymEngine::boolTrue;
-using SymEngine::abs;
-using SymEngine::sin;
-using SymEngine::cos;
-using SymEngine::tan;
-using SymEngine::asin;
-using SymEngine::acos;
-using SymEngine::atan;
-using SymEngine::atan2;
-using SymEngine::exp;
-using SymEngine::log;
-using SymEngine::sinh;
-using SymEngine::cosh;
-using SymEngine::tanh;
-using SymEngine::asinh;
-using SymEngine::acosh;
-using SymEngine::atanh;
-using SymEngine::floor;
-using SymEngine::ceiling;
-using SymEngine::truncate;
-using SymEngine::erf;
-using SymEngine::erfc;
-using SymEngine::gamma;
-using SymEngine::loggamma;
-using SymEngine::min;
-using SymEngine::max;
-using SymEngine::sqrt;
-using SymEngine::cbrt;
-using SymEngine::rational;
-using SymEngine::C89CodePrinter;
-using SymEngine::C99CodePrinter;
-using SymEngine::JSCodePrinter;
-using SymEngine::ccode;
 using SymEngine::jscode;
+using SymEngine::JSCodePrinter;
+using SymEngine::Le;
+using SymEngine::log;
+using SymEngine::loggamma;
+using SymEngine::Lt;
+using SymEngine::max;
+using SymEngine::min;
+using SymEngine::Ne;
+using SymEngine::NegInf;
+using SymEngine::pi;
+using SymEngine::piecewise;
+using SymEngine::rational;
+using SymEngine::sin;
+using SymEngine::sinh;
+using SymEngine::sqrt;
+using SymEngine::symbol;
+using SymEngine::tan;
+using SymEngine::tanh;
+using SymEngine::truncate;
 
 TEST_CASE("C-code printers", "[CodePrinter]")
 {
@@ -172,8 +172,9 @@ TEST_CASE("Piecewise", "[ccode]")
                         {y, contains(x, int2)},
                         {add(x, y), boolTrue}});
 
-    REQUIRE(ccode(*p) == "((x <= 2) ? (\n   x\n)\n: ((x > 2 && x <= 5) ? (\n   "
-                         "y\n)\n: (\n   x + y\n)))");
+    REQUIRE(ccode(*p)
+            == "((x <= 2) ? (\n   x\n)\n: ((x > 2 && x <= 5) ? (\n   "
+               "y\n)\n: (\n   x + y\n)))");
 }
 
 TEST_CASE("JavaScript math functions", "[jscode]")
