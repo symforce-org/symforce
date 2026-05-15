@@ -50,10 +50,7 @@ uint32_t show_field(std::ostream &stream, const uint32_t field_indices[], uint32
                 if (i > 0) {
                     stream << ", ";
                 }
-                const auto default_precision{stream.precision()};
-                constexpr auto max_precision{std::numeric_limits<typename T::Scalar>::digits10 + 1};
-                stream << std::setprecision(max_precision) << data_ptr[i]
-                       << std::setprecision(default_precision);
+                show_field(stream, nullptr, 0, data_ptr[i], settings);
             }
             stream << "]";
 
