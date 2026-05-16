@@ -285,8 +285,8 @@ setup_requirements = [
     "wheel",
     "pip",
     "cmake>=3.17",
-    "cython>=0.19.1,<3",
-    f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
+    "cython>=3,<3.1.0",
+    f"skymarshal @ file://localhost{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
 ]
 
 docs_requirements = [
@@ -395,9 +395,9 @@ if __name__ == "__main__":
                 "jinja2",
                 "numpy",
                 "scipy",
-                f"skymarshal @ file://localhost/{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
+                f"skymarshal @ file://localhost{ESCAPED_SOURCE_DIR}/third_party/skymarshal",
                 "sympy>=1.11",
-                f"symforce-sym @ file://localhost/{ESCAPED_SOURCE_DIR}/gen/python",
+                f"symforce-sym @ file://localhost{ESCAPED_SOURCE_DIR}/gen/python",
                 "sortedcontainers",
             ]
         ),

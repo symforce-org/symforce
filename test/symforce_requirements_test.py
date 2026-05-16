@@ -194,6 +194,16 @@ class SymforceRequirementsTest(TestCase):
     def test_requirements_py312(self) -> None:
         self.check_requirements_for_version(12)
 
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py313(self) -> None:
+        self.check_requirements_for_version(13)
+
+    @requires_source_build
+    @sympy_only
+    def test_requirements_py314(self) -> None:
+        self.check_requirements_for_version(14)
+
 
 if __name__ == "__main__":
     SymforceRequirementsTest.main()

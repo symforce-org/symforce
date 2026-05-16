@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------------------
 
 import functools
+import textwrap
 
 import symforce.symbolic as sf
 from symforce import codegen
@@ -92,13 +93,15 @@ def generate_manifold_imu_preintegration(
     codegen_update_auto_derivative = codegen.Codegen.function(
         functools.partial(imu_manifold_preintegration_update, use_handwritten_derivatives=False),
         name="imu_manifold_preintegration_update_auto_derivative",
-        docstring="""
-    Alternative to ImuManifoldPreintegrationUpdate that uses auto-derivatives. Exists only to
-    help verify correctness of ImuManifoldPreintegrationUpdate. Should have the same output.
-    Since this function is more expensive, there is no reason to use it instead.
-        """
+        docstring=textwrap.dedent(
+            """
+            Alternative to ImuManifoldPreintegrationUpdate that uses auto-derivatives. Exists only to
+            help verify correctness of ImuManifoldPreintegrationUpdate. Should have the same output.
+            Since this function is more expensive, there is no reason to use it instead.
+            """
+        )
         + (
-            imu_manifold_preintegration_update.__doc__
+            textwrap.dedent(imu_manifold_preintegration_update.__doc__)
             if imu_manifold_preintegration_update.__doc__ is not None
             else ""
         ),

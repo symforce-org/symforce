@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04]
-        python: ["3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
         compiler:
           # Newest gcc on 24.04
           - C: gcc-14
@@ -63,7 +63,7 @@ jobs:
               warning_options: "-Wall;-Wextra;-Werror;-DSYM_VALUES_DISALLOW_FROM_STORAGE_NON_EIGEN_TYPES"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # - Installing software-properties-common adds add-apt-repository
       - name: Update install tools
@@ -80,7 +80,7 @@ jobs:
           done
           sudo apt-get install -y ${{ matrix.compiler.package }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
@@ -153,7 +153,7 @@ jobs:
       # (probably any is good, assuming they all pass)
       # Unzip to a directory and run `npx http-server` in that directory
       - name: Upload Generated Docs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs ${{ matrix.os }}-python${{ matrix.python }}-${{ matrix.compiler.C }}
           path: build/docs

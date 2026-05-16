@@ -20,11 +20,11 @@ jobs:
         setuptools_version: [75.3.2]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - if: ${{ matrix.os == 'macos-latest' }}
         name: Set up user-managed python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
