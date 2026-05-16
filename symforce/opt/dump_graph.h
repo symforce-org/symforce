@@ -11,6 +11,7 @@
 #include <fmt/format.h>
 
 #include "./factor.h"
+#include "./fmt_compat.h"
 #include "./key.h"
 
 namespace sym {

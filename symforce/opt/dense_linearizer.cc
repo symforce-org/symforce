@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "./fmt_compat.h"
 #include "./internal/linearizer_utils.h"
 
 namespace sym {

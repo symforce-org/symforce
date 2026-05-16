@@ -7,6 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "../fmt_compat.h"
 #include "../optimization_stats.h"
 #include "../tic_toc.h"
 

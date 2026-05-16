@@ -13,6 +13,8 @@
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
 
+#include "../fmt_compat.h"
+
 #include <lcmtypes/sym/linearization_dense_factor_helper_t.hpp>
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 

@@ -148,11 +148,11 @@ void TicTocManager::PrintTimingResults(std::ostream& out) const {
                   "Max Time (s)", "Min Time (s)");
 
   fmt::print(out, "\nSymForce TicToc Results:\n");
-  fmt::print(out, legend);
-  fmt::print(out, separator + "\n");
+  fmt::print(out, "{}", legend);
+  fmt::print(out, "{}\n", separator);
 
   for (const auto& [name, block] : blocks) {
-    fmt::print(out, output_fmt, name, block.Count(), float(block.TotalTime()),
+    fmt::print(out, fmt::runtime(output_fmt), name, block.Count(), float(block.TotalTime()),
                float(block.AverageTime()), float(block.MaxTime()), float(block.MinTime()));
   }
 }

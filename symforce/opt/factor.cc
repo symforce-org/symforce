@@ -10,6 +10,7 @@
 #include <fmt/ranges.h>
 
 #include "./assert.h"
+#include "./fmt_compat.h"
 #include "./internal/factor_utils.h"
 
 namespace sym {

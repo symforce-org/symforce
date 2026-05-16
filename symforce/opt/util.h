@@ -100,7 +100,7 @@ auto NumericalDerivative(const F f, const X& x,
                              kDefaultEpsilon<typename StorageOps<X>::Scalar>,
                          const typename sym::StorageOps<X>::Scalar delta = 1e-2f) {
   using Scalar = typename sym::StorageOps<X>::Scalar;
-  using Y = typename std::result_of_t<F(X)>;
+  using Y = typename std::invoke_result_t<F, X>;
   using JacobianMat =
       Eigen::Matrix<Scalar, sym::LieGroupOps<Y>::TangentDim(), sym::LieGroupOps<X>::TangentDim()>;
   static_assert(std::is_same<typename sym::StorageOps<Y>::Scalar, Scalar>::value,

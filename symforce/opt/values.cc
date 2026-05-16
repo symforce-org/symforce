@@ -8,6 +8,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "./fmt_compat.h"
+
 #include "./assert.h"
 
 namespace sym {

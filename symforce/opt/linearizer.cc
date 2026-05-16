@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "./assert.h"
+#include "./fmt_compat.h"
 #include "./internal/linearizer_utils.h"
 #include "./tic_toc.h"
 #include "symforce/opt/factor.h"
