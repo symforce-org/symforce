@@ -180,6 +180,8 @@ class CasparLibrary:
         debug: bool = False,
         cuda_arch: str | None = None,
         jobs: int | None = None,
+        use_hip: bool = False,
+        hip_arch: str | None = None,
     ) -> None:
         build_dir = out_dir / "build"
         config_cmd: list[str | Path] = [
@@ -189,8 +191,15 @@ class CasparLibrary:
             "-B",
             build_dir,
             f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}",
-            f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch if cuda_arch is not None else _real_cuda_arch_string()}",
         ]
+        if use_hip:
+            config_cmd.append("-DUSE_HIP=ON")
+            if hip_arch:
+                config_cmd.append(f"-DCMAKE_HIP_ARCHITECTURES={hip_arch}")
+        else:
+            config_cmd.append(
+                f"-DCMAKE_CUDA_ARCHITECTURES={cuda_arch if cuda_arch is not None else _real_cuda_arch_string()}"
+            )
         subprocess.run(config_cmd, check=True)
         build_cmd: list[str | Path] = ["cmake", "--build", build_dir, "--parallel"]
         if jobs:

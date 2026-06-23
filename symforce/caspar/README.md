@@ -110,6 +110,17 @@ The following access patterns are currently supported:
 
 
 
+### AMD GPUs (ROCm/HIP)
+
+Caspar also runs on AMD GPUs through ROCm/HIP. The same generated kernels and runtime compile against the HIP toolchain via a small `cuda_to_hip.h` compatibility header that maps the CUDA spellings Caspar emits (`cudaMalloc`, `__syncthreads`, cooperative groups, CUB primitives, and friends) onto their HIP equivalents, so the symbolic kernel definitions are unchanged.
+
+To build a generated library for AMD GPUs, enable the HIP path when compiling:
+
+```python
+compile_caspar_library(caslib, output_dir, use_hip=True, hip_arch="gfx90a")
+```
+
+Set the target AMD GPU via the `hip_arch` argument, for example `gfx90a` for CDNA2 (MI200) or `gfx1100` for RDNA3. The ROCm build needs a HIP-enabled compiler (`hipcc`/`amdclang++`) and the `hip` and `hipcub` packages from a ROCm installation. When `use_hip` is off the build is unchanged and continues to use CUDA.
 
 ### Etymology
 Caspar, an acronym for **C**UDA **A**ccelerator for **S**ymbolic **P**rogramming with **A**daptive **R**eordering, is named after the Danish–Norwegian mathematician [Caspar Wessel](https://en.wikipedia.org/wiki/Caspar_Wessel). Wessel was the first to describe the geometrical interpretation of complex numbers as points in the complex plane and as vectors. However, since his thesis was written in Danish, it initially received little recognition. When his work was rediscovered later, the mathematician Sophus Lie, known for his discovery of Lie algebra, wrote the following in the newspaper:

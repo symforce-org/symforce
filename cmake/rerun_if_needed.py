@@ -84,7 +84,7 @@ def get_path_git_hash(path_to_check: str, repo_root: T.Optional[str] = None) -> 
     Changes to untracked files won't affect the hash.
     """
     # Get relative path from possibly absolute path
-    relative_path = os.path.relpath(path_to_check, repo_root or os.getcwd())
+    relative_path = os.path.relpath(path_to_check, repo_root or os.getcwd()).replace("\\", "/")
 
     tree_hash, diff_index = _get_hashes(relative_path, cwd=repo_root)
 

@@ -14,7 +14,11 @@
 
 #pragma once
 
+#if defined(USE_HIP) || defined(__HIP_PLATFORM_AMD__)
+#include <hip/hip_runtime.h>
+#else
 #include <cuda_runtime.h>
+#endif
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;

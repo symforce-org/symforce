@@ -2,16 +2,10 @@
  # SymForce - Copyright 2025, Skydio, Inc.
  # This source code is under the Apache 2.0 license found in the LICENSE file.
  # ---------------------------------------------------------------------------- #}
-#include <cooperative_groups.h>
-#include <cooperative_groups/details/partitioning.h>
-#include <cooperative_groups/memcpy_async.h>
-#include <cooperative_groups/reduce.h>
-#include <cuda_runtime.h>
+#include "cuda_to_hip.h"
 
 #include "kernel_{{kernel.name}}.h"
 #include "memops.cuh"
-
-namespace cg = cooperative_groups;
 
 namespace caspar {
 
