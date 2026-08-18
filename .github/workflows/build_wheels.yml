@@ -84,11 +84,15 @@ jobs:
 
   build-linux:
     if: contains(fromJSON('["push", "workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.runner }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
         python-version: [cp310, cp311, cp312, cp313, cp314]
 
     steps:
@@ -105,7 +109,8 @@ jobs:
     - name: Build wheels
       uses: pypa/cibuildwheel@v3.4.1
       env:
-        CIBW_BUILD: ${{ matrix.python-version }}-manylinux_x86_64
+        CIBW_BUILD: ${{ matrix.python-version }}-manylinux_${{ matrix.os.arch }}
+        CIBW_ARCHS_LINUX: ${{ matrix.os.arch }}
         CIBW_BEFORE_BUILD: yum install -y gmp-devel git
         CIBW_ENVIRONMENT: SYMFORCE_REWRITE_LOCAL_DEPENDENCIES=$SYMFORCE_VERSION SYMFORCE_PYTHON_OVERRIDE=python
         CIBW_ENVIRONMENT_PASS_LINUX: SYMFORCE_VERSION
@@ -121,7 +126,7 @@ jobs:
     - name: Upload Wheels
       uses: actions/upload-artifact@v7
       with:
-        name: symforce-wheels-${{ matrix.os }}-${{ matrix.python-version }}
+        name: symforce-wheels-linux-${{ matrix.os.arch }}-${{ matrix.python-version }}
         path: wheelhouse/*.whl
 
   merge-wheel-artifacts:
