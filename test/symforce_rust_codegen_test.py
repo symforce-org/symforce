@@ -55,6 +55,7 @@ def write_lib_rs(output_dir: Path) -> None:
             """
             mod backend_test_function_float32;
             mod backend_test_function_float64;
+            mod matrix_return_fun;
             mod vector_matrix_fun;
             """
         )
@@ -91,6 +92,9 @@ class SymforceRustCodegenTest(TestCase):
         def rust_func(vec3: sf.V3, mat33: sf.M33) -> sf.Matrix31:
             return sf.Matrix31(mat33 * vec3)
 
+        def matrix_return() -> sf.M23:
+            return sf.M23([[1, 2, 3], [4, 5, 6]])
+
         output_dir_base = self.make_output_dir("symforce_rust_codegen_test_")
         output_dir_src = output_dir_base / "src"
 
@@ -101,6 +105,13 @@ class SymforceRustCodegenTest(TestCase):
             rust_func,
             config=RustConfig(scalar_type=ScalarType.DOUBLE),
             name="vector_matrix_fun",
+        ).generate_function(output_dir_src, skip_directory_nesting=True)
+
+        # A non-square matrix distinguishes its row and column dimensions from a flattened vector.
+        Codegen.function(
+            matrix_return,
+            config=RustConfig(scalar_type=ScalarType.DOUBLE),
+            name="matrix_return_fun",
         ).generate_function(output_dir_src, skip_directory_nesting=True)
 
         # Generate the symbolic backend test function

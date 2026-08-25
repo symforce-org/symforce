@@ -59,7 +59,7 @@
         {% if is_symbolic(type) or T.__name__ == "float" %}
             {{ format_scalar(spec) }}
         {% elif issubclass(T, Matrix) %}
-            {{ format_vector(T, spec.return_key, spec) }}
+            {{ format_typename(spec.return_key, type, spec) }}
         {% else %}
             {{ raise("Unsupported return type: {}".format(T)) }}
         {% endif %}
@@ -231,8 +231,7 @@
             {% if is_symbolic(type) or T_return.__name__ == "float" %}
             {{ terms[0][1] }};
             {% elif issubclass(T_return, Matrix) %}
-                {% set size = T_return.SHAPE[0] * T_return.SHAPE[1] %}
-                {{ format_vector(T_return, name, spec) }}::new(
+                {{ format_typename(name, type, spec) }}::new(
                 {% for lhs, rhs in terms %}
         {{ rhs }}{% if not loop.last %},{% endif %}
                 {% endfor %}
