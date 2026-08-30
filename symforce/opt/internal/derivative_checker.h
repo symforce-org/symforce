@@ -7,6 +7,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "../fmt_compat.h"
+
 #include "../util.h"
 #include "../values.h"
 

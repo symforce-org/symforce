@@ -9,6 +9,8 @@
 
 #include <fmt/format.h>
 
+#include "./fmt_compat.h"
+
 namespace sym {
 
 /**
