@@ -7,7 +7,6 @@ import symforce.internal.symbolic as sf
 from symforce import geo
 from symforce import ops
 from symforce import typing as T
-from symforce import util
 from symforce.ops.interfaces import Storage
 
 
@@ -148,6 +147,11 @@ class CameraCal(Storage):
         Returns ``True`` if cls has implemented the method :meth:`camera_ray_from_pixel`, and
         ``False`` otherwise.
         """
+
+        # Imported locally, since this is outside the symforce core so otherwise creates an
+        # import cycle
+        from symforce import util
+
         try:
             util.symbolic_eval(cls.camera_ray_from_pixel)
         except NotImplementedError:
