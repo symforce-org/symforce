@@ -142,7 +142,13 @@ void CalculateHessianRhs(const RVecType& residual, const JMatrixType& jacobian,
 
   // Compute RHS if needed
   if (rhs != nullptr) {
-    (*rhs) = jacobian.transpose() * residual;
+    constexpr int N = JMatrixType::ColsAtCompileTime;
+    if constexpr (N == Eigen::Dynamic) {
+      (*rhs) = jacobian.transpose() * residual;
+    } else {
+      rhs->resize(N);
+      Eigen::Map<Eigen::Matrix<Scalar, N, 1>>{rhs->data()} = jacobian.transpose() * residual;
+    }
   }
 }
 
@@ -223,7 +229,8 @@ auto JacobianFixed(Functor&& func) {
       SYM_ASSERT(rhs == nullptr);
     }
 
-    (*residual) = residual_fixed;
+    residual->resize(M);
+    Eigen::Map<Eigen::Matrix<Scalar, M, 1>>{residual->data()} = residual_fixed;
   };
 }
 
