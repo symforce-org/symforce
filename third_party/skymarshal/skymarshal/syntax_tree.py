@@ -211,6 +211,8 @@ class Notation(AstNode):
         self.name = name
         self.raw_properties = properties
         self.lineno = lineno
+        # Unknown notations keep their raw properties unparsed, so this stays empty for them.
+        self.properties: T.Dict[str, T.Union[None, str, bool]] = {}
 
         self.spec = None
         try:
@@ -279,9 +281,30 @@ class Notation(AstNode):
     def allowed_on_struct(self) -> bool:
         return self.spec is None or "struct" in self.spec.allowed
 
+    def allowed_on_member(self) -> bool:
+        return self.spec is None or "member" in self.spec.allowed
+
     def __repr__(self) -> str:
         properties = ", ".join(f"{key} = {value}" for key, value in self.raw_properties.items())
         return f"{self.name} {{ {properties} }}\n"
+
+
+def find_notation(notations: T.Sequence[Notation], name: str) -> T.Optional[Notation]:
+    """Return the first notation with the given name, else None."""
+    for notation in notations:
+        if notation.name == name:
+            return notation
+    return None
+
+
+def find_notation_property(
+    notations: T.Sequence[Notation], name: str, prop_name: str
+) -> T.Union[None, str, bool]:
+    """Return the given property of the first notation with the given name, else None."""
+    notation = find_notation(notations, name)
+    if notation is None:
+        return None
+    return notation.properties.get(prop_name)
 
 
 class Enum(AstNode):
@@ -371,20 +394,10 @@ class Enum(AstNode):
         return self.type_ref.full_name
 
     def get_notation(self, name: str) -> T.Optional[Notation]:
-        # get the first notation with the given name, else None
-        for notation in self.notations:
-            if notation.name == name:
-                return notation
-        return None
+        return find_notation(self.notations, name)
 
     def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
-        notation = self.get_notation(name)
-        if notation is None:
-            return None
-        prop_value = notation.properties.get(prop_name)
-        if prop_value is None:
-            return None
-        return prop_value
+        return find_notation_property(self.notations, name, prop_name)
 
     def case_for_int_value(self, int_value: int) -> EnumCase:
         for case in self.cases:
@@ -488,8 +501,10 @@ class Struct(AstNode):
         reserved: T.List[AstNode] = (
             [ReservedFieldGroup(self.reserved_ids)] if self.reserved_ids else []
         )
+        # Members may render onto several lines (a member with notations), so indent line-by-line.
         children = "\n".join(
-            "  " + repr(member) for member in reserved + T.cast(T.List[AstNode], self.members)
+            "\n".join("  " + line for line in repr(member).splitlines())
+            for member in reserved + T.cast(T.List[AstNode], self.members)
         )
         return f"{notations}struct {self.name} {{\n{children}\n}};"
 
@@ -502,20 +517,10 @@ class Struct(AstNode):
         return self.type_ref.full_name
 
     def get_notation(self, name: str) -> T.Optional[Notation]:
-        # get the first notation with the given name, else None
-        for notation in self.notations:
-            if notation.name == name:
-                return notation
-        return None
+        return find_notation(self.notations, name)
 
     def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
-        notation = self.get_notation(name)
-        if notation is None:
-            return None
-        prop_value = notation.properties.get(prop_name)
-        if prop_value is None:
-            return None
-        return prop_value
+        return find_notation_property(self.notations, name, prop_name)
 
     def add_package_name(self, package_name: str) -> None:
         self.type_ref.add_package_name(package_name)
@@ -529,6 +534,15 @@ class Struct(AstNode):
         disallowed_notations = [x.name for x in self.notations if not x.allowed_on_struct()]
         if disallowed_notations:
             raise ValueError(f"Invalid notations {disallowed_notations} on a struct ({self.name})")
+
+        for member in self.members:
+            disallowed_notations = [x.name for x in member.notations if not x.allowed_on_member()]
+            if disallowed_notations:
+                raise ValueError(
+                    "Invalid notations {} on a member ({}.{})".format(
+                        disallowed_notations, self.name, member.name
+                    )
+                )
 
         has_protobuf_notation = bool(self.get_notation("#protobuf"))
 
@@ -670,21 +684,33 @@ class Member(AstNode):
         name: str,
         field_id: T.Optional[int] = None,
         comments: T.Optional[T.List[str]] = None,
+        notations: T.Sequence[Notation] = (),
     ) -> None:
         super().__init__()
         self.name = name
         self.type_ref = type_ref
         self.field_id = field_id
         self.comments = comments or []
+        self.notations = list(notations)
 
     @property
     def ndim(self) -> int:
         return 0
 
+    def get_notation(self, name: str) -> T.Optional[Notation]:
+        return find_notation(self.notations, name)
+
+    def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
+        return find_notation_property(self.notations, name, prop_name)
+
+    def notations_repr(self) -> str:
+        """Render this member's notations as a prefix for __repr__, one per line."""
+        return "".join(repr(notation) for notation in self.notations)
+
     def __repr__(self) -> str:
         if self.field_id is None:
-            return f"{self.type_ref} {self.name};"
-        return f"{self.type_ref} {self.name} = {self.field_id};"
+            return f"{self.notations_repr()}{self.type_ref} {self.name};"
+        return f"{self.notations_repr()}{self.type_ref} {self.name} = {self.field_id};"
 
     def compute_hash(self, type_hash: Hash) -> None:
         self.compute_hash_prefix_for_auto_members(type_hash)
@@ -927,8 +953,9 @@ class ArrayMember(Member):
         name: str,
         dims: T.Sequence[ArrayDim],
         field_id: T.Optional[int] = None,
+        notations: T.Sequence[Notation] = (),
     ) -> None:
-        super().__init__(type_ref, name, field_id=field_id)
+        super().__init__(type_ref, name, field_id=field_id, notations=notations)
         self.dims = dims
 
     def compute_hash_prefix_for_auto_members(self, type_hash: Hash) -> None:
@@ -946,8 +973,8 @@ class ArrayMember(Member):
     def __repr__(self) -> str:
         dims_str = "".join(repr(dim) for dim in self.dims)
         if self.field_id is None:
-            return f"{self.type_ref} {self.name}{dims_str};"
-        return f"{self.type_ref} {self.name}{dims_str} = {self.field_id};"
+            return f"{self.notations_repr()}{self.type_ref} {self.name}{dims_str};"
+        return f"{self.notations_repr()}{self.type_ref} {self.name}{dims_str} = {self.field_id};"
 
     def is_constant_size(self) -> bool:
         return not any(dim.dynamic for dim in self.dims)
@@ -964,8 +991,14 @@ class ArrayMember(Member):
 class ConstMember(Member):
     """An attribute whose value is bound to the type itself, not encoded in a message"""
 
-    def __init__(self, type_ref: TypeRef, name: str, value_str: str) -> None:
-        super().__init__(type_ref, name)
+    def __init__(
+        self,
+        type_ref: TypeRef,
+        name: str,
+        value_str: str,
+        notations: T.Sequence[Notation] = (),
+    ) -> None:
+        super().__init__(type_ref, name, notations=notations)
         if not type_ref.is_const_type():
             raise TypeError(
                 "Constant '{}' from line {} must be one of {}. '{}' found.".format(
@@ -980,4 +1013,4 @@ class ConstMember(Member):
         self.value_str = value_str
 
     def __repr__(self) -> str:
-        return f"const {self.type_ref} {self.name} = {self.value_str};"
+        return f"{self.notations_repr()}const {self.type_ref} {self.name} = {self.value_str};"

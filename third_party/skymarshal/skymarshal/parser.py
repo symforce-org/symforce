@@ -161,25 +161,39 @@ def p_members(p):
 
 # A type group is a list of one or more members that share the same type.
 # For example: int32_t foo, bar;
+# Any notations preceding the group apply to every member it declares.
 def p_member_type_group(p):
-    """type_group : type member_names SEMICOLON"""
+    """type_group : notations type member_names SEMICOLON"""
     # Handle the definition of multiple members on a single line.
-    type_ref = p[1]
-    names = p[2]
-    comments = p[3]
-    p[0] = [syntax_tree.Member(type_ref=type_ref, name=name, comments=comments) for name in names]
+    notations = p[1]
+    type_ref = p[2]
+    names = p[3]
+    comments = p[4]
+    p[0] = [
+        syntax_tree.Member(type_ref=type_ref, name=name, comments=comments, notations=notations)
+        for name in names
+    ]
 
 
 # A type group with id is one member.
 # For example: int32_t foo = 1;
 def p_member_with_id_type_group(p):
-    """type_group : type identifier EQUALS field_id SEMICOLON"""
+    """type_group : notations type identifier EQUALS field_id SEMICOLON"""
     # Handle the definition of multiple members on a single line.
-    type_ref = p[1]
-    name = p[2]
-    field_id = p[4]
-    comments = p[5]
-    p[0] = [syntax_tree.Member(type_ref=type_ref, name=name, field_id=field_id, comments=comments)]
+    notations = p[1]
+    type_ref = p[2]
+    name = p[3]
+    field_id = p[5]
+    comments = p[6]
+    p[0] = [
+        syntax_tree.Member(
+            type_ref=type_ref,
+            name=name,
+            field_id=field_id,
+            comments=comments,
+            notations=notations,
+        )
+    ]
 
 
 def p_member_reserved_group(p):
@@ -227,11 +241,15 @@ def p_member_names(p):
 
 # Const member declarations are similar, but have assignments instead of just names
 def p_const_member_type_group(p):
-    """type_group : CONST type const_member_assignments SEMICOLON"""
+    """type_group : notations CONST type const_member_assignments SEMICOLON"""
     # Handle the definition of multiple const members on a single line.
-    type_ref = p[2]
-    assignments = p[3]
-    p[0] = [syntax_tree.ConstMember(type_ref, name, value) for name, value in assignments]
+    notations = p[1]
+    type_ref = p[3]
+    assignments = p[4]
+    p[0] = [
+        syntax_tree.ConstMember(type_ref, name, value, notations=notations)
+        for name, value in assignments
+    ]
 
 
 # Assignments are comma-delimited and cannot be empty
@@ -262,14 +280,18 @@ def p_const_string(p):
 
 # A single member can be an array with one or more dimensions.
 def p_array_member_type_group(p):
-    """type_group : type identifier array_dims SEMICOLON"""
-    p[0] = [syntax_tree.ArrayMember(type_ref=p[1], name=p[2], dims=p[3])]
+    """type_group : notations type identifier array_dims SEMICOLON"""
+    p[0] = [syntax_tree.ArrayMember(type_ref=p[2], name=p[3], dims=p[4], notations=p[1])]
 
 
 # allow members with ids (for protobuf) to have a single dimension (e.g. repeated)
 def p_array_member_with_id_type_group(p):
-    """type_group : type identifier array_dim EQUALS field_id SEMICOLON"""
-    p[0] = [syntax_tree.ArrayMember(type_ref=p[1], name=p[2], dims=[p[3]], field_id=p[5])]
+    """type_group : notations type identifier array_dim EQUALS field_id SEMICOLON"""
+    p[0] = [
+        syntax_tree.ArrayMember(
+            type_ref=p[2], name=p[3], dims=[p[4]], field_id=p[6], notations=p[1]
+        )
+    ]
 
 
 # A non-empty list of dimensions
