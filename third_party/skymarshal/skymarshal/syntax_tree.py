@@ -16,6 +16,18 @@ INTEGER_TYPES = (
     "uint64_t",
 )
 PROTOBUF_INTEGER_TYPES = ("sfixed32", "ufixed32", "sfixed64", "ufixed64")
+# The largest value each integer type holds, which bounds the length an array declared with it
+# can carry.
+INTEGER_TYPE_MAX = {
+    "int8_t": 2**7 - 1,
+    "int16_t": 2**15 - 1,
+    "int32_t": 2**31 - 1,
+    "int64_t": 2**63 - 1,
+    "uint8_t": 2**8 - 1,
+    "uint16_t": 2**16 - 1,
+    "uint32_t": 2**32 - 1,
+    "uint64_t": 2**64 - 1,
+}
 FLOAT_TYPES = ("float", "double")
 NUMERIC_TYPES = INTEGER_TYPES + PROTOBUF_INTEGER_TYPES + FLOAT_TYPES
 
@@ -134,6 +146,9 @@ NotationSpecProperty = T.NamedTuple("NotationSpecProperty", [("name", str), ("ty
 NotationSpec = T.NamedTuple(
     "NotationSpec", [("allowed", T.Set[str]), ("properties", T.List[NotationSpecProperty])]
 )
+NotationPropertyValue = T.Union[None, str, bool, int]
+
+INLINE_CAPACITY_NOTATION = "#inline_capacity"
 
 
 class Notation(AstNode):
@@ -197,6 +212,28 @@ class Notation(AstNode):
         "#cpp_display_everywhere": NotationSpec(allowed={"struct"}, properties=[]),
         "#cpp_no_display": NotationSpec(allowed={"struct"}, properties=[]),
         "#cpp_no_print_helpers": NotationSpec(allowed={"struct"}, properties=[]),
+        # Store a dynamically-sized array inline, with room for `capacity` elements, instead of in
+        # a heap-allocated container. This is for embedded targets, where a message must not
+        # allocate and its size must be known at compile time.
+        #
+        # The encoded form is unchanged: still a length followed by that many elements, and still
+        # the same type hash. `capacity` is a bound on the local storage only, so it can differ
+        # between builds without making them disagree about the type. Decoding a message whose
+        # length exceeds `capacity` fails rather than overruns, and so does encoding one.
+        #
+        # Only valid on a one-dimensional array whose length is a member of the same struct
+        # (`meas[num_meas]`), because that member is what carries the length; a fixed-size
+        # container cannot carry it the way a resizable one does. `capacity` must fit in that
+        # member's type, since storage past what it can count to is unreachable.
+        "#inline_capacity": NotationSpec(
+            allowed={"member"},
+            properties=[
+                NotationSpecProperty(
+                    name="capacity",
+                    type="int",
+                ),
+            ],
+        ),
     }
 
     # If allow_unknown_notations is true, then any notation that doesn't match a NOTATION_SPECS
@@ -212,7 +249,7 @@ class Notation(AstNode):
         self.raw_properties = properties
         self.lineno = lineno
         # Unknown notations keep their raw properties unparsed, so this stays empty for them.
-        self.properties: T.Dict[str, T.Union[None, str, bool]] = {}
+        self.properties: T.Dict[str, NotationPropertyValue] = {}
 
         self.spec = None
         try:
@@ -248,11 +285,22 @@ class Notation(AstNode):
                 for prop, value in self.raw_properties.items()
             }
 
-    def parse_property(self, prop_name: str, raw_value: str) -> T.Union[None, str, bool]:
+    def parse_property(self, prop_name: str, raw_value: str) -> T.Union[None, str, bool, int]:
         if self.spec is None:
             return None
         [prop_spec] = [spec for spec in self.spec.properties if spec.name == prop_name]
-        if prop_spec.type == "string":
+        if prop_spec.type == "int":
+            try:
+                return int(raw_value, base=0)
+            except ValueError:
+                raise KeyError(
+                    "Expected an integer for notation {} {}: {}".format(
+                        self.name,
+                        prop_name,
+                        raw_value,
+                    )
+                )
+        elif prop_spec.type == "string":
             if '"' not in raw_value:
                 raise KeyError(
                     "Expected a string for notation {} {}: {}".format(
@@ -299,7 +347,7 @@ def find_notation(notations: T.Sequence[Notation], name: str) -> T.Optional[Nota
 
 def find_notation_property(
     notations: T.Sequence[Notation], name: str, prop_name: str
-) -> T.Union[None, str, bool]:
+) -> NotationPropertyValue:
     """Return the given property of the first notation with the given name, else None."""
     notation = find_notation(notations, name)
     if notation is None:
@@ -396,7 +444,7 @@ class Enum(AstNode):
     def get_notation(self, name: str) -> T.Optional[Notation]:
         return find_notation(self.notations, name)
 
-    def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
+    def get_notation_property(self, name: str, prop_name: str) -> NotationPropertyValue:
         return find_notation_property(self.notations, name, prop_name)
 
     def case_for_int_value(self, int_value: int) -> EnumCase:
@@ -519,13 +567,62 @@ class Struct(AstNode):
     def get_notation(self, name: str) -> T.Optional[Notation]:
         return find_notation(self.notations, name)
 
-    def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
+    def get_notation_property(self, name: str, prop_name: str) -> NotationPropertyValue:
         return find_notation_property(self.notations, name, prop_name)
 
     def add_package_name(self, package_name: str) -> None:
         self.type_ref.add_package_name(package_name)
         for member in self.members:
             member.add_package_name(package_name)
+
+    def inline_capacity_check(self, member: Member) -> None:
+        """Check that an #inline_capacity notation on the given member is one we can generate.
+
+        Must run after the member's dimensions have been resolved by its own reference_check.
+        """
+        notation = member.get_notation(INLINE_CAPACITY_NOTATION)
+        if notation is None:
+            return
+
+        where = f"{self.name}.{member.name}"
+        capacity = notation.properties.get("capacity")
+        if not isinstance(capacity, int):
+            raise ValueError(f"{INLINE_CAPACITY_NOTATION} on {where} needs a capacity")
+        if capacity < 1:
+            raise ValueError(
+                f"{INLINE_CAPACITY_NOTATION} capacity on {where} must be positive, got {capacity}"
+            )
+
+        if not isinstance(member, ArrayMember) or member.ndim != 1:
+            raise TypeError(
+                f"{INLINE_CAPACITY_NOTATION} on {where} is only valid on a 1-dimensional array"
+            )
+
+        [dim] = member.dims
+        if not dim.dynamic:
+            raise TypeError(
+                "{} on {} is only valid on a dynamically-sized array; {} is already "
+                "stored inline".format(INLINE_CAPACITY_NOTATION, where, dim)
+            )
+        if dim.auto_member is not None:
+            raise TypeError(
+                "{} on {} needs its length in a member of {} (as in `{}[num_{}]`); an "
+                "automatic length is carried by the container, which a fixed-size one cannot "
+                "do".format(
+                    INLINE_CAPACITY_NOTATION, where, self.name, member.name, member.name
+                )
+            )
+
+        assert dim.size_str is not None
+        length_type = self.member_map[dim.size_str].type_ref.name
+        length_max = INTEGER_TYPE_MAX[length_type]
+        if capacity > length_max:
+            raise ValueError(
+                "{} capacity on {} is {}, which {} cannot count to ({} at most); the storage "
+                "past that could never be filled".format(
+                    INLINE_CAPACITY_NOTATION, where, capacity, length_type, length_max
+                )
+            )
 
     def reference_check(self) -> None:
         for member in self.members:
@@ -543,6 +640,7 @@ class Struct(AstNode):
                         disallowed_notations, self.name, member.name
                     )
                 )
+            self.inline_capacity_check(member)
 
         has_protobuf_notation = bool(self.get_notation("#protobuf"))
 
@@ -700,8 +798,20 @@ class Member(AstNode):
     def get_notation(self, name: str) -> T.Optional[Notation]:
         return find_notation(self.notations, name)
 
-    def get_notation_property(self, name: str, prop_name: str) -> T.Union[None, str, bool]:
+    def get_notation_property(self, name: str, prop_name: str) -> NotationPropertyValue:
         return find_notation_property(self.notations, name, prop_name)
+
+    def get_inline_capacity(self) -> T.Optional[int]:
+        """Return the #inline_capacity of this member, or None if it is not annotated with one.
+
+        Struct.reference_check has already rejected an #inline_capacity that is malformed or on a
+        member that cannot have one, so a non-None result here is usable as-is.
+        """
+        capacity = self.get_notation_property(INLINE_CAPACITY_NOTATION, "capacity")
+        if capacity is None:
+            return None
+        assert isinstance(capacity, int)
+        return capacity
 
     def notations_repr(self) -> str:
         """Render this member's notations as a prefix for __repr__, one per line."""

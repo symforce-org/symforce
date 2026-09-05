@@ -33,6 +33,13 @@ INT64_TYPES = ["int64_t", "uint64_t", "ufixed32", "ufixed64"]
 
 
 def get_array_type(member, mapped_typename):
+    inline_capacity = member.get_inline_capacity()
+    if inline_capacity is not None:
+        # The array is dynamically sized on the wire but stored inline, with only the first
+        # `<length member>` elements meaningful. Struct.inline_capacity_check has already
+        # restricted this to a single dimension.
+        return f"std::array< {mapped_typename}, {inline_capacity} >"
+
     parts = []
     for i in range(len(member.dims)):
         if i == len(member.dims) - 1:
@@ -224,6 +231,10 @@ class CppStruct(StructBuilder, CppBase):
                     includes.add(CppInclude(std="limits"))
                 if member.is_constant_size():
                     includes.add(CppInclude(std="array"))
+                elif member.get_inline_capacity() is not None:
+                    includes.add(CppInclude(std="array"))
+                    # The generated capacity checks compare against std::size_t.
+                    includes.add(CppInclude(std="cstddef"))
                 elif member.type_ref.name == "boolean":
                     includes.add(CppInclude(std="string"))
                     if member.ndim > 1:
@@ -389,9 +400,28 @@ class CppStruct(StructBuilder, CppBase):
             self.encode_member(code, member)
         return code.getvalue().rstrip()
 
+    def check_inline_capacity(self, code, member, dim, inline_capacity, indent=1):
+        """Emit a guard that fails if an #inline_capacity array's length exceeds its storage.
+
+        The length is cast to std::size_t so that a negative one (the length member may be a
+        signed type) is rejected by the same comparison rather than sneaking under the bound.
+        """
+        code(
+            indent,
+            "if(static_cast<std::size_t>(%s) > %d) return -1;",
+            dim_size_access(dim),
+            inline_capacity,
+        )
+
     def encode_member(self, code, member, virtual=False):
         if isinstance(member, ArrayMember):
             last_dim = member.dims[-1]
+
+            inline_capacity = member.get_inline_capacity()
+            if inline_capacity is not None:
+                # Only the first `<length member>` elements are stored, so a length past the
+                # capacity has nothing behind it to encode. Refuse rather than read past the end.
+                self.check_inline_capacity(code, member, last_dim, inline_capacity)
 
             if last_dim.auto_member:
                 # If the inner-most dimension of the array is dynamic size and based on a primitive
@@ -521,10 +551,15 @@ class CppStruct(StructBuilder, CppBase):
             decode_indent = 1 + depth
 
             if not member.is_constant_size():
-                code.start(1 + depth, "this->%s", member.name)
-                for i in range(depth):
-                    code.add("[a%d]", i)
-                code.end(".resize(%s);", dim_size_access(dim))
+                inline_capacity = member.get_inline_capacity()
+                if inline_capacity is not None:
+                    # Inline storage cannot grow, so a longer message is rejected, not truncated.
+                    self.check_inline_capacity(code, member, dim, inline_capacity, 1 + depth)
+                else:
+                    code.start(1 + depth, "this->%s", member.name)
+                    for i in range(depth):
+                        code.add("[a%d]", i)
+                    code.end(".resize(%s);", dim_size_access(dim))
 
                 code(1 + depth, "if(%s) {", dim_size_access(dim))
 
@@ -570,10 +605,15 @@ class CppStruct(StructBuilder, CppBase):
         else:
             dim = member.dims[depth]
             if not member.is_constant_size():
-                code.start(1 + depth, "this->%s", member.name)
-                for i in range(depth):
-                    code.add("[a%d]", i)
-                code.end(".resize(%s);", dim_size_access(dim))
+                inline_capacity = member.get_inline_capacity()
+                if inline_capacity is not None:
+                    # Inline storage cannot grow, so a longer message is rejected, not truncated.
+                    self.check_inline_capacity(code, member, dim, inline_capacity, 1 + depth)
+                else:
+                    code.start(1 + depth, "this->%s", member.name)
+                    for i in range(depth):
+                        code.add("[a%d]", i)
+                    code.end(".resize(%s);", dim_size_access(dim))
 
             code(
                 1 + depth,
