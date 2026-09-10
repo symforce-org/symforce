@@ -126,7 +126,7 @@ mdit-py-plugins==0.5.0
     # via myst-parser
 mdurl==0.1.2
     # via markdown-it-py
-mistune==3.3.0
+mistune==3.3.3
     # via nbconvert
 mpmath==1.3.0
     # via sympy
@@ -187,7 +187,7 @@ pexpect==4.9.0
     # via ipython
 pillow==12.3.0
     # via matplotlib
-pip==26.1.2
+pip==26.2
     # via symforce (pyproject.toml)
 platformdirs==4.5.1
     # via jupyter-core
@@ -302,7 +302,7 @@ tomli==2.4.0
     #   mypy
     #   setuptools-scm
     #   sphinx
-tornado==6.5.7
+tornado==6.5.8
     # via
     #   ipykernel
     #   jupyter-client
