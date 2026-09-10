@@ -435,6 +435,7 @@ if __name__ == "__main__":
                     "types-jinja2",
                     "types-requests",
                     "types-setuptools",
+                    "types-tqdm",
                     "sortedcontainers-stubs",
                     # Oldest version that solves to the right requirements
                     "uv>=0.2.0",

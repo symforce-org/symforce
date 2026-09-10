@@ -70,6 +70,7 @@ module = [
   "graphviz.*",
   "mpl_toolkits.*",
   "numba.*",
+  "plotly.*",
   "ruff.*",
   "scipy.*",
   "setuptools_scm.*",

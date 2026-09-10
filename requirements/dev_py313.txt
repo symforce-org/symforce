@@ -321,6 +321,8 @@ types-requests==2.32.4.20260107
     # via symforce (pyproject.toml)
 types-setuptools==83.0.0.20260724
     # via symforce (pyproject.toml)
+types-tqdm==4.70.0.20260906
+    # via symforce (pyproject.toml)
 typing-extensions==4.15.0
     # via
     #   beautifulsoup4
