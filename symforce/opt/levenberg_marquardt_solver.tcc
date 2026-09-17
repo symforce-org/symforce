@@ -9,6 +9,7 @@
 #include <spdlog/spdlog.h>
 
 #include "./assert.h"
+#include "./fmt_eigen.h"
 #include "./levenberg_marquardt_solver.h"
 #include "./tic_toc.h"
 #include "./util.h"

@@ -7,6 +7,8 @@
 
 #include <tuple>
 
+#include <fmt/ranges.h>
+
 #include "./internal/linearizer_utils.h"
 
 namespace sym {

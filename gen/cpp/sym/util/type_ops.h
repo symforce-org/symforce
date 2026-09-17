@@ -365,3 +365,9 @@ inline std::pair<int, int> EigenTypeShape(const type_t type) {
   }
 
 }  // namespace sym
+
+// fmt::formatter specialization for type_t, which is formatted by the SYM_ASSERT calls above
+#if SYMFORCE_GEN_USE_FMTLIB
+template <>
+struct fmt::formatter<sym::type_t> : ostream_formatter {};
+#endif

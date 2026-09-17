@@ -7,6 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "../fmt_eigen.h"
 #include "../util.h"
 #include "../values.h"
 

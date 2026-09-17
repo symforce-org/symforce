@@ -25,6 +25,9 @@
 {% endif %}
 #include <ostream>
 {% endif %}
+{% if not lcmtype.cpp_no_display %}
+#include <sstream>
+{% endif %}
 
 {{lcmtype.includes()}}
 namespace {{lcmtype.namespace}}
@@ -222,6 +225,15 @@ class {{lcmtype.name}}
 #endif
 {% endif %}
 
+{% if not lcmtype.cpp_no_display %}
+        // The fmt library does not use operator<< implicitly, so it is given format_as instead.
+        friend std::string format_as(const {{lcmtype.name}}& obj) {
+            std::ostringstream _stream;
+            _stream << obj;
+            return _stream.str();
+        }
+
+{% endif %}
 #if defined(SKYMARSHAL_STORING_ENABLED)
         // Return value is 0 if the operation succeeded.
         // If the operation failed, return value is equal to 1 + the index of the first invalid field,

@@ -18,6 +18,10 @@
 #include <sym/ops/storage_ops.h>
 #include <sym/util/epsilon.h>
 
+#if SYMFORCE_GEN_USE_FMTLIB
+#include <fmt/ostream.h>
+#endif
+
 namespace sym {
 
 /**
@@ -268,3 +272,11 @@ static_assert(alignof(sym::Rot2<float>) == sizeof(float));
 #include "./ops/rot2/group_ops.h"
 #include "./ops/rot2/lie_group_ops.h"
 #include "./ops/rot2/storage_ops.h"
+
+// fmt::formatter specialization for this type
+#if SYMFORCE_GEN_USE_FMTLIB
+template <>
+struct fmt::formatter<sym::Rot2<double>> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::Rot2<float>> : ostream_formatter {};
+#endif

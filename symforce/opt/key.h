@@ -9,6 +9,8 @@
 #include <limits>
 #include <ostream>
 
+#include <fmt/ostream.h>
+
 #include <lcmtypes/sym/key_t.hpp>
 
 #include "./assert.h"
@@ -116,6 +118,12 @@ class Key {
 std::ostream& operator<<(std::ostream& os, const sym::Key& key);
 
 }  // namespace sym
+
+/**
+ * Specialize fmt::formatter for Key
+ */
+template <>
+struct fmt::formatter<sym::Key> : ostream_formatter {};
 
 /**
  * Hash function for Key.

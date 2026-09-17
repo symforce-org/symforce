@@ -9,6 +9,7 @@
 #include <fmt/ostream.h>
 
 #include "./assert.h"
+#include "./fmt_eigen.h"
 
 namespace sym {
 

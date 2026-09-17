@@ -17,6 +17,7 @@
 #include <lcmtypes/sym/linearization_sparse_factor_helper_t.hpp>
 
 #include "../factor.h"
+#include "../fmt_eigen.h"
 #include "./hash_combine.h"
 
 namespace sym {

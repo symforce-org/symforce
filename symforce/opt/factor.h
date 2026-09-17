@@ -9,11 +9,13 @@
 #include <unordered_set>
 
 #include <Eigen/SparseCore>
+#include <fmt/ostream.h>
 
 #include <lcmtypes/sym/index_entry_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factor_t.hpp>
 #include <lcmtypes/sym/linearized_dense_factorf_t.hpp>
 
+#include "./fmt_eigen.h"
 #include "./templates.h"
 #include "./values.h"
 
@@ -453,6 +455,20 @@ std::vector<Key> ComputeKeysToOptimize(const std::vector<Factor<Scalar>>& factor
 // Explicit instantiation declarations
 extern template class sym::Factor<double>;
 extern template class sym::Factor<float>;
+
+// fmt::formatter specializations
+template <>
+struct fmt::formatter<sym::linearized_dense_factor_t> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::linearized_dense_factorf_t> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::linearized_sparse_factor_t> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::linearized_sparse_factorf_t> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::Factor<double>> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::Factor<float>> : ostream_formatter {};
 
 // Template method implementations
 #include "./factor.tcc"

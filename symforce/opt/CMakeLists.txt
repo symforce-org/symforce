@@ -10,28 +10,6 @@
 include(FetchContent)
 
 # ------------------------------------------------------------------------------
-# fmtlib
-
-find_package(fmt 8...<9 QUIET)
-if (NOT fmt_FOUND)
-  message(STATUS "fmt not found, adding with FetchContent")
-  function(add_fmt)
-    set(FMT_INSTALL ON CACHE INTERNAL "fmt should create an install target")
-    FetchContent_Declare(
-      fmtlib
-      URL https://github.com/fmtlib/fmt/archive/8.0.1.zip
-      URL_HASH SHA256=6747442c189064b857336007dd7fa3aaf58512aa1a0b2ba76bf1182eefb01025
-    )
-    set(CMAKE_POSITION_INDEPENDENT_CODE True)
-    FetchContent_MakeAvailable(fmtlib)
-  endfunction()
-
-  add_fmt()
-else()
-  message(STATUS "fmt found: ${fmt_VERSION}")
-endif()
-
-# ------------------------------------------------------------------------------
 # spdlog
 
 find_package(spdlog 1.9...<1.11 QUIET)
@@ -45,6 +23,9 @@ if (NOT spdlog_FOUND)
       spdlog
       URL https://github.com/gabime/spdlog/archive/v1.9.2.zip
       URL_HASH SHA256=130bd593c33e2e2abba095b551db6a05f5e4a5a19c03ab31256c38fa218aa0a6
+      # spdlog 1.9.2 references fmt::basic_runtime, which fmt 10 removed, and relies on an
+      # fmt::fstring conversion that fmt 12 deprecated. Patch both so it compiles against fmt 12.
+      PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/patch_spdlog.sh" "${FETCHCONTENT_BASE_DIR}/spdlog-src" "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-fmt-runtime.patch" "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-fmt-fstring-get.patch"
     )
     FetchContent_MakeAvailable(spdlog)
   endfunction()

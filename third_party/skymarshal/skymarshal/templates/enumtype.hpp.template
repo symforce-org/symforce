@@ -15,6 +15,7 @@
 
 #include <array>
 #include <ostream>
+#include <string>
 
 namespace {{enumtype.namespace}}
 {
@@ -268,6 +269,23 @@ inline std::ostream& operator <<(std::ostream& s, const {{enumtype.name}}::optio
 inline std::ostream& operator <<(std::ostream& s, const {{enumtype.name}}& object)
 {
     return s << object.value;
+}
+
+// The fmt library does not use operator<< implicitly, so it is given format_as instead.
+inline std::string format_as(const {{enumtype.name}}::option_t& option)
+{
+    switch (option) {
+{% for case in enumtype.cases %}
+        case {{enumtype.name}}::{{case.name}}:
+            return "{{case.name}}";
+{% endfor %}
+    }
+    return "{{enumtype.name}}::" + std::to_string(static_cast<{{enumtype.string_cast_type}}>(option));
+}
+
+inline std::string format_as(const {{enumtype.name}}& object)
+{
+    return format_as(object.value);
 }
 
 }  // namespace  {{enumtype.namespace}}

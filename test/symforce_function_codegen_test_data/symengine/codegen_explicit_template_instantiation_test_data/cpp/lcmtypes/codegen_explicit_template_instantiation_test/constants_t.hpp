@@ -15,6 +15,7 @@
 #include <array>
 #endif
 #include <ostream>
+#include <sstream>
 
 
 namespace codegen_explicit_template_instantiation_test
@@ -163,6 +164,13 @@ class constants_t
             return _stream;
         }
 #endif
+
+        // The fmt library does not use operator<< implicitly, so it is given format_as instead.
+        friend std::string format_as(const constants_t& obj) {
+            std::ostringstream _stream;
+            _stream << obj;
+            return _stream.str();
+        }
 
 #if defined(SKYMARSHAL_STORING_ENABLED)
         // Return value is 0 if the operation succeeded.

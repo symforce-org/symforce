@@ -5,7 +5,15 @@
 {% endif %}
 #pragma once
 
+// The payload of this header for a formatting caller is the `format_as` overload below, reached by
+// ADL from an expression that names only the enum, which is declared by the djinni header instead.
+// include-cleaner therefore sees no use of this header in such a file, and asks for the include to
+// be removed.
+// IWYU pragma: always_keep
+
 #include <ostream>
+#include <sstream>
+#include <string>
 
 #include <{{enum_type.djinni_header}}>
 #include <{{enum_type.lcm_header}}>
@@ -31,5 +39,12 @@ namespace {{enum_type.djinni_namespace}} {
 
 // Support stringification of {{enum_type.djinni_name}}
 std::ostream& operator <<(std::ostream& s, {{enum_type.djinni_name}} djinni_enum);
+
+// The fmt library does not use operator<< implicitly, so it is given format_as instead.
+inline std::string format_as({{enum_type.djinni_name}} djinni_enum) {
+  std::ostringstream stream;
+  stream << djinni_enum;
+  return stream.str();
+}
 
 }  // namespace {{enum_type.djinni_namespace}}

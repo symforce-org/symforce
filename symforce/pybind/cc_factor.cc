@@ -11,6 +11,7 @@
 #include <Eigen/Core>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 #include <pybind11/eigen.h>
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
@@ -24,6 +25,19 @@
 #include "./sym_type_casters.h"
 
 namespace py = pybind11;
+
+// NOTE(aaron): pybind defines operator<< in stl.h, but doesn't define this
+template <typename Derived>
+struct fmt::formatter<Derived, std::enable_if_t<std::is_base_of_v<py::handle, Derived>, char>>
+    : ostream_formatter {};
+
+// pybind objects expose begin()/end(), which makes fmt's range formatter an equally specialized
+// candidate against the ostream formatter above.  Opt out of range formatting to leave the ostream
+// formatter as the only match.
+template <typename Derived, typename Char>
+struct fmt::range_format_kind<Derived, Char,
+                              std::enable_if_t<std::is_base_of_v<py::handle, Derived>>>
+    : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
 
 namespace sym {
 

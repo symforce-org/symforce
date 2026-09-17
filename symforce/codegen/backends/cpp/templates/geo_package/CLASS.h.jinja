@@ -28,6 +28,10 @@
 #include <sym/ops/lie_group_ops.h>
 #include <sym/util/epsilon.h>
 
+#if SYMFORCE_GEN_USE_FMTLIB
+#include <fmt/ostream.h>
+#endif
+
 namespace sym {
 
 {% if doc %}
@@ -273,3 +277,10 @@ static_assert(
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/storage_ops.h"
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/lie_group_ops.h"
 #include "./ops/{{ camelcase_to_snakecase(cls.__name__) }}/group_ops.h"
+
+// fmt::formatter specialization for this type
+#if SYMFORCE_GEN_USE_FMTLIB
+{% for scalar in scalar_types %}
+template <> struct fmt::formatter<sym::{{ cls.__name__ }}<{{ scalar }}>> : ostream_formatter {};
+{% endfor %}
+#endif

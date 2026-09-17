@@ -361,5 +361,11 @@ extern template sym::Values<float> sym::Values<double>::Cast<float>() const;
 extern template sym::Values<double> sym::Values<float>::Cast<double>() const;
 extern template sym::Values<float> sym::Values<float>::Cast<float>() const;
 
+// Specialize fmt::formatter for Values
+template <>
+struct fmt::formatter<sym::Values<double>> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::Values<float>> : ostream_formatter {};
+
 // Template method implementations
 #include "./values.tcc"

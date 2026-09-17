@@ -14,6 +14,10 @@
 
 #include <sym/ops/storage_ops.h>
 
+#if SYMFORCE_GEN_USE_FMTLIB
+#include <fmt/ostream.h>
+#endif
+
 namespace sym {
 
 /**
@@ -194,3 +198,11 @@ static_assert(alignof(sym::LinearCameraCal<float>) == sizeof(float));
 #include "./ops/linear_camera_cal/group_ops.h"
 #include "./ops/linear_camera_cal/lie_group_ops.h"
 #include "./ops/linear_camera_cal/storage_ops.h"
+
+// fmt::formatter specialization for this type
+#if SYMFORCE_GEN_USE_FMTLIB
+template <>
+struct fmt::formatter<sym::LinearCameraCal<double>> : ostream_formatter {};
+template <>
+struct fmt::formatter<sym::LinearCameraCal<float>> : ostream_formatter {};
+#endif

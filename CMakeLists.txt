@@ -27,6 +27,10 @@ option(SYMFORCE_ADD_PYTHON_TESTS "Include the Python tests" ON)
 option(SYMFORCE_BUILD_SYMENGINE "Build symengine[py]" ON)
 option(SYMFORCE_GENERATE_MANIFEST "Generate build manifest" ON)
 option(SYMFORCE_BUILD_BENCHMARKS "Generate examples for alternative libraries" OFF)
+option(SYMFORCE_GEN_USE_FMTLIB
+  "Declare fmt::formatter specializations in symforce_gen (requires fmtlib)"
+  ON
+)
 
 # ------------------------------------------------------------------------------
 # TicTocs
@@ -197,6 +201,28 @@ if(SYMFORCE_BUILD_BENCHMARKS OR SYMFORCE_BUILD_TESTS)
   endif()
 endif()
 
+# ------------------------------------------------------------------------------
+# fmtlib
+
+find_package(fmt 12...<13 QUIET)
+if (NOT fmt_FOUND)
+  message(STATUS "fmt not found, adding with FetchContent")
+  function(add_fmt)
+    set(FMT_INSTALL ON CACHE INTERNAL "fmt should create an install target")
+    FetchContent_Declare(
+      fmtlib
+      URL https://github.com/fmtlib/fmt/archive/12.2.0.zip
+      URL_HASH SHA256=8bc0dfbeccc1ba96dc9c0f9bf0bbc95f3c7a35308122618638c5755f389e5e72
+    )
+    set(CMAKE_POSITION_INDEPENDENT_CODE True)
+    FetchContent_MakeAvailable(fmtlib)
+  endfunction()
+
+  add_fmt()
+else()
+  message(STATUS "fmt found: ${fmt_VERSION}")
+endif()
+
 # ==============================================================================
 # SymForce Targets
 # ==============================================================================
@@ -270,6 +296,10 @@ add_library(
 target_compile_options(symforce_gen PRIVATE ${SYMFORCE_COMPILE_OPTIONS})
 if(NOT SYMFORCE_NO_FAST_MATH)
   target_compile_options(symforce_gen PRIVATE -ffast-math)
+endif()
+if(SYMFORCE_GEN_USE_FMTLIB)
+  target_compile_definitions(symforce_gen PUBLIC SYMFORCE_GEN_USE_FMTLIB)
+  target_link_libraries(symforce_gen fmt::fmt)
 endif()
 target_link_libraries(symforce_gen ${SYMFORCE_EIGEN_TARGET} symforce_lcmtypes_cpp)
 target_include_directories(
