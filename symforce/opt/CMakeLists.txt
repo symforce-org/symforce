@@ -12,7 +12,7 @@ include(FetchContent)
 # ------------------------------------------------------------------------------
 # spdlog
 
-find_package(spdlog 1.9...<1.11 QUIET)
+find_package(spdlog 1.17...<1.18 QUIET)
 if (NOT spdlog_FOUND)
   message(STATUS "spdlog not found, adding with FetchContent")
   function(add_spdlog)
@@ -21,11 +21,14 @@ if (NOT spdlog_FOUND)
     set(CMAKE_POSITION_INDEPENDENT_CODE True)
     FetchContent_Declare(
       spdlog
-      URL https://github.com/gabime/spdlog/archive/v1.9.2.zip
-      URL_HASH SHA256=130bd593c33e2e2abba095b551db6a05f5e4a5a19c03ab31256c38fa218aa0a6
-      # spdlog 1.9.2 references fmt::basic_runtime, which fmt 10 removed, and relies on an
-      # fmt::fstring conversion that fmt 12 deprecated. Patch both so it compiles against fmt 12.
-      PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/patch_spdlog.sh" "${FETCHCONTENT_BASE_DIR}/spdlog-src" "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-fmt-runtime.patch" "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-fmt-fstring-get.patch"
+      URL https://github.com/gabime/spdlog/archive/v1.17.0.zip
+      URL_HASH SHA256=b11912a82d149792fef33fabd0503b13d54aeac25c1464755461d4108ea71fc2
+      # spdlog 1.17.0 relies on an fmt::fstring conversion that fmt 12 deprecated. These are
+      # upstream spdlog 1685e694 and d5af52d9, which landed after the 1.17.0 release.
+      PATCH_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/patch_spdlog.sh"
+        "${FETCHCONTENT_BASE_DIR}/spdlog-src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-0001-Fix-deprecated-copy-constructor-usage-of-fmt-format_.patch"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/spdlog-0002-Fix-format_string-propagation-3543.patch"
     )
     FetchContent_MakeAvailable(spdlog)
   endfunction()

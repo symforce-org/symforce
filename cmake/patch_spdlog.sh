@@ -10,13 +10,18 @@ set -eu
 spdlog_src="$1"
 shift
 
-# Apply the patches that make spdlog 1.9.2 compile against fmt 12. FetchContent re-runs the patch
-# step on trees that may already be patched, so skip any patch whose changes are already present -- a
-# successful reverse dry-run means the tree contains that patch.
-for patch_file in "$@"; do
-  if patch -p1 -R -s --dry-run -d "${spdlog_src}" -i "${patch_file}" >/dev/null 2>&1; then
-    continue
-  fi
+# FetchContent re-runs the patch step on trees that may already be patched. The series overlaps
+# itself, so a per-patch check can't tell "already applied" from "does not apply"; stamp the whole
+# series instead.
+stamp="${spdlog_src}/.symforce_patches_applied"
+series="$(cat "$@" | sha256sum | cut -d' ' -f1)"
 
+if [ -f "${stamp}" ] && [ "$(cat "${stamp}")" = "${series}" ]; then
+  exit 0
+fi
+
+for patch_file in "$@"; do
   patch -p1 -d "${spdlog_src}" -i "${patch_file}"
 done
+
+echo "${series}" > "${stamp}"
