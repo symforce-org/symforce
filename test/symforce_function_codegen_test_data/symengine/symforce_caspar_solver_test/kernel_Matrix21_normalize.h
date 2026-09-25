@@ -1,0 +1,15 @@
+#pragma once
+
+#include <cuda_runtime.h>
+
+#include "shared_indices.h"
+
+namespace caspar {
+
+void Matrix21Normalize(double* precond_diag, unsigned int precond_diag_num_alloc,
+                       double* precond_tril, unsigned int precond_tril_num_alloc, double* njtr,
+                       unsigned int njtr_num_alloc, const double* const diag,
+                       double* out_normalized, unsigned int out_normalized_num_alloc,
+                       size_t problem_size);
+
+}  // namespace caspar

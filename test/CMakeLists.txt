@@ -109,6 +109,37 @@ if(CMAKE_CUDA_COMPILER)
 
   list(APPEND SYMFORCE_CC_TEST_TARGETS bin.tests.caspar_padding_lane_cuda_test)
   add_test(caspar_padding_lane_cuda_test ${CMAKE_BINARY_DIR}/bin/tests/caspar_padding_lane_cuda_test)
+
+  set(CASPAR_SOLVER_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/symforce_function_codegen_test_data/symengine/symforce_caspar_solver_test
+  )
+  file(GLOB CASPAR_SOLVER_SOURCES CONFIGURE_DEPENDS
+    ${CASPAR_SOLVER_DIR}/*.cu
+    ${CASPAR_SOLVER_DIR}/*.cc
+  )
+
+  add_executable(
+    bin.tests.caspar_solver_cuda_test
+    caspar_solver_cuda_test.cc
+    ${CASPAR_SOLVER_SOURCES}
+    ${CASPAR_RUNTIME_DIR}/shared_indices.cu
+    ${CASPAR_RUNTIME_DIR}/sort_indices.cu
+    ${CASPAR_RUNTIME_DIR}/solver_tools.cu
+  )
+  set_target_properties(bin.tests.caspar_solver_cuda_test PROPERTIES
+    CUDA_ARCHITECTURES 75
+    OUTPUT_NAME tests/caspar_solver_cuda_test
+    TEST_NAME caspar_solver_cuda_test
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+  )
+  target_include_directories(bin.tests.caspar_solver_cuda_test PRIVATE
+    ${CASPAR_SOLVER_DIR}
+    ${CASPAR_RUNTIME_DIR}
+  )
+  target_link_libraries(bin.tests.caspar_solver_cuda_test Catch2::Catch2WithMain CUDA::cudart)
+
+  list(APPEND SYMFORCE_CC_TEST_TARGETS bin.tests.caspar_solver_cuda_test)
+  add_test(caspar_solver_cuda_test ${CMAKE_BINARY_DIR}/bin/tests/caspar_solver_cuda_test)
 endif()
 
 if(SYMFORCE_ADD_PYTHON_TESTS)

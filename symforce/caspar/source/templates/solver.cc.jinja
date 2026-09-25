@@ -86,6 +86,9 @@ namespace caspar {
   if (params.diag_init < 0.0f){
     throw std::runtime_error("params.diag_init must be positive");
   }
+  if (params.pcg_iter_max < 1){
+    throw std::runtime_error("params.pcg_iter_max must be at least 1");
+  }
   allocation_size_ = get_nbytes();
 
   if (device_id_ < 0) {
@@ -147,10 +150,12 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
   }
 
   for (solver_iter_ = 0; solver_iter_ < params_.solver_iter_max; solver_iter_++) {
-    if (solver_iter_ != 0 && solver_iter_ < params_.solver_iter_max - 1){
+    if (solver_iter_ != 0){
       DoResJac();
     }
     score_best_pcg = score_best;
+    // The inner loop can break before storing a proposal in storage_new_best_.
+    bool have_pcg_proposal = false;
     for (pcg_iter_ = 0; pcg_iter_ < params_.pcg_iter_max; pcg_iter_++){
       DoNormalize();
 
@@ -179,6 +184,7 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
                   {{node_key(node_type, "storage_new_best")}});
         {% endfor %}
         score_best_pcg = score_new_pcg;
+        have_pcg_proposal = true;
         if (params_.pcg_rel_score_exit != -1.0f
             &&score_best_pcg < score_best * params_.pcg_rel_score_exit){
           break;
@@ -196,11 +202,12 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
       std::swap({{node_key(node_type, "storage_check")}},
                 {{node_key(node_type, "storage_new_best")}});
       {% endfor %}
+      have_pcg_proposal = true;
     }
 
     const {{solver.linear_t}} diag_current = diag;
     bool step_accepted = false;
-    if (score_best_pcg < score_best * params_.solver_rel_decrease_min) {
+    if (have_pcg_proposal && score_best_pcg < score_best * params_.solver_rel_decrease_min) {
       quality = (score_best - score_best_pcg) / GetPredDecrease();
       const {{solver.linear_t}} quality_tmp = 2 * quality - 1;
       {{solver.linear_t}} scale =
@@ -209,6 +216,7 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
       cudaMemcpy({{solver_key("current_diag")}}, &diag, sizeof({{solver.linear_t}}), cudaMemcpyHostToDevice);
       up_scale = params_.diag_scaling_up;
       score_best = score_best_pcg;
+      step_accepted = true;
       {% for node_type in solver.node_types %}
       std::swap({{node_key(node_type, "storage_current")}},
                 {{node_key(node_type, "storage_new_best")}});
