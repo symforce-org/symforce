@@ -343,7 +343,6 @@ SolveResult {{ solver.struct_name }}::solve(bool print_progress, bool verbose_lo
 {%endfor%}
 
 void {{ solver.struct_name }}::DoNormalize() {
-    {{solver.linear_t}}* r_k;
     {{solver.linear_t}}* z;
     {% for nodetype in solver.node_types%}
     z = pcg_iter_ == 0 ? {{node_key(nodetype, "p")}} : {{node_key(nodetype, "z")}};
@@ -459,8 +458,6 @@ void {{ solver.struct_name }}::DoJtjpDirect() {
 
 void {{ solver.struct_name }}::DoAlphaFirst() {
     Zero({{solver_key("alpha_numerator")}}, {{solver_key("alpha_denominator")}}+1);
-    {{solver.linear_t}}* p_kp1;
-    {{solver.linear_t}}* r_k;
     {% for nodetype in solver.node_types %}
     {{nodetype.__name__}}AlphaNumeratorDenominator(
         {{node_key(nodetype, "p")}}, {{num_key(nodetype)}},
