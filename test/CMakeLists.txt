@@ -9,6 +9,8 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 # symforce_test library
 
 file(GLOB_RECURSE SYMFORCE_TEST_SOURCES CONFIGURE_DEPENDS symforce_function_codegen_test_data/**/*.cc)
+# The caspar test data is CUDA, built by its own targets below.
+list(FILTER SYMFORCE_TEST_SOURCES EXCLUDE REGEX "/symforce_caspar_[^/]*/")
 file(GLOB_RECURSE SYMFORCE_TEST_HEADERS CONFIGURE_DEPENDS
   symforce_function_codegen_test_data/**/*.hpp
   include/*.h
@@ -44,6 +46,11 @@ target_compile_definitions(
 # Tests
 
 file(GLOB SYMFORCE_TEST_CC_SOURCES CONFIGURE_DEPENDS *_test.cc)
+
+# *_cuda_test.cc tests are built below, only when a CUDA compiler is available.
+file(GLOB SYMFORCE_CUDA_TEST_CC_SOURCES CONFIGURE_DEPENDS *_cuda_test.cc)
+list(REMOVE_ITEM SYMFORCE_TEST_CC_SOURCES ${SYMFORCE_CUDA_TEST_CC_SOURCES})
+
 set(SYMFORCE_CC_TEST_TARGETS "")
 foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
   get_filename_component(TEST_NAME ${SOURCE_FILE} NAME_WE)
@@ -67,6 +74,42 @@ foreach(SOURCE_FILE ${SYMFORCE_TEST_CC_SOURCES})
 
   add_test(${TEST_NAME} ${CMAKE_BINARY_DIR}/bin/${BINARY_NAME})
 endforeach()
+
+# ------------------------------------------------------------------------------
+# Caspar CUDA tests, on code checked in by symforce_caspar_codegen_test.py
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+  find_package(CUDAToolkit REQUIRED)
+
+  set(CASPAR_KERNEL_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/symforce_function_codegen_test_data/symengine/symforce_caspar_codegen_test
+  )
+  set(CASPAR_RUNTIME_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../symforce/caspar/source/runtime)
+
+  add_executable(
+    bin.tests.caspar_padding_lane_cuda_test
+    caspar_padding_lane_cuda_test.cc
+    ${CASPAR_KERNEL_DIR}/kernel_caspar_padding_lane_score.cu
+    ${CASPAR_RUNTIME_DIR}/shared_indices.cu
+  )
+  set_target_properties(bin.tests.caspar_padding_lane_cuda_test PROPERTIES
+    CUDA_ARCHITECTURES 75  # Minimum for cooperative_groups::reduce
+    OUTPUT_NAME tests/caspar_padding_lane_cuda_test
+    TEST_NAME caspar_padding_lane_cuda_test
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+  )
+  target_include_directories(bin.tests.caspar_padding_lane_cuda_test PRIVATE
+    ${CASPAR_KERNEL_DIR}
+    ${CASPAR_RUNTIME_DIR}
+  )
+  target_link_libraries(bin.tests.caspar_padding_lane_cuda_test Catch2::Catch2WithMain CUDA::cudart)
+
+  list(APPEND SYMFORCE_CC_TEST_TARGETS bin.tests.caspar_padding_lane_cuda_test)
+  add_test(caspar_padding_lane_cuda_test ${CMAKE_BINARY_DIR}/bin/tests/caspar_padding_lane_cuda_test)
+endif()
 
 if(SYMFORCE_ADD_PYTHON_TESTS)
   file(GLOB SYMFORCE_TEST_PY_SOURCES CONFIGURE_DEPENDS *_test.py)

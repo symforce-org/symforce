@@ -97,7 +97,7 @@ class InvalidSymbolicApiError(Exception):
         super().__init__(f'Symbolic API is "{api}", must be one of ("sympy", "symengine")')
 
 
-def _find_symengine() -> ModuleType:
+def find_symengine() -> ModuleType:
     """
     Attempts to import symengine from its location in the symforce build directory
 
@@ -159,7 +159,7 @@ def _set_symbolic_api(sympy_module: T.Literal["sympy", "symengine"]) -> None:
 
 def _use_symengine() -> None:
     try:
-        _find_symengine()
+        find_symengine()
 
     except ImportError:
         logger.critical("Commanded to use symengine, but failed to import.")
@@ -221,7 +221,7 @@ if "SYMFORCE_SYMBOLIC_API" in os.environ:
     set_symbolic_api(os.environ["SYMFORCE_SYMBOLIC_API"])
 else:
     try:
-        _find_symengine()
+        find_symengine()
 
         logger.debug("No SYMFORCE_SYMBOLIC_API set, found and using symengine.")
         set_symbolic_api("symengine")

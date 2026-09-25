@@ -806,7 +806,7 @@ class Matrix(Storage):
             return self.__class__(self.mat * _T.cast(sf.sympy.MutableDenseMatrix, right).inv())
 
     def _symengine_(self) -> symengine.Matrix:  # noqa: PLW3201
-        symengine = symforce._find_symengine()  # noqa: SLF001
+        symengine = symforce.find_symengine()
         return symengine.S(self.mat)
 
     def compute_AtA(self, lower_only: bool = False) -> Matrix:

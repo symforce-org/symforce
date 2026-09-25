@@ -39,7 +39,9 @@ __launch_bounds__({{kernel.block_size}}, 1)
   {% endfor %}
 
   {% if kernel.registers.__len__() > 0 %}
-  {{kernel.kernel_t}} {{','.join(kernel.registers)}};
+  {# Threads past problem_size pass these by value to accessor calls outside the guard without
+     ever assigning them, so they need a defined value; zero is the identity of the sums. #}
+  {{kernel.kernel_t}} {{' = 0, '.join(kernel.registers)}} = 0;
   {% endif %}
 
   if (global_thread_idx < problem_size){

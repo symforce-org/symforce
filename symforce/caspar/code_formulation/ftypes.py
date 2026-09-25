@@ -9,6 +9,12 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
+import symforce
+
+# symengine may only be importable once symforce has found it.
+symforce.find_symengine()
+
+# isort: split
 from symengine.lib import symengine_wrapper
 
 import symforce.symbolic as sf

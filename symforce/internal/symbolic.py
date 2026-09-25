@@ -61,7 +61,7 @@ symforce._have_imported_symbolic = True
 import sympy as _sympy_py
 
 if not T.TYPE_CHECKING and symforce.get_symbolic_api() == "symengine":
-    sympy = symforce._find_symengine()
+    sympy = symforce.find_symengine()
 
     # isort: split
 
