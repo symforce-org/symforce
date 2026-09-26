@@ -27,7 +27,8 @@ namespace sym {
  * symforce/notebooks/epsilon_sandbox.ipynb
  */
 template <typename Scalar>
-constexpr Scalar kDefaultEpsilon = Scalar(10.0) * std::numeric_limits<Scalar>::epsilon();
+constexpr Scalar kDefaultEpsilon =
+    static_cast<Scalar>(10.0) * std::numeric_limits<Scalar>::epsilon();
 
 // Explicit instantiation to reduce duplicate instantiation
 extern template const double kDefaultEpsilon<double>;

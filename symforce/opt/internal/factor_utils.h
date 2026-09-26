@@ -12,9 +12,22 @@
  * Primarily intended to be included by factor.tcc and used internally there
  */
 
+#include <cstddef>
+#include <functional>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
-#include "../factor.h"
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
+
+#include <lcmtypes/sym/index_entry_t.hpp>
+
+#include <sym/util/typedefs.h>
+
+#include "../assert.h"
+#include "../templates.h"
+#include "../values.h"
 
 namespace sym {
 namespace internal {
