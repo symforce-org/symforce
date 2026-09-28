@@ -227,8 +227,17 @@ __lcm_buffer_size SymmetricMatrixXf::_encodeNoHash(void* buf, __lcm_buffer_size 
       flattened_offset += segment_size;
       segment_size -= 1;
     }
+    // GCC false positive: -Wmaybe-uninitialized fires on Eigen's aligned allocation through the
+    // data pointer, though the loop above writes every element of the lower triangle.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, flattened_lower_triangle.data(),
                                 flattened_lower_triangle.size());
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
     if (tlen < 0) {
       return tlen;
     } else {
