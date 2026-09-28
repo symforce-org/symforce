@@ -29,15 +29,9 @@
 #include <sym/unit3.h>
 #include <sym/util/typedefs.h>
 #include <symforce/opt/assert.h>
+#include <symforce/opt/eigen_type_ops.h>
 
 namespace sym {
-
-template <typename T>
-static constexpr const bool kIsEigenType = std::is_base_of<Eigen::MatrixBase<T>, T>::value;
-
-template <typename T>
-static constexpr const bool kIsSparseEigenType =
-    std::is_base_of<Eigen::SparseMatrix<typename T::Scalar>, T>::value;
 
 inline bool IsEigenType(const type_t type) {
   switch (type.value) {

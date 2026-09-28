@@ -10,8 +10,13 @@
 
 /// Formatter definitions for Eigen types
 
+#include <type_traits>
+#include <utility>
+
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
+
+#include "./eigen_type_ops.h"
 
 namespace Eigen {
 template <typename T>
@@ -52,21 +57,8 @@ struct fmt::formatter<Eigen::VectorBlock<VectorType, Size>> : ostream_formatter 
 
 // Eigen 3.4 gave vector expressions STL iterators, so fmt's range formatter is an equally
 // specialized candidate against the ostream formatters above.  Opt out of range formatting to leave
-// the ostream formatters as the only match.  These mirror the formatters above, minus the ones fmt
-// never treats as ranges (2D expressions, sparse, and WithFormat).
-template <typename Derived, typename Char>
-struct fmt::range_format_kind<Eigen::DenseBase<Derived>, Char>
-    : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
-
-template <typename Derived, typename Char>
-struct fmt::range_format_kind<Eigen::MatrixBase<Derived>, Char>
-    : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
-
-template <typename Derived, typename Char>
-struct fmt::range_format_kind<
-    Derived, Char, std::enable_if_t<std::is_base_of_v<Eigen::DenseBase<Derived>, Derived>>>
-    : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
-
-template <typename VectorType, int Size, typename Char>
-struct fmt::range_format_kind<Eigen::VectorBlock<VectorType, Size>, Char>
+// the ostream formatters as the only match.  This also covers subclasses of Eigen types (e.g.
+// eigen_lcm types) whose own format_as would otherwise be ambiguous with the range formatter.
+template <typename T, typename Char>
+struct fmt::range_format_kind<T, Char, std::enable_if_t<sym::kIsDenseEigenType<T>>>
     : std::integral_constant<fmt::range_format, fmt::range_format::disabled> {};
