@@ -46,6 +46,385 @@ __all__: list[str] = [
     "set_log_level",
 ]
 
+class Key:
+    """
+    Key type for Values. Contains a letter plus an integral subscript and superscript. Can construct with a letter, a letter + sub, or a letter + sub + super, but not a letter + super.
+    """
+
+    INVALID_LETTER: typing.ClassVar[str] = "\x00"
+    INVALID_SUB: typing.ClassVar[int] = -9223372036854775808
+    INVALID_SUPER: typing.ClassVar[int] = -9223372036854775808
+    def __eq__(self, arg0: typing.Any) -> bool: ...
+    def __getstate__(self) -> tuple: ...
+    def __hash__(self) -> int: ...
+    @typing.overload
+    def __init__(self, letter: str) -> None: ...
+    @typing.overload
+    def __init__(self, letter: str, sub: typing.SupportsInt) -> None: ...
+    @typing.overload
+    def __init__(self, letter: str, sub: typing.SupportsInt, super: typing.SupportsInt) -> None: ...
+    def __repr__(self) -> str: ...
+    def __setstate__(self, arg0: tuple) -> None: ...
+    def get_lcm_type(self) -> lcmtypes.sym._key_t.key_t: ...
+    def lexical_less_than(self, arg0: Key) -> bool:
+        """
+        Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
+        """
+    def with_letter(self, letter: str) -> Key:
+        """
+        Creates a new key with a modified letter from an existing one.
+        """
+    def with_sub(self, sub: typing.SupportsInt) -> Key:
+        """
+        Creates a new key with a modified subscript from an existing one.
+        """
+    def with_super(self, super: typing.SupportsInt) -> Key:
+        """
+        Creates a new key with a modified superscript from an existing one.
+        """
+    @property
+    def letter(self) -> str:
+        """
+        The letter value of the key.
+        """
+    @property
+    def sub(self) -> int:
+        """
+        The subscript value of the key (INVALID_SUB if not set).
+        """
+    @property
+    def super(self) -> int:
+        """
+        The superscript value of the key (INVALID_SUPER if not set).
+        """
+
+class Values:
+    """
+    Efficient polymorphic data structure to store named types with a dict-like interface and
+    support efficient repeated operations using a key index. Supports on-manifold optimization.
+
+    Compatible types are given by the type_t enum. All types implement the StorageOps and
+    LieGroupOps concepts, which are the core operating mechanisms in this class.
+    """
+    def __getstate__(self) -> bytes: ...
+    @typing.overload
+    def __init__(self) -> None:
+        """
+        Default construct as empty.
+        """
+    @typing.overload
+    def __init__(self, msg: lcmtypes.sym._values_t.values_t) -> None:
+        """
+        Construct from serialized form.
+        """
+    def __repr__(self) -> str: ...
+    def __setstate__(self, arg0: bytes) -> None: ...
+    @typing.overload
+    def at(self, key: Key) -> typing.Any:
+        """
+        Retrieve a value by key.
+        """
+    @typing.overload
+    def at(self, entry: lcmtypes.sym._index_entry_t.index_entry_t) -> typing.Any:
+        """
+        Retrieve a value by index entry. This avoids a map lookup compared to at(key).
+        """
+    def cleanup(self) -> int:
+        """
+        Repack the data array to get rid of empty space from removed keys. If regularly removing
+        keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
+        number of Scalar elements cleaned up from the data array.
+
+        It will INVALIDATE all indices, offset increments, and pointers.
+        Re-create an index with create_index().
+        """
+    @typing.overload
+    def create_index(self, sort_by_offset: bool) -> lcmtypes.sym._index_t.index_t:
+        """
+        Create an index for all keys in this Values. This object can then be used
+        for repeated efficient operations.
+
+        If sort_by_offset is true, the index will be sorted by offset.  Otherwise, the ordering is
+        not specified.
+
+        An index will be INVALIDATED if the following happens:
+          1) Remove() is called with a contained key, or RemoveAll() is called
+          2) Cleanup() is called to re-pack the data array
+        """
+    @typing.overload
+    def create_index(self, keys: collections.abc.Sequence[Key]) -> lcmtypes.sym._index_t.index_t:
+        """
+        Create an index from the given ordered subset of keys. This object can then be used
+        for repeated efficient operations on that subset of keys.
+
+        If you want an index of all the keys, call `values.create_index(values.keys())`.
+
+        An index will be INVALIDATED if the following happens:
+          1) remove() is called with a contained key, or remove_all() is called
+          2) cleanup() is called to re-pack the data array
+        """
+    def data(self) -> list[float]:
+        """
+        Raw data buffer.
+        """
+    def empty(self) -> bool:
+        """
+        Has zero keys.
+        """
+    def get_lcm_type(self, sort_keys: bool = False) -> lcmtypes.sym._values_t.values_t:
+        """
+        Serialize to LCM.
+        """
+    def has(self, key: Key) -> bool:
+        """
+        Return whether the key exists.
+        """
+    def items(self) -> dict[Key, lcmtypes.sym._index_entry_t.index_entry_t]:
+        """
+        Expose map type to allow iteration.
+        """
+    def keys(self, sort_by_offset: bool = True) -> list[Key]:
+        """
+        Get all keys.
+
+        Args:
+            sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
+        """
+    @typing.overload
+    def local_coordinates(
+        self,
+        others: Values,
+        keys: collections.abc.Sequence[Key],
+        epsilon: typing.SupportsFloat,
+        tangent_dimension: typing.SupportsInt | None = None,
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
+        """
+        Compute the tangent space delta needed to transform this into others.
+        Args:
+          others: The other Values that the local coordinate is relative to
+          keys: Keys (in order) for the resulting tangent space delta
+          epsilon: Small constant to avoid singularities (do not use zero)
+          tangent_dimension: Total tangent dimension; None to infer
+        """
+    @typing.overload
+    def local_coordinates(
+        self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: typing.SupportsFloat
+    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
+        """
+        Compute the tangent space delta needed to transform this into others.
+        Args:
+          others: The other Values that the local coordinate is relative to
+          index: Ordered list of keys to include (valid for both Values)
+          epsilon: Small constant to avoid singularities (do not use zero)
+        """
+    def num_entries(self) -> int:
+        """
+        Number of keys.
+        """
+    def remove(self, key: Key) -> bool:
+        """
+        Remove the given key. Only removes the index entry, does not change the data array.
+        Returns true if removed, false if already not present.
+
+        Call cleanup() to re-pack the data array.
+        """
+    def remove_all(self) -> None:
+        """
+        Remove all keys and empty out the storage.
+        """
+    def retract(
+        self,
+        index: lcmtypes.sym._index_t.index_t,
+        delta: collections.abc.Sequence[typing.SupportsFloat],
+        epsilon: typing.SupportsFloat,
+    ) -> None:
+        """
+        Perform a retraction from an update vector.
+
+        Args:
+            index: Ordered list of keys in the delta vector
+            delta: Update vector - MUST be the size of index.tangent_dim!
+            epsilon: Small constant to avoid singularities (do not use zero)
+        """
+    @typing.overload
+    def set(self, key: Key, value: typing.SupportsFloat) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: typing.SupportsFloat
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.Rot2) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Rot2) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.Rot3) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Rot3) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.Pose2) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Pose2) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.Pose3) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Pose3) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.Unit3) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Unit3) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.ATANCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.ATANCameraCal) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.DoubleSphereCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.DoubleSphereCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.EquirectangularCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.EquirectangularCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.LinearCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.LinearCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.PolynomialCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.PolynomialCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.SphericalCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.SphericalCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: sym.OrthographicCameraCal) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.OrthographicCameraCal
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def set(self, key: Key, value: numpy.typing.ArrayLike) -> bool:
+        """
+        Add or update a value by key. Returns true if added, false if updated.
+        """
+    @typing.overload
+    def set(
+        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: numpy.typing.ArrayLike
+    ) -> None:
+        """
+        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
+        """
+    @typing.overload
+    def update(self, index: lcmtypes.sym._index_t.index_t, other: Values) -> None:
+        """
+        Efficiently update the keys given by this index from other into this. This purely copies slices of the data arrays, the index MUST be valid for both objects!
+        """
+    @typing.overload
+    def update(
+        self,
+        index_this: lcmtypes.sym._index_t.index_t,
+        index_other: lcmtypes.sym._index_t.index_t,
+        other: Values,
+    ) -> None:
+        """
+        Efficiently update the keys from a different structured Values, given by this index and other index. This purely copies slices of the data arrays. index_this MUST be valid for this object; index_other MUST be valid for other object.
+        """
+    def update_or_set(self, index: lcmtypes.sym._index_t.index_t, other: Values) -> None:
+        """
+        Update or add keys to this Values base on other Values of different structure.
+        index MUST be valid for other.
+
+        NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
+        """
+
 class Factor:
     """
     A residual term for optimization.
@@ -166,77 +545,6 @@ class Factor:
     def optimized_keys(self) -> list[Key]:
         """
         Get the optimized keys for this factor.
-        """
-
-class ImuPreintegrator:
-    """
-    Class to on-manifold preintegrate IMU measurements for usage in a SymForce optimization problem.
-    """
-    def __init__(
-        self, accel_bias: numpy.typing.ArrayLike, gyro_bias: numpy.typing.ArrayLike
-    ) -> None: ...
-    def covariance(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[9, 9]"]: ...
-    def integrate_measurement(
-        self,
-        measured_accel: numpy.typing.ArrayLike,
-        measured_gyro: numpy.typing.ArrayLike,
-        accel_cov: numpy.typing.ArrayLike,
-        gyro_cov: numpy.typing.ArrayLike,
-        dt: typing.SupportsFloat,
-        epsilon: typing.SupportsFloat = 2.220446049250313e-15,
-    ) -> None: ...
-    def preintegrated_measurements(self) -> PreintegratedImuMeasurements: ...
-
-class Key:
-    """
-    Key type for Values. Contains a letter plus an integral subscript and superscript. Can construct with a letter, a letter + sub, or a letter + sub + super, but not a letter + super.
-    """
-
-    INVALID_LETTER: typing.ClassVar[str] = "\x00"
-    INVALID_SUB: typing.ClassVar[int] = -9223372036854775808
-    INVALID_SUPER: typing.ClassVar[int] = -9223372036854775808
-    def __eq__(self, arg0: typing.Any) -> bool: ...
-    def __getstate__(self) -> tuple: ...
-    def __hash__(self) -> int: ...
-    @typing.overload
-    def __init__(self, letter: str) -> None: ...
-    @typing.overload
-    def __init__(self, letter: str, sub: typing.SupportsInt) -> None: ...
-    @typing.overload
-    def __init__(self, letter: str, sub: typing.SupportsInt, super: typing.SupportsInt) -> None: ...
-    def __repr__(self) -> str: ...
-    def __setstate__(self, arg0: tuple) -> None: ...
-    def get_lcm_type(self) -> lcmtypes.sym._key_t.key_t: ...
-    def lexical_less_than(self, arg0: Key) -> bool:
-        """
-        Return true if a is LESS than b, in dictionary order of the tuple (letter, sub, super).
-        """
-    def with_letter(self, letter: str) -> Key:
-        """
-        Creates a new key with a modified letter from an existing one.
-        """
-    def with_sub(self, sub: typing.SupportsInt) -> Key:
-        """
-        Creates a new key with a modified subscript from an existing one.
-        """
-    def with_super(self, super: typing.SupportsInt) -> Key:
-        """
-        Creates a new key with a modified superscript from an existing one.
-        """
-    @property
-    def letter(self) -> str:
-        """
-        The letter value of the key.
-        """
-    @property
-    def sub(self) -> int:
-        """
-        The subscript value of the key (INVALID_SUB if not set).
-        """
-    @property
-    def super(self) -> int:
-        """
-        The superscript value of the key (INVALID_SUPER if not set).
         """
 
 class Linearization:
@@ -569,332 +877,24 @@ class PreintegratedImuMeasurements:
     @gyro_bias.setter
     def gyro_bias(self, arg0: numpy.typing.ArrayLike) -> None: ...
 
-class Values:
+class ImuPreintegrator:
     """
-    Efficient polymorphic data structure to store named types with a dict-like interface and
-    support efficient repeated operations using a key index. Supports on-manifold optimization.
-
-    Compatible types are given by the type_t enum. All types implement the StorageOps and
-    LieGroupOps concepts, which are the core operating mechanisms in this class.
+    Class to on-manifold preintegrate IMU measurements for usage in a SymForce optimization problem.
     """
-    def __getstate__(self) -> bytes: ...
-    @typing.overload
-    def __init__(self) -> None:
-        """
-        Default construct as empty.
-        """
-    @typing.overload
-    def __init__(self, msg: lcmtypes.sym._values_t.values_t) -> None:
-        """
-        Construct from serialized form.
-        """
-    def __repr__(self) -> str: ...
-    def __setstate__(self, arg0: bytes) -> None: ...
-    @typing.overload
-    def at(self, key: Key) -> typing.Any:
-        """
-        Retrieve a value by key.
-        """
-    @typing.overload
-    def at(self, entry: lcmtypes.sym._index_entry_t.index_entry_t) -> typing.Any:
-        """
-        Retrieve a value by index entry. This avoids a map lookup compared to at(key).
-        """
-    def cleanup(self) -> int:
-        """
-        Repack the data array to get rid of empty space from removed keys. If regularly removing
-        keys, it's up to the user to call this appropriately to avoid storage growth. Returns the
-        number of Scalar elements cleaned up from the data array.
-
-        It will INVALIDATE all indices, offset increments, and pointers.
-        Re-create an index with create_index().
-        """
-    @typing.overload
-    def create_index(self, sort_by_offset: bool) -> lcmtypes.sym._index_t.index_t:
-        """
-        Create an index for all keys in this Values. This object can then be used
-        for repeated efficient operations.
-
-        If sort_by_offset is true, the index will be sorted by offset.  Otherwise, the ordering is
-        not specified.
-
-        An index will be INVALIDATED if the following happens:
-          1) Remove() is called with a contained key, or RemoveAll() is called
-          2) Cleanup() is called to re-pack the data array
-        """
-    @typing.overload
-    def create_index(self, keys: collections.abc.Sequence[Key]) -> lcmtypes.sym._index_t.index_t:
-        """
-        Create an index from the given ordered subset of keys. This object can then be used
-        for repeated efficient operations on that subset of keys.
-
-        If you want an index of all the keys, call `values.create_index(values.keys())`.
-
-        An index will be INVALIDATED if the following happens:
-          1) remove() is called with a contained key, or remove_all() is called
-          2) cleanup() is called to re-pack the data array
-        """
-    def data(self) -> list[float]:
-        """
-        Raw data buffer.
-        """
-    def empty(self) -> bool:
-        """
-        Has zero keys.
-        """
-    def get_lcm_type(self, sort_keys: bool = False) -> lcmtypes.sym._values_t.values_t:
-        """
-        Serialize to LCM.
-        """
-    def has(self, key: Key) -> bool:
-        """
-        Return whether the key exists.
-        """
-    def items(self) -> dict[Key, lcmtypes.sym._index_entry_t.index_entry_t]:
-        """
-        Expose map type to allow iteration.
-        """
-    def keys(self, sort_by_offset: bool = True) -> list[Key]:
-        """
-        Get all keys.
-
-        Args:
-            sort_by_offset: Sorts by storage order to make iteration safer and more memory efficient
-        """
-    @typing.overload
-    def local_coordinates(
+    def __init__(
+        self, accel_bias: numpy.typing.ArrayLike, gyro_bias: numpy.typing.ArrayLike
+    ) -> None: ...
+    def covariance(self) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[9, 9]"]: ...
+    def integrate_measurement(
         self,
-        others: Values,
-        keys: collections.abc.Sequence[Key],
-        epsilon: typing.SupportsFloat,
-        tangent_dimension: typing.SupportsInt | None = None,
-    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
-        """
-        Compute the tangent space delta needed to transform this into others.
-        Args:
-          others: The other Values that the local coordinate is relative to
-          keys: Keys (in order) for the resulting tangent space delta
-          epsilon: Small constant to avoid singularities (do not use zero)
-          tangent_dimension: Total tangent dimension; None to infer
-        """
-    @typing.overload
-    def local_coordinates(
-        self, arg0: Values, arg1: lcmtypes.sym._index_t.index_t, arg2: typing.SupportsFloat
-    ) -> typing.Annotated[numpy.typing.NDArray[numpy.float64], "[m, 1]"]:
-        """
-        Compute the tangent space delta needed to transform this into others.
-        Args:
-          others: The other Values that the local coordinate is relative to
-          index: Ordered list of keys to include (valid for both Values)
-          epsilon: Small constant to avoid singularities (do not use zero)
-        """
-    def num_entries(self) -> int:
-        """
-        Number of keys.
-        """
-    def remove(self, key: Key) -> bool:
-        """
-        Remove the given key. Only removes the index entry, does not change the data array.
-        Returns true if removed, false if already not present.
-
-        Call cleanup() to re-pack the data array.
-        """
-    def remove_all(self) -> None:
-        """
-        Remove all keys and empty out the storage.
-        """
-    def retract(
-        self,
-        index: lcmtypes.sym._index_t.index_t,
-        delta: collections.abc.Sequence[typing.SupportsFloat],
-        epsilon: typing.SupportsFloat,
-    ) -> None:
-        """
-        Perform a retraction from an update vector.
-
-        Args:
-            index: Ordered list of keys in the delta vector
-            delta: Update vector - MUST be the size of index.tangent_dim!
-            epsilon: Small constant to avoid singularities (do not use zero)
-        """
-    @typing.overload
-    def set(self, key: Key, value: typing.SupportsFloat) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: typing.SupportsFloat
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.Rot2) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Rot2) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.Rot3) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Rot3) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.Pose2) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Pose2) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.Pose3) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Pose3) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.Unit3) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.Unit3) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.ATANCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.ATANCameraCal) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.DoubleSphereCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.DoubleSphereCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.EquirectangularCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.EquirectangularCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.LinearCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.LinearCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.PolynomialCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.PolynomialCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.SphericalCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.SphericalCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: sym.OrthographicCameraCal) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: sym.OrthographicCameraCal
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def set(self, key: Key, value: numpy.typing.ArrayLike) -> bool:
-        """
-        Add or update a value by key. Returns true if added, false if updated.
-        """
-    @typing.overload
-    def set(
-        self, key: lcmtypes.sym._index_entry_t.index_entry_t, value: numpy.typing.ArrayLike
-    ) -> None:
-        """
-        Update a value by index entry with no map lookup (compared to Set(key)). This does NOT add new values and assumes the key exists already.
-        """
-    @typing.overload
-    def update(self, index: lcmtypes.sym._index_t.index_t, other: Values) -> None:
-        """
-        Efficiently update the keys given by this index from other into this. This purely copies slices of the data arrays, the index MUST be valid for both objects!
-        """
-    @typing.overload
-    def update(
-        self,
-        index_this: lcmtypes.sym._index_t.index_t,
-        index_other: lcmtypes.sym._index_t.index_t,
-        other: Values,
-    ) -> None:
-        """
-        Efficiently update the keys from a different structured Values, given by this index and other index. This purely copies slices of the data arrays. index_this MUST be valid for this object; index_other MUST be valid for other object.
-        """
-    def update_or_set(self, index: lcmtypes.sym._index_t.index_t, other: Values) -> None:
-        """
-        Update or add keys to this Values base on other Values of different structure.
-        index MUST be valid for other.
-
-        NOTE(alvin): it is less efficient than the Update methods below if index objects are created and cached. This method performs map lookup for each key of the index
-        """
+        measured_accel: numpy.typing.ArrayLike,
+        measured_gyro: numpy.typing.ArrayLike,
+        accel_cov: numpy.typing.ArrayLike,
+        gyro_cov: numpy.typing.ArrayLike,
+        dt: typing.SupportsFloat,
+        epsilon: typing.SupportsFloat = 2.220446049250313e-15,
+    ) -> None: ...
+    def preintegrated_measurements(self) -> PreintegratedImuMeasurements: ...
 
 def default_optimizer_params() -> lcmtypes.sym._optimizer_params_t.optimizer_params_t:
     """

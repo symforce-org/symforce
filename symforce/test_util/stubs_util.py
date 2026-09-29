@@ -11,12 +11,10 @@ import pybind11_stubgen
 import pybind11_stubgen.parser.mixins.fix as fix_mixins
 import pybind11_stubgen.parser.mixins.parse as parse_mixins
 from pybind11_stubgen import ExtractSignaturesFromPybind11Docstrings
-from pybind11_stubgen import FixCurrentModulePrefixInTypeNames
 from pybind11_stubgen import FixMissingImports as PybindFixMissingImports
 from pybind11_stubgen import (
     FixMissingNoneHashFieldAnnotation as PybindFixMissingNoneHashFieldAnnotation,
 )
-from pybind11_stubgen import FixTypingTypeNames as PybindFixTypingTypeNames
 from pybind11_stubgen import IParser
 from pybind11_stubgen.structs import Class
 from pybind11_stubgen.structs import Docstring
@@ -38,50 +36,10 @@ class FixMissingImports(PybindFixMissingImports):
             return
         super()._add_import(name)
 
-    # NOTE(aaron): Fixed in https://github.com/sizmailov/pybind11-stubgen/pull/263
-    def parse_annotation_str(self, annotation_str: str) -> ResolvedType | InvalidExpression | Value:
-        result = super().parse_annotation_str(annotation_str)
-
-        def handle_annotation(annotation: ResolvedType | InvalidExpression | Value) -> None:
-            if isinstance(annotation, ResolvedType):
-                self._add_import(annotation.name)
-                if annotation.parameters is not None:
-                    for p in annotation.parameters:
-                        handle_annotation(p)
-
-        handle_annotation(result)
-        return result
-
 
 def patch_lcmtype_imports() -> None:
     fix_mixins.FixMissingImports = FixMissingImports  # type: ignore[misc]
     pybind11_stubgen.FixMissingImports = FixMissingImports  # type: ignore[misc]
-
-
-def patch_current_module_prefix() -> None:
-    """
-    Fix use of the current module in nested types
-
-    Could upstream
-    """
-
-    def parse_annotation_str(
-        self: FixCurrentModulePrefixInTypeNames,
-        annotation_str: str,
-    ) -> ResolvedType | InvalidExpression | Value:
-        result = super(FixCurrentModulePrefixInTypeNames, self).parse_annotation_str(annotation_str)  # type: ignore[safe-super]
-
-        def handle_annotation(annotation: ResolvedType | InvalidExpression | Value) -> None:
-            if isinstance(annotation, ResolvedType):
-                annotation.name = self._strip_current_module(annotation.name)
-                if annotation.parameters is not None:
-                    for p in annotation.parameters:
-                        handle_annotation(p)
-
-        handle_annotation(result)
-        return result
-
-    fix_mixins.FixCurrentModulePrefixInTypeNames.parse_annotation_str = parse_annotation_str  # type: ignore[method-assign]
 
 
 def patch_handle_docstring() -> None:
@@ -117,43 +75,6 @@ def patch_fix_missing_none_hash_field_annotation() -> None:
         return result
 
     fix_mixins.FixMissingNoneHashFieldAnnotation.handle_field = handle_field  # type: ignore[method-assign]
-
-
-def patch_numpy_annotations() -> None:
-    class FixTypingTypeNames(PybindFixTypingTypeNames):
-        def _parse_annotation_str(
-            self,
-            result: ResolvedType | InvalidExpression | Value,
-        ) -> ResolvedType | InvalidExpression | Value:
-            if not isinstance(result, ResolvedType):
-                return result
-
-            result.parameters = (
-                [self._parse_annotation_str(p) for p in result.parameters]
-                if result.parameters is not None
-                else None
-            )
-
-            if len(result.name) != 1:
-                if result.name[0] == "typing" and result.name[1] in self.__typing_extensions_names:
-                    result.name = QualifiedName.from_str(f"typing_extensions.{result.name[1]}")
-                return result
-
-            word = result.name[0]
-            if word in self.__typing_names:
-                package = "typing"
-                if word in self.__typing_extensions_names:
-                    package = "typing_extensions"
-                result.name = QualifiedName.from_str(f"{package}.{word[0].upper()}{word[1:]}")
-            if word == "function" and result.parameters is None:
-                result.name = QualifiedName.from_str("typing.Callable")
-            if word in {"object", "handle"} and result.parameters is None:
-                result.name = QualifiedName.from_str("typing.Any")
-
-            return result
-
-    fix_mixins.FixTypingTypeNames = FixTypingTypeNames  # type: ignore[misc]
-    pybind11_stubgen.FixTypingTypeNames = FixTypingTypeNames  # type: ignore[misc]
 
 
 class FixNumpyArrayRemoveParameters(IParser):

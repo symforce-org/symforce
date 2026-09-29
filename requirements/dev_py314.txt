@@ -203,7 +203,7 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pybind11-stubgen==2.5.5
+pybind11-stubgen==3.0.0
     # via symforce (pyproject.toml)
 pygments==2.20.0
     # via

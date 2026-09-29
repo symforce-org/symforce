@@ -15,17 +15,13 @@ from symforce import cc_sym  # noqa: F401
 from symforce import path_util
 from symforce.codegen import format_util
 from symforce.test_util import TestCase
-from symforce.test_util.stubs_util import patch_current_module_prefix
 from symforce.test_util.stubs_util import patch_handle_docstring
 from symforce.test_util.stubs_util import patch_lcmtype_imports
-from symforce.test_util.stubs_util import patch_numpy_annotations
 from symforce.test_util.stubs_util import patch_remove_parameters
 
 patch_lcmtype_imports()
 patch_handle_docstring()
 patch_remove_parameters()
-patch_numpy_annotations()
-patch_current_module_prefix()
 
 
 class SymforceCCSymStubsCodegenTest(TestCase):
@@ -52,6 +48,7 @@ class SymforceCCSymStubsCodegenTest(TestCase):
             # Ignore undefined n and m typevars for numpy arrays
             # This shouldn't be needed with --numpy-array-remove-parameters, but it seems like it is
             "--ignore-unresolved-names=n|m",
+            "--print-value-comments",
             f"--output-dir={output_dir}",
             "--exit-code",
         ]
@@ -61,20 +58,16 @@ class SymforceCCSymStubsCodegenTest(TestCase):
         )
 
         parser = pybind11_stubgen.stub_parser_from_args(args)
-        printer = pybind11_stubgen.Printer(invalid_expr_as_ellipses=False)
-
-        out_dir, sub_dir = pybind11_stubgen.to_output_and_subdir(
-            output_dir=args.output_dir,
-            module_name=args.module_name,
-            root_suffix=args.root_suffix,
+        printer = pybind11_stubgen.Printer(
+            invalid_expr_as_ellipses=False, print_value_comments=args.print_value_comments
         )
 
         pybind11_stubgen.run(
             parser,
             printer,
-            args.module_name,
-            out_dir,
-            sub_dir=sub_dir,
+            args.module_names,
+            args.output_dir,
+            root_suffix=args.root_suffix,
             dry_run=args.dry_run,
             writer=pybind11_stubgen.Writer(stub_ext=args.stub_extension),
         )
