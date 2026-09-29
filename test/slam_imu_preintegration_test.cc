@@ -179,7 +179,7 @@ TEST_CASE("Test ImuPreintegrator.covariance", "[slam]") {
   // NOTE(brad): I assume I can equally distribute samples among the threads
   CHECK(kSampleCount % kThreadCount == 0);
   std::vector<std::thread> threads;
-  std::array<Eigen::Matrix<double, 9, 9>, kThreadCount> covariance_sums;
+  std::array<Eigen::Matrix<double, 9, 9>, kThreadCount> covariance_sums{};
   covariance_sums.fill(M99::Zero());
 
   Eigen::MatrixXd samples(9, kSampleCount);
