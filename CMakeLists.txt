@@ -209,6 +209,9 @@ if (NOT fmt_FOUND)
   message(STATUS "fmt not found, adding with FetchContent")
   function(add_fmt)
     set(FMT_INSTALL ON CACHE INTERNAL "fmt should create an install target")
+    # Mark fmt headers as system headers so warnings in them don't break -Werror builds, e.g.
+    # clang's -Wnan-infinity-disabled under -ffast-math
+    set(FMT_SYSTEM_HEADERS ON CACHE INTERNAL "fmt headers should be marked as system headers")
     FetchContent_Declare(
       fmtlib
       URL https://github.com/fmtlib/fmt/archive/12.2.0.zip
