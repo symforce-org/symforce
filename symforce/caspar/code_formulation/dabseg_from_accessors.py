@@ -27,7 +27,7 @@ def expr_to_val(dabseg: Dabseg, expr: sf.Basic, expr_map: dict[sf.Basic, Val]) -
         return out
 
     if expr.is_Number or isinstance(expr, (int, float)):
-        return expr_map.setdefault(expr, dabseg.add_call(ftypes.Store(data=float(expr)))[0])  # type: ignore[arg-type]
+        return dabseg.add_call(ftypes.Store(data=float(expr)))[0]  # type: ignore[arg-type]
 
     func: Call
     if expr.is_Symbol:
