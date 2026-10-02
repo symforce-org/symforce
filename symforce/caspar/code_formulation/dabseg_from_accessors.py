@@ -51,6 +51,21 @@ def expr_to_val(dabseg: Dabseg, expr: sf.Basic, expr_map: dict[sf.Basic, Val]) -
     return expr_map.setdefault(expr, func[0])
 
 
+def _output_group(name: str) -> str:
+    for suffix in (
+        "_jac_first",
+        "_jac_second",
+        "_jac",
+        "_tridig_U",
+        "_njtr",
+        "_precond_diag",
+        "_precond_tril",
+    ):
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
+
+
 def make_dabseg(
     inputs: list[accessors._ReadAccessor],
     outputs: list[accessors._WriteAccessor],
@@ -88,7 +103,13 @@ def make_dabseg(
                     var._str = storage[el].name  # noqa: SLF001
 
     leaves = []
+    base_expr_map = dict(expr_map)
+    current_group: str | None = None
     for out in outputs:
+        group = _output_group(out.name)
+        if group != current_group:
+            expr_map = dict(base_expr_map)
+            current_group = group
         if is_pair(out.storage):
             expr_lists = [Ops.to_storage(out.storage[0]), Ops.to_storage(out.storage[1])]
             for i, indices in enumerate(out.chunk_indices):
