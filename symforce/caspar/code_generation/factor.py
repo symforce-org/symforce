@@ -207,47 +207,70 @@ class Factor:
                 diag1, tril1 = get_diagonal_and_lower_triangle(jac1.T * jac1)
                 if not self.solved_by_preconditioner:
                     jac_outs += (
-                        WriteSequential(f"out_{k}_jac_first", dyn_part(jac0), **accessor_kwargs),
-                        WriteSequential(f"out_{k}_jac_second", dyn_part(jac1), **accessor_kwargs),
+                        WriteSequential(
+                            f"out_{k}_jac_first", dyn_part(jac0), group=k, **accessor_kwargs
+                        ),
+                        WriteSequential(
+                            f"out_{k}_jac_second", dyn_part(jac1), group=k, **accessor_kwargs
+                        ),
                     )
                 jac_outs += (
-                    WriteSequential(f"out_{k}_tridig_U", dyn_part(tridig), **accessor_kwargs),
+                    WriteSequential(
+                        f"out_{k}_tridig_U", dyn_part(tridig), group=k, **accessor_kwargs
+                    ),
                     AddPair(
                         f"out_{k}_njtr",
                         Pair(-jac0.T * self.res, -jac1.T * self.res),
+                        group=k,
                         **accessor_kwargs,
                     ),
-                    AddPair(f"out_{k}_precond_diag", Pair(diag0, diag1), **accessor_kwargs),
-                    AddPair(f"out_{k}_precond_tril", Pair(tril0, tril1), **accessor_kwargs),
+                    AddPair(
+                        f"out_{k}_precond_diag", Pair(diag0, diag1), group=k, **accessor_kwargs
+                    ),
+                    AddPair(
+                        f"out_{k}_precond_tril", Pair(tril0, tril1), group=k, **accessor_kwargs
+                    ),
                 )
             elif self.isnodeuniq[k]:
                 jac = self.jacs[k]
                 diag, tril = get_diagonal_and_lower_triangle(jac.T * jac)
                 if not self.solved_by_preconditioner:
                     jac_outs.append(
-                        WriteSequential(f"out_{k}_jac", dyn_part(jac), **accessor_kwargs)
+                        WriteSequential(f"out_{k}_jac", dyn_part(jac), group=k, **accessor_kwargs)
                     )
                 jac_outs += (
-                    AddSum(f"out_{k}_njtr", -jac.T * self.res, **accessor_kwargs),
-                    AddSum(f"out_{k}_precond_diag", diag, **accessor_kwargs),
-                    AddSum(f"out_{k}_precond_tril", tril, **accessor_kwargs),
+                    AddSum(f"out_{k}_njtr", -jac.T * self.res, group=k, **accessor_kwargs),
+                    AddSum(f"out_{k}_precond_diag", diag, group=k, **accessor_kwargs),
+                    AddSum(f"out_{k}_precond_tril", tril, group=k, **accessor_kwargs),
                 )
             else:
                 jac = self.jacs[k]
                 diag, tril = get_diagonal_and_lower_triangle(jac.T * jac)
                 if not self.solved_by_preconditioner:
                     jac_outs.append(
-                        WriteSequential(f"out_{k}_jac", dyn_part(jac), **accessor_kwargs)
+                        WriteSequential(f"out_{k}_jac", dyn_part(jac), group=k, **accessor_kwargs)
                     )
                 jac_outs += (
                     AddSharedSum(
-                        f"out_{k}_njtr", -jac.T * self.res, reuse_indices_from=k, **accessor_kwargs
+                        f"out_{k}_njtr",
+                        -jac.T * self.res,
+                        reuse_indices_from=k,
+                        group=k,
+                        **accessor_kwargs,
                     ),
                     AddSharedSum(
-                        f"out_{k}_precond_diag", diag, reuse_indices_from=k, **accessor_kwargs
+                        f"out_{k}_precond_diag",
+                        diag,
+                        reuse_indices_from=k,
+                        group=k,
+                        **accessor_kwargs,
                     ),
                     AddSharedSum(
-                        f"out_{k}_precond_tril", tril, reuse_indices_from=k, **accessor_kwargs
+                        f"out_{k}_precond_tril",
+                        tril,
+                        reuse_indices_from=k,
+                        group=k,
+                        **accessor_kwargs,
                     ),
                 )
 
@@ -255,8 +278,8 @@ class Factor:
             (self.name, "res_jac_first"),
             inputs,
             [
-                WriteSequential("out_res", self.res, **accessor_kwargs),
-                AddSum("out_rTr", self.res.T * self.res, **accessor_kwargs),
+                WriteSequential("out_res", self.res, group="res", **accessor_kwargs),
+                AddSum("out_rTr", self.res.T * self.res, group="res", **accessor_kwargs),
                 *jac_outs,
             ],
         )
@@ -264,7 +287,7 @@ class Factor:
             (self.name, "res_jac"),
             inputs,
             [
-                WriteSequential("out_res", self.res, **accessor_kwargs),
+                WriteSequential("out_res", self.res, group="res", **accessor_kwargs),
                 *jac_outs,
             ],
         )

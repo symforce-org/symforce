@@ -136,6 +136,7 @@ def split_accumulators(dabseg: Dabseg) -> None:  # noqa: PLR0912, PLR0915
 
     for call_id, relations in relations_map.items():
         call = dabseg.call(call_id)
+        dabseg.current_group = call.group
         if (is_fma_prod(call) and call.n_args == 2) or not relations:
             continue
 
@@ -199,3 +200,4 @@ def split_accumulators(dabseg: Dabseg) -> None:  # noqa: PLR0912, PLR0915
         init.add_relation(finish, "finish")
 
         dabseg.rebind(finish, call)
+    dabseg.current_group = None
