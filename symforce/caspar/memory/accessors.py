@@ -91,7 +91,7 @@ class Accessor:
 
     SKIP_IF_ALL_ZERO: T.ClassVar[bool] = False
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         name: str,
         storage: T.StorableOrType,
@@ -104,6 +104,7 @@ class Accessor:
         default: T.Any | None = None,
         after: str | None = None,
         block_size: int = 1024,
+        group: str | None = None,
     ):
         assert isinstance(self, _Pairwise) == is_pair(storage)
         assert isinstance(kernel_dtype, DType)
@@ -114,6 +115,7 @@ class Accessor:
         self.stride = stride
         self.default = default
         self.after = after
+        self.group = group
         self.idx_name = name if reuse_indices_from is None else reuse_indices_from
         self.kernel_t = kernel_dtype
         self.storage_t = dtype

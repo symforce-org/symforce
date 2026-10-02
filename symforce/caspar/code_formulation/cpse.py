@@ -106,7 +106,7 @@ def _cpse_impl(
 def do_cpse(dabseg: Dabseg, ftype: T.Type[Func]) -> None:
     """
     Perform Partial Common Subexpression Elimination on a Dabseg for a given
-    commutative and associative function type.
+    commutative and associative function type, scoped within each call group.
 
     Example:
     1) r0=a+b+c, r1=a+c+d+e, r2=a+c+e           (original sums)
@@ -114,8 +114,20 @@ def do_cpse(dabseg: Dabseg, ftype: T.Type[Func]) -> None:
     3) r0=r3+b,  r1=r2+d,    r2=r3+e,  r3=a+c   (eliminate r3+e)
                                                 (done)
     """
-    calls = [call for call in dabseg.call_iter() if call.is_a(ftype)]
+    calls_by_group: dict[str | None, list[Call]] = {}
+    for call in dabseg.call_iter():
+        if call.is_a(ftype):
+            calls_by_group.setdefault(call.group, []).append(call)
 
+    for group, calls in calls_by_group.items():
+        if len(calls) < 2:
+            continue
+        _do_cpse_group(dabseg, ftype, calls, group)
+
+
+def _do_cpse_group(
+    dabseg: Dabseg, ftype: T.Type[Func], calls: list[Call], group: str | None
+) -> None:
     def get_args(call: Call) -> T.Iterator[ValId]:
         for arg in call.args:
             if arg.call.is_a(ftype):
@@ -131,17 +143,23 @@ def do_cpse(dabseg: Dabseg, ftype: T.Type[Func]) -> None:
     def map_var(v: ValId) -> Val:
         return dabseg.val(tmp_map.get(v, v))
 
-    unique = {argset[0]: func for argset, func in zip(argsets, calls) if len(argset) == 1}
+    unique = {
+        argset[0]: func for argset, func in zip(argsets, calls, strict=True) if len(argset) == 1
+    }
 
     for i, tmp_varset in enumerate(tmp_varsets):
         tmp_id = ValId(i + OFFSET)
         if tmp_id in unique:
             func = unique[tmp_id]
         else:
-            func = dabseg.add_call(ftype(), tuple(map(map_var, tmp_varset)), fix_accumulator=False)
+            func = dabseg.add_call(
+                ftype(), tuple(map(map_var, tmp_varset)), fix_accumulator=False, group=group
+            )
         tmp_map[tmp_id] = func[0].id
-    for func, argset in zip(calls, argsets):
+    for func, argset in zip(calls, argsets, strict=True):
         if len(argset) == 1:
             continue
-        func_new = dabseg.add_call(ftype(), tuple(map(map_var, argset)), fix_accumulator=False)
+        func_new = dabseg.add_call(
+            ftype(), tuple(map(map_var, argset)), fix_accumulator=False, group=group
+        )
         dabseg.rebind(func_new, func)

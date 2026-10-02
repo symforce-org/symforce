@@ -28,6 +28,7 @@ class Dabseg:
         self.call_rebinds: dict[CallId, CallId] = {}
         self.unique_used: set[ValId] = set()
         self.final_call_ids: SortedSet[CallId] = SortedSet()
+        self.current_group: str | None = None
 
     def call_data(self, call_id: CallId) -> CallData:
         return self._call_data[call_id]
@@ -56,13 +57,17 @@ class Dabseg:
         *,
         depends: tuple[Call, ...] = (),
         fix_accumulator: bool = True,
+        group: str | None = None,
     ) -> Call:
+        if group is None:
+            group = self.current_group
         return self.add_call_data(
             CallData(
                 func=func,
                 arg_ids=tuple(a.id for a in args),
                 depends=tuple(call.id for call in depends),
                 relations={},
+                group=group,
             ),
             fix_accumulator=fix_accumulator,
         )
@@ -189,6 +194,7 @@ class Dabseg:
                     arg_ids=tuple((vmap[v.id] for v in call.args)),
                     depends=tuple(cmap[dep.id] for dep in call.depends),
                     relations=self.call_data(call.id).relations,
+                    group=call.group,
                 )
             )
             vmap.update({v_old.id: v_new.id for v_old, v_new in zip(call.outs, new_func.outs)})
@@ -247,6 +253,7 @@ class CallData:
     relations: dict[str, CallId]
     out_ids: tuple[ValId, ...]
     id: CallId
+    group: str | None = None
 
     def __init__(
         self,
@@ -254,12 +261,14 @@ class CallData:
         arg_ids: tuple[ValId, ...],
         depends: tuple[CallId, ...],
         relations: dict[str, CallId],
+        group: str | None = None,
     ) -> None:
         assert isinstance(func, Func)
         self.func = func
         self.arg_ids = arg_ids
         self.depends = depends
         self.relations = relations
+        self.group = group
 
     def finalize(self, outs: tuple[ValId, ...], fid: CallId) -> None:
         self.out_ids = outs
@@ -275,18 +284,20 @@ class CallData:
             arg_ids=self.arg_ids,
             depends=self.depends,
             relations=self.relations,
+            group=self.group,
         )
 
     def __hash__(self) -> int:
         if self.is_unique:
             return hash((self.func, self.arg_ids, self.id))
-        return hash((self.func, self.arg_ids))
+        return hash((self.func, self.arg_ids, self.group))
 
     def __eq__(self, value: object, /) -> bool:
         return (
             isinstance(value, CallData)
             and self.func == value.func
             and self.arg_ids == value.arg_ids
+            and self.group == value.group
         )
 
 
@@ -417,6 +428,10 @@ class Call:
     @property
     def func(self) -> Func:
         return self._fdata.func
+
+    @property
+    def group(self) -> str | None:
+        return self._fdata.group
 
     def parents(
         self,

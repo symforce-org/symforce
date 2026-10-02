@@ -88,7 +88,13 @@ def make_dabseg(
                     var._str = storage[el].name  # noqa: SLF001
 
     leaves = []
+    base_expr_map = dict(expr_map)
+    current_group: str | None = None
     for out in outputs:
+        if out.group != current_group:
+            expr_map = dict(base_expr_map)
+            current_group = out.group
+            dabseg.current_group = current_group
         if is_pair(out.storage):
             expr_lists = [Ops.to_storage(out.storage[0]), Ops.to_storage(out.storage[1])]
             for i, indices in enumerate(out.chunk_indices):
@@ -119,8 +125,10 @@ def make_dabseg(
                 leaves.append(call)
     dabseg.set_finalize(leaves)
     for call in dabseg.call_iter():
+        dabseg.current_group = call.group
         call = function_fixers.fix_pow(dabseg, call)
         call = function_fixers.unpack_square(dabseg, call)
+    dabseg.current_group = None
     set_debug_graph(dabseg)
     do_cpse(dabseg, ftypes.Prod)
     do_cpse(dabseg, ftypes.Sum)

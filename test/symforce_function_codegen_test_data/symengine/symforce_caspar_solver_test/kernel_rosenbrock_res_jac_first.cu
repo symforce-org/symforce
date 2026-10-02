@@ -29,7 +29,7 @@ __global__ void __launch_bounds__(1024, 1)
 
   __shared__ double out_rTr_local[1];
 
-  double r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0;
+  double r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0;
 
   if (global_thread_idx < problem_size) {
     r0 = 1.00000000000000000e+01;
@@ -42,38 +42,44 @@ __global__ void __launch_bounds__(1024, 1)
   if (global_thread_idx < problem_size) {
     r3 = -1.00000000000000000e+00;
     r4 = r1 * r1;
-    r2 = fma(r3, r4, r2);
-    r0 = r0 * r2;
+    r4 = fma(r3, r4, r2);
+    r0 = r0 * r4;
     r5 = 1.00000000000000000e+00;
     r3 = fma(r1, r3, r5);
     WriteIdx2<1024, double, double, double2>(out_res, 0 * out_res_num_alloc, global_thread_idx, r0,
                                              r3);
     r0 = 1.00000000000000000e+02;
-    r6 = r2 * r2;
-    r6 = fma(r0, r6, r3 * r3);
+    r4 = r4 * r4;
+    r4 = fma(r0, r4, r3 * r3);
   };
-  SumStore<double>(out_rTr_local, (double*)inout_shared, 0, global_thread_idx < problem_size, r6);
+  SumStore<double>(out_rTr_local, (double*)inout_shared, 0, global_thread_idx < problem_size, r4);
   if (global_thread_idx < problem_size) {
+    r4 = 1.00000000000000000e+00;
+    r0 = -1.00000000000000000e+00;
+    r3 = fma(r1, r0, r4);
+    r5 = 2.00000000000000000e+02;
+    r6 = r1 * r5;
+    r7 = r1 * r1;
+    r0 = fma(r0, r7, r2);
+    r3 = fma(r0, r6, r3);
     r6 = -1.00000000000000000e+02;
-    r6 = r2 * r6;
-    r7 = r1 * r2;
-    r8 = 2.00000000000000000e+02;
-    r7 = fma(r8, r7, r3);
-    WriteSum2<double, double>((double*)inout_shared, r7, r6);
+    r6 = r0 * r6;
+    WriteSum2<double, double>((double*)inout_shared, r3, r6);
   };
   FlushSumShared<2, double>(out_x_njtr, 0 * out_x_njtr_num_alloc, x_indices_loc,
                             (double*)inout_shared);
   if (global_thread_idx < problem_size) {
-    r6 = 4.00000000000000000e+02;
-    r4 = fma(r6, r4, r5);
-    WriteSum2<double, double>((double*)inout_shared, r4, r0);
+    r6 = 1.00000000000000000e+02;
+    r3 = 4.00000000000000000e+02;
+    r7 = fma(r3, r7, r4);
+    WriteSum2<double, double>((double*)inout_shared, r7, r6);
   };
   FlushSumShared<2, double>(out_x_precond_diag, 0 * out_x_precond_diag_num_alloc, x_indices_loc,
                             (double*)inout_shared);
   if (global_thread_idx < problem_size) {
-    r0 = -2.00000000000000000e+02;
-    r0 = r1 * r0;
-    WriteSum1<double, double>((double*)inout_shared, r0);
+    r6 = -2.00000000000000000e+02;
+    r6 = r1 * r6;
+    WriteSum1<double, double>((double*)inout_shared, r6);
   };
   FlushSumShared<1, double>(out_x_precond_tril, 0 * out_x_precond_tril_num_alloc, x_indices_loc,
                             (double*)inout_shared);
