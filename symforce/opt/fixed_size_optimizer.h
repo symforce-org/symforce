@@ -72,9 +72,9 @@ class FixedSizeOptimizer {
   using LinearizeFunc = typename NonlinearSolverType::LinearizeFunc;
   using ValuesType = typename NonlinearSolverType::ValuesType;
 
-  FixedSizeOptimizer(const optimizer_params_t& params,
-                     const std::string& name = "sym::FixedSizeOptimizer",
-                     const Scalar epsilon = sym::kDefaultEpsilon<Scalar>);
+  explicit FixedSizeOptimizer(const optimizer_params_t& params,
+                              const std::string& name = "sym::FixedSizeOptimizer",
+                              const Scalar epsilon = sym::kDefaultEpsilon<Scalar>);
 
   template <typename... NonlinearSolverArgs>
   FixedSizeOptimizer(const optimizer_params_t& params, const std::string& name,

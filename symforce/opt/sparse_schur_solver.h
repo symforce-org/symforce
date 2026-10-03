@@ -73,8 +73,10 @@ class SparseSchurSolver {
   using MatrixX = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
   using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
-  SparseSchurSolver(const typename SMatrixSolverType::Ordering& ordering =
-                        Eigen::MetisOrdering<typename SMatrixSolverType::StorageIndex>())
+  SparseSchurSolver()
+      : SparseSchurSolver(Eigen::MetisOrdering<typename SMatrixSolverType::StorageIndex>()) {}
+
+  explicit SparseSchurSolver(const typename SMatrixSolverType::Ordering& ordering)
       : is_initialized_(false), S_solver_(ordering) {}
 
   bool IsInitialized() const {

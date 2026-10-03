@@ -44,7 +44,12 @@ class SparseCholeskySolver {
 
  public:
   /**
-   * Default constructor
+   * Default constructor, using Eigen::MetisOrdering
+   */
+  SparseCholeskySolver() : SparseCholeskySolver(Eigen::MetisOrdering<StorageIndex>()) {}
+
+  /**
+   * Construct with the given variable ordering
    *
    * @param ordering: Functor to compute the variable ordering to use.  Can be any functor with
    *    signature void(const MatrixType&, PermutationMatrixType&) which takes in the sparsity
@@ -54,7 +59,7 @@ class SparseCholeskySolver {
    *    that are nonzero.  Typically this will be an instance of one of the orderings provided
    *    by Eigen, such as Eigen::NaturalOrdering().
    */
-  SparseCholeskySolver(const Ordering& ordering = Eigen::MetisOrdering<StorageIndex>())
+  explicit SparseCholeskySolver(const Ordering& ordering)
       : is_initialized_(false), ordering_(ordering) {}
 
   /**

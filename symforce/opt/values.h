@@ -47,7 +47,7 @@ class Values {
    *
    * NOTE(alvin): others Values should not contain overlapping Keys
    */
-  explicit Values(std::initializer_list<Values<Scalar>> others);
+  Values(std::initializer_list<Values<Scalar>> others);
 
   /**
    * Construct from serialized form.

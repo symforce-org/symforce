@@ -36,13 +36,17 @@ class Key {
   static constexpr superscript_t kInvalidSuper = std::numeric_limits<superscript_t>::min();
 
   constexpr Key() = default;
-  constexpr Key(const letter_t letter, const subscript_t sub = kInvalidSub,
-                const superscript_t super = kInvalidSuper)
+  // Implicit so a letter or {letter, sub, super} can be passed wherever a Key is expected.
+  constexpr Key(const letter_t letter,  // NOLINT(google-explicit-constructor)
+                const subscript_t sub = kInvalidSub, const superscript_t super = kInvalidSuper)
       : letter_(letter), sub_(sub), super_(super) {
     SYM_ASSERT(letter != kInvalidLetter);
   }
 
-  constexpr Key(const key_t& key) : Key(key.letter, key.subscript, key.superscript) {}
+  // Implicit because key_t is the LCM form of the same value, and code indexing Key maps with a
+  // key_t relies on it.
+  constexpr Key(const key_t& key)  // NOLINT(google-explicit-constructor)
+      : Key(key.letter, key.subscript, key.superscript) {}
 
   constexpr letter_t Letter() const noexcept {
     return letter_;

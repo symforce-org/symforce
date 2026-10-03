@@ -22,11 +22,11 @@ struct SolverParams {
   T pcg_rel_decrease_min = -1.0f;  // disabled if == -1.0f
   T solver_rel_decrease_min = 1.0f;
 
-  // Templated conversion constructor to enable automatic type conversion
   SolverParams() = default;
 
+  // Implicit so set_params can assign a SolverParams<double> to the SolverParams<linear_t> member.
   template <typename U>
-  SolverParams(const SolverParams<U>& other)
+  SolverParams(const SolverParams<U>& other)  // NOLINT(google-explicit-constructor)
       : diag_init(static_cast<T>(other.diag_init)),
         diag_scaling_up(static_cast<T>(other.diag_scaling_up)),
         diag_scaling_down(static_cast<T>(other.diag_scaling_down)),

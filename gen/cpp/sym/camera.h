@@ -21,8 +21,8 @@ class Camera {
  public:
   using Scalar = typename CameraCalType::Scalar;
 
-  Camera(const CameraCalType& calibration,
-         const Eigen::Vector2i& image_size = Eigen::Vector2i(-1, -1))
+  explicit Camera(const CameraCalType& calibration,
+                  const Eigen::Vector2i& image_size = Eigen::Vector2i(-1, -1))
       : calibration_(calibration), image_size_(image_size) {}
 
   Eigen::Matrix<Scalar, 2, 1> FocalLength() const {
