@@ -298,7 +298,7 @@ sympy==1.13.3
     # via symforce (pyproject.toml)
 tinycss2==1.4.0
     # via bleach
-tornado==6.5.8
+tornado==6.5.9
     # via
     #   ipykernel
     #   jupyter-client
@@ -328,7 +328,7 @@ typing-extensions==4.15.0
     #   beautifulsoup4
     #   mypy
     #   sortedcontainers-stubs
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   requests
     #   types-requests
