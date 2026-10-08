@@ -161,6 +161,7 @@ class {{lcmtype.name}}
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve({{lcmtype.num_members}});
 
         {% for member in lcmtype.members %}
             fields.push_back(lcm::get_schema<decltype({{lcmtype.name}}::{{member.name}})>());

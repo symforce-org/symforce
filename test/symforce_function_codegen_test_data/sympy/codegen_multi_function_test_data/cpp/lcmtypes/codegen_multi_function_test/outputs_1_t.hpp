@@ -147,6 +147,7 @@ class outputs_1_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(7);
 
             fields.push_back(lcm::get_schema<decltype(outputs_1_t::foo)>());
             fields.push_back(lcm::get_schema<decltype(outputs_1_t::bar)>());

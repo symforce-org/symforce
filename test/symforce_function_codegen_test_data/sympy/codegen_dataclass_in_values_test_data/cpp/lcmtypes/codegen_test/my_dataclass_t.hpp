@@ -121,6 +121,7 @@ class my_dataclass_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(1);
 
             fields.push_back(lcm::get_schema<decltype(my_dataclass_t::rot)>());
 

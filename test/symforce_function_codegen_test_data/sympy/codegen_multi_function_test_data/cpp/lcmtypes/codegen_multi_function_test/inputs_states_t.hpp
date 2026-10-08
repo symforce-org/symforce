@@ -120,6 +120,7 @@ class inputs_states_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(1);
 
             fields.push_back(lcm::get_schema<decltype(inputs_states_t::p)>());
 

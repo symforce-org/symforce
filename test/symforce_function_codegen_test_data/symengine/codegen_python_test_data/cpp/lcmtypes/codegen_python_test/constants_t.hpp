@@ -113,6 +113,7 @@ class constants_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(1);
 
             fields.push_back(lcm::get_schema<decltype(constants_t::epsilon)>());
 

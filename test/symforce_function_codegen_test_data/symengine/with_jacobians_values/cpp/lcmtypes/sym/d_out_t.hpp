@@ -117,6 +117,7 @@ class d_out_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(2);
 
             fields.push_back(lcm::get_schema<decltype(d_out_t::x)>());
             fields.push_back(lcm::get_schema<decltype(d_out_t::y)>());

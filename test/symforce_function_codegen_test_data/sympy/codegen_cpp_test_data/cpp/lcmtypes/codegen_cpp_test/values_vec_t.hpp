@@ -141,6 +141,7 @@ class values_vec_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(6);
 
             fields.push_back(lcm::get_schema<decltype(values_vec_t::x)>());
             fields.push_back(lcm::get_schema<decltype(values_vec_t::y)>());

@@ -112,6 +112,7 @@ class outputs_2_t
         static lcm::StructType schema()
         {
             std::vector<lcm::SchemaType> fields;
+            fields.reserve(1);
 
             fields.push_back(lcm::get_schema<decltype(outputs_2_t::foo)>());
 
