@@ -206,7 +206,11 @@ class MarginalizationFactorLinearizationFunctor {
       *rhs = H_delta_ + factor_.rhs;
     }
 
-    const Scalar c_updated = delta_.dot(H_delta_) + 2 * factor_.rhs.dot(delta_) + factor_.c;
+    // c_updated is a squared norm by construction, so it can only drop below zero through
+    // roundoff when the current estimate sits at the quadratic's minimum. Clamp it so the
+    // residual below stays finite.
+    const Scalar c_updated =
+        std::max(delta_.dot(H_delta_) + 2 * factor_.rhs.dot(delta_) + factor_.c, Scalar(0));
 
     // We don't directly have a Jacobian or residual. The residual of the system would've been
     // some MxN matrix, but since we can compute and store only the quadratic form (NxN), we
