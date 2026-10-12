@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse  # typing
+import copy
 import json
 import os
 import typing as T
@@ -123,7 +124,11 @@ class EnumType:
 
         # names for templating
         self.definition_name = f"{package_name}.{enum.name}"
-        self.proto_package = package_name
+        self.proto_package = (
+            f"{args.package_prefix}.{package_name}"
+            if getattr(args, "package_prefix", None)
+            else package_name
+        )
         self.proto_java_package = f"com.skydio.pbtypes.{package_name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
@@ -368,7 +373,11 @@ class StructType:
 
         # names for templating
         self.definition_name = f"{package.name}.{struct.name}"
-        self.proto_package = package.name
+        self.proto_package = (
+            f"{args.package_prefix}.{package.name}"
+            if getattr(args, "package_prefix", None)
+            else package.name
+        )
         self.proto_java_package = f"com.skydio.pbtypes.{package.name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
@@ -570,6 +579,11 @@ class SkymarshalProto(SkymarshalLanguage):
             help="path prefix to use when importing other generated .proto files",
         )
         parser.add_argument(
+            "--proto-package-prefix",
+            default=None,
+            help="override package-prefix for proto only",
+        )
+        parser.add_argument(
             "--proto-deps-info",
             nargs="*",
             help="JSON information about dependent files needed by Protobuf",
@@ -593,6 +607,10 @@ class SkymarshalProto(SkymarshalLanguage):
         """
         if not args.proto:
             return {}
+
+        if args.proto_package_prefix is not None:
+            args = copy.copy(args)
+            args.package_prefix = args.proto_package_prefix
 
         render = TemplateRenderer(os.path.dirname(__file__))
         type_map = make_proto_type_map(packages, args)
