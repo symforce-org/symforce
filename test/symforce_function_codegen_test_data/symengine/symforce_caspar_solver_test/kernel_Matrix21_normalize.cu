@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #include <cooperative_groups.h>
 #include <cooperative_groups/details/partitioning.h>
 #include <cooperative_groups/memcpy_async.h>
@@ -68,6 +71,13 @@ void Matrix21Normalize(double* precond_diag, unsigned int precond_diag_num_alloc
   Matrix21NormalizeKernel<<<n_blocks, 1024>>>(
       precond_diag, precond_diag_num_alloc, precond_tril, precond_tril_num_alloc, njtr,
       njtr_num_alloc, diag, out_normalized, out_normalized_num_alloc, problem_size);
+  // A launch that fails (e.g. from exceeding shared memory or register limits)
+  // otherwise leaves its outputs untouched without any error.
+  const cudaError_t launch_error = cudaGetLastError();
+  if (launch_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21NormalizeKernel launch failed: ") +
+                             cudaGetErrorString(launch_error));
+  }
 }
 
 }  // namespace caspar

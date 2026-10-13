@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #include <cooperative_groups.h>
 #include <cooperative_groups/details/partitioning.h>
 #include <cooperative_groups/memcpy_async.h>
@@ -41,6 +44,13 @@ void Matrix21Retract(double* Matrix21, unsigned int Matrix21_num_alloc, double* 
   Matrix21RetractKernel<<<n_blocks, 1024>>>(Matrix21, Matrix21_num_alloc, delta, delta_num_alloc,
                                             out_Matrix21_retracted,
                                             out_Matrix21_retracted_num_alloc, problem_size);
+  // A launch that fails (e.g. from exceeding shared memory or register limits)
+  // otherwise leaves its outputs untouched without any error.
+  const cudaError_t launch_error = cudaGetLastError();
+  if (launch_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21RetractKernel launch failed: ") +
+                             cudaGetErrorString(launch_error));
+  }
 }
 
 }  // namespace caspar

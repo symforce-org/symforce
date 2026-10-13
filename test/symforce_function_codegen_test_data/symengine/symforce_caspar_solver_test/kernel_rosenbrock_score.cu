@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #include <cooperative_groups.h>
 #include <cooperative_groups/details/partitioning.h>
 #include <cooperative_groups/memcpy_async.h>
@@ -55,6 +58,13 @@ void RosenbrockScore(double* x, unsigned int x_num_alloc, SharedIndex* x_indices
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
   RosenbrockScoreKernel<<<n_blocks, 1024>>>(x, x_num_alloc, x_indices, out_rTr, problem_size);
+  // A launch that fails (e.g. from exceeding shared memory or register limits)
+  // otherwise leaves its outputs untouched without any error.
+  const cudaError_t launch_error = cudaGetLastError();
+  if (launch_error != cudaSuccess) {
+    throw std::runtime_error(std::string("RosenbrockScoreKernel launch failed: ") +
+                             cudaGetErrorString(launch_error));
+  }
 }
 
 }  // namespace caspar

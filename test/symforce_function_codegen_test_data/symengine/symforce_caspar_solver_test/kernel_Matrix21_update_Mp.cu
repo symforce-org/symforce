@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #include <cooperative_groups.h>
 #include <cooperative_groups/details/partitioning.h>
 #include <cooperative_groups/memcpy_async.h>
@@ -57,6 +60,13 @@ void Matrix21UpdateMp(double* Matrix21_r_k, unsigned int Matrix21_r_k_num_alloc,
                                              Matrix21_Mp_num_alloc, beta, out_Matrix21_Mp_kp1,
                                              out_Matrix21_Mp_kp1_num_alloc, out_Matrix21_w,
                                              out_Matrix21_w_num_alloc, problem_size);
+  // A launch that fails (e.g. from exceeding shared memory or register limits)
+  // otherwise leaves its outputs untouched without any error.
+  const cudaError_t launch_error = cudaGetLastError();
+  if (launch_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21UpdateMpKernel launch failed: ") +
+                             cudaGetErrorString(launch_error));
+  }
 }
 
 }  // namespace caspar

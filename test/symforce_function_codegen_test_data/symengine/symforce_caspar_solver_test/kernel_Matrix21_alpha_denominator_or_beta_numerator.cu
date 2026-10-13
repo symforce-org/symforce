@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <string>
+
 #include <cooperative_groups.h>
 #include <cooperative_groups/details/partitioning.h>
 #include <cooperative_groups/memcpy_async.h>
@@ -45,6 +48,14 @@ void Matrix21AlphaDenominatorOrBetaNumerator(double* Matrix21_p_kp1,
   Matrix21AlphaDenominatorOrBetaNumeratorKernel<<<n_blocks, 1024>>>(
       Matrix21_p_kp1, Matrix21_p_kp1_num_alloc, Matrix21_w, Matrix21_w_num_alloc, Matrix21_out,
       problem_size);
+  // A launch that fails (e.g. from exceeding shared memory or register limits)
+  // otherwise leaves its outputs untouched without any error.
+  const cudaError_t launch_error = cudaGetLastError();
+  if (launch_error != cudaSuccess) {
+    throw std::runtime_error(
+        std::string("Matrix21AlphaDenominatorOrBetaNumeratorKernel launch failed: ") +
+        cudaGetErrorString(launch_error));
+  }
 }
 
 }  // namespace caspar
