@@ -113,7 +113,9 @@ class FileType(enum.Enum):
         elif self in {FileType.PYTHON, FileType.PYTHON_INTERFACE}:
             return format_util.format_py(file_contents, filename=str(CURRENT_DIR / format_filename))
         elif self == FileType.LCM:
-            return file_contents
+            return format_util.format_cpp(
+                file_contents, filename=str(CURRENT_DIR / format_filename)
+            )
         elif self == FileType.RUST:
             return format_util.format_rust(
                 file_contents, filename=str(CURRENT_DIR / format_filename)

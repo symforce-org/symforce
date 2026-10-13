@@ -8,4 +8,4 @@ package codegen_multi_function_test;
 
 struct outputs_2_t {
   double foo;
-}
+};

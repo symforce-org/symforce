@@ -135,11 +135,8 @@ class Package(AstNode):
             self.type_definitions[name] = t
 
     def __repr__(self) -> str:
-        lines: T.List[str] = []
-        for _, type_definition in self.type_definitions.items():
-            lines.extend(repr(type_definition).splitlines())
-        children = "\n".join(lines)
-        return f"package {self.name};\n{children}"
+        children = "\n\n".join(repr(t) for t in self.type_definitions.values())
+        return f"package {self.name};\n\n{children}"
 
 
 NotationSpecProperty = T.NamedTuple("NotationSpecProperty", [("name", str), ("type", str)])

@@ -13,15 +13,15 @@ struct values_vec_t {
   eigen_lcm.Vector4d rot_vec[3];
   double scalar_vec[3];
   eigen_lcm.Vector4d list_of_lists[3][3];
-}
+};
 
 struct inputs_constants_t {
   double epsilon;
-}
+};
 
 struct inputs_states_t {
   eigen_lcm.Vector2d p;
-}
+};
 
 struct inputs_t {
   double x;
@@ -36,7 +36,7 @@ struct inputs_t {
   eigen_lcm.MatrixXd big_matrix;
   eigen_lcm.Matrix4d small_matrix;
   inputs_states_t states;
-}
+};
 
 struct outputs_1_t {
   double foo;
@@ -46,4 +46,4 @@ struct outputs_1_t {
   values_vec_t values_vec_2D_out[2][1];
   eigen_lcm.MatrixXd big_matrix_from_small_matrix;
   eigen_lcm.Matrix4d small_matrix_from_big_matrix;
-}
+};

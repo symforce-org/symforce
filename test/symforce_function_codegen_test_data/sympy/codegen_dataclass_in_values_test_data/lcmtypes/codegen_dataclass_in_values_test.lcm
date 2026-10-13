@@ -8,4 +8,4 @@ package codegen_test;
 
 struct my_dataclass_t {
   eigen_lcm.Vector4d rot;
-}
+};

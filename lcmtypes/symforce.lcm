@@ -197,7 +197,7 @@ struct optimizer_params_t {
   double early_exit_min_absolute_error;
   // Allow uphill movements in the optimization?
   boolean enable_bold_updates;
-}
+};
 
 // Additional parameters for the GNCOptimizer
 struct optimizer_gnc_params_t {
@@ -223,7 +223,7 @@ struct optimizer_gnc_params_t {
   // convergence once, with the value of gnc_mu_key set to mu_initial and convergence threshold
   // early_exit_min_reduction.
   double mu_max;
-}
+};
 
 // Debug stats for a single iteration of a Levenberg Marquardt optimization
 struct optimization_iteration_t {
@@ -259,7 +259,7 @@ struct optimization_iteration_t {
   eigen_lcm.VectorXd residual;
   // The problem jacobian exactly if dense, or as CSC format sparse data column vector if sparse
   eigen_lcm.MatrixXd jacobian_values;
-}
+};
 
 // The structure of a sparse matrix in CSC format, not including the numerical values
 // For a description of the format, see
@@ -274,7 +274,8 @@ struct sparse_matrix_structure_t {
 
   // The shape (M, N) of the sparse matrix
   int64_t shape[2];
-}
+};
+
 #protobuf
 enum optimization_status_t {
   // Uninitialized enum value
@@ -285,7 +286,7 @@ enum optimization_status_t {
   HIT_ITERATION_LIMIT = 2,
   // The solver failed to converge for some reason (other than hitting the iteration limit)
   FAILED = 3,
-}
+};
 
 #protobuf
 enum levenberg_marquardt_solver_failure_reason_t : int32_t {
@@ -296,7 +297,7 @@ enum levenberg_marquardt_solver_failure_reason_t : int32_t {
   // The initial error was not finite (either NaN or Inf)
   INITIAL_ERROR_NOT_FINITE = 2,
 
-}
+};
 
 // Debug stats for a full optimization run
 struct optimization_stats_t {
@@ -333,19 +334,19 @@ struct optimization_stats_t {
   /// exposes L() (such as the default SparseCholeskySolver).  Otherwise, will be default
   /// constructed.
   sparse_matrix_structure_t cholesky_factor_sparsity;
-}
+};
 
 struct imu_biases_t {
   eigen_lcm.Vector3d accel_bias;
   eigen_lcm.Vector3d gyro_bias;
-}
+};
 
 struct imu_integrated_measurement_delta_t {
   double Dt;
   eigen_lcm.Quaterniond DR;
   eigen_lcm.Vector3d Dv;
   eigen_lcm.Vector3d Dp;
-}
+};
 
 struct imu_integrated_measurement_derivatives_t {
   eigen_lcm.Matrix3d DR_D_gyro_bias;
@@ -353,13 +354,13 @@ struct imu_integrated_measurement_derivatives_t {
   eigen_lcm.Matrix3d Dv_D_gyro_bias;
   eigen_lcm.Matrix3d Dp_D_accel_bias;
   eigen_lcm.Matrix3d Dp_D_gyro_bias;
-}
+};
 
 struct imu_integrated_measurement_t {
   imu_biases_t biases;
   imu_integrated_measurement_delta_t delta;
   imu_integrated_measurement_derivatives_t derivatives;
-}
+};
 
 // Serialized form of MarginalizationFactor for double precision
 struct marginalization_factor_t {
@@ -368,7 +369,7 @@ struct marginalization_factor_t {
   double c;
   values_t linearization_values;
   index_entry_t index[];
-}
+};
 
 // Serialized form of MarginalizationFactor for float precision
 struct marginalization_factorf_t {
@@ -377,4 +378,4 @@ struct marginalization_factorf_t {
   float c;
   valuesf_t linearization_values;
   index_entry_t index[];
-}
+};

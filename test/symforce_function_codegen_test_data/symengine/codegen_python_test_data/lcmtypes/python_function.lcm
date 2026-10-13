@@ -13,12 +13,12 @@ struct values_vec_t {
   eigen_lcm.Vector4d rot_vec[3];
   double scalar_vec[3];
   eigen_lcm.Vector4d list_of_lists[3][3];
-}
+};
 
 struct constants_t {
   double epsilon;
-}
+};
 
 struct states_t {
   eigen_lcm.Vector2d p;
-}
+};
