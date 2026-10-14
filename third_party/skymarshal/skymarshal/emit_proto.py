@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse  # typing
+import copy
 import json
 import os
 import typing as T
@@ -123,7 +124,11 @@ class EnumType:
 
         # names for templating
         self.definition_name = f"{package_name}.{enum.name}"
-        self.proto_package = package_name
+        self.proto_package = (
+            f"{args.package_prefix}.{package_name}"
+            if getattr(args, "package_prefix", None)
+            else package_name
+        )
         self.proto_java_package = f"com.skydio.pbtypes.{package_name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
@@ -147,7 +152,11 @@ class EnumType:
             self.proto_cpp_type = self.proto_cpp_container_type
 
         # filenames for generated converter sources
-        self.proto_filename = f"{package_name}/pbtypes/{proto_filename_base}.proto"
+        self.proto_filename = (
+            f"{proto_filename_base}.proto"
+            if getattr(args, "proto_flat_output", False)
+            else f"{package_name}/pbtypes/{proto_filename_base}.proto"
+        )
 
         # include paths
         self.proto_import_path = os.path.join(self.args.proto_import_path, self.proto_filename)
@@ -368,7 +377,11 @@ class StructType:
 
         # names for templating
         self.definition_name = f"{package.name}.{struct.name}"
-        self.proto_package = package.name
+        self.proto_package = (
+            f"{args.package_prefix}.{package.name}"
+            if getattr(args, "package_prefix", None)
+            else package.name
+        )
         self.proto_java_package = f"com.skydio.pbtypes.{package.name}"
         self.proto_java_outer_classname = "{}Proto".format(
             snakecase_to_camelcase(camelcase_to_snakecase(proto_filename_base))
@@ -379,7 +392,11 @@ class StructType:
         self.lcm_cpp_type = f"::{package.name}::{struct.name}"
 
         # filenames for generated files sources
-        self.proto_filename = f"{package.name}/pbtypes/{proto_filename_base}.proto"
+        self.proto_filename = (
+            f"{proto_filename_base}.proto"
+            if getattr(args, "proto_flat_output", False)
+            else f"{package.name}/pbtypes/{proto_filename_base}.proto"
+        )
         self.protolcm_filename_h = f"{package.name}/{proto_filename_base}.h"
         self.protolcm_filename_cc = f"{package.name}/{proto_filename_base}.cc"
 
@@ -570,6 +587,17 @@ class SkymarshalProto(SkymarshalLanguage):
             help="path prefix to use when importing other generated .proto files",
         )
         parser.add_argument(
+            "--proto-package-prefix",
+            default=None,
+            help="override package-prefix for proto only",
+        )
+        parser.add_argument(
+            "--proto-flat-output",
+            action="store_true",
+            help="write the generated .proto directly under --proto-path, "
+            "skipping the <package>/pbtypes/ subdirectory convention",
+        )
+        parser.add_argument(
             "--proto-deps-info",
             nargs="*",
             help="JSON information about dependent files needed by Protobuf",
@@ -593,6 +621,11 @@ class SkymarshalProto(SkymarshalLanguage):
         """
         if not args.proto:
             return {}
+
+        proto_package_prefix = getattr(args, "proto_package_prefix", None)
+        if proto_package_prefix is not None:
+            args = copy.copy(args)
+            args.package_prefix = proto_package_prefix
 
         render = TemplateRenderer(os.path.dirname(__file__))
         type_map = make_proto_type_map(packages, args)
