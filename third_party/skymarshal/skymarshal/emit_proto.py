@@ -152,7 +152,11 @@ class EnumType:
             self.proto_cpp_type = self.proto_cpp_container_type
 
         # filenames for generated converter sources
-        self.proto_filename = f"{package_name}/pbtypes/{proto_filename_base}.proto"
+        self.proto_filename = (
+            f"{proto_filename_base}.proto"
+            if getattr(args, "proto_flat_output", False)
+            else f"{package_name}/pbtypes/{proto_filename_base}.proto"
+        )
 
         # include paths
         self.proto_import_path = os.path.join(self.args.proto_import_path, self.proto_filename)
@@ -388,7 +392,11 @@ class StructType:
         self.lcm_cpp_type = f"::{package.name}::{struct.name}"
 
         # filenames for generated files sources
-        self.proto_filename = f"{package.name}/pbtypes/{proto_filename_base}.proto"
+        self.proto_filename = (
+            f"{proto_filename_base}.proto"
+            if getattr(args, "proto_flat_output", False)
+            else f"{package.name}/pbtypes/{proto_filename_base}.proto"
+        )
         self.protolcm_filename_h = f"{package.name}/{proto_filename_base}.h"
         self.protolcm_filename_cc = f"{package.name}/{proto_filename_base}.cc"
 
@@ -582,6 +590,12 @@ class SkymarshalProto(SkymarshalLanguage):
             "--proto-package-prefix",
             default=None,
             help="override package-prefix for proto only",
+        )
+        parser.add_argument(
+            "--proto-flat-output",
+            action="store_true",
+            help="write the generated .proto directly under --proto-path, "
+            "skipping the <package>/pbtypes/ subdirectory convention",
         )
         parser.add_argument(
             "--proto-deps-info",
