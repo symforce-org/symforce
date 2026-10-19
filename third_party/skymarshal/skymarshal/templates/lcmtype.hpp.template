@@ -8,11 +8,11 @@
 {% endif %}
  **/
 
-#include <lcm/lcm_coretypes.h>
-#include <lcm/lcm_cpptypes.hpp>
-
 #ifndef __{{lcmtype.underscored}}_hpp__
 #define __{{lcmtype.underscored}}_hpp__
+
+#include <lcm/lcm_coretypes.h>
+#include <lcm/lcm_cpptypes.hpp>
 
 {% if not lcmtype.cpp_no_print_helpers and not lcmtype.args.cpp_no_print_helpers %}
 {% if not lcmtype.cpp_display_everywhere %}

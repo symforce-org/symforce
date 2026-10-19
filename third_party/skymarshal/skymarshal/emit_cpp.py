@@ -193,10 +193,9 @@ class CppInclude:
     def directive(self):
         name = self.absolute_path
         if self.std is not None:
-            name = f"<{name}>"
-        else:
-            name = f'"{name}"'
-        return f"#include {name}\n"
+            return f"#include <{name}>\n"
+        # A struct's member types are part of its interface, so it exports their headers.
+        return f'#include "{name}"  // IWYU pragma: export\n'
 
     @property
     def package(self):

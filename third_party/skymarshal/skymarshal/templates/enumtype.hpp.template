@@ -8,10 +8,10 @@
 {% endif %}
  **/
 
-#include <lcm/lcm_coretypes.h>
-
 #ifndef __{{enumtype.underscored}}_hpp__
 #define __{{enumtype.underscored}}_hpp__
+
+#include <lcm/lcm_coretypes.h>
 
 #include <array>
 #include <ostream>
