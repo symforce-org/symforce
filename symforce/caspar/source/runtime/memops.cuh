@@ -246,6 +246,43 @@ __forceinline__ __device__ void WriteSum4(StorageT* const inout_shared, const Ke
   inout_shared[threadIdx.x * 4 + 3] = w;
 }
 
+#if defined(__clang__) && !defined(__NVCC__)
+/**
+ * Sums val over the active lanes of the warp that share the same label. Returns the sum on the
+ * lowest such lane, which is flagged with is_leader.
+ *
+ * Replaces cg::reduce over cg::labeled_partition on Clang CUDA, where floating-point
+ * coalesced_group reductions fall back to a non-contiguous inclusive scan whose shuffle loop trip
+ * counts vary per group, which can produce incorrect results in divergent code. This is slower
+ * under nvcc, so it is only used on Clang.
+ */
+template <typename StorageT>
+__forceinline__ __device__ StorageT LabeledWarpSum(const uint label, const StorageT val,
+                                                   bool* const is_leader) {
+  const unsigned int lane_id = threadIdx.x & 31;
+  const unsigned int active_mask = __activemask();
+  StorageT tot = 0;
+  int group_leader = -1;
+  for (int lane = 0; lane < 32; ++lane) {
+    if ((active_mask & (1u << lane)) == 0) {
+      continue;
+    }
+    const uint other_label = __shfl_sync(active_mask, label, lane);
+    const StorageT other_val = __shfl_sync(active_mask, val, lane);
+    if (other_label == label) {
+      if (group_leader == -1) {
+        group_leader = lane;
+      }
+      if (lane_id == static_cast<unsigned int>(group_leader)) {
+        tot += other_val;
+      }
+    }
+  }
+  *is_leader = lane_id == static_cast<unsigned int>(group_leader);
+  return tot;
+}
+#endif
+
 /**
  * Function used to perform collaborative reductions. Read more on caspar.argtypes.accessors.Sum.
  */
@@ -260,68 +297,33 @@ __forceinline__ __device__ void FlushSumShared(StorageT* const output, const uin
   if (idx.argsort != 0xffff) {  // 0xffff indicates the thread is not used.
     unique = indices[indices[idx.argsort].target].unique;
   }
-#if defined(__clang__) && !defined(__NVCC__)
-  // Clang CUDA: cg::reduce on a floating-point coalesced_group from labeled_partition falls back
-  // to a non-contiguous inclusive scan whose shuffle loop trip counts vary per group, which can
-  // produce incorrect reductions inside this divergent branch. Use an explicit uniform warp
-  // shuffle over __activemask() instead. This is slower under nvcc, so it is only used on clang.
-  const unsigned int lane_id = threadIdx.x & 31;
-
-#pragma unroll
-  for (int i = 0; i < dim_target; i++) {
-    const SharedIndex idx = indices[threadIdx.x];
-    StorageT tot = 0;
-    int group_leader = -1;
-    if (idx.argsort != 0xffff) {  // 0xffff indicates the thread is not used.
-      const StorageT my_val = inout_shared[idx.argsort * dim_target + i];
-      const unsigned int active_mask = __activemask();
-      for (int lane = 0; lane < 32; ++lane) {
-        if ((active_mask & (1u << lane)) == 0) {
-          continue;
-        }
-        const uint other_unique = __shfl_sync(active_mask, unique, lane);
-        const StorageT other_tot = __shfl_sync(active_mask, my_val, lane);
-        if (other_unique == unique) {
-          if (group_leader == -1) {
-            group_leader = lane;
-          }
-          if (lane_id == static_cast<unsigned int>(group_leader)) {
-            tot += other_tot;
-          }
-        }
-      }
-    }
-    __syncthreads();
-    inout_shared[threadIdx.x * dim_target + i] = 0.0f;
-    __syncthreads();
-
-    // 0xffff indicates the thread is not used.
-    if (idx.argsort != 0xffff && lane_id == static_cast<unsigned int>(group_leader)) {
-      atomicAdd_block(&inout_shared[indices[idx.argsort].target * dim_target + i], tot);
-    }
-    __syncthreads();
-  }
-#else
+#if !defined(__clang__) || defined(__NVCC__)  // Clang uses LabeledWarpSum instead.
   const cg::coalesced_group group = cg::labeled_partition(cg::coalesced_threads(), unique);
+#endif
 
 #pragma unroll
   for (int i = 0; i < dim_target; i++) {
     const SharedIndex idx = indices[threadIdx.x];
     StorageT tot = 0;
+    bool is_leader = false;
     if (idx.argsort != 0xffff) {  // 0xffff indicates the thread is not used.
+#if defined(__clang__) && !defined(__NVCC__)
+      tot = LabeledWarpSum(unique, inout_shared[idx.argsort * dim_target + i], &is_leader);
+#else
       tot = cg::reduce(group, inout_shared[idx.argsort * dim_target + i], cg::plus<StorageT>());
+      is_leader = group.thread_rank() == 0;
+#endif
     }
     __syncthreads();
     inout_shared[threadIdx.x * dim_target + i] = 0.0f;
     __syncthreads();
 
     // 0xffff indicates the thread is not used.
-    if (idx.argsort != 0xffff && group.thread_rank() == 0) {
+    if (idx.argsort != 0xffff && is_leader) {
       atomicAdd_block(&inout_shared[indices[idx.argsort].target * dim_target + i], tot);
     }
     __syncthreads();
   }
-#endif
 
   constexpr uint dim_aligned = dim_target == 3 ? 4 : dim_target;
   for (int i = 0; i < dim_target; i++) {
