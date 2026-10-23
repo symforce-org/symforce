@@ -123,6 +123,46 @@ TEST_CASE("A solve that accepts non-monotonically still returns what it reports"
   CHECK(ScoreOf(solve.x) == Catch::Approx(solve.result.final_score).epsilon(1e-9));
 }
 
+TEST_CASE("Solver handles shared nodes and partial blocks", "[caspar_solver_cuda_test]") {
+  REQUIRE(HaveDevice());
+
+  constexpr size_t kNumSharedNodes = 64;
+  constexpr size_t kNumFactors = 1500;
+  caspar::SolverParams<double> params = ParamsWithIterations(50);
+  caspar::GraphSolver solver(params, kNumSharedNodes, kNumFactors);
+
+  std::vector<unsigned int> indices(kNumFactors);
+  for (size_t i = 0; i < kNumFactors; i++) {
+    indices[i] = static_cast<unsigned int>(i % kNumSharedNodes);
+  }
+  std::vector<double> x(2 * kNumSharedNodes);
+  for (size_t i = 0; i < kNumSharedNodes; i++) {
+    x[2 * i + 0] = -1.2;
+    x[2 * i + 1] = 1.0;
+  }
+
+  solver.SetRosenbrockXIndicesFromHost(indices.data(), kNumFactors);
+  solver.SetMatrix21NodesFromStackedHost(x.data(), 0, kNumSharedNodes);
+  solver.finish_indices();
+
+  const caspar::SolveResult result =
+      solver.solve(/* print_progress */ false, /* verbose_logging */ true);
+  solver.GetMatrix21NodesToStackedHost(x.data(), 0, kNumSharedNodes);
+
+  double expected_score = 0.0;
+  for (size_t i = 0; i < kNumFactors; i++) {
+    const size_t node = indices[i];
+    const double r0 = 10.0 * (x[2 * node + 1] - x[2 * node + 0] * x[2 * node + 0]);
+    const double r1 = 1.0 - x[2 * node + 0];
+    expected_score += 0.5 * (r0 * r0 + r1 * r1);
+  }
+
+  CHECK(std::isfinite(result.final_score));
+  CHECK(result.final_score < result.initial_score);
+  CHECK(x[0] > -1.2);
+  CHECK(expected_score == Catch::Approx(result.final_score).epsilon(1e-9));
+}
+
 TEST_CASE("A solver with no inner iterations is rejected", "[caspar_solver_cuda_test]") {
   REQUIRE(HaveDevice());
 
