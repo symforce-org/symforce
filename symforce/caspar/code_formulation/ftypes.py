@@ -357,6 +357,16 @@ class Abs(Func):
         return f"{outs[0]} = {_fname('fabs', dtype)}({args[0]});"
 
 
+class Floor(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('floor', dtype)}({args[0]});"
+
+
+class Ceil(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('ceil', dtype)}({args[0]});"
+
+
 class Sign(Func):
     def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
         if dtype:
@@ -411,6 +421,58 @@ class ATan2(Func):
         return f"{outs[0]} = {_fname('atan2', dtype)}({args[0]}, {args[1]});"
 
 
+# HYPERBOLIC FUNCTIONS
+class Sinh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('sinh', dtype)}({args[0]});"
+
+
+class Cosh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('cosh', dtype)}({args[0]});"
+
+
+class Tanh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('tanh', dtype)}({args[0]});"
+
+
+class ASinh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('asinh', dtype)}({args[0]});"
+
+
+class ACosh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('acosh', dtype)}({args[0]});"
+
+
+class ATanh(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('atanh', dtype)}({args[0]});"
+
+
+# SPECIAL FUNCTIONS
+class Erf(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('erf', dtype)}({args[0]});"
+
+
+class Erfc(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('erfc', dtype)}({args[0]});"
+
+
+class LGamma(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('lgamma', dtype)}({args[0]});"
+
+
+class TGamma(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('tgamma', dtype)}({args[0]});"
+
+
 class SinCos(Func):
     n_outs = 2
 
@@ -445,6 +507,16 @@ class Exponent(Func):
 class Pow(Exponent):
     def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
         return f"{outs[0]} = {_fname('pow', dtype)}({args[0]}, {args[1]});"
+
+
+class Exp(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('exp', dtype)}({args[0]});"
+
+
+class Log(Func):
+    def assign_code(self, outs: list[str], args: list[str], dtype: DType) -> str:
+        return f"{outs[0]} = {_fname('log', dtype)}({args[0]});"
 
 
 class Square(Exponent):
@@ -533,4 +605,18 @@ EXPR_TO_FUNC: dict[T.Type[sf.Basic], T.Type[Func]] = {
     sf.Min: Min,
     sf.Max: Max,
     sf.Abs: Abs,
+    symengine_wrapper.floor: Floor,
+    symengine_wrapper.ceiling: Ceil,
+    symengine_wrapper.log: Log,
+    symengine_wrapper.sinh: Sinh,
+    symengine_wrapper.cosh: Cosh,
+    symengine_wrapper.tanh: Tanh,
+    symengine_wrapper.asinh: ASinh,
+    symengine_wrapper.acosh: ACosh,
+    symengine_wrapper.atanh: ATanh,
+    symengine_wrapper.erf: Erf,
+    symengine_wrapper.erfc: Erfc,
+    symengine_wrapper.loggamma: LGamma,
+    # symengine_wrapper.gamma is a function that returns an instance of the class.
+    type(symengine_wrapper.gamma(symengine_wrapper.Symbol("x"))): TGamma,
 }

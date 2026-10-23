@@ -26,12 +26,15 @@ def expr_to_val(dabseg: Dabseg, expr: sf.Basic, expr_map: dict[sf.Basic, Val]) -
     if (out := expr_map.get(expr)) is not None:
         return out
 
-    if expr.is_Number or isinstance(expr, (int, float)):
+    # Atoms other than symbols are constants, including number symbols like pi that aren't Numbers.
+    if isinstance(expr, (int, float)) or expr.is_Number or not (expr.args or expr.is_Symbol):
         return expr_map.setdefault(expr, dabseg.add_call(ftypes.Store(data=float(expr)))[0])  # type: ignore[arg-type]
 
     func: Call
     if expr.is_Symbol:
         raise ValueError(f"Symbol {expr} not found in arg_values")
+    elif expr.is_Pow and expr.args[0] == sf.S.Exp1:
+        func = dabseg.add_call(ftypes.Exp(), args=(expr_to_val(dabseg, expr.args[1], expr_map),))
     elif isinstance(expr, sf.Piecewise):
         args = list(expr.args)
         if len(args) != 4:
