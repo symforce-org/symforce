@@ -364,6 +364,18 @@ void {{ solver.struct_name }}::DoNormalize() {
         {{num_key(nodetype)}}
     );
     {% else %}
+    if ({{num_key(nodetype)}} < 2) {
+      // Without a second node there are no off-diagonal blocks, and the cyclic reduction would
+      // write a second node's solution.
+      {{nodetype.__name__}}Normalize(
+          {{node_key(nodetype, "precond_diag")}}, {{num_key(nodetype)}},
+          {{node_key(nodetype, "precond_tril")}}, {{num_key(nodetype)}},
+          {{node_key(nodetype, "r_k")}}, {{num_key(nodetype)}},
+          {{solver_key("current_diag")}},
+          z, {{num_key(nodetype)}},
+          {{num_key(nodetype)}}
+      );
+    } else {
       Zero(z, pcg_iter_ == 0 ? {{node_key(nodetype, "p_end_")}} : {{node_key(nodetype, "z_end_")}});
       {{nodetype.__name__}}TridigMakeEq(
         {{node_key(nodetype, "precond_diag")}}, {{num_key(nodetype)}},
@@ -393,9 +405,9 @@ void {{ solver.struct_name }}::DoNormalize() {
       i--;
 
       {{nodetype.__name__}}CyclicReductionSolveTwo(
-        {{node_key(nodetype, "tridig_eq")}}, {{num_key(nodetype)}}, offset, (2<<i),
+        {{node_key(nodetype, "tridig_eq")}}, {{num_key(nodetype)}}, offset, (1<<(i+1)),
         z, {{num_key(nodetype)}}, offset, 1,
-        z, {{num_key(nodetype)}}, offset+(2<<i), 1,
+        z, {{num_key(nodetype)}}, offset+(1<<(i+1)), 1,
         1
       );
 
@@ -412,6 +424,7 @@ void {{ solver.struct_name }}::DoNormalize() {
         offset += shift* (!is_odd);
         remaining = remaining*2-is_odd;
       }
+    }
     {% endif %}
     {% endfor%}
 }
