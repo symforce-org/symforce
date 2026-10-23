@@ -20,7 +20,10 @@ __global__ void __launch_bounds__(1024, 1)
                                   unsigned int out_Matrix21_step_kp1_num_alloc,
                                   size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[8192];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
 
   double r0 = 0, r1 = 0, r2 = 0;
 
@@ -49,9 +52,16 @@ void Matrix21UpdateStepFirst(double* Matrix21_p_kp1, unsigned int Matrix21_p_kp1
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  Matrix21UpdateStepFirstKernel<<<n_blocks, 1024>>>(Matrix21_p_kp1, Matrix21_p_kp1_num_alloc, alpha,
-                                                    out_Matrix21_step_kp1,
-                                                    out_Matrix21_step_kp1_num_alloc, problem_size);
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      Matrix21UpdateStepFirstKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 8192);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21UpdateStepFirstKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  Matrix21UpdateStepFirstKernel<<<n_blocks, 1024, 8192>>>(
+      Matrix21_p_kp1, Matrix21_p_kp1_num_alloc, alpha, out_Matrix21_step_kp1,
+      out_Matrix21_step_kp1_num_alloc, problem_size);
   // A launch that fails (e.g. from exceeding shared memory or register limits)
   // otherwise leaves its outputs untouched without any error.
   const cudaError_t launch_error = cudaGetLastError();

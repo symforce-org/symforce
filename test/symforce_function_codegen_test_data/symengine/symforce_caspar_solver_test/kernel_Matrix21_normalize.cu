@@ -21,7 +21,10 @@ __global__ void __launch_bounds__(1024, 1)
                             double* out_normalized, unsigned int out_normalized_num_alloc,
                             size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[8192];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
 
   double r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0, r8 = 0;
 
@@ -68,7 +71,14 @@ void Matrix21Normalize(double* precond_diag, unsigned int precond_diag_num_alloc
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  Matrix21NormalizeKernel<<<n_blocks, 1024>>>(
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      Matrix21NormalizeKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 8192);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21NormalizeKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  Matrix21NormalizeKernel<<<n_blocks, 1024, 8192>>>(
       precond_diag, precond_diag_num_alloc, precond_tril, precond_tril_num_alloc, njtr,
       njtr_num_alloc, diag, out_normalized, out_normalized_num_alloc, problem_size);
   // A launch that fails (e.g. from exceeding shared memory or register limits)

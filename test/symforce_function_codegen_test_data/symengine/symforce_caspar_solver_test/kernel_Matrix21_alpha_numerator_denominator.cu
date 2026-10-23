@@ -19,7 +19,10 @@ __global__ void __launch_bounds__(1024, 1) Matrix21AlphaNumeratorDenominatorKern
     unsigned int Matrix21_r_k_num_alloc, double* Matrix21_w, unsigned int Matrix21_w_num_alloc,
     double* const Matrix21_total_ag, double* const Matrix21_total_ac, size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[256];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
 
   __shared__ double Matrix21_total_ag_local[1];
 
@@ -58,7 +61,14 @@ void Matrix21AlphaNumeratorDenominator(double* Matrix21_p_kp1,
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  Matrix21AlphaNumeratorDenominatorKernel<<<n_blocks, 1024>>>(
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      Matrix21AlphaNumeratorDenominatorKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 256);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21AlphaNumeratorDenominatorKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  Matrix21AlphaNumeratorDenominatorKernel<<<n_blocks, 1024, 256>>>(
       Matrix21_p_kp1, Matrix21_p_kp1_num_alloc, Matrix21_r_k, Matrix21_r_k_num_alloc, Matrix21_w,
       Matrix21_w_num_alloc, Matrix21_total_ag, Matrix21_total_ac, problem_size);
   // A launch that fails (e.g. from exceeding shared memory or register limits)

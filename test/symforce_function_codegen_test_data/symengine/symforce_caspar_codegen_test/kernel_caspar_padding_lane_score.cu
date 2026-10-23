@@ -20,17 +20,26 @@ __global__ void __launch_bounds__(1024, 1) CasparPaddingLaneScoreKernel(
     unsigned int calibration_num_alloc, SharedIndex* calibration_indices, float* pixel,
     unsigned int pixel_num_alloc, float* const out_rTr, size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[16384];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
+  constexpr unsigned int cam_T_world_indices_shared_offset = 16384;
+  constexpr unsigned int point_indices_shared_offset = 24576;
+  constexpr unsigned int calibration_indices_shared_offset = 32768;
 
-  __shared__ SharedIndex cam_T_world_indices_loc[1024];
+  SharedIndex* const cam_T_world_indices_loc =
+      reinterpret_cast<SharedIndex*>(inout_shared + cam_T_world_indices_shared_offset);
   cam_T_world_indices_loc[threadIdx.x] =
       (global_thread_idx < problem_size ? cam_T_world_indices[global_thread_idx]
                                         : SharedIndex{0xffffffff, 0xffff, 0xffff});
-  __shared__ SharedIndex point_indices_loc[1024];
+  SharedIndex* const point_indices_loc =
+      reinterpret_cast<SharedIndex*>(inout_shared + point_indices_shared_offset);
   point_indices_loc[threadIdx.x] =
       (global_thread_idx < problem_size ? point_indices[global_thread_idx]
                                         : SharedIndex{0xffffffff, 0xffff, 0xffff});
-  __shared__ SharedIndex calibration_indices_loc[1024];
+  SharedIndex* const calibration_indices_loc =
+      reinterpret_cast<SharedIndex*>(inout_shared + calibration_indices_shared_offset);
   calibration_indices_loc[threadIdx.x] =
       (global_thread_idx < problem_size ? calibration_indices[global_thread_idx]
                                         : SharedIndex{0xffffffff, 0xffff, 0xffff});
@@ -158,7 +167,14 @@ void CasparPaddingLaneScore(float* cam_T_world, unsigned int cam_T_world_num_all
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  CasparPaddingLaneScoreKernel<<<n_blocks, 1024>>>(
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      CasparPaddingLaneScoreKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 40960);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("CasparPaddingLaneScoreKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  CasparPaddingLaneScoreKernel<<<n_blocks, 1024, 40960>>>(
       cam_T_world, cam_T_world_num_alloc, cam_T_world_indices, point, point_num_alloc,
       point_indices, calibration, calibration_num_alloc, calibration_indices, pixel,
       pixel_num_alloc, out_rTr, problem_size);

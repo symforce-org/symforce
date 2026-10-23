@@ -22,7 +22,10 @@ __global__ void __launch_bounds__(1024, 1)
                                        unsigned int Matrix21_njtr_num_alloc,
                                        double* const out_Matrix21_pred_dec, size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[8192];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
 
   __shared__ double out_Matrix21_pred_dec_local[1];
 
@@ -64,7 +67,14 @@ void Matrix21PredDecreaseTimesTwo(double* Matrix21_step, unsigned int Matrix21_s
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  Matrix21PredDecreaseTimesTwoKernel<<<n_blocks, 1024>>>(
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      Matrix21PredDecreaseTimesTwoKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 8192);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("Matrix21PredDecreaseTimesTwoKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  Matrix21PredDecreaseTimesTwoKernel<<<n_blocks, 1024, 8192>>>(
       Matrix21_step, Matrix21_step_num_alloc, Matrix21_precond_diag,
       Matrix21_precond_diag_num_alloc, diag, Matrix21_njtr, Matrix21_njtr_num_alloc,
       out_Matrix21_pred_dec, problem_size);

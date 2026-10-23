@@ -29,9 +29,14 @@ __launch_bounds__({{kernel.block_size}}, 1)
     size_t problem_size) {
   {% if kernel.code_lines %}
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  {% if kernel.shared_size_req > 0 %}
-  __shared__ uint8_t inout_shared[{{kernel.shared_size_req}}];
+  {% if kernel.dynamic_shared_bytes > 0 %}
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so that it may exceed
+  // the 48 KB static shared memory limit (see the launch below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
   {% endif %}
+  {% for idx_name, offset in kernel.shared_index_offsets.items() %}
+  constexpr unsigned int {{idx_name}}_indices_shared_offset = {{offset}};
+  {% endfor %}
   {% endif %}
 
   {% for accessor in kernel.accessors %}
@@ -88,7 +93,17 @@ void {{parts_to_pascal(kernel.name)}} (
   {{accessor.pre_kernel_code()}}
   {% endif %}
   {% endfor %}
-  {{parts_to_pascal(kernel.name)}}Kernel<<<n_blocks, {{kernel.block_size}}>>>(
+  {% if kernel.dynamic_shared_bytes > 0 %}
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      {{parts_to_pascal(kernel.name)}}Kernel, cudaFuncAttributeMaxDynamicSharedMemorySize,
+      {{kernel.dynamic_shared_bytes}});
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("{{parts_to_pascal(kernel.name)}}Kernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  {% endif %}
+  {{parts_to_pascal(kernel.name)}}Kernel<<<n_blocks, {{kernel.block_size}}, {{kernel.dynamic_shared_bytes}}>>>(
       {% for accessor in kernel.accessors %}
       {% for name in accessor.kernel_sig %}
       {{name}},

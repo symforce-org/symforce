@@ -357,7 +357,8 @@ class ReadShared(_UsingIndexData, _UsingSharedMem, _ReadAccessor):
     }
 
     KERNEL_INIT_LINES_TEMPLATE = textwrap.dedent("""
-    __shared__ SharedIndex {idx_name}_indices_loc[{block_size}];
+    SharedIndex* const {idx_name}_indices_loc =
+        reinterpret_cast<SharedIndex*>(inout_shared + {idx_name}_indices_shared_offset);
     {idx_name}_indices_loc[threadIdx.x] = (global_thread_idx<problem_size ?
                                    {idx_name}_indices[global_thread_idx] :
                                    SharedIndex{{0xffffffff, 0xffff, 0xffff}});
@@ -426,7 +427,8 @@ class AddSharedSum(_UsingIndexData, _UsingSharedMem, _AddAccessor):
     }
 
     KERNEL_INIT_LINES_TEMPLATE = textwrap.dedent("""
-    __shared__ SharedIndex {idx_name}_indices_loc[{block_size}];
+    SharedIndex* const {idx_name}_indices_loc =
+        reinterpret_cast<SharedIndex*>(inout_shared + {idx_name}_indices_shared_offset);
     {idx_name}_indices_loc[threadIdx.x] = (global_thread_idx<problem_size ?
                                    {idx_name}_indices[global_thread_idx] :
                                    SharedIndex{{0xffffffff, 0xffff, 0xffff}});

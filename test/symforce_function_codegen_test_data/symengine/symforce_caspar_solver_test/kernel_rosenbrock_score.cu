@@ -18,9 +18,14 @@ __global__ void __launch_bounds__(1024, 1)
     RosenbrockScoreKernel(double* x, unsigned int x_num_alloc, SharedIndex* x_indices,
                           double* const out_rTr, size_t problem_size) {
   const int global_thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  __shared__ uint8_t inout_shared[16384];
+  // Scratch data, then the shared indices of each shared accessor; dynamic, so
+  // that it may exceed the 48 KB static shared memory limit (see the launch
+  // below).
+  extern __shared__ __align__(16) uint8_t inout_shared[];
+  constexpr unsigned int x_indices_shared_offset = 16384;
 
-  __shared__ SharedIndex x_indices_loc[1024];
+  SharedIndex* const x_indices_loc =
+      reinterpret_cast<SharedIndex*>(inout_shared + x_indices_shared_offset);
   x_indices_loc[threadIdx.x] =
       (global_thread_idx < problem_size ? x_indices[global_thread_idx]
                                         : SharedIndex{0xffffffff, 0xffff, 0xffff});
@@ -57,7 +62,15 @@ void RosenbrockScore(double* x, unsigned int x_num_alloc, SharedIndex* x_indices
   }
 
   const int n_blocks = (problem_size + 1024 - 1) / 1024;
-  RosenbrockScoreKernel<<<n_blocks, 1024>>>(x, x_num_alloc, x_indices, out_rTr, problem_size);
+  // Kernels using more than 48 KB of shared memory per block must opt in.
+  static const cudaError_t attribute_error = cudaFuncSetAttribute(
+      RosenbrockScoreKernel, cudaFuncAttributeMaxDynamicSharedMemorySize, 24576);
+  if (attribute_error != cudaSuccess) {
+    throw std::runtime_error(std::string("RosenbrockScoreKernel: ") +
+                             cudaGetErrorString(attribute_error));
+  }
+  RosenbrockScoreKernel<<<n_blocks, 1024, 24576>>>(x, x_num_alloc, x_indices, out_rTr,
+                                                   problem_size);
   // A launch that fails (e.g. from exceeding shared memory or register limits)
   // otherwise leaves its outputs untouched without any error.
   const cudaError_t launch_error = cudaGetLastError();
