@@ -260,6 +260,11 @@ __forceinline__ __device__ void FlushSumShared(StorageT* const output, const uin
   if (idx.argsort != 0xffff) {  // 0xffff indicates the thread is not used.
     unique = indices[indices[idx.argsort].target].unique;
   }
+#if defined(__clang__) && !defined(__NVCC__)
+  // Clang CUDA: cg::reduce on a floating-point coalesced_group from labeled_partition falls back
+  // to a non-contiguous inclusive scan whose shuffle loop trip counts vary per group, which can
+  // produce incorrect reductions inside this divergent branch. Use an explicit uniform warp
+  // shuffle over __activemask() instead. This is slower under nvcc, so it is only used on clang.
   const unsigned int lane_id = threadIdx.x & 31;
 
 #pragma unroll
@@ -296,6 +301,27 @@ __forceinline__ __device__ void FlushSumShared(StorageT* const output, const uin
     }
     __syncthreads();
   }
+#else
+  const cg::coalesced_group group = cg::labeled_partition(cg::coalesced_threads(), unique);
+
+#pragma unroll
+  for (int i = 0; i < dim_target; i++) {
+    const SharedIndex idx = indices[threadIdx.x];
+    StorageT tot = 0;
+    if (idx.argsort != 0xffff) {  // 0xffff indicates the thread is not used.
+      tot = cg::reduce(group, inout_shared[idx.argsort * dim_target + i], cg::plus<StorageT>());
+    }
+    __syncthreads();
+    inout_shared[threadIdx.x * dim_target + i] = 0.0f;
+    __syncthreads();
+
+    // 0xffff indicates the thread is not used.
+    if (idx.argsort != 0xffff && group.thread_rank() == 0) {
+      atomicAdd_block(&inout_shared[indices[idx.argsort].target * dim_target + i], tot);
+    }
+    __syncthreads();
+  }
+#endif
 
   constexpr uint dim_aligned = dim_target == 3 ? 4 : dim_target;
   for (int i = 0; i < dim_target; i++) {
