@@ -22,9 +22,9 @@ CudaArray = T.Any
 
 {% if solver is not none %}
 class ExitReason:
-    MAX_ITERATIONS: int
-    CONVERGED_SCORE_THRESHOLD: int
-    CONVERGED_DIAG_EXIT: int
+    MAX_ITERATIONS: T.ClassVar[ExitReason]
+    CONVERGED_SCORE_THRESHOLD: T.ClassVar[ExitReason]
+    CONVERGED_DIAG_EXIT: T.ClassVar[ExitReason]
 
 class IterationData:
     solver_iter: int
