@@ -8,7 +8,9 @@
 #include <random>
 #include <thread>
 
+#include <Eigen/Cholesky>
 #include <Eigen/Core>
+#include <Eigen/Eigenvalues>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -244,6 +246,134 @@ TEST_CASE("Test ImuPreintegrator.covariance", "[slam]") {
 
   // NOTE(brad): 0.05 is also somewhat arbitrary. Seemed reasonable.
   CHECK(weighted_relative_error.maxCoeff() < 0.05);
+}
+
+Eigen::Matrix3d SkewSymmetric(const Ref<const Vector3d>& v) {
+  Eigen::Matrix3d m;
+  m << 0, -v.z(), v.y(), v.z(), 0, -v.x(), -v.y(), v.x(), 0;
+  return m;
+}
+
+/**
+ * The covariance that one integration step of duration dt adds to [DR, Dv, Dp], for white noise
+ * with the given spectral densities, held measurements, and the rotation held at DR over the step.
+ * This is the closed form documented in manifold_symbolic.py, written out block by block.
+ */
+Eigen::Matrix<double, 9, 9> AnalyticStepNoiseCovariance(const Rot3d& DR,
+                                                        const Ref<const Vector3d>& corrected_accel,
+                                                        const Ref<const Vector3d>& accel_cov,
+                                                        const Ref<const Vector3d>& gyro_cov,
+                                                        const double dt) {
+  const Eigen::Matrix3d R = DR.ToRotationMatrix();
+  const Eigen::Matrix3d A = -R * SkewSymmetric(corrected_accel);
+  const Eigen::Matrix3d Sg = gyro_cov.asDiagonal();
+  const Eigen::Matrix3d Sa = R * accel_cov.asDiagonal() * R.transpose();
+  const Eigen::Matrix3d ASg = A * Sg;
+  const Eigen::Matrix3d ASgAT = ASg * A.transpose();
+
+  Eigen::Matrix<double, 9, 9> Q;
+  Q.block<3, 3>(0, 0) = Sg * dt;
+  Q.block<3, 3>(3, 0) = ASg * (dt * dt / 2);
+  Q.block<3, 3>(6, 0) = ASg * (dt * dt * dt / 6);
+  Q.block<3, 3>(3, 3) = Sa * dt + ASgAT * (dt * dt * dt / 3);
+  Q.block<3, 3>(6, 3) = Sa * (dt * dt / 2) + ASgAT * (dt * dt * dt * dt / 8);
+  Q.block<3, 3>(6, 6) = Sa * (dt * dt * dt / 3) + ASgAT * (dt * dt * dt * dt * dt / 20);
+  Q.block<3, 3>(0, 3) = Q.block<3, 3>(3, 0).transpose();
+  Q.block<3, 3>(0, 6) = Q.block<3, 3>(6, 0).transpose();
+  Q.block<3, 3>(3, 6) = Q.block<3, 3>(6, 3).transpose();
+  return Q;
+}
+
+TEST_CASE("Test ImuManifoldPreintegrationUpdate adds the analytic step noise covariance",
+          "[slam]") {
+  using M99 = Eigen::Matrix<double, 9, 9>;
+  std::mt19937 gen(2718);
+
+  for (int i_ = 0; i_ < 10; i_++) {
+    const sym::Rot3d DR = sym::Rot3d::Random(gen);
+    const Eigen::Vector3d Dv = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d Dp = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d accel = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d gyro = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d accel_bias = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d gyro_bias = sym::Random<Eigen::Vector3d>(gen);
+    const Eigen::Vector3d accel_cov = sym::Random<Eigen::Vector3d>(gen).cwiseAbs();
+    const Eigen::Vector3d gyro_cov = sym::Random<Eigen::Vector3d>(gen).cwiseAbs();
+    const double dt = 0.37;
+
+    // With zero input covariance, the output covariance is exactly the step's noise covariance
+    M99 new_covariance;
+    sym::ImuManifoldPreintegrationUpdate<double>(
+        DR, Dv, Dp, M99::Zero(), Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Zero(),
+        Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Zero(), Eigen::Matrix3d::Zero(), accel_bias,
+        gyro_bias, accel_cov, gyro_cov, accel, gyro, dt, sym::kDefaultEpsilond, nullptr, nullptr,
+        nullptr, &new_covariance, nullptr, nullptr, nullptr, nullptr, nullptr);
+
+    const M99 expected =
+        AnalyticStepNoiseCovariance(DR, accel - accel_bias, accel_cov, gyro_cov, dt);
+    const M99 symmetric_new_covariance = new_covariance.selfadjointView<Eigen::Lower>();
+    CHECK(sym::IsClose(symmetric_new_covariance, expected, 1e-12 * expected.norm()));
+  }
+}
+
+TEST_CASE("Test ImuPreintegrator covariance is positive definite after one measurement", "[slam]") {
+  using M99 = Eigen::Matrix<double, 9, 9>;
+  const double dt = 5e-4;
+
+  sym::ImuPreintegrator<double> integrator(example::kAccelBias, example::kGyroBias);
+  integrator.IntegrateMeasurement(example::kAccelBias + example::kTrueAccel,
+                                  example::kGyroBias + example::kTrueGyro, example::kAccelCov,
+                                  example::kGyroCov, dt, sym::kDefaultEpsilond);
+
+  const M99 covariance = integrator.Covariance().selfadjointView<Eigen::Lower>();
+  const Eigen::LLT<M99> llt(covariance);
+  CHECK(llt.info() == Eigen::Success);
+  const Eigen::SelfAdjointEigenSolver<M99> eigensolver(covariance);
+  CHECK(eigensolver.eigenvalues().minCoeff() > 0.0);
+
+  const M99 expected = AnalyticStepNoiseCovariance(sym::Rot3d::Identity(), example::kTrueAccel,
+                                                   example::kAccelCov, example::kGyroCov, dt);
+  CHECK(sym::IsClose(covariance, expected, 1e-12 * expected.norm()));
+}
+
+TEST_CASE("Test ImuPreintegrator covariance does not depend on the step subdivision", "[slam]") {
+  // With a held measurement, the integrated noise covariance of a window is the exact solution of
+  // the linearized continuous-time model, so it is the same whether the window is integrated as
+  // one step or as many. With no rotation rate this holds to machine precision; with rotation,
+  // the step's rotation is held at its start, so the results agree to O(|gyro| dt).
+  using M99 = Eigen::Matrix<double, 9, 9>;
+  const double window = 0.2;
+  const Eigen::Vector3d accel_cov(0.06 * 0.06, 0.06 * 0.06, 0.06 * 0.06);
+  const Eigen::Vector3d gyro_cov(5e-4 * 5e-4, 5e-4 * 5e-4, 5e-4 * 5e-4);
+  const Eigen::Vector3d accel(0.4, -0.7, 9.81);
+
+  const auto integrate = [&](const Eigen::Vector3d& gyro, const int steps) -> M99 {
+    sym::ImuPreintegrator<double> integrator(Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
+    for (int k = 0; k < steps; k++) {
+      integrator.IntegrateMeasurement(accel, gyro, accel_cov, gyro_cov, window / steps,
+                                      sym::kDefaultEpsilond);
+    }
+    return integrator.Covariance().selfadjointView<Eigen::Lower>();
+  };
+
+  {
+    const M99 one_step = integrate(Eigen::Vector3d::Zero(), 1);
+    const M99 expected =
+        AnalyticStepNoiseCovariance(sym::Rot3d::Identity(), accel, accel_cov, gyro_cov, window);
+    CHECK(sym::IsClose(one_step, expected, 1e-12 * expected.norm()));
+    for (const int steps : {2, 7, 40, 400}) {
+      const M99 many_steps = integrate(Eigen::Vector3d::Zero(), steps);
+      CAPTURE(steps);
+      CHECK(sym::IsClose(many_steps, one_step, 1e-10 * one_step.norm()));
+    }
+  }
+
+  {
+    const Eigen::Vector3d gyro(0.3, -0.5, 0.4);
+    const M99 coarse = integrate(gyro, 40);
+    const M99 fine = integrate(gyro, 4000);
+    CHECK(sym::IsClose(coarse, fine, 1e-6 * fine.norm()));
+  }
 }
 
 TEST_CASE("Test preintegrated derivatives wrt IMU biases", "[slam]") {

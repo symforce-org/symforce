@@ -224,6 +224,92 @@ def handwritten_new_state_D_state_gyro_accel(
     return sf.M99(new_state_D_old_state), sf.M93(new_state_D_gyro), sf.M93(new_state_D_accel)
 
 
+def step_noise_covariance(
+    DR: sf.Rot3,
+    corrected_accel: sf.V3,
+    accel_cov_diagonal: sf.V3,
+    gyro_cov_diagonal: sf.V3,
+    dt: T.Scalar,
+) -> sf.M99:
+    """
+    Calculates the covariance of the error that the gyroscope and accelerometer noise of a single
+    integration step adds to the new state (DR, Dv, Dp), in local coordinates of the new state.
+
+    The noise is modeled as continuous-time white noise with the given spectral densities, acting
+    over the whole step, while the integrator holds the measurements and the rotation DR of the
+    start of the step constant (see :func:`integrate_state`). The linearized error state
+    ``(dR, dv, dp)`` then evolves within the step as::
+
+        d/dt [dR, dv, dp] = F [dR, dv, dp] + G [gyro_noise, accel_noise]
+
+        F = [[0, 0, 0],      G = [[I, 0],      A = -R [corrected_accel]_x
+             [A, 0, 0],           [0, R],
+             [0, I, 0]]           [0, 0]]
+
+    where ``R`` is the rotation matrix of DR. ``F`` is nilpotent (``F^3 = 0``), so the state
+    transition matrix over a time ``s`` is exactly ``Phi(s) = I + F s + F^2 s^2 / 2``, and the
+    covariance of the noise integrated over the step is, exactly::
+
+        Q = int_0^dt Phi(dt - tau) G Sigma G^T Phi(dt - tau)^T dtau
+          = sum_{i, j in 0..2} F^i (G Sigma G^T) (F^T)^j dt^(i + j + 1) / (i! j! (i + j + 1))
+
+    Written out by blocks, with ``Sg = diag(gyro_cov_diagonal)`` and
+    ``Sa = R diag(accel_cov_diagonal) R^T``::
+
+        Q_RR = Sg dt
+        Q_vR = A Sg dt^2 / 2
+        Q_pR = A Sg dt^3 / 6
+        Q_vv = Sa dt       + A Sg A^T dt^3 / 3
+        Q_pv = Sa dt^2 / 2 + A Sg A^T dt^4 / 8
+        Q_pp = Sa dt^3 / 3 + A Sg A^T dt^5 / 20
+
+    The ``Sa`` terms are the familiar covariance of doubly integrated white noise, which is
+    positive definite for any ``dt > 0``. The ``A Sg`` terms are the rotation noise accumulated
+    during the step leaking into the velocity and position through the integrated acceleration.
+
+    This is exact for a non-rotating body. Holding DR fixed within the step drops the
+    ``-[omega]_x dR`` term of the rotation-error dynamics (and the right Jacobian ``J_r(omega dt)``
+    the discrete model applied to the gyro noise), so with an angular rate ``omega`` the step
+    covariance is accurate to first order in ``|omega| dt``. Likewise, the covariance of a window
+    does not depend on how it is divided into steps when the body does not rotate, and depends on
+    it only to that order otherwise.
+
+    Args:
+        DR: Preintegrated DR at the start of the step
+        corrected_accel: Accelerometer measurement corrected for IMU bias
+        accel_cov_diagonal: Diagonal of the accelerometer noise spectral density
+        gyro_cov_diagonal: Diagonal of the gyroscope noise spectral density
+        dt: Duration of the step
+
+    Returns:
+        sf.M99: The noise covariance to add to the propagated covariance of the new state
+    """
+    R = DR.to_rotation_matrix()
+    A = -R * sf.Matrix.skew_symmetric(corrected_accel)
+
+    gyro_cov = sf.M33.diag(gyro_cov_diagonal.to_flat_list())
+    rotated_accel_cov = R * sf.M33.diag(accel_cov_diagonal.to_flat_list()) * R.T
+    A_gyro_cov = A * gyro_cov
+    A_gyro_cov_AT = A_gyro_cov * A.T
+
+    Q_RR = gyro_cov * dt
+    Q_vR = A_gyro_cov * (dt**2 / 2)
+    Q_pR = A_gyro_cov * (dt**3 / 6)
+    Q_vv = rotated_accel_cov * dt + A_gyro_cov_AT * (dt**3 / 3)
+    Q_pv = rotated_accel_cov * (dt**2 / 2) + A_gyro_cov_AT * (dt**4 / 8)
+    Q_pp = rotated_accel_cov * (dt**3 / 3) + A_gyro_cov_AT * (dt**5 / 20)
+
+    return sf.M99(
+        sf.Matrix.block_matrix(
+            [
+                [Q_RR, Q_vR.T, Q_pR.T],
+                [Q_vR, Q_vv, Q_pv.T],
+                [Q_pR, Q_pv, Q_pp],
+            ]
+        )
+    )
+
+
 def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
     # Initial state
     DR: sf.Rot3,
@@ -260,6 +346,13 @@ def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
     When integrating the first measurement, DR should be the identity, Dv, Dp, covariance, and the
     derivatives w.r.t. to bias should all be 0.
 
+    The measurement noise is modeled as continuous-time white noise acting over the whole step,
+    and its contribution to the covariance is integrated in closed form over the step, holding
+    the step's starting rotation fixed (see :func:`step_noise_covariance`). The covariance of a
+    window of measurements is therefore full rank even when the window consists of a single step.
+    It is exact, and does not depend on how the window is divided into steps, for a non-rotating
+    body; with an angular rate it is accurate to first order in the rotation per step.
+
     Args:
         DR: Preintegrated change in orientation
         Dv: Preintegrated change in velocity
@@ -272,8 +365,10 @@ def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
         Dp_D_gyro_bias: Derivative of Dp w.r.t. gyro_bias
         accel_bias: Initial guess for the accelerometer measurement bias
         gyro_bias: Initial guess for the gyroscope measurement bias
-        accel_cov_diagonal: The diagonal of the covariance of the accelerometer measurement
-        gyro_cov_diagonal: The diagonal of the covariance of the gyroscope measurement
+        accel_cov_diagonal: The diagonal of the noise spectral density of the accelerometer
+            measurement, i.e. the covariance of a measurement times the time it covers
+        gyro_cov_diagonal: The diagonal of the noise spectral density of the gyroscope
+            measurement, i.e. the covariance of a measurement times the time it covers
         accel_measurement: The accelerometer measurement
         gyro_measurement: The gyroscope measurement
         dt: The time between the new measurements and the last
@@ -338,9 +433,13 @@ def imu_manifold_preintegration_update(  # noqa: PLR0913, PLR0917
 
     covariance = covariance.symmetric_copy(sf.Matrix.Triangle.LOWER)
 
+    # The noise of the step is modeled as white noise acting over the whole step, rather than as a
+    # perturbation of the held measurement, so its covariance is not expressible through
+    # new_state_D_gyro and new_state_D_accel; see step_noise_covariance for the derivation.
     new_covariance = new_state_D_state * covariance * new_state_D_state.T
-    new_covariance += new_state_D_gyro * sf.M.diag(gyro_cov_diagonal / dt) * new_state_D_gyro.T
-    new_covariance += new_state_D_accel * sf.M.diag(accel_cov_diagonal / dt) * new_state_D_accel.T
+    new_covariance += step_noise_covariance(
+        DR, corrected_accel, accel_cov_diagonal, gyro_cov_diagonal, dt
+    )
 
     new_covariance = new_covariance.symmetric_copy(sf.Matrix.Triangle.LOWER)
 

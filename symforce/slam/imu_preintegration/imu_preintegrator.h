@@ -42,11 +42,19 @@ class ImuPreintegrator {
    *   @param measured_accel the next accelerometer measurement after the last integrated
    * measurement
    *   @param measured_gyro the next gyroscope measurement after the last integrated measurement
-   *   @param accel_cov the covariance of the accelerometer measurement (represented by its diagonal
-   *     entries) `[(meters / time^2)^2 * time]`
-   *   @param gyro_cov the covariance of the gyroscope measurement (represented by its diagonal
-   *     entries) `[(radians / time)^2 * time]`
+   *   @param accel_cov the noise spectral density of the accelerometer measurement (represented by
+   *     its diagonal entries) `[(meters / time^2)^2 * time]`, i.e. the covariance of the
+   *     measurement times dt
+   *   @param gyro_cov the noise spectral density of the gyroscope measurement (represented by its
+   *     diagonal entries) `[(radians / time)^2 * time]`, i.e. the covariance of the measurement
+   *     times dt
    *   @param dt the time span over which these measurements were made
+   *
+   * The measurement noise is modeled as white noise acting over the whole time span dt, and its
+   * effect on the covariance is integrated in closed form over the span, holding the rotation at
+   * the start of the span fixed. The covariance is therefore positive definite after a single
+   * measurement. It is exact, and independent of how a window is divided into measurements, for a
+   * non-rotating body; with an angular rate omega it is accurate to first order in |omega| dt.
    *
    * Postcondition:
    *
