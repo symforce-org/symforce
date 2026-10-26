@@ -159,6 +159,17 @@ class Codegen:
         self.inputs = inputs
         self.outputs = outputs
 
+        # Inputs must be symbols, not constants or expressions
+        non_symbolic_inputs = [
+            key
+            for key, value in inputs.items_recursive()
+            if not all(isinstance(e, sf.Symbol) for e in ops.StorageOps.to_storage(value))
+        ]
+        if non_symbolic_inputs:
+            raise ValueError(
+                f"Inputs must be symbolic, found constants or expressions in: {non_symbolic_inputs}"
+            )
+
         # All symbols in outputs must be present in inputs
         input_symbols_list = codegen_util.flat_symbols_from_values(inputs)
         input_symbols = set(input_symbols_list)
