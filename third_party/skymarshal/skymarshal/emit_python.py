@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import argparse
 import copy
+import importlib.util
+import marshal
 import os
+import sys
 import typing as T
 import zipfile
 from io import BytesIO
@@ -22,6 +25,9 @@ TypeInfo = T.NamedTuple(
         ("size", T.Optional[int]),
     ],
 )
+
+# PEP 552 flags of a hash-based pyc whose source hash the interpreter does not check.
+PYC_FLAGS_UNCHECKED_HASH = 0b01
 
 TYPE_MAP = {
     "byte": TypeInfo("int", 0, "B", "B", 1),
@@ -646,6 +652,11 @@ class SkymarshalPython(SkymarshalLanguage):
         parser.add_argument(
             "--python-zip-path", default=None, help="Zip all Python outputs and put them here"
         )
+        parser.add_argument(
+            "--python-pyc",
+            action="store_true",
+            help="Also write the bytecode of each package module into the __pycache__ next to it",
+        )
 
     @classmethod
     def create_module(
@@ -709,6 +720,11 @@ class SkymarshalPython(SkymarshalLanguage):
                 namespace_package=args.python_namespace_packages,
             )
 
+        # The master package init is left out: it is usually a separately declared output, whose
+        # __pycache__ would land outside the declared output directories.
+        if args.python_pyc:
+            file_map.update(compile_pycs(file_map, args.python_path or os.curdir))
+
         if args.package_prefix:
             # Create an init for the master package
             init_path = os.path.join(args.python_path or "", "__init__.py")
@@ -732,3 +748,41 @@ class SkymarshalPython(SkymarshalLanguage):
             file_map = {args.python_zip_path: data.getvalue()}
 
         return file_map
+
+
+def compile_pycs(file_map: T.Mapping[str, str | bytes], python_path: str) -> dict[str, bytes]:
+    """
+    Compile each Python source in file_map to the `__pycache__` path the interpreter loads it from.
+
+    The bytecode is unchecked-hash based (PEP 552), so it stays valid regardless of the timestamps
+    the sources get once staged into runfiles. It matches the running interpreter's version, so it
+    is only picked up by an interpreter with the same cache tag.
+
+    The filename recorded in the bytecode is relative to python_path, so identical sources compile
+    to identical bytecode wherever they are generated. The interpreter replaces it with the real
+    source path on import.
+
+    Args:
+        file_map: Map from path to source of each Python module
+        python_path: Root directory of the Python outputs
+
+    Returns:
+        Map from path to bytecode of each module's pyc
+    """
+    pycs = {}
+    for path, source in file_map.items():
+        source_bytes = source.encode("utf-8") if isinstance(source, str) else source
+        code = compile(
+            source_bytes, os.path.relpath(path, python_path), "exec", dont_inherit=True
+        )
+        stem = os.path.splitext(os.path.basename(path))[0]
+        pyc_path = os.path.join(
+            os.path.dirname(path), "__pycache__", f"{stem}.{sys.implementation.cache_tag}.pyc"
+        )
+        pycs[pyc_path] = (
+            importlib.util.MAGIC_NUMBER
+            + PYC_FLAGS_UNCHECKED_HASH.to_bytes(4, "little")
+            + importlib.util.source_hash(source_bytes)
+            + marshal.dumps(code)
+        )
+    return pycs
