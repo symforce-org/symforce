@@ -333,6 +333,9 @@ class CppStruct(StructBuilder, CppBase):
     def constructor_args(self):
         return ",\n".join(declare_member(member, "_arg", const_ref=True) for member in self.members)
 
+    def constructor_specifier(self):
+        return "constexpr" if self.struct.literal_type else "inline"
+
     def initializers(self):
         return ",\n".join("{0}({0}_arg)".format(member.name) for member in self.members)
 

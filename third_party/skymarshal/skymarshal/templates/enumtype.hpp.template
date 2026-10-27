@@ -220,17 +220,17 @@ constexpr uint64_t {{enumtype.name}}::_computeHash(const __lcm_hash_ptr *)
     return {{ "0x%xULL" % enumtype.recursive_hash }};
 }
 
-inline bool operator==(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
+inline constexpr bool operator==(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
 {
     return a.value == b.value;
 }
 
-inline bool operator!=(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
+inline constexpr bool operator!=(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
 {
     return !(a == b);
 }
 
-inline bool operator<(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
+inline constexpr bool operator<(const {{enumtype.name}}& a, const {{enumtype.name}}& b)
 {
     return a.value < b.value;
 }

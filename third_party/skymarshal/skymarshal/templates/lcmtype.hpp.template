@@ -54,7 +54,7 @@ class {{lcmtype.name}}
         /**
          * Member constructor
          */
-        inline {{lcmtype.name}}(
+        {{lcmtype.constructor_specifier()}} {{lcmtype.name}}(
             {{lcmtype.constructor_args()|indent(12)}}
         );
 {% endif %}
@@ -257,7 +257,7 @@ class {{lcmtype.name}}
 };
 {% if lcmtype.members and not lcmtype.args.cpp_no_operators %}
 
-{{lcmtype.name}}::{{lcmtype.name}}(
+{% if lcmtype.constructor_specifier() == "constexpr" %}constexpr {% endif %}{{lcmtype.name}}::{{lcmtype.name}}(
     {{lcmtype.constructor_args()|indent(4)}}
 ) : {{lcmtype.initializers()|indent(4)}} {}
 {% endif %}

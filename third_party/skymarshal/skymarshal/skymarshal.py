@@ -12,6 +12,7 @@ import shlex
 import sys
 import typing as T
 
+from skymarshal import syntax_tree
 from skymarshal.language_plugin import SkymarshalLanguage
 from skymarshal.package_map import parse_lcmtypes
 
@@ -115,12 +116,7 @@ def main(
             for full_name, hex_hash in json.load(f).items():
                 dep_hashes[full_name] = int(hex_hash, 16)
 
-    for t in type_map.values():
-        t.recursive_hash = t.compute_recursive_hash(type_map, dep_hashes)
-        # Enum emitters operate on enum.equivalent_struct; mirror the hash there.
-        equivalent_struct = getattr(t, "equivalent_struct", None)
-        if equivalent_struct is not None:
-            equivalent_struct.recursive_hash = t.recursive_hash
+    syntax_tree.annotate_types(type_map, dep_hashes)
 
     files = {}
 

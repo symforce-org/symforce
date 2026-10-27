@@ -535,8 +535,9 @@ class Struct(AstNode):
         self.type_ref = TypeRef(name)
         self.notations = list(notations)
         self.source_file: T.Optional[str] = None
-        # Populated by skymarshal.main after cross-package hashes are loaded.
+        # Populated by annotate_types after cross-package hashes are loaded.
         self.recursive_hash: int = 0
+        self.literal_type: bool = False
 
     def set_source_file(self, source_file: str) -> None:
         self.source_file = source_file
@@ -757,6 +758,37 @@ class Struct(AstNode):
                 raise KeyError(f"compute_recursive_hash: cannot resolve {full_name}")
             h = (h + sub_hash) & 0xFFFFFFFFFFFFFFFF
         return ((h << 1) & 0xFFFFFFFFFFFFFFFF) | (h >> 63)
+
+    def is_literal_type(self, type_map: T.Mapping[str, T.Union[Struct, Enum]]) -> bool:
+        """Whether every member is a number, boolean, byte, enum or fixed-size array of those."""
+        for member in self.members:
+            if isinstance(member, ConstMember):
+                continue
+            if isinstance(member, ArrayMember) and not (
+                member.is_constant_size() or member.get_inline_capacity() is not None
+            ):
+                return False
+            type_ref = member.type_ref
+            if type_ref.is_primitive_type():
+                if type_ref.name == "string":
+                    return False
+            elif not isinstance(type_map.get(type_ref.full_name), Enum):
+                return False
+        return True
+
+
+def annotate_types(
+    type_map: T.Mapping[str, T.Union[Struct, Enum]], dep_hashes: T.Mapping[str, int]
+) -> None:
+    """Precomputes what emitters render as literals: recursive hashes and constexpr eligibility."""
+    for t in type_map.values():
+        t.recursive_hash = t.compute_recursive_hash(type_map, dep_hashes)
+        if isinstance(t, Struct):
+            t.literal_type = t.is_literal_type(type_map)
+        # Enum emitters operate on enum.equivalent_struct; mirror the hash there.
+        equivalent_struct = getattr(t, "equivalent_struct", None)
+        if equivalent_struct is not None:
+            equivalent_struct.recursive_hash = t.recursive_hash
 
 
 class ReservedFieldGroup(AstNode):

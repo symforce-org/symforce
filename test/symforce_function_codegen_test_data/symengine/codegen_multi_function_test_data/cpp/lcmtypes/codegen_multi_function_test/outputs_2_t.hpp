@@ -32,7 +32,7 @@ class outputs_2_t
         /**
          * Member constructor
          */
-        inline outputs_2_t(
+        constexpr outputs_2_t(
             const double& foo_arg
         );
 
@@ -191,7 +191,7 @@ class outputs_2_t
 #endif
 };
 
-outputs_2_t::outputs_2_t(
+constexpr outputs_2_t::outputs_2_t(
     const double& foo_arg
 ) : foo(foo_arg) {}
 

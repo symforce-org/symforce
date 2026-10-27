@@ -32,7 +32,7 @@ class inputs_constants_t
         /**
          * Member constructor
          */
-        inline inputs_constants_t(
+        constexpr inputs_constants_t(
             const double& epsilon_arg
         );
 
@@ -191,7 +191,7 @@ class inputs_constants_t
 #endif
 };
 
-inputs_constants_t::inputs_constants_t(
+constexpr inputs_constants_t::inputs_constants_t(
     const double& epsilon_arg
 ) : epsilon(epsilon_arg) {}
 

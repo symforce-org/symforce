@@ -34,7 +34,7 @@ class d_out_t
         /**
          * Member constructor
          */
-        inline d_out_t(
+        constexpr d_out_t(
             const double& x_arg,
             const double& y_arg
         );
@@ -207,7 +207,7 @@ class d_out_t
 #endif
 };
 
-d_out_t::d_out_t(
+constexpr d_out_t::d_out_t(
     const double& x_arg,
     const double& y_arg
 ) : x(x_arg),
