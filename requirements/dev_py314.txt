@@ -140,7 +140,7 @@ narwhals==2.16.0
     # via plotly
 nbclient==0.10.4
     # via nbconvert
-nbconvert==7.17.1
+nbconvert==7.17.2
     # via nbsphinx
 nbformat==5.10.4
     # via
