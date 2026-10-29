@@ -146,8 +146,13 @@ def _backend_coverage_expected_header() -> str:
     outputs = _backend_coverage_outputs(x, y)
 
     def evaluate(expr: sf.Expr, x_value: float, y_value: float) -> str:
-        # SymEngine can't evalf every function here, so convert to SymPy.
-        value = complex(sympy.sympify(expr).subs({x: x_value, y: y_value}).evalf(30))
+        # SymEngine can't evalf every function here, so convert to SymPy.  Substitute the exact
+        # values of the doubles, since how SymPy rounds float arguments varies between versions.
+        value = complex(
+            sympy.sympify(expr)
+            .subs({x: sympy.Rational(x_value), y: sympy.Rational(y_value)})
+            .evalf(30)
+        )
         if value.imag != 0:
             return "kNaN"
         return repr(value.real)
