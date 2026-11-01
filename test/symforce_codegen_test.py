@@ -925,14 +925,29 @@ class SymforceCodegenTest(TestCase):
     def test_invalid_codegen_raises(self) -> None:
         """
         Tests:
+            Codegen inputs must be symbolic
             Codegen outputs must be a function of given inputs
             Codegen input/output names must be valid variable names
             Codegen namespace must be a valid identifier
             Codegen name must be a valid identifier
         """
-        # Outputs have symbols not present in inputs
         x = sf.Symbol("x")
         y = sf.Symbol("y")
+
+        # Inputs are constants
+        inputs = Values(a=sf.Rot3.from_storage([1, 2, 3, 4]))
+        outputs = Values(out=sf.Rot3.from_storage([1, 2, 3, 4]))
+        self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
+
+        # Inputs contain an expression or a constant alongside symbols
+        inputs = Values(a=x, b=x * y)
+        outputs = Values(out=x)
+        self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
+        inputs = Values(a=sf.V2(x, 2))
+        outputs = Values(out=x)
+        self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
+
+        # Outputs have symbols not present in inputs
         inputs = Values(input=x)
         outputs = Values(output=x + y)
         self.assertRaises(ValueError, codegen.Codegen, inputs, outputs, codegen.CppConfig(), "test")
